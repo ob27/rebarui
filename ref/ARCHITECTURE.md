@@ -82,6 +82,20 @@ A single attribute toggle on the root element; no per-component JS re-render nee
 change, no runtime style mutation. Dark mode is an orthogonal attribute so it composes with either
 theme.
 
+**Theme rules must scope to their own attribute selector only — never also to bare `:root`.**
+An earlier version of `theme-sketch` matched `:root, [data-rebar-theme="sketch"]` in one rule, to
+make sketch "the default" even with no attribute set. That meant sketch's tokens always applied
+at the root regardless of which theme was actually active, and switching to
+`data-rebar-theme="clean"` on the same element came down to an equal-specificity, source-order
+tiebreak between `theme-sketch`'s and `theme-clean`'s CSS — which broke in practice (clicking
+"Clean" didn't change the font; Turbopack's CSS bundling doesn't guarantee the import-order
+assumption that tiebreak depended on). Fixed by scoping every theme rule to only its own explicit
+`[data-rebar-theme="..."]` (and `[data-theme="dark"]`) selector, never `:root` — an app with no
+theme attribute set at all now falls back to `core`'s own inline `var(--x, fallback)` values
+rather than silently becoming "sketch." Getting-started docs already instruct setting the
+attribute explicitly, so this doesn't change the documented setup path, only removes an
+undocumented, fragile implicit default.
+
 No component ever silently rewrites a developer-authored value (e.g. "rounds" a stray `margin:
 13px` to `16px`). Deviations from the token scale are surfaced as **dev-mode console warnings**
 (or an optional ESLint rule scanning for raw pixel values in Rebar component usage) — visible,

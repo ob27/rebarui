@@ -5,13 +5,16 @@
   on every bordered element) — otherwise it doesn't earn the name "sketch." Color stays reserved
   for key actions (the primary button) per the user's own heuristic: grey scale so people aren't
   distracted by color, but critical actions stay colored so they're recognizable (Nielsen #6).
-  Applies when the nearest ancestor has data-rebar-theme="sketch" (or no theme attribute at all,
-  since sketch is the default — see [data-rebar-theme] fallback rule below).
+  Applies only when data-rebar-theme="sketch" is actually set — deliberately NOT also on bare
+  :root. An earlier version matched both, meaning sketch's tokens applied unconditionally at
+  the root and switching to data-rebar-theme="clean" on the same element came down to an
+  equal-specificity, source-order tiebreak between this file and theme-clean's — fragile, and
+  broke in practice (clicking "Clean" didn't change the font). No-theme-set-at-all now falls
+  back to packages/core's own inline var() fallbacks instead of silently being "sketch."
 */
 
 @import url("https://fonts.googleapis.com/css2?family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
-:root,
 [data-rebar-theme="sketch"] {
   --rebar-font-family-sans: "Balsamiq Sans", "Comic Sans MS", "Chalkboard SE", cursive,
     sans-serif;
@@ -79,7 +82,6 @@
   box-shadow: none;
 }
 
-:root[data-theme="dark"],
 [data-rebar-theme="sketch"][data-theme="dark"] {
   --rebar-color-text-primary: #f5f5f5;
   --rebar-color-text-secondary: #a1a1aa;
