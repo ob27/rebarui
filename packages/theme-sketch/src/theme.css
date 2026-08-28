@@ -1,16 +1,20 @@
 /*
-  Rebar's default theme: clean greyscale wireframe — light-grey page background, white cards
-  with a soft shadow, moderate rounded corners, grey text/icons. Color is reserved for key
-  actions (the primary button) per the user's own heuristic: grey scale so people aren't
+  Rebar's default theme: a clean greyscale wireframe (light-grey page background, white cards
+  with a soft shadow — see the reference mockups this was updated against) combined with a
+  genuinely hand-drawn feel (a real Balsamiq-style font, subtly irregular "sketch line" corners
+  on every bordered element) — otherwise it doesn't earn the name "sketch." Color stays reserved
+  for key actions (the primary button) per the user's own heuristic: grey scale so people aren't
   distracted by color, but critical actions stay colored so they're recognizable (Nielsen #6).
-  Applies when the nearest ancestor has data-rebar-theme="sketch" (or no theme attribute at
-  all, since sketch is the default — see [data-rebar-theme] fallback rule below).
+  Applies when the nearest ancestor has data-rebar-theme="sketch" (or no theme attribute at all,
+  since sketch is the default — see [data-rebar-theme] fallback rule below).
 */
+
+@import url("https://fonts.googleapis.com/css2?family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
 :root,
 [data-rebar-theme="sketch"] {
-  --rebar-font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+  --rebar-font-family-sans: "Balsamiq Sans", "Comic Sans MS", "Chalkboard SE", cursive,
+    sans-serif;
 
   --rebar-space-0: 0px;
   --rebar-space-xs: 4px;
@@ -43,17 +47,20 @@
   --rebar-color-warning: #f57c00;
   --rebar-color-warning-bg: #fff3e0;
   --rebar-color-info: #0288d1;
-  --rebar-color-text-primary: #18181b;
+  --rebar-color-text-primary: #27272a;
   --rebar-color-text-secondary: #71717a;
   --rebar-color-bg-primary: #ffffff;
   --rebar-color-bg-secondary: #f0f0f2;
-  --rebar-color-border: #e4e4e7;
-  --rebar-color-border-strong: #d4d4d8;
+  --rebar-color-border: #d4d4d8;
+  --rebar-color-border-strong: #3f3f46;
   --rebar-color-border-focus: #0066cc;
 
-  --rebar-border-width: 1px;
-  --rebar-radius: 12px;
-  --rebar-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.06);
+  --rebar-border-width: 1.5px;
+  /* Subtly irregular per-corner radius — a "sketch line" wobble, not a perfect rectangle.
+     Deliberately restrained compared to the original brainstorm's exaggerated blob-shaped
+     border-radius trick; this should read as hand-drawn, not distorted. */
+  --rebar-radius: 9px 12px 8px 13px / 11px 8px 13px 9px;
+  --rebar-shadow: 1px 2px 0 rgba(63, 63, 70, 0.12), 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 [data-rebar-theme="sketch"] body {
@@ -78,6 +85,6 @@
   --rebar-color-text-secondary: #a1a1aa;
   --rebar-color-bg-primary: #1e1e21;
   --rebar-color-bg-secondary: #131316;
-  --rebar-color-border: #333336;
-  --rebar-color-border-strong: #45454a;
+  --rebar-color-border: #45454a;
+  --rebar-color-border-strong: #a1a1aa;
 }
