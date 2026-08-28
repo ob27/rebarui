@@ -21,3 +21,9 @@ export type { CardProps } from "./components/Card";
 
 export { Alert } from "./components/Alert";
 export type { AlertProps } from "./components/Alert";
+
+export { Dialog } from "./components/Dialog";
+export type { DialogProps } from "./components/Dialog";
+
+export { Tabs, TabList, Tab, TabPanel } from "./components/Tabs";
+export type { TabsProps, TabListProps, TabProps, TabPanelProps } from "./components/Tabs";

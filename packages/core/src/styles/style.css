@@ -182,3 +182,97 @@
 .rebar-alert-title {
   font-weight: var(--rebar-font-weight-semibold, 600);
 }
+
+.rebar-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.rebar-dialog-content {
+  box-sizing: border-box;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  width: calc(100vw - var(--rebar-space-xl, 32px) * 2);
+  max-width: 600px;
+  max-height: calc(100vh - var(--rebar-space-xl, 32px) * 2);
+  overflow-y: auto;
+  background: var(--rebar-color-bg-primary, #ffffff);
+  border: var(--rebar-border-width, 1px) solid var(--rebar-color-border-strong, #333333);
+  border-radius: var(--rebar-radius, 4px);
+  padding: var(--rebar-space-lg, 24px);
+}
+
+.rebar-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--rebar-space-md, 16px);
+}
+
+.rebar-dialog-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: var(--rebar-font-size-lg, 20px);
+  line-height: 1;
+  color: var(--rebar-color-text-secondary, #757575);
+  padding: var(--rebar-space-xs, 4px);
+}
+
+.rebar-dialog-close:focus-visible {
+  outline: 2px solid var(--rebar-color-border-focus, #0066cc);
+  outline-offset: 2px;
+}
+
+.rebar-dialog-body {
+  margin-top: var(--rebar-space-md, 16px);
+}
+
+.rebar-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--rebar-space-sm, 8px);
+  margin-top: var(--rebar-space-lg, 24px);
+}
+
+.rebar-tab-list {
+  display: flex;
+  gap: var(--rebar-space-md, 16px);
+  border-bottom: var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0);
+}
+
+.rebar-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: var(--rebar-space-sm, 8px) var(--rebar-space-xs, 4px);
+  font-size: var(--rebar-font-size-sm, 14px);
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--rebar-color-text-secondary, #757575);
+}
+
+.rebar-tab[data-state="active"] {
+  font-weight: var(--rebar-font-weight-semibold, 600);
+  color: var(--rebar-color-text-primary, #212121);
+  border-bottom-color: var(--rebar-color-primary, #0066cc);
+}
+
+.rebar-tab:focus-visible {
+  outline: 2px solid var(--rebar-color-border-focus, #0066cc);
+  outline-offset: 2px;
+}
+
+.rebar-tab-panel {
+  padding-top: var(--rebar-space-md, 16px);
+}
+
+.rebar-tab-panel:focus-visible {
+  outline: 2px solid var(--rebar-color-border-focus, #0066cc);
+  outline-offset: 2px;
+}

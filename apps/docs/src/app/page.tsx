@@ -6,15 +6,20 @@ import {
   Box,
   Button,
   Card,
+  Dialog,
   Heading,
   Input,
   Stack,
+  Tab,
+  TabList,
+  TabPanel,
+  Tabs,
   Text,
 } from "rebar-ui";
 
 const PHASES = [
   { label: "Phase 1 — core primitives (Box, Stack, Text, Heading, Button, Input, Card, Alert)", done: true },
-  { label: "Phase 2 — composite components (Dialog, Tabs, Form)", done: false },
+  { label: "Phase 2 — composite components (Dialog, Tabs done; Form next)", done: true },
   { label: "Phase 3 — theming (sketch, clean, dark)", done: false },
   { label: "Phase 4 — DevTools panel", done: false },
   { label: "Phase 5 — migration tooling", done: false },
@@ -86,6 +91,41 @@ export default function Home() {
                 </Text>
               ) : null}
             </Stack>
+          </Stack>
+        </Card>
+
+        <Card>
+          <Stack gap="md">
+            <Heading level={3}>Dialog + Tabs</Heading>
+
+            <Dialog
+              trigger={<Button variant="destructive">Delete account</Button>}
+              title="Delete account"
+              description="This cannot be undone."
+              footer={
+                <>
+                  <Button variant="secondary">Cancel</Button>
+                  <Button variant="destructive">Delete</Button>
+                </>
+              }
+            >
+              <Text size="sm">
+                All of your data will be permanently removed. Type DELETE to confirm.
+              </Text>
+            </Dialog>
+
+            <Tabs defaultValue="overview">
+              <TabList aria-label="Demo sections">
+                <Tab value="overview">Overview</Tab>
+                <Tab value="settings">Settings</Tab>
+              </TabList>
+              <TabPanel value="overview">
+                <Text size="sm">Overview panel content.</Text>
+              </TabPanel>
+              <TabPanel value="settings">
+                <Text size="sm">Settings panel content.</Text>
+              </TabPanel>
+            </Tabs>
           </Stack>
         </Card>
 
