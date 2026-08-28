@@ -47,8 +47,8 @@ export default function StatusPage() {
         </Stack>
 
         <Alert type="info" title="Not part of the public docs nav">
-          Kept around because it's a useful at-a-glance check, but it's not linked from the site
-          header — the real per-component reference lives under /components.
+          Kept around because it&apos;s a useful at-a-glance check, but it&apos;s not linked from
+          the site header — the real per-component reference lives under /components.
         </Alert>
 
         <Card>

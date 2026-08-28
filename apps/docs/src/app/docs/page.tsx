@@ -13,21 +13,28 @@ export default function IntroductionPage() {
       </Text>
 
       <Stack gap="sm">
-        <Heading level={2}>When to reach for Rebar</Heading>
+        <Heading level={2}>Why this is cheaper, not just faster upfront</Heading>
         <Text>
-          Internal tools, admin panels, prototypes, and anything where you want to prove the
-          logic works before anyone argues about button colors. Rebar is designed to be
-          replaced — its job is to get you moving fast now and hand off cleanly later, via{" "}
-          <Link href="/docs/migration">a migration adapter or the migration prompt</Link>.
+          Even when you already know your target design system, building against it directly
+          from the start is usually the more expensive path — not just slower to get moving, but
+          costlier in total, especially with an AI agent doing the building. Every round of logic
+          iteration against a real, opinionated design system pays a styling/constraint tax again:
+          the agent has to reconcile business-logic changes with the target library&apos;s
+          component shapes, prop conventions, and visual rules on every pass. Building headless
+          and low-fidelity first means logic settles fast and cheap — no visual decisions in the
+          loop — and the &quot;make it pretty&quot; pass happens exactly once, as a bounded reskin
+          (<Link href="/docs/migration">a codemod or the migration prompt</Link>), after the
+          logic is done, instead of being re-paid on every iteration along the way.
         </Text>
       </Stack>
 
       <Stack gap="sm">
-        <Heading level={2}>When not to</Heading>
+        <Heading level={2}>When to reach for Rebar</Heading>
         <Text>
-          If you already know your target design system and have time to build against it
-          directly, do that — Rebar exists to remove a decision you don&apos;t want to make yet,
-          not to add a migration step you didn&apos;t need.
+          Internal tools, admin panels, prototypes, production apps with a known target design
+          system — the logic-first, style-once order of operations above holds regardless of
+          whether you know where you&apos;re headed. Rebar is designed to be replaced; that&apos;s
+          the point, not a limitation.
         </Text>
       </Stack>
 

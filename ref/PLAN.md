@@ -24,6 +24,20 @@ they run a migration prompt (or an adapter codemod) that swaps the theme — and
 specific library, the components — while every Playwright test written against
 `data-rebar-*`/ARIA roles keeps passing untouched.
 
+## The core thesis: cheaper in total, not just faster upfront
+
+This holds even when the target design system is already known, and it's a claim about *total*
+cost, not just initial velocity — especially with an AI agent doing the building. Building
+directly against a real, opinionated design system from the start means every round of logic
+iteration re-pays a styling/constraint tax: the agent has to reconcile each business-logic change
+against that library's component shapes, prop conventions, and visual rules on every single pass.
+Building headless and low-fidelity first lets logic settle fast and cheap — no visual decisions in
+the loop at all — and the "make it pretty" pass happens exactly once, as a bounded reskin (a
+codemod or the migration prompt), after the logic is done, rather than being re-paid on every
+iteration along the way. "You already know your target, so just build against it directly" is
+the wrong conclusion to draw from that fact — see `apps/docs`'s own Introduction page
+(`/docs`) for the public-facing version of this argument.
+
 ## Scope for v0.1 (first npm publish)
 
 Deliberately small. The goal of v0.1 is proving the sketch→clean re-skin story end-to-end on a

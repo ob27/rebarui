@@ -54,8 +54,9 @@ export default function ButtonPage() {
       <Stack gap="xs">
         <Heading level={2}>Accessibility</Heading>
         <Text size="sm">
-          Real <code>&lt;button type="button"&gt;</code> by default (pass <code>type="submit"</code>{" "}
-          for form submission) — Tab to focus, Enter/Space to activate, native focus-visible
+          Real <code>&lt;button type=&quot;button&quot;&gt;</code> by default (pass{" "}
+          <code>type=&quot;submit&quot;</code> for form submission) — Tab to focus, Enter/Space to
+          activate, native focus-visible
           outline. <code>aria-busy</code> is set while <code>loading</code>.
         </Text>
       </Stack>
