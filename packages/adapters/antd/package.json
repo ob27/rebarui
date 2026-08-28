@@ -1,0 +1,28 @@
+{
+  "name": "@rebar-ui/migrate-antd",
+  "version": "0.1.0",
+  "description": "Codemod migrating rebar-ui usage to Ant Design v5. First instance of the migration-adapter pattern — see ref/ARCHITECTURE.md#migration-adapters.",
+  "bin": {
+    "rebar-migrate-antd": "./dist/cli.js"
+  },
+  "main": "./dist/transform.js",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "pretest": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "jscodeshift": "^17.1.2"
+  },
+  "devDependencies": {
+    "@types/jscodeshift": "^0.11.11",
+    "@types/node": "^22.10.5",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  },
+  "license": "MIT"
+}

@@ -43,10 +43,21 @@ here — treat this file as the "why," not the spec.
 
 - **The Ant Design coupling.** The chat has the *core* component API mimic AntD's specific prop
   vocabulary (`open`/`onOpenChange`, `size="small"|"middle"|"large"`, `danger`) so that a future
-  swap is a 1:1 rename. Problem: AntD was this chat's suggestion, not a confirmed target — the
-  user's actual "work repo" design system is unknown and was never named. Baking one specific
-  library's naming into Rebar's core forever is over-fitting to a guess, and it forecloses a clean
-  migration to Tailwind/shadcn/MUI/a custom system later.
+  swap is a 1:1 rename. Problem, at the time this was written: AntD was this chat's suggestion,
+  not a confirmed target — the user's actual "work repo" design system was unknown and never
+  named. Baking one specific library's naming into Rebar's core forever would have been
+  over-fitting to a guess, and would foreclose a clean migration to Tailwind/shadcn/MUI/a custom
+  system later.
+  **Update:** AntD is no longer a guess. While scoping the unrelated Coherence project (a
+  separate repo — see `/Users/tom/Documents/GitHub/Coherence`), every sibling app on the user's
+  actual "Oestler platform" (`Simple-Doc-Control`, `Simple-Checklists`,
+  `Simple-Asset-Management`, `Simple AIM Kanban`, `Simple-Presentation`, `Oestler-Root`) turned
+  out to depend on `antd` + `@ant-design/icons` in production. That's almost certainly the "work
+  repo" design system the original brainstorm meant. This validates building the AntD adapter now
+  rather than only sketching the pattern — see [PLAN.md](PLAN.md) Phase 5 — while the underlying
+  decision to keep it as a *separate, optional adapter package* rather than baked into core
+  remains correct regardless: the same repo family could still gain a non-AntD product later, and
+  the adapter pattern needs to generalize either way.
   **Resolution:** keep the core API on its own sensible, common conventions (`open`/`onOpenChange`
   is fine — it's converged on across Radix/MUI/AntD, not AntD-specific; `variant="destructive"`
   instead of `danger`, since `variant` is the more universal cross-library term). Push
@@ -109,9 +120,8 @@ block a phase:
 
 1. Monorepo tooling preference (pnpm + Turborepo assumed as a default — say if you want something
    else, e.g. plain npm workspaces, Nx).
-2. Whether to build the AntD adapter package now (turn 20 asked for it explicitly) or defer it
-   until the actual "work repo" design system is confirmed — recommendation is to defer, build the
-   adapter *pattern* now with AntD as the first proof case.
+2. ~~Whether to build the AntD adapter package now...~~ **Resolved** — see the update above;
+   AntD is confirmed, build it now (Phase 5).
 3. Whether the token/cost estimator gets cut, reframed (recommended), or kept as originally
    specified.
 4. v0.1 component scope — how small the first npm publish should be.

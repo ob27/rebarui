@@ -24,7 +24,7 @@ const PHASES = [
   { label: "Phase 2 — composite components (Dialog, Tabs, Form)", done: true },
   { label: "Phase 3 — theming (sketch, clean, dark)", done: true },
   { label: "Phase 4 — DevTools panel — click 🔧 bottom-right", done: true },
-  { label: "Phase 5 — migration tooling", done: false },
+  { label: "Phase 5 — migration tooling (@rebar-ui/migrate-antd + MIGRATION_PROMPT.md)", done: true },
   { label: "Phase 6 — this site, for real", done: false },
 ];
 

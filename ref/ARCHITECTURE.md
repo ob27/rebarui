@@ -90,25 +90,47 @@ system status" instead of contradicting it.
 
 ## Migration adapters
 
-Pattern, not a one-off: an adapter package exports (a) a prop-mapping table from Rebar's generic
-prop names to the target library's names, and (b) a jscodeshift codemod that rewrites imports,
-flattens compositions (Radix-style nested composition → target's monolithic props), and
-preserves every `data-*`/`aria-*` attribute verbatim on the migrated node.
+Pattern, not a one-off: an adapter package (`packages/adapters/<name>`, published as
+`@rebar-ui/migrate-<name>`) ships a jscodeshift codemod that partitions a file's `rebar-ui`
+imports into "has a target equivalent" (moved to the target library's import, renamed/flattened
+as needed) and "doesn't" (left importing from `rebar-ui`, for `MIGRATION_PROMPT.md` or a manual
+pass to handle) — never a blind whole-file import-source swap, since not every Rebar component
+has a target equivalent.
 
-`@rebar-ui/migrate-antd` is the first instance, built to prove the pattern:
-- `RebarModal` → `Modal` (`open`/`onOpenChange` unchanged — no mapping needed).
-- `RebarButton variant="destructive"` → `Button danger`.
-- `RebarForm`/`RebarFormItem` → `Form`/`Form.Item`, React Hook Form state bridged to AntD's form
-  store or dropped in favor of AntD's own `Form` instance, decided per-project.
+`@rebar-ui/migrate-antd` is the first instance, built and actually verified, not just sketched:
+- `Dialog` → `Modal`: `open`/`title`/`footer` unchanged; `onOpenChange` → `onCancel`, flagged
+  with an inline review comment (`AntD's onCancel takes no argument, unlike onOpenChange(open:
+  boolean)`) rather than silently assumed compatible — the original plan here was wrong until
+  actually built. `description` (a prop `Modal` doesn't have) is promoted into a child instead of
+  silently dropped.
+- `Button`: `variant="destructive"` → `danger`; `variant="primary"|"secondary"|"tertiary"` →
+  `type="primary"|"default"|"text"`; `size="sm"|"md"|"lg"` → `"small"|"middle"|"large"`.
+  **A native `type` (e.g. `type="submit"`) is moved to AntD's `htmlType` prop first** — AntD's
+  own `type` means visual variant, colliding with Rebar's native pass-through meaning. This was
+  found by dogfooding the codemod against `apps/docs/src/app/page.tsx`, not by reasoning about it
+  in advance; the synthetic test fixtures alone didn't catch it. Take this as the standing bar:
+  run a new adapter against real code before considering it done, not just its own unit tests.
+- `FormItem` → `Form.Item`: `required` kept, plus a generated `rules={[{ required: true, message:
+  ... }]}` alongside it (AntD's actual validation lives in `rules`). The render-prop children
+  pattern (`{(field) => <Input {...field} />}`) is unwrapped to a plain child when it's a single
+  arrow function returning one JSX element, since `Form.Item` clones a direct child rather than
+  calling a render function.
+- Deliberately **not** migrated: `Box`/`Stack`/`Text`/`Heading` (no direct AntD equivalent) and
+  `Tabs`/`Tab`/`TabList`/`TabPanel` (AntD's items-array shape isn't a safe syntax-level flatten —
+  needs semantic understanding of which panel pairs with which tab). These stay importing from
+  `rebar-ui` and get a note pointing at `MIGRATION_PROMPT.md`.
+
+Tested via jscodeshift's own `applyTransform` test helper against inline fixtures (7 tests,
+`packages/adapters/antd/src/test/transform.test.ts`), covering every case above including the
+`htmlType` regression.
 
 A second adapter (`migrate-mui` or `migrate-shadcn`) is deferred, but the pattern above should
 make it a template exercise, not a redesign — that's the test of whether this architecture holds
 up.
 
-`MIGRATION_PROMPT.md` (repo root) is the human/agent-facing version of the same idea for cases
-where a full codemod doesn't exist yet for the target: a prompt instructing an LLM coding agent to
-perform the same rename-and-flatten transform, with explicit instructions to preserve
-`data-rebar-*` and ARIA output.
+`MIGRATION_PROMPT.md` (repo root) is the human/agent-facing complement, for components no
+codemod exists for yet (or ever will, if the shape is too different to automate safely) and for
+resolving the `rebar-migrate:` review comments a codemod like this one leaves behind.
 
 ## DevTools panel
 

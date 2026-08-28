@@ -87,16 +87,26 @@ Phase 5+) but come after the core loop is proven.
 - No separate "overview page" — a route would have to assume the host app dedicates one to it,
   which doesn't hold generally; the popover is the whole surface for v0.1.
 
-### Phase 5 — Migration tooling
-- `MIGRATION_PROMPT.md` shipped in the repo root and linked from docs: the literal prompt text a
-  developer pastes into their coding agent to re-skin sketch → a named target system, preserving
-  `data-rebar-*`, ARIA roles, and business logic.
-- `@rebar-ui/migrate-antd` — first concrete adapter package: prop-name mapping table
-  (`variant="destructive"` → `danger`, etc.) plus a codemod (jscodeshift) that flattens Rebar's
-  compositions into AntD's monolithic component shape. Built as a template for future adapters
-  (`migrate-mui`, `migrate-shadcn`), not a special case.
-- Playground app demonstrating the sketch → clean toggle live (the "viral demo" from the
-  brainstorm), built once Phase 3 lands.
+### Phase 5 — Migration tooling — done (AntD adapter + prompt; playground still open)
+- `MIGRATION_PROMPT.md` shipped at the repo root: the literal prompt text a developer pastes into
+  their coding agent, covering both "no adapter exists yet for your target" and "finish what the
+  codemod below deliberately left alone."
+- `@rebar-ui/migrate-antd` — first concrete adapter, a real jscodeshift codemod (not just a
+  prop-mapping table on paper): Button/Input size+variant remapping, Alert's `title`→`message`,
+  `Dialog`→`Modal` with `onOpenChange`→`onCancel` flagged for review and `description` promoted
+  into a child, `FormItem`→`Form.Item` with `required`→`rules` and render-prop unwrapping.
+  `Box`/`Stack`/`Text`/`Heading`/`Tabs` deliberately left unmigrated (no direct AntD equivalent,
+  or a composition shape too different to flatten safely at the syntax level — see the package
+  README) and handed off to `MIGRATION_PROMPT.md` instead. 7 tests, all passing.
+  **Dogfooded against real code** (`apps/docs/src/app/page.tsx`, dry-run), which caught a real
+  bug the synthetic test fixtures missed: naively renaming `variant`→`type` collided with a
+  Button's own native `type="submit"`, since AntD's `type` prop means visual variant, not HTML
+  button type — fixed by moving the native value to AntD's `htmlType` prop first. Worth
+  remembering when adding the next adapter: run it against real code, not just fixtures, before
+  calling it done.
+- Playground app (a deeper, multi-component "build a whole mock screen and toggle it" demo, per
+  [MARKETING_SITE.md](MARKETING_SITE.md)) — still open, folded into Phase 6 since it's really
+  part of the docs/marketing site's scope.
 
 ### Phase 6 — Docs site + launch
 - Docs site per [MARKETING_SITE.md](MARKETING_SITE.md) (Next.js + MDX, not the earlier
