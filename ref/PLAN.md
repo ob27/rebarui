@@ -135,12 +135,49 @@ Phase 5+) but come after the core loop is proven.
 - Launch checklist (Reddit r/reactjs & r/webdev, Show HN, Twitter/X, Dev.to) — low priority, do
   once the library itself is solid.
 
+### Phase 7 — AntD v5 component parity (new scope, added post-v0.1)
+
+Superseded the original "not chasing feature parity with AntD" non-goal below — the user
+explicitly asked for Rebar equivalents of AntD v5's full component catalog, for two reasons: (1)
+completing the migration pathway, since `@rebar-ui/migrate-antd` currently only handles the ~8
+components Rebar has (everything else falls to `MIGRATION_PROMPT.md`'s manual/LLM path); (2) the
+expanded library becomes marketing content in its own right — a showcase on the docs site of
+"every AntD component, sketched." This is a genuinely large undertaking (40+ components) — not
+attempted in one sitting. Sequenced by how commonly each is used and how directly Radix already
+covers it:
+
+**Tier 1 — common, Radix has a direct primitive:** `Checkbox`, `Radio`/`RadioGroup`, `Switch`,
+`Select` (Radix Select), `Tooltip` (Radix Tooltip), `Popover` (Radix Popover), `Dropdown`/`Menu`
+(Radix DropdownMenu), `Slider` (Radix Slider), `Progress` (Radix Progress), `Avatar` (Radix
+Avatar), `Accordion`/`Collapse` (Radix Accordion), `Toast`/AntD's `Message`/`Notification` (Radix
+Toast).
+
+**Tier 2 — common, no direct Radix primitive but moderate to build:** `Tag`, `Badge`, `Divider`,
+`Skeleton`, `Breadcrumb`, `Empty`, `Spin`, `Pagination`, `Steps`, `Drawer` (a Dialog variant —
+slides from an edge instead of centering), `DatePicker` (genuinely fiddly — calendar logic,
+locale, range mode).
+
+**Tier 3 — complex or specialized, lowest priority:** `Table` (the biggest single undertaking —
+sorting, filtering, virtualization expectations), `Tree`, `TreeSelect`, `Cascader`, `Transfer`,
+`Upload`, `AutoComplete`, `Mentions`, `InputNumber`, `Rate`, `ColorPicker`, `Carousel`, `Calendar`,
+`Timeline`, `Descriptions`, `Statistic`, `Result`, `Image`, `QRCode`, `Watermark`, `Anchor`,
+`Affix`, `FloatButton`, `Segmented`, `Tour`, `Splitter`.
+
+Already covered (Rebar's own naming, not AntD's): `Button`, `Card`, `Alert`, `Dialog`↔`Modal`,
+`Tabs`, `Form`/`FormItem`, `Input`, `Box`/`Stack` (≈ AntD `Layout`/`Space`/`Flex`),
+`Text`/`Heading` (≈ AntD `Typography`).
+
+Each new component follows the same bar as everything built so far: real tests (role, keyboard
+operability, `data-rebar-*` attributes), a props table entry (automatic, via
+`apps/docs/scripts/generate-props.mjs` — no hand-maintained table to keep in sync), a component
+reference page, and — once it has a plausible AntD mapping — an entry in
+`@rebar-ui/migrate-antd`'s transform, verified by dogfooding against real usage, not just its own
+fixtures (per the `htmlType` lesson from Phase 5).
+
 ## Non-goals
 
 - Not building a Vue/Svelte port in v0.1 — noted in docs as a community-contribution
   opportunity if it ever comes up, per the brainstorm's own distribution philosophy.
-- Not chasing feature parity with AntD/MUI/Carbon. Rebar's job is to be replaced, not to compete
-  as a permanent production design system.
 - Not shipping fabricated cost/token metrics as if they were measured (see ASSESSMENT.md).
 
 ## How this project's planning works
