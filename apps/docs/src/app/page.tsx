@@ -7,6 +7,8 @@ import {
   Button,
   Card,
   Dialog,
+  Form,
+  FormItem,
   Heading,
   Input,
   Stack,
@@ -19,7 +21,7 @@ import {
 
 const PHASES = [
   { label: "Phase 1 — core primitives (Box, Stack, Text, Heading, Button, Input, Card, Alert)", done: true },
-  { label: "Phase 2 — composite components (Dialog, Tabs done; Form next)", done: true },
+  { label: "Phase 2 — composite components (Dialog, Tabs, Form)", done: true },
   { label: "Phase 3 — theming (sketch, clean, dark)", done: false },
   { label: "Phase 4 — DevTools panel", done: false },
   { label: "Phase 5 — migration tooling", done: false },
@@ -27,8 +29,7 @@ const PHASES = [
 ];
 
 export default function Home() {
-  const [name, setName] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
 
   return (
     <Box as="main" style={{ maxWidth: 720, margin: "0 auto", padding: "var(--rebar-space-xl)" }}>
@@ -64,33 +65,21 @@ export default function Home() {
               <Button loading>Loading</Button>
             </Stack>
 
-            <label>
-              <Stack gap="xs">
-                <Text as="span" size="sm">
-                  Name
-                </Text>
-                <Input
-                  placeholder="Type something"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                />
+            <Form<{ email: string }> onSubmit={(values) => setSubmittedEmail(values.email)}>
+              <FormItem name="email" label="Email" required>
+                {(field) => <Input type="email" placeholder="you@example.com" {...field} />}
+              </FormItem>
+              <Stack direction="row" gap="sm">
+                <Button type="submit" variant="primary">
+                  Submit
+                </Button>
+                {submittedEmail ? (
+                  <Text size="sm" color="secondary">
+                    Submitted: {submittedEmail}
+                  </Text>
+                ) : null}
               </Stack>
-            </label>
-
-            <Stack direction="row" gap="sm">
-              <Button
-                variant="primary"
-                onClick={() => setSubmitted(true)}
-                disabled={name.length === 0}
-              >
-                Submit
-              </Button>
-              {submitted ? (
-                <Text size="sm" color="secondary">
-                  Submitted: {name}
-                </Text>
-              ) : null}
-            </Stack>
+            </Form>
           </Stack>
         </Card>
 

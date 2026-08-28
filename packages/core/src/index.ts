@@ -27,3 +27,6 @@ export type { DialogProps } from "./components/Dialog";
 
 export { Tabs, TabList, Tab, TabPanel } from "./components/Tabs";
 export type { TabsProps, TabListProps, TabProps, TabPanelProps } from "./components/Tabs";
+
+export { Form, FormItem } from "./components/Form";
+export type { FormProps, FormItemProps, RebarFieldProps } from "./components/Form";

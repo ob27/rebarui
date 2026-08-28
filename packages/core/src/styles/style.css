@@ -276,3 +276,27 @@
   outline: 2px solid var(--rebar-color-border-focus, #0066cc);
   outline-offset: 2px;
 }
+
+.rebar-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rebar-space-lg, 24px);
+}
+
+.rebar-form-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rebar-space-sm, 8px);
+}
+
+.rebar-form-item-label {
+  display: block;
+}
+
+.rebar-form-item-required {
+  color: var(--rebar-color-danger, #d32f2f);
+}
+
+.rebar-form-item-error {
+  color: var(--rebar-color-danger, #d32f2f);
+}
