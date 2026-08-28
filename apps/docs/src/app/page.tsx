@@ -18,11 +18,12 @@ import {
   Tabs,
   Text,
 } from "rebar-ui";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const PHASES = [
   { label: "Phase 1 — core primitives (Box, Stack, Text, Heading, Button, Input, Card, Alert)", done: true },
   { label: "Phase 2 — composite components (Dialog, Tabs, Form)", done: true },
-  { label: "Phase 3 — theming (sketch, clean, dark)", done: false },
+  { label: "Phase 3 — theming (sketch, clean, dark) — try the toggle above", done: true },
   { label: "Phase 4 — DevTools panel", done: false },
   { label: "Phase 5 — migration tooling", done: false },
   { label: "Phase 6 — this site, for real", done: false },
@@ -41,6 +42,8 @@ export default function Home() {
             real design system later. This page is that library, dogfooded, live.
           </Text>
         </Stack>
+
+        <ThemeToggle />
 
         <Alert type="info" title="Work in progress">
           This is a running build, not a finished marketing site — see the checklist below for

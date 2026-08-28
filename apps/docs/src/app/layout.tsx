@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "rebar-ui/style.css";
 import "@rebar-ui/theme-sketch/theme.css";
+import "@rebar-ui/theme-clean/theme.css";
 
 export const metadata: Metadata = {
   title: "Rebar UI",
