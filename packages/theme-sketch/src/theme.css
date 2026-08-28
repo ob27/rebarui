@@ -1,0 +1,68 @@
+/*
+  Rebar's default theme: intentionally low-fidelity, hand-drawn-looking, grayscale.
+  Applies when the nearest ancestor has data-rebar-theme="sketch" (or no theme attribute
+  at all, since sketch is the default — see [data-rebar-theme] fallback rule below).
+*/
+
+:root,
+[data-rebar-theme="sketch"] {
+  --rebar-font-family-sans: "Comic Sans MS", "Chalkboard SE", "Marker Felt", cursive,
+    sans-serif;
+
+  --rebar-space-0: 0px;
+  --rebar-space-xs: 4px;
+  --rebar-space-sm: 8px;
+  --rebar-space-md: 16px;
+  --rebar-space-lg: 24px;
+  --rebar-space-xl: 32px;
+  --rebar-space-2xl: 48px;
+  --rebar-space-3xl: 64px;
+
+  --rebar-font-size-xs: 12px;
+  --rebar-font-size-sm: 14px;
+  --rebar-font-size-md: 16px;
+  --rebar-font-size-lg: 20px;
+  --rebar-font-size-xl: 24px;
+  --rebar-font-size-2xl: 32px;
+  --rebar-line-height: 1.5;
+  --rebar-font-weight-normal: 400;
+  --rebar-font-weight-medium: 500;
+  --rebar-font-weight-semibold: 600;
+  --rebar-font-weight-bold: 700;
+
+  --rebar-color-primary: #0066cc;
+  --rebar-color-primary-text: #ffffff;
+  --rebar-color-danger: #d32f2f;
+  --rebar-color-danger-text: #ffffff;
+  --rebar-color-danger-bg: #ffebee;
+  --rebar-color-success: #2e7d32;
+  --rebar-color-success-bg: #e8f5e9;
+  --rebar-color-warning: #f57c00;
+  --rebar-color-warning-bg: #fff3e0;
+  --rebar-color-info: #0288d1;
+  --rebar-color-text-primary: #212121;
+  --rebar-color-text-secondary: #757575;
+  --rebar-color-bg-primary: #ffffff;
+  --rebar-color-bg-secondary: #f5f5f5;
+  --rebar-color-border: #e0e0e0;
+  --rebar-color-border-strong: #333333;
+  --rebar-color-border-focus: #0066cc;
+
+  --rebar-border-width: 2px;
+  --rebar-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+}
+
+[data-rebar-theme="sketch"] .rebar-button,
+[data-rebar-theme="sketch"] .rebar-card {
+  box-shadow: 2px 2px 0px var(--rebar-color-border-strong, #333333);
+}
+
+:root[data-theme="dark"],
+[data-rebar-theme="sketch"][data-theme="dark"] {
+  --rebar-color-text-primary: #f5f5f5;
+  --rebar-color-text-secondary: #bdbdbd;
+  --rebar-color-bg-primary: #1e1e1e;
+  --rebar-color-bg-secondary: #2a2a2a;
+  --rebar-color-border: #444444;
+  --rebar-color-border-strong: #e0e0e0;
+}

@@ -1,0 +1,66 @@
+/*
+  Rebar's "clean" theme: same token set as theme-sketch, but a plain system font and
+  a small border-radius instead of the hand-drawn look — the first step on the way to
+  a full custom re-skin, not a brand. Apply via data-rebar-theme="clean".
+*/
+
+[data-rebar-theme="clean"] {
+  --rebar-font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+
+  --rebar-space-0: 0px;
+  --rebar-space-xs: 4px;
+  --rebar-space-sm: 8px;
+  --rebar-space-md: 16px;
+  --rebar-space-lg: 24px;
+  --rebar-space-xl: 32px;
+  --rebar-space-2xl: 48px;
+  --rebar-space-3xl: 64px;
+
+  --rebar-font-size-xs: 12px;
+  --rebar-font-size-sm: 14px;
+  --rebar-font-size-md: 16px;
+  --rebar-font-size-lg: 20px;
+  --rebar-font-size-xl: 24px;
+  --rebar-font-size-2xl: 32px;
+  --rebar-line-height: 1.5;
+  --rebar-font-weight-normal: 400;
+  --rebar-font-weight-medium: 500;
+  --rebar-font-weight-semibold: 600;
+  --rebar-font-weight-bold: 700;
+
+  --rebar-color-primary: #0066cc;
+  --rebar-color-primary-text: #ffffff;
+  --rebar-color-danger: #d32f2f;
+  --rebar-color-danger-text: #ffffff;
+  --rebar-color-danger-bg: #ffebee;
+  --rebar-color-success: #2e7d32;
+  --rebar-color-success-bg: #e8f5e9;
+  --rebar-color-warning: #f57c00;
+  --rebar-color-warning-bg: #fff3e0;
+  --rebar-color-info: #0288d1;
+  --rebar-color-text-primary: #212121;
+  --rebar-color-text-secondary: #757575;
+  --rebar-color-bg-primary: #ffffff;
+  --rebar-color-bg-secondary: #f5f5f5;
+  --rebar-color-border: #e0e0e0;
+  --rebar-color-border-strong: #d0d0d0;
+  --rebar-color-border-focus: #0066cc;
+
+  --rebar-border-width: 1px;
+  --rebar-radius: 4px;
+}
+
+[data-rebar-theme="clean"] .rebar-button,
+[data-rebar-theme="clean"] .rebar-card {
+  box-shadow: none;
+}
+
+[data-rebar-theme="clean"][data-theme="dark"] {
+  --rebar-color-text-primary: #f5f5f5;
+  --rebar-color-text-secondary: #bdbdbd;
+  --rebar-color-bg-primary: #1e1e1e;
+  --rebar-color-bg-secondary: #2a2a2a;
+  --rebar-color-border: #444444;
+  --rebar-color-border-strong: #555555;
+}

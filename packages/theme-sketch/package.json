@@ -1,0 +1,17 @@
+{
+  "name": "@rebar-ui/theme-sketch",
+  "version": "0.1.0",
+  "description": "Rebar's default hand-drawn, low-fidelity theme.",
+  "type": "module",
+  "files": ["dist"],
+  "exports": {
+    "./theme.css": "./dist/theme.css"
+  },
+  "scripts": {
+    "build": "mkdir -p dist && cp src/theme.css dist/theme.css",
+    "dev": "npm run build",
+    "test": "echo \"no tests\"",
+    "typecheck": "echo \"no typecheck\""
+  },
+  "license": "MIT"
+}
