@@ -1,0 +1,71 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Button, Stack, Text } from "rebar-ui";
+import corePackageJson from "../../../../packages/core/package.json";
+
+const NAV_LINKS = [
+  { href: "/docs", label: "Docs" },
+  { href: "/components", label: "Components" },
+  { href: "/docs/migration", label: "Migration" },
+  { href: "/playground", label: "Playground" },
+];
+
+export function SiteHeader() {
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    if (dark) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+    }
+  }, [dark]);
+
+  return (
+    <header
+      style={{
+        borderBottom: "var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0)",
+      }}
+    >
+      <Stack
+        direction="row"
+        align="center"
+        gap="lg"
+        style={{
+          justifyContent: "space-between",
+          padding: "var(--rebar-space-md) var(--rebar-space-xl)",
+        }}
+      >
+        <Stack direction="row" align="center" gap="lg">
+          <Link href="/" style={{ textDecoration: "none" }}>
+            <Text as="span" size="md" style={{ fontWeight: "var(--rebar-font-weight-bold, 700)" }}>
+              Rebar UI
+            </Text>
+          </Link>
+          <nav>
+            <Stack direction="row" gap="md">
+              {NAV_LINKS.map((link) => (
+                <Link key={link.href} href={link.href} style={{ textDecoration: "none" }}>
+                  <Text as="span" size="sm" color="secondary">
+                    {link.label}
+                  </Text>
+                </Link>
+              ))}
+            </Stack>
+          </nav>
+        </Stack>
+
+        <Stack direction="row" align="center" gap="sm">
+          <Text size="xs" color="secondary">
+            v{corePackageJson.version}
+          </Text>
+          <Button size="sm" variant="tertiary" onClick={() => setDark((value) => !value)}>
+            {dark ? "☀️" : "🌙"}
+          </Button>
+        </Stack>
+      </Stack>
+    </header>
+  );
+}

@@ -1,13 +1,16 @@
 /*
-  Rebar's default theme: intentionally low-fidelity, hand-drawn-looking, grayscale.
-  Applies when the nearest ancestor has data-rebar-theme="sketch" (or no theme attribute
-  at all, since sketch is the default — see [data-rebar-theme] fallback rule below).
+  Rebar's default theme: clean greyscale wireframe — light-grey page background, white cards
+  with a soft shadow, moderate rounded corners, grey text/icons. Color is reserved for key
+  actions (the primary button) per the user's own heuristic: grey scale so people aren't
+  distracted by color, but critical actions stay colored so they're recognizable (Nielsen #6).
+  Applies when the nearest ancestor has data-rebar-theme="sketch" (or no theme attribute at
+  all, since sketch is the default — see [data-rebar-theme] fallback rule below).
 */
 
 :root,
 [data-rebar-theme="sketch"] {
-  --rebar-font-family-sans: "Comic Sans MS", "Chalkboard SE", "Marker Felt", cursive,
-    sans-serif;
+  --rebar-font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
 
   --rebar-space-0: 0px;
   --rebar-space-xs: 4px;
@@ -40,29 +43,41 @@
   --rebar-color-warning: #f57c00;
   --rebar-color-warning-bg: #fff3e0;
   --rebar-color-info: #0288d1;
-  --rebar-color-text-primary: #212121;
-  --rebar-color-text-secondary: #757575;
+  --rebar-color-text-primary: #18181b;
+  --rebar-color-text-secondary: #71717a;
   --rebar-color-bg-primary: #ffffff;
-  --rebar-color-bg-secondary: #f5f5f5;
-  --rebar-color-border: #e0e0e0;
-  --rebar-color-border-strong: #333333;
+  --rebar-color-bg-secondary: #f0f0f2;
+  --rebar-color-border: #e4e4e7;
+  --rebar-color-border-strong: #d4d4d8;
   --rebar-color-border-focus: #0066cc;
 
-  --rebar-border-width: 2px;
-  --rebar-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  --rebar-border-width: 1px;
+  --rebar-radius: 12px;
+  --rebar-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+[data-rebar-theme="sketch"] body {
+  background: var(--rebar-color-bg-secondary, #f0f0f2);
 }
 
 [data-rebar-theme="sketch"] .rebar-button,
-[data-rebar-theme="sketch"] .rebar-card {
-  box-shadow: 2px 2px 0px var(--rebar-color-border-strong, #333333);
+[data-rebar-theme="sketch"] .rebar-card,
+[data-rebar-theme="sketch"] .rebar-dialog-content,
+[data-rebar-theme="sketch"] .rebar-input {
+  box-shadow: var(--rebar-shadow);
+}
+
+[data-rebar-theme="sketch"] .rebar-button[data-rebar-variant="secondary"],
+[data-rebar-theme="sketch"] .rebar-button[data-rebar-variant="tertiary"] {
+  box-shadow: none;
 }
 
 :root[data-theme="dark"],
 [data-rebar-theme="sketch"][data-theme="dark"] {
   --rebar-color-text-primary: #f5f5f5;
-  --rebar-color-text-secondary: #bdbdbd;
-  --rebar-color-bg-primary: #1e1e1e;
-  --rebar-color-bg-secondary: #2a2a2a;
-  --rebar-color-border: #444444;
-  --rebar-color-border-strong: #e0e0e0;
+  --rebar-color-text-secondary: #a1a1aa;
+  --rebar-color-bg-primary: #1e1e21;
+  --rebar-color-bg-secondary: #131316;
+  --rebar-color-border: #333336;
+  --rebar-color-border-strong: #45454a;
 }

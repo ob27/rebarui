@@ -3,21 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "generate:props": "node scripts/generate-props.mjs",
+    "predev": "npm run generate:props",
+    "prebuild": "npm run generate:props",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "npm run generate:props && tsc --noEmit",
     "test": "echo \"no tests\""
   },
   "dependencies": {
+    "@rebar-ui/devtools": "workspace:*",
+    "@rebar-ui/theme-clean": "workspace:*",
+    "@rebar-ui/theme-sketch": "workspace:*",
     "next": "16.3.3",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "rebar-ui": "workspace:*",
-    "@rebar-ui/theme-sketch": "workspace:*",
-    "@rebar-ui/theme-clean": "workspace:*",
-    "@rebar-ui/devtools": "workspace:*"
+    "rebar-ui": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -25,6 +28,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
+    "react-docgen-typescript": "^2.4.0",
     "typescript": "^5"
   },
   "packageManager": "pnpm@11.24.0"

@@ -8,11 +8,12 @@ const SPACE_VAR: Record<NonNullable<StackProps["gap"]>, string> = {
   md: "var(--rebar-space-md, 16px)",
   lg: "var(--rebar-space-lg, 24px)",
   xl: "var(--rebar-space-xl, 32px)",
+  "2xl": "var(--rebar-space-2xl, 48px)",
 };
 
 export interface StackProps extends ComponentPropsWithoutRef<"div"> {
   direction?: "row" | "column";
-  gap?: "xs" | "sm" | "md" | "lg" | "xl";
+  gap?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
   align?: "start" | "center" | "end" | "stretch";
 }
 

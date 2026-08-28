@@ -8,4 +8,7 @@ export default defineConfig({
   clean: true,
   external: ["react", "react-dom"],
   publicDir: "src/styles",
+  banner: {
+    js: '"use client";',
+  },
 });

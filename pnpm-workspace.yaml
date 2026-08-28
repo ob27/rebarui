@@ -6,3 +6,6 @@ allowBuilds:
   esbuild: true
   sharp: false
   unrs-resolver: false
+overrides:
+  "@types/react": ^19.0.0
+  "@types/react-dom": ^19.0.0

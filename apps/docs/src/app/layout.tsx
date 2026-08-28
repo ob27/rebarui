@@ -8,6 +8,8 @@ import "@rebar-ui/theme-clean/theme.css";
 // behavior — see DevToolsMount.tsx for how the JS itself stays out of production.
 import "@rebar-ui/devtools/style.css";
 import { DevToolsMount } from "@/components/DevToolsMount";
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 export const metadata: Metadata = {
   title: "Rebar UI",
@@ -17,9 +19,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" data-rebar-theme="sketch">
-      <body>
+    <html lang="en" data-rebar-theme="clean">
+      <body style={{ margin: 0 }}>
+        <SiteHeader />
         {children}
+        <SiteFooter />
         <DevToolsMount />
       </body>
     </html>
