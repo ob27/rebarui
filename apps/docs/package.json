@@ -16,7 +16,8 @@
     "react-dom": "19.2.8",
     "rebar-ui": "workspace:*",
     "@rebar-ui/theme-sketch": "workspace:*",
-    "@rebar-ui/theme-clean": "workspace:*"
+    "@rebar-ui/theme-clean": "workspace:*",
+    "@rebar-ui/devtools": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20",

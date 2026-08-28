@@ -72,15 +72,20 @@ Phase 5+) but come after the core loop is proven.
 - Theme switching is a single `data-rebar-theme`/`data-theme` attribute swap at the root; no
   JS-driven per-component restyling at runtime.
 
-### Phase 4 — DevTools panel
-- Dev-only (`process.env.NODE_ENV === 'development'`, tree-shaken from production builds),
-  bottom-corner floating toggle per the original brainstorm.
-- Shows **real, computed** data only: component-instance counts by type on the current page,
-  sketch/dark-mode toggles, an 8pt-grid overlay, a component inspector (hover to see
+### Phase 4 — DevTools panel — done
+- Shipped as `@rebar-ui/devtools`, bottom-corner floating toggle per the original brainstorm.
+  Keeping it out of production requires the **consumer** to gate the import with a dynamic
+  `import()`, not just the internal `NODE_ENV` check — verified by grepping a real production
+  build; see [ARCHITECTURE.md](ARCHITECTURE.md#devtools-panel) for the confirmed mechanism and
+  why the naive approach doesn't work with Turbopack.
+- Shows **real, computed** data only: component-instance counts by type on the current page
+  (via a `MutationObserver` over `data-rebar-component`, not app-level instrumentation),
+  sketch/clean/dark-mode toggles, an 8pt-grid overlay, a component inspector (hover to see
   `data-rebar-*` metadata), and a bucketed migration-effort estimate (Low/Medium/High — see
   [ASSESSMENT.md](ASSESSMENT.md#keep-but-change) for why this replaces the original fabricated
-  token/dollar counter).
-- Overview page: same data, full-page, exportable as JSON.
+  token/dollar counter) plus a JSON export of the same.
+- No separate "overview page" — a route would have to assume the host app dedicates one to it,
+  which doesn't hold generally; the popover is the whole surface for v0.1.
 
 ### Phase 5 — Migration tooling
 - `MIGRATION_PROMPT.md` shipped in the repo root and linked from docs: the literal prompt text a

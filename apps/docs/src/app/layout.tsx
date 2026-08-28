@@ -2,6 +2,12 @@ import type { Metadata } from "next";
 import "rebar-ui/style.css";
 import "@rebar-ui/theme-sketch/theme.css";
 import "@rebar-ui/theme-clean/theme.css";
+// Statically imported (unlike the JS below): a static import() chained inside next/dynamic's
+// loader broke Turbopack's dynamic-import transform ("not an ecmascript client_module"), and
+// a few KB of unused CSS in production is a much smaller concern than shipping the panel's JS
+// behavior — see DevToolsMount.tsx for how the JS itself stays out of production.
+import "@rebar-ui/devtools/style.css";
+import { DevToolsMount } from "@/components/DevToolsMount";
 
 export const metadata: Metadata = {
   title: "Rebar UI",
@@ -12,7 +18,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" data-rebar-theme="sketch">
-      <body>{children}</body>
+      <body>
+        {children}
+        <DevToolsMount />
+      </body>
     </html>
   );
 }

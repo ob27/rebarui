@@ -17,7 +17,7 @@ packages/
   core/            # components + primitives, wraps Radix, ships CSS-var-only styles
   theme-sketch/    # default sketch theme: fonts, sketchy borders, grayscale tokens
   theme-clean/     # plain production-safe baseline theme
-  devtools/        # dev-only floating panel, tree-shaken from prod builds
+  devtools/        # dev-only floating panel — kept out of prod via a consumer-side dynamic import, see below
   adapters/
     antd/          # @rebar-ui/migrate-antd — prop-map + codemod, first adapter template
 apps/
@@ -112,25 +112,61 @@ perform the same rename-and-flatten transform, with explicit instructions to pre
 
 ## DevTools panel
 
-Dev-only React tree mounted once at the app root (`<RebarDevTools />`), gated on
-`process.env.NODE_ENV === 'development'` so it's fully absent from production bundles.
+Shipped as its own package, `@rebar-ui/devtools` (`<RebarDevTools />`), so an app that never
+imports it pays nothing.
 
-Internally, every `core` component registers its render with a lightweight in-memory usage
-registry (component name → count) via a context hook — no external analytics, nothing persisted,
-resets on reload. The panel reads that registry to show:
+**The `NODE_ENV==='development'` check inside the component is not sufficient on its own to keep
+it out of production bundles** — verified empirically, not assumed: a production build of
+`apps/docs` with a plain `import { RebarDevTools } from "@rebar-ui/devtools"` still shipped the
+panel's markup strings and its `MutationObserver`-based counting logic in the client chunks.
+Turbopack (and bundlers generally) will fold a literal `process.env.NODE_ENV` comparison in
+first-party app code, but does not reliably extend that constant-folding into bundled
+`node_modules` code — so the internal early-return never becomes bundler-visible dead code from
+the consuming app's side.
 
-- Live component-instance counts by type, current page.
-- Sketch/dark-mode toggles (writes the `data-rebar-theme`/`data-theme` attributes described
-  above).
+The reliable pattern, and the one `apps/docs` actually uses (see
+`apps/docs/src/components/DevToolsMount.tsx`): the environment check happens **in the consuming
+app's own code**, gating a dynamic `import()` of the package (and its stylesheet) rather than a
+static top-level import:
+
+```tsx
+"use client";
+import dynamic from "next/dynamic";
+
+const RebarDevTools =
+  process.env.NODE_ENV === "development"
+    ? dynamic(() => import("@rebar-ui/devtools").then((m) => m.RebarDevTools), { ssr: false })
+    : () => null;
+```
+
+Because the check is evaluated in code the app's own bundler treats as first-party, the dead
+branch (and therefore the `import()` call inside it) is actually eliminated in production —
+confirmed by re-grepping the production build afterward and finding nothing. This is the
+documented, recommended way to mount `RebarDevTools`; the internal `NODE_ENV` check stays as
+defense-in-depth (so `forceEnabled` tests and non-bundled usage still behave correctly), not as
+the primary guarantee.
+
+Internally, component counts are **not** tracked via app-level instrumentation (no context
+provider every `core` component has to call into) — the panel queries the live DOM for
+`[data-rebar-component]` elements via a `MutationObserver`-backed hook
+(`useComponentCounts`), scanning only while the panel is open. This is simpler than threading a
+usage-registry context through every component and requires zero changes to `packages/core`. The
+panel shows:
+
+- Live component-instance counts by type, current page (real, queried — not estimated).
+- Sketch/clean theme radio + dark-mode toggle (writes the `data-rebar-theme`/`data-theme`
+  attributes described above).
 - 8pt-grid overlay (a fixed, pointer-events-none absolutely positioned grid).
-- Component inspector (hover any node with `data-rebar-component` to see its metadata).
-- A **bucketed migration-effort estimate** — Low/Medium/High derived from counts of simple vs.
-  medium vs. complex component types plus any dev-mode token-violation warnings accumulated this
-  session. Explicitly not a token or dollar figure (see
-  [ASSESSMENT.md](ASSESSMENT.md#keep-but-change)); if a numeric estimate is wanted later, it ships
-  labeled as a configurable, illustrative heuristic, not a measured fact.
-- "Open overview" → same data as a full page, with a JSON export for anyone who wants to track it
-  over time themselves.
+- Component inspector (hover any node with `data-rebar-component` to see its metadata in a
+  floating tooltip).
+- A **bucketed migration-effort estimate** — Low/Medium/High from a weighted score over
+  simple/medium/complex component counts (`estimateMigrationEffort`). Explicitly not a token or
+  dollar figure (see [ASSESSMENT.md](ASSESSMENT.md#keep-but-change)) — the exported JSON report
+  labels it explicitly as "not a measured cost."
+- Export report (JSON) — downloads the real counts + effort estimate. No separate "overview page"
+  route: a full-page view would require assuming the host app has a route to dedicate to it,
+  which doesn't hold across arbitrary consuming apps, so the popover itself is the whole surface
+  for v0.1.
 
 ## Testing strategy
 

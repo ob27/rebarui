@@ -1,0 +1,147 @@
+/*
+  DevTools' own look is deliberately independent of the host app's rebar-ui theme
+  (dark panel, system font) rather than reusing --rebar-* tokens — it should stay legible
+  regardless of what the app it's inspecting currently looks like.
+*/
+
+.rebar-devtools {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 999999;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+}
+
+.rebar-devtools-toggle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid #444;
+  background: #1e1e1e;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.rebar-devtools-panel {
+  position: absolute;
+  bottom: 52px;
+  right: 0;
+  width: 300px;
+  max-height: 70vh;
+  overflow-y: auto;
+  background: #1e1e1e;
+  color: #f5f5f5;
+  border: 1px solid #444;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  padding: 12px;
+}
+
+.rebar-devtools-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #333;
+}
+
+.rebar-devtools-close {
+  background: transparent;
+  border: none;
+  color: #f5f5f5;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.rebar-devtools-section {
+  padding: 8px 0;
+  border-bottom: 1px solid #333;
+}
+
+.rebar-devtools-section:last-of-type {
+  border-bottom: none;
+}
+
+.rebar-devtools-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rebar-devtools-breakdown {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rebar-devtools-breakdown li {
+  display: flex;
+  justify-content: space-between;
+  color: #bdbdbd;
+}
+
+.rebar-devtools-hint {
+  margin: 4px 0 0;
+  color: #9e9e9e;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.rebar-devtools-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rebar-devtools-toggles label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.rebar-devtools-export {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+  background: #2a2a2a;
+  color: #f5f5f5;
+  border: 1px solid #444;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.rebar-devtools-export:hover {
+  background: #333;
+}
+
+.rebar-devtools-grid-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999998;
+  background-image:
+    linear-gradient(rgba(255, 0, 128, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 0, 128, 0.15) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+.rebar-devtools-inspector {
+  position: fixed;
+  z-index: 999999;
+  background: #1e1e1e;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+  pointer-events: none;
+  white-space: nowrap;
+}
