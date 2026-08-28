@@ -116,4 +116,76 @@ export const X = () => (
     expect(output).toContain("<Box>");
     expect(output).toContain("<Stack>");
   });
+
+  it("renames Checkbox's onCheckedChange to onChange, flagged for review (signatures differ)", () => {
+    const source = `
+import { Checkbox } from "rebar-ui";
+export const X = () => <Checkbox onCheckedChange={setAccepted}>Accept terms</Checkbox>;`;
+    const output = run(source);
+    expect(output).toContain("onChange={setAccepted}");
+    expect(output).not.toMatch(/^\s*onCheckedChange=/m);
+    expect(output).toMatch(/rebar-migrate:.*CheckboxChangeEvent/);
+  });
+
+  it("renames RadioGroup to Radio.Group and onValueChange to onChange, flagged for review", () => {
+    const source = `
+import { Radio, RadioGroup } from "rebar-ui";
+export const X = () => (
+  <RadioGroup onValueChange={setChoice}>
+    <Radio value="a">A</Radio>
+  </RadioGroup>
+);`;
+    const output = run(source);
+    expect(output).toContain("Radio.Group");
+    expect(output).not.toContain("RadioGroup");
+    expect(output).toContain("onChange={setChoice}");
+    expect(output).toMatch(/rebar-migrate:.*RadioChangeEvent/);
+  });
+
+  it("renames Switch/Select/Slider's onValueChange to onChange without a review flag (compatible signatures)", () => {
+    const source = `
+import { Switch, Select, Slider } from "rebar-ui";
+export const X = () => (
+  <>
+    <Switch onValueChange={setOn} />
+    <Select options={opts} onValueChange={setValue} />
+    <Slider onValueChange={setAmount} />
+  </>
+);`;
+    const output = run(source);
+    expect(output.match(/onChange=/g)).toHaveLength(3);
+    expect(output).not.toContain("onValueChange");
+    expect(output).not.toContain("rebar-migrate");
+  });
+
+  it("renames Tooltip's content prop to title", () => {
+    const source = `
+import { Tooltip } from "rebar-ui";
+export const X = () => <Tooltip content="Saves your changes">{trigger}</Tooltip>;`;
+    const output = run(source);
+    expect(output).toContain('title="Saves your changes"');
+    expect(output).not.toContain("content=");
+  });
+
+  it("leaves Popover, Dropdown, Progress, Avatar, Accordion, and Toast unmigrated (real structural mismatches, not just naming)", () => {
+    const source = `
+import { Popover, Dropdown, Progress, Avatar, Accordion, AccordionItem, Toast, ToastProvider, Button } from "rebar-ui";
+export const X = () => <Button variant="primary">Go</Button>;`;
+    const output = run(source);
+    const rebarImportMatch = output.match(/import \{([\s\S]*?)\} from "rebar-ui"/);
+    expect(rebarImportMatch).not.toBeNull();
+    for (const name of [
+      "Popover",
+      "Dropdown",
+      "Progress",
+      "Avatar",
+      "Accordion",
+      "AccordionItem",
+      "Toast",
+      "ToastProvider",
+    ]) {
+      expect(rebarImportMatch![1]).toContain(name);
+    }
+    expect(output).toContain('import { Button } from "antd"');
+  });
 });

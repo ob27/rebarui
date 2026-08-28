@@ -20,16 +20,54 @@ const DIRECT_RENAME: Record<string, string> = {
   Dialog: "Modal",
 };
 
-const SAME_NAME = new Set(["Button", "Input", "Card", "Alert", "Form"]);
+const SAME_NAME = new Set([
+  "Button",
+  "Input",
+  "Card",
+  "Alert",
+  "Form",
+  "Checkbox",
+  "Radio",
+  "Switch",
+  "Select",
+  "Slider",
+  "Tooltip",
+]);
 
 const MEMBER_RENAME: Record<string, { object: string; property: string }> = {
   FormItem: { object: "Form", property: "Item" },
+  RadioGroup: { object: "Radio", property: "Group" },
 };
 
-// Deliberately not migrated in v1 — AntD has no direct equivalent (Box/Stack/Text/Heading) or
-// the shape is too different to migrate safely at the syntax level (Tabs' composition vs.
-// AntD's items-array). See the adapter README and MIGRATION_PROMPT.md for these.
-const NOT_MIGRATED = new Set(["Box", "Stack", "Text", "Heading", "Tabs", "Tab", "TabList", "TabPanel"]);
+// Deliberately not migrated in v1 — either AntD has no direct equivalent (Box/Stack/Text/
+// Heading), the composition shape is too different to flatten safely at the syntax level
+// (Tabs' composition vs. AntD's items-array; Accordion/AccordionItem vs. Collapse's
+// items-array), the prop shape is structurally incompatible rather than just differently
+// named (Popover/Dropdown: our `trigger` prop holds an element, AntD's `trigger` prop is an
+// interaction-mode string with the element as children instead — a naive rename would
+// produce broken code, not just oddly-named code), the values need computing rather than
+// renaming (Progress: AntD's `percent` assumes 0-100, ours has a separate `max` that isn't
+// necessarily 100), the prop is structurally different (Avatar: AntD's fallback is children,
+// ours is a `fallback` prop), or the two libraries don't even share a paradigm (Toast: AntD's
+// message/notification APIs are imperative function calls, not a component you render).
+const NOT_MIGRATED = new Set([
+  "Box",
+  "Stack",
+  "Text",
+  "Heading",
+  "Tabs",
+  "Tab",
+  "TabList",
+  "TabPanel",
+  "Popover",
+  "Dropdown",
+  "Progress",
+  "Avatar",
+  "Accordion",
+  "AccordionItem",
+  "Toast",
+  "ToastProvider",
+]);
 
 const BUTTON_VARIANT_TO_TYPE: Record<string, string> = {
   primary: "primary",
@@ -41,6 +79,12 @@ const SIZE_MAP: Record<string, string> = { sm: "small", md: "middle", lg: "large
 
 const REVIEW_COMMENT_ON_CANCEL =
   " rebar-migrate: AntD's onCancel takes no argument, unlike onOpenChange(open: boolean) — review this handler.";
+
+const REVIEW_COMMENT_CHECKBOX_ONCHANGE =
+  " rebar-migrate: AntD's onChange receives a CheckboxChangeEvent (checked is e.target.checked), unlike onCheckedChange(checked: boolean) — review this handler.";
+
+const REVIEW_COMMENT_RADIO_ONCHANGE =
+  " rebar-migrate: AntD's Radio.Group onChange receives a RadioChangeEvent (value is e.target.value), unlike onValueChange(value: string) — review this handler.";
 
 function transform(fileInfo: FileInfo, api: API, _options: Options): string | undefined {
   const j = api.jscodeshift;
@@ -380,6 +424,63 @@ function transform(fileInfo: FileInfo, api: API, _options: Options): string | un
             path.node.children = [inner];
           }
         }
+      }
+    });
+
+  // Checkbox: onCheckedChange -> onChange, flagged — signatures differ (boolean vs event).
+  root
+    .find(j.JSXOpeningElement)
+    .filter((path) => path.node.name.type === "JSXIdentifier" && path.node.name.name === "Checkbox")
+    .forEach((path) => {
+      const attr = findAttr(path.node, "onCheckedChange");
+      if (attr) {
+        attr.name = j.jsxIdentifier("onChange");
+        attr.comments = [j.commentLine(REVIEW_COMMENT_CHECKBOX_ONCHANGE, true, false)];
+      }
+    });
+
+  // Radio.Group (renamed from RadioGroup): onValueChange -> onChange, flagged.
+  root
+    .find(j.JSXOpeningElement)
+    .filter(
+      (path) =>
+        path.node.name.type === "JSXMemberExpression" &&
+        path.node.name.object.type === "JSXIdentifier" &&
+        path.node.name.object.name === "Radio" &&
+        path.node.name.property.name === "Group",
+    )
+    .forEach((path) => {
+      const attr = findAttr(path.node, "onValueChange");
+      if (attr) {
+        attr.name = j.jsxIdentifier("onChange");
+        attr.comments = [j.commentLine(REVIEW_COMMENT_RADIO_ONCHANGE, true, false)];
+      }
+    });
+
+  // Switch, Select, Slider: onValueChange -> onChange — safe, unflagged. Each of these AntD
+  // components' onChange receives the new value as its first argument (Switch: (checked,
+  // event); Select: (value, option); Slider: (value)), so the rename alone is compatible —
+  // unlike Checkbox/Radio above, where the whole first argument shape differs.
+  for (const name of ["Switch", "Select", "Slider"]) {
+    root
+      .find(j.JSXOpeningElement)
+      .filter((path) => path.node.name.type === "JSXIdentifier" && path.node.name.name === name)
+      .forEach((path) => {
+        const attr = findAttr(path.node, "onValueChange");
+        if (attr) {
+          attr.name = j.jsxIdentifier("onChange");
+        }
+      });
+  }
+
+  // Tooltip: content -> title (AntD's prop name for the same thing).
+  root
+    .find(j.JSXOpeningElement)
+    .filter((path) => path.node.name.type === "JSXIdentifier" && path.node.name.name === "Tooltip")
+    .forEach((path) => {
+      const attr = findAttr(path.node, "content");
+      if (attr) {
+        attr.name = j.jsxIdentifier("title");
       }
     });
 

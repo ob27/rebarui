@@ -52,14 +52,42 @@ hold any changes here to, not just passing the unit tests.
   (`{(field) => <Input {...field} />}`) is unwrapped into a plain child (`<Input />`) when it's a
   single arrow function returning one JSX element — AntD's `Form.Item` clones a single direct
   child rather than calling a render function.
+- **`Checkbox`** — `onCheckedChange` → `onChange`, flagged for review: AntD's `onChange` receives
+  a `CheckboxChangeEvent` (`checked` is `e.target.checked`), not a plain boolean.
+- **`RadioGroup` → `Radio.Group`** — same flagged rename for `onValueChange` → `onChange`
+  (AntD's carries a `RadioChangeEvent`, `value` is `e.target.value`). `Radio` itself is unchanged.
+- **`Switch`, `Select`, `Slider`** — `onValueChange` → `onChange`, **not** flagged: each of these
+  AntD components' `onChange` receives the new value as its first argument already (`Switch`:
+  `(checked, event)`; `Select`: `(value, option)`; `Slider`: `(value)`), so the rename alone is
+  compatible — unlike `Checkbox`/`Radio` above, where the whole first-argument shape differs.
+- **`Tooltip`** — `content` → `title` (AntD's prop name for the same thing).
 
 ## What this does **not** migrate (by design, not oversight)
 
-`Box`, `Stack`, `Text`, `Heading`, `Tabs`, `Tab`, `TabList`, `TabPanel` are left importing from
-`rebar-ui` untouched. `Box`/`Stack`/`Text`/`Heading` have no direct AntD equivalent (AntD has
-`Typography.Text`/`Typography.Title`, not a generic layout primitive) and `Tabs`' composition API
-(`Tabs`/`TabList`/`Tab`/`TabPanel`) doesn't map onto AntD v5's items-array API
-(`<Tabs items={[...]} />`) at the syntax level — flattening that safely needs semantic
-understanding of which `TabPanel` pairs with which `Tab`, which is exactly what
-[`MIGRATION_PROMPT.md`](../../../MIGRATION_PROMPT.md) (the LLM-assisted path) is for. Don't
-attempt to extend this codemod to guess at those — hand them to the prompt instead.
+`Box`, `Stack`, `Text`, `Heading`, `Tabs`/`Tab`/`TabList`/`TabPanel`,
+`Accordion`/`AccordionItem`, `Popover`, `Dropdown`, `Progress`, `Avatar`, `Toast`/`ToastProvider`
+are left importing from `rebar-ui` untouched — each for a distinct, real reason, not just
+"not gotten to yet":
+
+- **`Box`/`Stack`/`Text`/`Heading`** — no direct AntD equivalent (AntD has
+  `Typography.Text`/`Typography.Title`, not a generic layout primitive).
+- **`Tabs` and `Accordion`** — both AntD's `Tabs` and `Collapse` use an items-array API
+  (`<Tabs items={[...]} />`), which Rebar's composition (`Tabs`/`TabList`/`Tab`/`TabPanel`,
+  `Accordion`/`AccordionItem`) doesn't map onto at the syntax level — flattening that safely
+  needs semantic understanding of which panel pairs with which tab/section.
+- **`Popover` and `Dropdown`** — a *structural* mismatch, not just a naming one: Rebar's `trigger`
+  prop holds the trigger element, but AntD's `trigger` prop is an interaction-mode string
+  (`"hover"|"click"`) with the trigger element passed as `children` instead. Renaming our
+  `trigger` prop would silently produce broken code (an element where AntD expects a string),
+  which is worse than leaving it alone.
+- **`Progress`** — AntD's `percent` assumes a 0–100 scale; Rebar's `Progress` has a separate `max`
+  that isn't necessarily 100, so a value needs *computing* (`(value / max) * 100`), not renaming.
+- **`Avatar`** — AntD's fallback content is `children`; Rebar's is a `fallback` prop — a
+  prop-to-children structural move, not a rename.
+- **`Toast`/`ToastProvider`** — AntD doesn't have a `Toast` component at all; it has imperative
+  `message.success()`/`notification.open()` function calls. Different paradigm entirely, not a
+  naming gap.
+
+Don't attempt to extend this codemod to guess at any of these — hand them to
+[`MIGRATION_PROMPT.md`](../../../MIGRATION_PROMPT.md) (the LLM-assisted path) instead, where a
+model can actually reason about the restructuring each one needs.

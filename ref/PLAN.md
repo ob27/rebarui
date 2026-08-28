@@ -146,11 +146,18 @@ expanded library becomes marketing content in its own right — a showcase on th
 attempted in one sitting. Sequenced by how commonly each is used and how directly Radix already
 covers it:
 
-**Tier 1 — common, Radix has a direct primitive:** `Checkbox`, `Radio`/`RadioGroup`, `Switch`,
-`Select` (Radix Select), `Tooltip` (Radix Tooltip), `Popover` (Radix Popover), `Dropdown`/`Menu`
-(Radix DropdownMenu), `Slider` (Radix Slider), `Progress` (Radix Progress), `Avatar` (Radix
-Avatar), `Accordion`/`Collapse` (Radix Accordion), `Toast`/AntD's `Message`/`Notification` (Radix
-Toast).
+**Tier 1 — common, Radix has a direct primitive — done:** `Checkbox`, `Radio`/`RadioGroup`,
+`Switch`, `Select`, `Tooltip`, `Popover`, `Dropdown`, `Slider`, `Progress`, `Avatar`,
+`Accordion`/`AccordionItem`, `Toast`/`ToastProvider`. 30 tests added (52 total in `packages/core`).
+`@rebar-ui/migrate-antd` extended for the ones with a genuinely safe mapping — `Checkbox`,
+`RadioGroup`→`Radio.Group`, `Switch`, `Select`, `Slider`, `Tooltip` — and deliberately *not*
+extended for `Popover`/`Dropdown` (structural mismatch: our `trigger` prop holds an element,
+AntD's `trigger` prop is an interaction-mode string), `Progress` (needs a computed
+`value/max*100`, not a rename), `Avatar` (AntD's fallback is `children`, ours is a prop), or
+`Toast` (AntD has no such component — it's an imperative `message`/`notification` API). See
+`packages/adapters/antd/README.md` for the full reasoning per component. Reference doc pages for
+these 12 are not written yet (only Button/Dialog/Form have full pages) — they do appear on the
+`/components` index, generated from the same props JSON, honestly marked "not written yet."
 
 **Tier 2 — common, no direct Radix primitive but moderate to build:** `Tag`, `Badge`, `Divider`,
 `Skeleton`, `Breadcrumb`, `Empty`, `Spin`, `Pagination`, `Steps`, `Drawer` (a Dialog variant —

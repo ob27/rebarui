@@ -33,6 +33,18 @@ const COMPONENT_FILES = [
   "Dialog.tsx",
   "Tabs.tsx",
   "Form.tsx",
+  "Checkbox.tsx",
+  "RadioGroup.tsx",
+  "Switch.tsx",
+  "Select.tsx",
+  "Tooltip.tsx",
+  "Popover.tsx",
+  "Dropdown.tsx",
+  "Slider.tsx",
+  "Progress.tsx",
+  "Avatar.tsx",
+  "Accordion.tsx",
+  "Toast.tsx",
 ];
 
 const result = {};
