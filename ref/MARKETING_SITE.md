@@ -83,19 +83,36 @@ extends via adapters/ports).
 
 ## Information architecture
 
-**Top nav:** Docs · Components · Migration · Playground · GitHub · search (cmd/ctrl+K) ·
-light/dark toggle (ordinary site chrome, not Rebar's sketch/clean gimmick) · version number.
+**Top nav:** Docs · Components · Performance · Migration · Playground · GitHub · search
+(cmd/ctrl+K) · light/dark toggle (ordinary site chrome, not Rebar's sketch/clean gimmick) ·
+version number. "Performance" added per the user's ant.design-inspired homepage restructure — see
+below.
 
-**Homepage:**
+**Homepage** (restructured to mirror ant.design's actual flow — hero → theme-customization
+showcase → rich-components showcase → an ecosystem-style card grid — checked directly against
+the live site, not from memory):
 1. Hero — tagline, `npm install rebar-ui`, and one small, self-contained demo panel (a card or
    form) with its own local sketch⇄clean toggle scoped to just that panel — illustrating the
-   mechanism without implying the whole site is switching.
-2. Three feature cards (above).
-3. "See it work" — a slightly bigger embedded example (a small form + table + modal), same
+   mechanism without implying the whole site is switching. Maps onto ant.design's hero + its
+   "flexible theme customization" showcase in one step, since Rebar's theme swap already *is*
+   the showcase.
+2. Three feature cards (Headless & accessible / Built to be replaced / Playwright-proof).
+3. "See it work" — a slightly bigger embedded example (a small form + confirmation dialog), same
    scoped local-toggle pattern, proving it holds up on composite components, not just a button.
-4. Install / getting-started snippet, link into docs.
-5. Footer: GitHub, license, links to `ARCHITECTURE.md`/`HEURISTICS.md`-derived doc pages,
+   Maps onto ant.design's "rich components" section.
+4. **Three pillars** — a card grid (ant.design's "ecosystem links" pattern) for Design
+   Heuristics (`/docs/theming`), Design Components (`/components`), and Performance
+   (`/performance`) — the user's explicit three-pillar framing for the whole site, not just a
+   copy of ant.design's specific link set.
+5. Install / getting-started snippet, link into docs.
+6. Footer: GitHub, license, links to `ARCHITECTURE.md`/`HEURISTICS.md`-derived doc pages,
    migration guide.
+
+**The Performance pillar** (`/performance`) is the empirical complement to the DevTools token
+estimate (`/docs/token-estimate`) — see [PLAN.md](PLAN.md) Phase 8 for why it's currently
+methodology-and-status-only, not results: fabricating comparative numbers here would be far worse
+than the original brainstorm's fabricated token counter, since this page explicitly claims to be
+a measured comparison.
 
 **Docs sidebar:**
 - **Introduction** — what Rebar is, the pitch, when to reach for it vs. not.

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useComponentCounts } from "./useComponentCounts";
 import { estimateMigrationEffort } from "./migrationEffort";
+import { estimateTokenCost, MODEL_DOCS_PATH, type TokenEstimate } from "./tokenEstimate";
 import { GridOverlay } from "./GridOverlay";
 import { ComponentInspector } from "./ComponentInspector";
 
@@ -18,6 +19,7 @@ function downloadReport(
   counts: ReturnType<typeof useComponentCounts>,
   score: number,
   effort: string,
+  tokenEstimate: TokenEstimate,
 ) {
   const report = {
     generatedAt: new Date().toISOString(),
@@ -27,6 +29,10 @@ function downloadReport(
       score,
       effort,
       note: "Illustrative heuristic derived from component counts, not a measured cost.",
+    },
+    tokenEstimate: {
+      ...tokenEstimate,
+      note: `A documented estimation model with stated, editable assumptions — not a measured cost. Full methodology: ${MODEL_DOCS_PATH}`,
     },
   };
 
@@ -47,9 +53,11 @@ export function RebarDevTools({ forceEnabled }: RebarDevToolsProps) {
   const [dark, setDark] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [showInspector, setShowInspector] = useState(false);
+  const [iterations, setIterations] = useState(5);
 
   const counts = useComponentCounts(isDev && isOpen);
   const { score, effort } = estimateMigrationEffort(counts);
+  const tokenEstimate = estimateTokenCost(counts, iterations);
 
   useEffect(() => {
     if (!isDev) return;
@@ -124,6 +132,41 @@ export function RebarDevTools({ forceEnabled }: RebarDevToolsProps) {
               </p>
             </div>
 
+            <div className="rebar-devtools-section">
+              <div className="rebar-devtools-stat">
+                <span>Token estimate</span>
+              </div>
+              <label className="rebar-devtools-iterations">
+                Assumed logic iterations
+                <input
+                  type="number"
+                  min={0}
+                  value={iterations}
+                  onChange={(event) =>
+                    setIterations(Math.max(0, Number(event.target.value) || 0))
+                  }
+                />
+              </label>
+              <ul className="rebar-devtools-breakdown">
+                <li>
+                  <span>AntD, built directly</span>
+                  <span>{Math.round(tokenEstimate.antdDirect).toLocaleString()}</span>
+                </li>
+                <li>
+                  <span>Rebar only</span>
+                  <span>{Math.round(tokenEstimate.rebarOnly).toLocaleString()}</span>
+                </li>
+                <li>
+                  <span>Rebar, then migrate once</span>
+                  <span>{Math.round(tokenEstimate.rebarThenMigrate).toLocaleString()}</span>
+                </li>
+              </ul>
+              <p className="rebar-devtools-hint">
+                A documented model with stated, editable assumptions — not a measured cost. Full
+                methodology and reasoning: {MODEL_DOCS_PATH}
+              </p>
+            </div>
+
             <div className="rebar-devtools-section rebar-devtools-toggles">
               <label>
                 <input
@@ -172,7 +215,7 @@ export function RebarDevTools({ forceEnabled }: RebarDevToolsProps) {
             <button
               type="button"
               className="rebar-devtools-export"
-              onClick={() => downloadReport(counts, score, effort)}
+              onClick={() => downloadReport(counts, score, effort, tokenEstimate)}
             >
               Export report (JSON)
             </button>

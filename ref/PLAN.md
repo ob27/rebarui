@@ -181,6 +181,33 @@ reference page, and — once it has a plausible AntD mapping — an entry in
 `@rebar-ui/migrate-antd`'s transform, verified by dogfooding against real usage, not just its own
 fixtures (per the `htmlType` lesson from Phase 5).
 
+### Phase 8 — Performance benchmark (empirical, not yet started)
+
+The marketing site now has three pillars on the homepage (per the user's ant.design-inspired
+homepage restructure): Design Heuristics (`/docs/theming`), Design Components (`/components`),
+and **Performance** (`/performance`) — a real, measured comparison, not another model. The
+DevTools token estimate (`/docs/token-estimate`) already makes the case theoretically (documented
+constants, editable assumptions); this phase replaces "theoretical" with "measured": build the
+same UI twice — once against AntD directly, once with Rebar and a single migration pass — across
+a spread of example groups from simple to complex, and capture real token usage from the actual
+build runs, not an estimate applied after the fact.
+
+**Explicitly blocked on more of the component library existing first** — the user's own
+observation, not an excuse: representative example groups (a settings form up through a
+multi-step wizard with a table, form, dialog, and tabs) need enough real component coverage that
+the comparison isn't just picking convenient narrow cases to fit whatever's built. Tier 1 (Phase
+7 above) covers the common Radix-backed set; Tiers 2–3 aren't built yet. `/performance` currently
+documents the planned methodology and this dependency honestly rather than shipping placeholder
+or fabricated results — the same "no silent fabrication" standard as everything else in this
+project, applied to what would otherwise be the single most reputation-sensitive page on the
+site (a claimed empirical proof that turned out to be invented would be far worse than the
+original brainstorm's fabricated token counter, since this one explicitly claims to be measured).
+
+Open before this can start: how token usage gets captured per run (need a controlled, repeatable
+build harness — likely a `Workflow` orchestrating both conditions per example group, but that
+needs explicit user opt-in per this session's tooling rules, and a real methodology design pass
+of its own before committing to it).
+
 ## Non-goals
 
 - Not building a Vue/Svelte port in v0.1 — noted in docs as a community-contribution

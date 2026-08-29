@@ -1,8 +1,8 @@
 import type { ComponentCounts } from "./useComponentCounts";
 
-type Complexity = "simple" | "medium" | "complex";
+export type Complexity = "simple" | "medium" | "complex";
 
-const COMPLEXITY: Record<string, Complexity> = {
+export const COMPLEXITY: Record<string, Complexity> = {
   box: "simple",
   stack: "simple",
   text: "simple",
@@ -12,8 +12,21 @@ const COMPLEXITY: Record<string, Complexity> = {
   card: "simple",
   alert: "simple",
   "form-item": "simple",
+  checkbox: "simple",
+  radio: "simple",
+  switch: "simple",
+  avatar: "simple",
+  progress: "simple",
   dialog: "medium",
   tabs: "medium",
+  "radio-group": "medium",
+  select: "medium",
+  tooltip: "medium",
+  popover: "medium",
+  dropdown: "medium",
+  slider: "medium",
+  accordion: "medium",
+  toast: "medium",
   form: "complex",
 };
 

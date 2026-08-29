@@ -17,6 +17,27 @@ const FEATURES = [
   },
 ];
 
+const PILLARS = [
+  {
+    title: "Design Heuristics",
+    body: "Spacing, type scale, color, and interaction defaults baked in — cited to Nielsen, Shneiderman, Material, Carbon, and USWDS, not invented. Published standalone as HEURISTICS.md for any project.",
+    href: "/docs/theming",
+    cta: "Read the heuristics",
+  },
+  {
+    title: "Design Components",
+    body: "30 components and counting, working toward full Ant Design v5 parity — real Radix primitives, tested, with a migration path back to AntD (or anywhere else) built in from day one.",
+    href: "/components",
+    cta: "Browse components",
+  },
+  {
+    title: "Performance",
+    body: "The actual argument for building this way: comparative token-cost runs, AntD-direct vs. Rebar-then-migrate, across simple and complex component groups.",
+    href: "/performance",
+    cta: "See the methodology",
+  },
+];
+
 export default function Home() {
   return (
     <Box as="main" style={{ maxWidth: 880, margin: "0 auto", padding: "var(--rebar-space-xl)" }}>
@@ -106,6 +127,27 @@ export default function Home() {
           </LivePreview>
         </Stack>
 
+        <Stack gap="md">
+          <Heading level={2}>Three pillars</Heading>
+          <Stack direction="row" gap="lg" style={{ flexWrap: "wrap" }}>
+            {PILLARS.map((pillar) => (
+              <Card key={pillar.title} style={{ flex: "1 1 260px" }}>
+                <Stack gap="sm">
+                  <Heading level={3}>{pillar.title}</Heading>
+                  <Text size="sm" color="secondary">
+                    {pillar.body}
+                  </Text>
+                  <Link href={pillar.href}>
+                    <Button variant="secondary" size="sm">
+                      {pillar.cta}
+                    </Button>
+                  </Link>
+                </Stack>
+              </Card>
+            ))}
+          </Stack>
+        </Stack>
+
         <Card>
           <Stack gap="md">
             <Heading level={2}>Get started</Heading>
@@ -141,8 +183,9 @@ import { Button } from "rebar-ui";
         </Card>
 
         <Alert type="info" title="Work in progress">
-          v0.1 — 15 components, the DevTools panel, and the AntD migration adapter are built and
-          tested. See <Link href="/status">/status</Link> for the full build checklist.
+          v0.1 — 30 components, the DevTools panel (with a live three-way token estimate), and
+          the AntD migration adapter are built and tested. See{" "}
+          <Link href="/status">/status</Link> for the full build checklist.
         </Alert>
       </Stack>
     </Box>

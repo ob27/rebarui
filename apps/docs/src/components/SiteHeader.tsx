@@ -8,6 +8,7 @@ import corePackageJson from "../../../../packages/core/package.json";
 const NAV_LINKS = [
   { href: "/docs", label: "Docs" },
   { href: "/components", label: "Components" },
+  { href: "/performance", label: "Performance" },
   { href: "/docs/migration", label: "Migration" },
   { href: "/playground", label: "Playground" },
 ];

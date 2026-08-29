@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Box, Heading, Stack, Text } from "rebar-ui";
 
 export default function DevToolsPage() {
@@ -22,6 +23,23 @@ export default function DevToolsPage() {
           The migration-effort estimate is explicitly a rough heuristic (a weighted score over
           simple/medium/complex component counts) — never a token or dollar figure presented as
           fact.
+        </Text>
+      </Stack>
+
+      <Stack gap="sm">
+        <Heading level={2}>Token estimate: three ways to build this page</Heading>
+        <Text size="sm">
+          Below the migration-effort score, the panel computes three numbers from the real
+          components on the page: building against AntD directly, building with Rebar alone, and
+          building with Rebar then migrating once. An &quot;assumed logic iterations&quot; input
+          lets you see how the comparison shifts as you change how many rounds of changes you
+          expect — the direct-AntD number grows with it, the Rebar-only number doesn&apos;t.
+        </Text>
+        <Text size="sm" color="secondary">
+          Full methodology, every constant, and the reasoning behind each one:{" "}
+          <Link href="/docs/token-estimate">Token estimate methodology</Link>. This is a
+          documented model with stated, editable assumptions — not a measured cost, and the page
+          says so explicitly.
         </Text>
       </Stack>
 

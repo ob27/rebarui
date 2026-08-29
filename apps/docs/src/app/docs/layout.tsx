@@ -7,6 +7,7 @@ const DOCS_SECTIONS = [
   { href: "/docs/theming", label: "Theming & Defaults" },
   { href: "/docs/migration", label: "Migration" },
   { href: "/docs/devtools", label: "DevTools" },
+  { href: "/docs/token-estimate", label: "Token estimate methodology" },
   { href: "/docs/contributing", label: "Contributing" },
 ];
 

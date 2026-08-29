@@ -86,7 +86,29 @@ describe("RebarDevTools", () => {
     expect(report.componentsByType).toEqual({ button: 1 });
     expect(report.migrationEffort).not.toHaveProperty("dollars");
     expect(report.migrationEffort.note).toMatch(/not a measured cost/);
+    expect(report.tokenEstimate).toHaveProperty("antdDirect");
+    expect(report.tokenEstimate).toHaveProperty("rebarOnly");
+    expect(report.tokenEstimate).toHaveProperty("rebarThenMigrate");
+    expect(report.tokenEstimate.note).toMatch(/documented estimation model/);
 
     vi.unstubAllGlobals();
+  });
+
+  it("shows the three-way token estimate and recomputes it as the iteration count changes", async () => {
+    document.body.innerHTML = `<div data-rebar-component="form"></div>`;
+    const user = userEvent.setup();
+    render(<RebarDevTools forceEnabled />);
+    await user.click(screen.getByRole("button", { name: "Rebar DevTools" }));
+    await screen.findByText("Rebar only");
+
+    const iterationsInput = screen.getByLabelText("Assumed logic iterations");
+    const readValues = () => screen.getAllByText(/^\d[\d,]*$/).map((el) => el.textContent);
+    const before = readValues();
+
+    await user.clear(iterationsInput);
+    await user.type(iterationsInput, "50");
+
+    const after = readValues();
+    expect(after).not.toEqual(before);
   });
 });

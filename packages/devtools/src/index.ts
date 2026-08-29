@@ -12,3 +12,6 @@ export type { ComponentCounts } from "./useComponentCounts";
 
 export { estimateMigrationEffort } from "./migrationEffort";
 export type { MigrationEffort, MigrationEstimate } from "./migrationEffort";
+
+export { estimateTokenCost, MODEL_DOCS_PATH } from "./tokenEstimate";
+export type { TokenEstimate, TokenEstimateBreakdownRow } from "./tokenEstimate";
