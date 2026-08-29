@@ -35,11 +35,26 @@ describe("RebarDevTools", () => {
     expect(screen.getByText("button")).toBeInTheDocument();
   });
 
+  it("doesn't clobber the page's real theme on mount — reads it instead of hardcoding sketch", async () => {
+    // Regression test: this used to hardcode its initial state to "sketch" and write that
+    // straight to <html> on mount, silently overriding a consuming app's real configured theme
+    // (e.g. a layout that sets data-rebar-theme="clean") the instant DevTools mounted, before
+    // anyone touched the panel.
+    document.documentElement.setAttribute("data-rebar-theme", "clean");
+    const user = userEvent.setup();
+    render(<RebarDevTools forceEnabled />);
+    await user.click(screen.getByRole("button", { name: "Rebar DevTools" }));
+
+    expect(document.documentElement).toHaveAttribute("data-rebar-theme", "clean");
+    expect(screen.getByRole("radio", { name: "Clean theme" })).toBeChecked();
+  });
+
   it("writes data-rebar-theme and data-theme on the document root when toggled", async () => {
     const user = userEvent.setup();
     render(<RebarDevTools forceEnabled />);
     await user.click(screen.getByRole("button", { name: "Rebar DevTools" }));
 
+    await user.click(screen.getByRole("radio", { name: "Sketch theme" }));
     expect(document.documentElement).toHaveAttribute("data-rebar-theme", "sketch");
 
     await user.click(screen.getByRole("radio", { name: "Clean theme" }));
@@ -94,21 +109,15 @@ describe("RebarDevTools", () => {
     vi.unstubAllGlobals();
   });
 
-  it("shows the three-way token estimate and recomputes it as the iteration count changes", async () => {
+  it("shows the three-way token estimate without an editable iterations control", async () => {
     document.body.innerHTML = `<div data-rebar-component="form"></div>`;
     const user = userEvent.setup();
     render(<RebarDevTools forceEnabled />);
     await user.click(screen.getByRole("button", { name: "Rebar DevTools" }));
     await screen.findByText("Rebar only");
 
-    const iterationsInput = screen.getByLabelText("Assumed logic iterations");
-    const readValues = () => screen.getAllByText(/^\d[\d,]*$/).map((el) => el.textContent);
-    const before = readValues();
-
-    await user.clear(iterationsInput);
-    await user.type(iterationsInput, "50");
-
-    const after = readValues();
-    expect(after).not.toEqual(before);
+    expect(screen.getByText("AntD, built directly")).toBeInTheDocument();
+    expect(screen.getByText("Rebar, then migrate once")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Assumed logic iterations")).not.toBeInTheDocument();
   });
 });

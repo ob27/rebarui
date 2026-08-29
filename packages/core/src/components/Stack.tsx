@@ -11,14 +11,23 @@ const SPACE_VAR: Record<NonNullable<StackProps["gap"]>, string> = {
   "2xl": "var(--rebar-space-2xl, 48px)",
 };
 
+const JUSTIFY_VAR: Record<NonNullable<StackProps["justify"]>, string> = {
+  start: "flex-start",
+  center: "center",
+  end: "flex-end",
+  between: "space-between",
+  around: "space-around",
+};
+
 export interface StackProps extends ComponentPropsWithoutRef<"div"> {
   direction?: "row" | "column";
   gap?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
   align?: "start" | "center" | "end" | "stretch";
+  justify?: "start" | "center" | "end" | "between" | "around";
 }
 
 export const Stack = forwardRef<HTMLDivElement, StackProps>(function Stack(
-  { direction = "column", gap = "md", align, className, style, children, ...props },
+  { direction = "column", gap = "md", align, justify, className, style, children, ...props },
   ref,
 ) {
   return (
@@ -27,7 +36,12 @@ export const Stack = forwardRef<HTMLDivElement, StackProps>(function Stack(
       className={clsx("rebar-stack", className)}
       data-rebar-component="stack"
       data-rebar-direction={direction}
-      style={{ gap: SPACE_VAR[gap], alignItems: align, ...style }}
+      style={{
+        gap: SPACE_VAR[gap],
+        alignItems: align,
+        justifyContent: justify ? JUSTIFY_VAR[justify] : undefined,
+        ...style,
+      }}
       {...props}
     >
       {children}

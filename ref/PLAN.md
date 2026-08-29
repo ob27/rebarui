@@ -135,10 +135,10 @@ Phase 5+) but come after the core loop is proven.
 - Launch checklist (Reddit r/reactjs & r/webdev, Show HN, Twitter/X, Dev.to) — low priority, do
   once the library itself is solid.
 
-### Phase 7 — AntD v5 component parity (new scope, added post-v0.1)
+### Phase 7 — AntD v6 component parity (new scope, added post-v0.1)
 
 Superseded the original "not chasing feature parity with AntD" non-goal below — the user
-explicitly asked for Rebar equivalents of AntD v5's full component catalog, for two reasons: (1)
+explicitly asked for Rebar equivalents of AntD's full component catalog, for two reasons: (1)
 completing the migration pathway, since `@rebar-ui/migrate-antd` currently only handles the ~8
 components Rebar has (everything else falls to `MIGRATION_PROMPT.md`'s manual/LLM path); (2) the
 expanded library becomes marketing content in its own right — a showcase on the docs site of
@@ -158,6 +158,15 @@ AntD's `trigger` prop is an interaction-mode string), `Progress` (needs a comput
 `packages/adapters/antd/README.md` for the full reasoning per component. Reference doc pages for
 these 12 are not written yet (only Button/Dialog/Form have full pages) — they do appear on the
 `/components` index, generated from the same props JSON, honestly marked "not written yet."
+
+**Targeting AntD v6, not v5** — the user asked to align with v6; checked directly against the
+live v6 docs rather than assumed (v6 is real, released, requires React 18+, and is
+backward-compatible with v5 prop names). Two things v6 actually changed that this codemod
+touches: the `size` enum is now `small`/`medium`/`large` (`middle` deprecated) — `SIZE_MAP`
+updated; `Alert`'s heading prop was renamed back to `title` in v6 (it was `message` in v5),
+which now matches Rebar's own prop name, so that rename was removed entirely rather than
+updated. Everything else the codemod touches (`Modal`'s `onCancel`, `Checkbox`'s
+`CheckboxChangeEvent`, `Tooltip`'s `title` prop) was checked and is unchanged from v5.
 
 **Tier 2 — common, no direct Radix primitive but moderate to build:** `Tag`, `Badge`, `Divider`,
 `Skeleton`, `Breadcrumb`, `Empty`, `Spin`, `Pagination`, `Steps`, `Drawer` (a Dialog variant —
@@ -185,7 +194,7 @@ fixtures (per the `htmlType` lesson from Phase 5).
 
 The marketing site now has three pillars on the homepage (per the user's ant.design-inspired
 homepage restructure): Design Heuristics (`/docs/theming`), Design Components (`/components`),
-and **Performance** (`/performance`) — a real, measured comparison, not another model. The
+and **Benchmarks** (`/benchmarks`) — a real, measured comparison, not another model. The
 DevTools token estimate (`/docs/token-estimate`) already makes the case theoretically (documented
 constants, editable assumptions); this phase replaces "theoretical" with "measured": build the
 same UI twice — once against AntD directly, once with Rebar and a single migration pass — across
@@ -196,7 +205,7 @@ build runs, not an estimate applied after the fact.
 observation, not an excuse: representative example groups (a settings form up through a
 multi-step wizard with a table, form, dialog, and tabs) need enough real component coverage that
 the comparison isn't just picking convenient narrow cases to fit whatever's built. Tier 1 (Phase
-7 above) covers the common Radix-backed set; Tiers 2–3 aren't built yet. `/performance` currently
+7 above) covers the common Radix-backed set; Tiers 2–3 aren't built yet. `/benchmarks` currently
 documents the planned methodology and this dependency honestly rather than shipping placeholder
 or fabricated results — the same "no silent fabrication" standard as everything else in this
 project, applied to what would otherwise be the single most reputation-sensitive page on the

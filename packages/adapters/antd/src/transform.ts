@@ -10,10 +10,14 @@ import type {
 } from "jscodeshift";
 
 /**
- * Migrates rebar-ui usage to Ant Design v5. Scope is deliberately bounded to what's safe to
+ * Migrates rebar-ui usage to Ant Design v6. Scope is deliberately bounded to what's safe to
  * automate — see packages/adapters/antd/README.md for exactly what this does and does not
  * handle, and ref/ARCHITECTURE.md#migration-adapters for why this exists as a template rather
- * than a one-off.
+ * than a one-off. Verified against the live v6 API docs (ant.design/components/*), not assumed:
+ * v6 renamed Alert's `message` prop back to `title` (matching Rebar's own name, so no rename is
+ * needed there anymore) and standardized size enums to `small`/`medium`/`large` (`middle` is
+ * deprecated). Everything else this codemod touches — Modal's `onCancel`, Checkbox's
+ * `CheckboxChangeEvent`, Tooltip's `title` prop — was checked directly and is unchanged from v5.
  */
 
 const DIRECT_RENAME: Record<string, string> = {
@@ -75,7 +79,7 @@ const BUTTON_VARIANT_TO_TYPE: Record<string, string> = {
   tertiary: "text",
 };
 
-const SIZE_MAP: Record<string, string> = { sm: "small", md: "middle", lg: "large" };
+const SIZE_MAP: Record<string, string> = { sm: "small", md: "medium", lg: "large" };
 
 const REVIEW_COMMENT_ON_CANCEL =
   " rebar-migrate: AntD's onCancel takes no argument, unlike onOpenChange(open: boolean) — review this handler.";
@@ -292,16 +296,7 @@ function transform(fileInfo: FileInfo, api: API, _options: Options): string | un
       }
     });
 
-  // Alert: title -> message.
-  root
-    .find(j.JSXOpeningElement)
-    .filter((path) => path.node.name.type === "JSXIdentifier" && path.node.name.name === "Alert")
-    .forEach((path) => {
-      const titleAttr = findAttr(path.node, "title");
-      if (titleAttr) {
-        titleAttr.name = j.jsxIdentifier("message");
-      }
-    });
+  // Alert: no prop rename needed — AntD v6's `title` prop matches Rebar's own name directly.
 
   // Modal (renamed from Dialog): onOpenChange -> onCancel (flagged), description -> child.
   root

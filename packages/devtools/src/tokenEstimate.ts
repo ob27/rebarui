@@ -38,6 +38,19 @@ const ANTD_ITERATION_TAX: Record<Complexity, number> = {
 const CODEMOD_REVIEW_COST = 5;
 const MANUAL_MIGRATION_MULTIPLIER = 1.5;
 
+// The one constant below actually grounded in a real measurement, not an assumption: the real
+// n=15 /benchmarks runs (PreviewPanel, both text- and image-driven) found rebar-ui's own
+// placement-layer build costs ~3% LESS than antd's direct build on the very first build alone —
+// 30,211 vs 31,231 tokens (text), 30,787 vs 31,765 (image, refined prompt) — averaging ~3.2%.
+// Previously this model assumed antdDirect and rebarOnly had an IDENTICAL first-build cost (same
+// `base`), with rebar's whole advantage coming from the (still unmeasured — see ANTD_ITERATION_TAX
+// above) per-iteration tax. That assumption undersold Rebar: this discount corrects it using real,
+// whole-component data, rounded down from the measured ~3.2% to stay conservative. Real, but at a
+// coarser granularity than this per-component-type model: whole-panel builds, not isolated
+// per-type costs (we haven't measured what one Button vs one Card costs in isolation) — see
+// /benchmarks for the source numbers.
+const REBAR_FIRST_BUILD_DISCOUNT = 0.03;
+
 // Mirrors @rebar-ui/migrate-antd's actual coverage (packages/adapters/antd/src/transform.ts) —
 // update this list if that adapter's coverage changes, so the estimate doesn't silently drift
 // from what the codemod actually does.
@@ -86,7 +99,7 @@ export function estimateTokenCost(counts: ComponentCounts, iterations: number): 
     const tax = ANTD_ITERATION_TAX[complexity] * count * iterations;
 
     antdDirect += base + tax;
-    rebarOnly += base;
+    rebarOnly += base * (1 - REBAR_FIRST_BUILD_DISCOUNT);
 
     const codemodSupported = CODEMOD_SUPPORTED.has(type);
     migrationCost += codemodSupported

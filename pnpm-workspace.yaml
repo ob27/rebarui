@@ -2,10 +2,13 @@ packages:
   - "packages/*"
   - "packages/adapters/*"
   - "apps/*"
+  - "bench/*"
 allowBuilds:
   esbuild: true
   sharp: false
   unrs-resolver: false
+minimumReleaseAgeExclude:
+  - antd@6.6.2
 overrides:
   "@types/react": ^19.0.0
   "@types/react-dom": ^19.0.0

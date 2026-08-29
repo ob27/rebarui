@@ -49,13 +49,28 @@ export const X = () => <Button type="submit" variant="primary">Submit</Button>;`
     expect(output.match(/type="primary"/g)).toHaveLength(1);
   });
 
-  it("renames Alert's title prop to AntD's message prop", () => {
+  it("leaves Alert's title prop as-is — AntD v6's prop name matches Rebar's directly", () => {
     const source = `
 import { Alert } from "rebar-ui";
 export const X = () => <Alert type="error" title="Email is required" />;`;
     const output = run(source);
-    expect(output).toContain('message="Email is required"');
-    expect(output).not.toContain("title=");
+    expect(output).toContain('title="Email is required"');
+    expect(output).toContain('from "antd"');
+    expect(output).not.toContain("rebar-ui");
+  });
+
+  it("maps Button/Input's md size to AntD v6's medium (not the deprecated middle)", () => {
+    const source = `
+import { Button, Input } from "rebar-ui";
+export const X = () => (
+  <>
+    <Button size="md">A</Button>
+    <Input size="md" />
+  </>
+);`;
+    const output = run(source);
+    expect(output).toContain('size="medium"');
+    expect(output).not.toContain("middle");
   });
 
   it("renames Dialog to Modal, flags onOpenChange for review, and promotes description into a child", () => {

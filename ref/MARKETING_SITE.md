@@ -102,17 +102,57 @@ the live site, not from memory):
    Maps onto ant.design's "rich components" section.
 4. **Three pillars** — a card grid (ant.design's "ecosystem links" pattern) for Design
    Heuristics (`/docs/theming`), Design Components (`/components`), and Performance
-   (`/performance`) — the user's explicit three-pillar framing for the whole site, not just a
+   (`/benchmarks`) — the user's explicit three-pillar framing for the whole site, not just a
    copy of ant.design's specific link set.
 5. Install / getting-started snippet, link into docs.
 6. Footer: GitHub, license, links to `ARCHITECTURE.md`/`HEURISTICS.md`-derived doc pages,
    migration guide.
 
-**The Performance pillar** (`/performance`) is the empirical complement to the DevTools token
-estimate (`/docs/token-estimate`) — see [PLAN.md](PLAN.md) Phase 8 for why it's currently
-methodology-and-status-only, not results: fabricating comparative numbers here would be far worse
-than the original brainstorm's fabricated token counter, since this page explicitly claims to be
-a measured comparison.
+**The Benchmarks pillar** (`/benchmarks`) is the empirical complement to the DevTools token
+estimate (`/docs/token-estimate`). It's no longer methodology-only — real, repeated (n=15 per
+condition), Playwright-verified measured runs now live there, both a text-prompt and an
+image-prompt build of the same target component, comparing AntD direct against Rebar built through
+its placement layer (see "Positioning" below and [ARCHITECTURE.md](ARCHITECTURE.md#the-placement-layer--validated-direction-not-yet-a-shipped-package)).
+The one standing rule carries over unchanged from when this was methodology-only: never fabricate
+or round a number here — every figure on that page must trace back to a real transcript.
+
+## Positioning: the placement layer, and when to migrate
+
+Two things changed since this document was first written that the whole site's copy needs to
+reflect, not just `/benchmarks`:
+
+1. **Rebar is always used through its placement layer now, not hand-authored.** Earlier language
+   on this page (and on the homepage) describes Rebar purely as "headless components + CSS-
+   variable theming" — true, but no longer the whole story. The measured default building method
+   is: an LLM writes a small typed document naming pre-built composite blocks (a banner, a
+   checklist, a callout, ...), and a deterministic renderer (`@rebar-ui/placement`'s
+   `BlockRenderer` — see [ARCHITECTURE.md](ARCHITECTURE.md#the-placement-layer-rebar-uiplacement))
+   turns that into the real component tree. This isn't a separate "DSL mode" to explain as an
+   alternative — it's simply how Rebar is built with, the same way nobody explains JSX as "the
+   React DSL." Site copy should name the two heuristics that make it work, not just gesture at "a
+   placement layer": **anatomical order** (each block's internal parts render in a fixed, head-to-
+   toe sequence the model never chooses — icon, then text, then action, every time) and **the
+   magnetic heuristic** (blocks snap into place in the order the model lists them, like magnets
+   pulling into a line — no coordinates, no grid math, just sequence). Site copy should stop
+   presenting raw `Stack`/`Box` composition as the primary authoring path (it still is one, for a
+   human hand-writing code, but the marketing story for AI-assisted building is the placement
+   layer, backed by the `/benchmarks` numbers).
+2. **The core hypothesis needs to be stated plainly, not left implicit:** most of the token cost of
+   building UI with an LLM is front-loaded, during the early phase of a project when flows and
+   layouts are still volatile — many small changes, a lot of exploration, nothing settled yet.
+   That is exactly the phase Rebar (via the placement layer) is built for: no visual decisions in
+   the loop, so iteration is cheap and — per the benchmark's visual-consistency numbers — far more
+   predictable. Once a project's UI has actually stabilized and is heading to production, the
+   right move is to migrate once, via the codemod/migration-prompt path, to a real design system
+   that can be customized for the long term. Rebar isn't positioned as a permanent alternative to a
+   production design system — it's positioned as the cheapest way to get through the volatile
+   phase before you need one. This should be the load-bearing sentence on the homepage hero and
+   the Introduction doc page, not buried in a benchmarks caveat.
+
+Concretely, this means: the homepage hero subtitle, the Introduction page's "why cheaper" section,
+and the Migration page's framing should all name the volatility→stabilization arc explicitly
+(design volatile → build headless via the placement layer → flows settle → migrate once), rather
+than describing headless-first and migration as two separate, only-loosely-connected features.
 
 **Docs sidebar:**
 - **Introduction** — what Rebar is, the pitch, when to reach for it vs. not.

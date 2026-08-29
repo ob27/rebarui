@@ -1,0 +1,8 @@
+# rebar-ui
+
+Headless-first, low-fidelity React components (real Radix UI underneath, styled via `--rebar-*`
+CSS custom properties).
+
+For an LLM/coding agent: read `dist/index.d.ts` for the exact prop interface of every component
+(one compact file, ~220 lines) instead of the `.tsx` source under `src/components/`. See
+`README.md` for install steps and composition recipes.

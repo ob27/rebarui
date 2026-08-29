@@ -1,10 +1,17 @@
 # @rebar-ui/migrate-antd
 
-A codemod that migrates `rebar-ui` usage to [Ant Design v5](https://ant.design/). The first
+A codemod that migrates `rebar-ui` usage to [Ant Design v6](https://ant.design/). The first
 instance of Rebar's migration-adapter pattern — see
 [ref/ARCHITECTURE.md#migration-adapters](../../../ref/ARCHITECTURE.md#migration-adapters) for why
 this exists as a template for future adapters (`migrate-mui`, `migrate-shadcn`, ...), not a
 one-off.
+
+Targets v6 specifically (not v5) because v6 actually changed two things this codemod cares about,
+verified directly against the live v6 API docs rather than assumed: the `size` enum is now
+`small`/`medium`/`large` (`middle` is deprecated), and `Alert`'s heading prop was renamed back to
+`title` — which happens to match Rebar's own prop name, so that one's no longer a rename at all.
+v6 is backward-compatible with v5-style props in general, so output from an older version of this
+codemod still works on v6, just with deprecation warnings on those two.
 
 ## Use
 
@@ -34,12 +41,13 @@ hold any changes here to, not just passing the unit tests.
 
 - **`Button`** — `variant="primary"|"secondary"|"tertiary"` → `type="primary"|"default"|"text"`;
   `variant="destructive"` → `danger` (shorthand boolean); `size="sm"|"md"|"lg"` →
-  `"small"|"middle"|"large"`. If the element already has a native HTML `type` (e.g.
+  `"small"|"medium"|"large"`. If the element already has a native HTML `type` (e.g.
   `type="submit"`), that's moved to AntD's `htmlType` prop **first** — AntD's own `type` prop
   means visual variant, not HTML button type, so without this step the naive rename produces an
   invalid duplicate `type` attribute. (This is the bug dogfooding caught.)
 - **`Input`** — same `size` mapping as `Button`.
-- **`Alert`** — `title` → `message` (AntD's prop name for the same thing).
+- **`Alert`** — no rename: AntD v6's `title` prop matches Rebar's own name directly (v5 called it
+  `message`; v6 renamed it back to `title`).
 - **`Dialog` → `Modal`** — `open`/`title`/`footer` are unchanged (already-compatible names).
   `onOpenChange` is renamed to `onCancel`, but a review comment is inserted above it: AntD's
   `onCancel` takes no argument, while Rebar's `onOpenChange(open: boolean)` does — this needs a

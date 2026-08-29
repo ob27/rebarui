@@ -27,7 +27,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
         </span>
       ) : null}
       {children ? (
-        <span data-rebar-part="description">{children}</span>
+        <div data-rebar-part="description">{children}</div>
       ) : null}
     </div>
   );

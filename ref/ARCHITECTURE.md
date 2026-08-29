@@ -15,6 +15,7 @@ Monorepo (pnpm workspaces + Turborepo, pending confirmation):
 ```
 packages/
   core/            # components + primitives, wraps Radix, ships CSS-var-only styles
+  placement/       # @rebar-ui/placement — the placement layer: block schema + BlockRenderer, see below
   theme-sketch/    # default sketch theme: fonts, sketchy borders, grayscale tokens
   theme-clean/     # plain production-safe baseline theme
   devtools/        # dev-only floating panel — kept out of prod via a consumer-side dynamic import, see below
@@ -25,10 +26,68 @@ apps/
   playground/      # deeper, multi-component live sketch <-> clean toggle demo
 ```
 
-`core` depends on Radix primitives + React Hook Form (for `Form`). `theme-*` packages are pure CSS
-(custom properties + a stylesheet), no JS. `devtools` depends on `core`'s internal usage registry
-but is an entirely separate import — an app that never imports `@rebar-ui/devtools` pays zero cost
+`core` depends on Radix primitives + React Hook Form (for `Form`). `placement` depends only on
+`core` (it renders blocks using `core`'s own components) — it's a separate package specifically so
+a consumer who never wants the placement layer (just the atomic components) doesn't pay for it.
+`theme-*` packages are pure CSS (custom properties + a stylesheet), no JS. `devtools` depends on
+`core`'s internal usage registry but is an entirely separate import — an app that never imports
+`@rebar-ui/devtools` pays zero cost
 for it.
+
+## The placement layer — `@rebar-ui/placement`
+
+Rebar UI is meant to be built with by an LLM through a small procedural placement layer, not by
+hand-authoring `Stack`/`Box` JSX directly: the model writes a compact typed document naming a
+handful of pre-built composite archetypes — called **blocks** — and a deterministic renderer
+(`BlockRenderer`, built from `core`'s own components) turns that document into the actual tree. The
+model never decides layout — direction, gap, nesting — only which block and what content.
+
+Two heuristics do the actual layout work, so the model never has to:
+
+- **Anatomical order** — within any one block, its internal parts always render in the same fixed,
+  predetermined sequence, head to toe. A `callout` is always icon → title → subtitle, top to
+  bottom, every time; a `banner` is always icon → text → trailing action, left to right. The model
+  fills in the slots' content; it never decides which slot comes first.
+- **The magnetic heuristic** — at the document level, blocks are simply listed in the order the
+  model wants them to appear, and the renderer "snaps" each one into the stack in that sequence —
+  like magnets pulling into a line, not a grid the model has to compute coordinates for. Supplying
+  order is the only placement decision the model makes; no `x`/`y`, no `flex`/`grid` value, ever.
+
+**Status: shipped as `@rebar-ui/placement`, dogfooded on this project's own marketing site
+(`apps/docs`)** — not just a benchmark prototype anymore. `BlockRenderer` and its six current block
+types (`header`, `banner`, `checklist`, `callout`, `feature-grid`, `pillar-grid`) live in
+`packages/placement/src`; the homepage's feature-card row and three-pillars grid
+(`apps/docs/src/app/page.tsx`) are real `BlockRenderer` output, not hand-authored `Stack`/`Card`
+JSX — proof-by-existence that the mechanism holds up outside the one benchmark component it was
+validated on, per the dogfooding principle already stated in
+[MARKETING_SITE.md](MARKETING_SITE.md#what-to-change-and-why).
+
+The evidence for the underlying mechanism lives in
+[`/benchmarks`](../apps/docs/src/app/benchmarks/page.tsx): a hand-authored-JSX version of Rebar
+lost to AntD by ~54% in token cost; the placement-layer version not only closed that gap but beat
+AntD outright — cheaper, faster wall-clock, and with visual output that is (with a properly scoped
+prompt) pixel-identical run to run, versus AntD's real run-to-run drift. That result held up again
+on an image-driven build (read a screenshot, produce the same document), once the prompt spelled
+out the document schema instead of making the agent discover it by reading source files.
+
+What's still open: the three archetypes measured in that benchmark (`banner`/`checklist`/`callout`)
+were chosen to fit one benchmark component; `feature-grid`/`pillar-grid` were added to cover this
+project's own marketing copy and haven't been measured in isolation the same way. Whether the block
+vocabulary keeps paying off as it grows to cover arbitrary UI, and whether DOM order (and therefore
+accessibility — WCAG 2.1 SC 1.3.2) stays correct as more blocks are added, are the honest open
+questions, not yet answered by more than "it worked for these six."
+
+**Why this is the intended default rather than an optional mode:** most of the token cost of an
+LLM building UI is paid up front, during the early, high-volatility phase of a project — flows,
+layouts, and information architecture are still being figured out, and every design decision made
+against a fully-styled, opinionated target library has to be re-justified on every iteration. That
+is exactly the phase where a low-fidelity, placement-driven build is cheapest and most consistent:
+there is nothing visual to re-litigate, so iteration is fast and (per the benchmark above) far more
+predictable in cost. Once a project's UI has actually stabilized — the flows are settled, it is
+heading to production — the adapter/codemod migration path (see "Migration adapters" below) is the
+bounded, one-time cost of moving to a real, brand-customized design system for long-term use. Rebar
+is not meant to compete with a production design system on visual fidelity; it is meant to be the
+cheapest way to iterate before you need one.
 
 ## Component API conventions
 

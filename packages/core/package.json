@@ -15,7 +15,9 @@
     "./style.css": "./dist/style.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "AGENTS.md",
+    "llms.txt"
   ],
   "sideEffects": [
     "**/*.css"

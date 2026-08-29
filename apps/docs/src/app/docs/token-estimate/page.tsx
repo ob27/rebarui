@@ -54,17 +54,19 @@ export default function TokenEstimatePage() {
   antdTax     = ANTD_ITERATION_TAX[T] × N × iterations
 
   antdDirect       += base + antdTax
-  rebarOnly        += base
+  rebarOnly        += base × (1 - REBAR_FIRST_BUILD_DISCOUNT)  // see below — this one's measured
   migrationCost    += codemodSupported(type)
                         ? CODEMOD_REVIEW_COST × N                        // cheap, mechanical
                         : base × MANUAL_MIGRATION_MULTIPLIER             // LLM-assisted rework
 
   rebarThenMigrate = rebarOnly + migrationCost`}</Code>
         <Text size="sm" color="secondary">
-          <code>iterations</code> is the one assumption you set yourself, in the panel — how many
-          rounds of logic changes you expect before this UI is done. There&apos;s no correct
-          default; it&apos;s genuinely project-specific, which is why it&apos;s an input, not a
-          constant.
+          <code>iterations</code> — how many rounds of logic changes you expect before this UI is
+          done — is fixed at 5 in the panel rather than exposed as a control (it was confusing
+          without this page&apos;s context open alongside it). There&apos;s no correct default; if
+          your project&apos;s iteration count is very different from 5, edit{" "}
+          <code>ASSUMED_LOGIC_ITERATIONS</code> in{" "}
+          <code>packages/devtools/src/RebarDevTools.tsx</code> directly.
         </Text>
       </Stack>
 
@@ -82,7 +84,21 @@ export default function TokenEstimatePage() {
           specific API): simple 10, medium 25, complex 50. This is the number that operationalizes
           Rebar&apos;s core thesis — it&apos;s zero for the headless path and compounds with every
           iteration for the direct-AntD path, which is exactly the argument made on the{" "}
-          <a href="/docs">Introduction page</a>.
+          <a href="/docs">Introduction page</a>. Still a stated assumption, not a measurement — the
+          iteration-by-iteration experiment that would measure it directly (Condition A/B on{" "}
+          <a href="/benchmarks">/benchmarks</a>) hasn&apos;t been run yet.
+        </Text>
+        <Text size="sm">
+          <strong>Rebar first-build discount (3%)</strong> — the one constant here that <em>is</em>{" "}
+          grounded in a real measurement rather than an assumption. The real, repeated (n=15)
+          benchmark runs on <a href="/benchmarks">/benchmarks</a> found Rebar&apos;s own placement-
+          layer build costs ~3.2% less than AntD&apos;s direct build on the very first build alone
+          — before counting any iteration advantage at all (30,211 vs. 31,231 tokens, text-prompt;
+          30,787 vs. 31,765, image-prompt) — so <code>rebarOnly</code> now gets a small discount
+          instead of assuming an identical first-build cost to <code>antdDirect</code>. Rounded down
+          to 3% to stay conservative. It&apos;s real, but at a coarser grain than the rest of this
+          model: a whole-panel measurement, not an isolated per-component-type one — we haven&apos;t
+          measured what one <code>Button</code> vs. one <code>Card</code> costs in isolation.
         </Text>
         <Text size="sm">
           <strong>Migration cost</strong>: components <code>@rebar-ui/migrate-antd</code> actually

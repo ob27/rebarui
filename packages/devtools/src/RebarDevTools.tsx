@@ -15,6 +15,11 @@ export interface RebarDevToolsProps {
   forceEnabled?: boolean;
 }
 
+// Not exposed as a panel control — it was confusing without the methodology page's context
+// (packages/devtools/src/tokenEstimate.ts / /docs/token-estimate) open alongside it. Fixed here
+// instead of editable in the UI; still just a stated assumption, documented on that page.
+const ASSUMED_LOGIC_ITERATIONS = 5;
+
 function downloadReport(
   counts: ReturnType<typeof useComponentCounts>,
   score: number,
@@ -49,15 +54,22 @@ export function RebarDevTools({ forceEnabled }: RebarDevToolsProps) {
   const isDev = forceEnabled ?? process.env.NODE_ENV === "development";
 
   const [isOpen, setIsOpen] = useState(false);
-  const [theme, setTheme] = useState<"sketch" | "clean">("sketch");
+  // Lazily read the page's actual current theme rather than hardcoding "sketch" — the effect
+  // below writes this state straight back to <html> on mount, so a hardcoded default would
+  // silently clobber whatever the consuming app really configured (e.g. layout.tsx's "clean")
+  // the instant DevTools mounts, before anyone touches the panel.
+  const [theme, setTheme] = useState<"sketch" | "clean">(() =>
+    typeof document !== "undefined" && document.documentElement.getAttribute("data-rebar-theme") === "sketch"
+      ? "sketch"
+      : "clean",
+  );
   const [dark, setDark] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [showInspector, setShowInspector] = useState(false);
-  const [iterations, setIterations] = useState(5);
 
   const counts = useComponentCounts(isDev && isOpen);
   const { score, effort } = estimateMigrationEffort(counts);
-  const tokenEstimate = estimateTokenCost(counts, iterations);
+  const tokenEstimate = estimateTokenCost(counts, ASSUMED_LOGIC_ITERATIONS);
 
   useEffect(() => {
     if (!isDev) return;
@@ -136,17 +148,6 @@ export function RebarDevTools({ forceEnabled }: RebarDevToolsProps) {
               <div className="rebar-devtools-stat">
                 <span>Token estimate</span>
               </div>
-              <label className="rebar-devtools-iterations">
-                Assumed logic iterations
-                <input
-                  type="number"
-                  min={0}
-                  value={iterations}
-                  onChange={(event) =>
-                    setIterations(Math.max(0, Number(event.target.value) || 0))
-                  }
-                />
-              </label>
               <ul className="rebar-devtools-breakdown">
                 <li>
                   <span>AntD, built directly</span>

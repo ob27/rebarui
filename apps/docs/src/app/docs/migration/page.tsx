@@ -5,8 +5,12 @@ export default function MigrationPage() {
     <Stack gap="lg">
       <Heading level={1}>Migration</Heading>
       <Text>
-        Rebar is designed to be replaced. Two complementary paths get you there, depending on
-        whether a dedicated adapter exists for your target design system yet.
+        Rebar is designed to be replaced, once — not iterated against forever. The signal to
+        migrate isn&apos;t a deadline, it&apos;s <em>stability</em>: once your UI&apos;s flows and
+        layouts have actually settled and you&apos;re heading to production, that&apos;s when the
+        cost/benefit flips from &quot;keep iterating cheaply, headless&quot; to &quot;pay the
+        one-time cost of a real, customizable design system.&quot; Two complementary paths get you
+        there, depending on whether a dedicated adapter exists for your target design system yet.
       </Text>
 
       <Stack gap="sm">

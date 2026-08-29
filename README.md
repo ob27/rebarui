@@ -18,7 +18,7 @@ Planning lives in [`ref/`](ref) — start with [`ref/PLAN.md`](ref/PLAN.md).
 - [`packages/devtools`](packages/devtools) (`@rebar-ui/devtools`) — a dev-only floating panel:
   real component counts, theme/grid toggles, a migration-effort estimate.
 - [`packages/adapters/antd`](packages/adapters/antd) (`@rebar-ui/migrate-antd`) — a jscodeshift
-  codemod migrating Rebar usage to Ant Design v5.
+  codemod migrating Rebar usage to Ant Design v6.
 - [`apps/docs`](apps/docs) — the docs/marketing site, built with Rebar itself.
 
 ## Other root files

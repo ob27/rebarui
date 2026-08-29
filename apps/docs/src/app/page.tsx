@@ -1,9 +1,17 @@
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
-import { Box, Button, Card, Dialog, Heading, Input, Stack, Text } from "rebar-ui";
+import { Box, Button, Card, Heading, Stack, Text } from "rebar-ui";
+import { BlockRenderer, type FeatureGridItem, type PillarGridItem } from "@rebar-ui/placement";
 import { LivePreview } from "@/components/LivePreview";
+import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
-const MICRO_FEATURES = [
+// This homepage is itself built partly through the placement layer, not just hand-authored Rebar
+// components — the feature row and three-pillars grid below are `BlockRenderer` output from a
+// `feature-grid`/`pillar-grid` document, the same mechanism /benchmarks measures. Proof-by-
+// existence, per ref/MARKETING_SITE.md: this site really is built the way it says Rebar is meant
+// to be used, not just described that way.
+
+const MICRO_FEATURES: FeatureGridItem[] = [
   {
     title: "Headless & accessible",
     body: "Radix UI underneath every interactive component.",
@@ -18,7 +26,7 @@ const MICRO_FEATURES = [
   },
 ];
 
-const PILLARS = [
+const PILLARS: PillarGridItem[] = [
   {
     title: "Design Heuristics",
     body: "Spacing, type scale, color, and interaction defaults baked in — cited to Nielsen, Shneiderman, Material, Carbon, and USWDS, not invented. Published standalone as HEURISTICS.md for any project.",
@@ -27,15 +35,15 @@ const PILLARS = [
   },
   {
     title: "Design Components",
-    body: "30 components and counting, working toward full Ant Design v5 parity — real Radix primitives, tested, with a migration path back to AntD (or anywhere else) built in from day one.",
+    body: "30 components and counting, working toward full Ant Design v6 parity — real Radix primitives, tested, with a migration path back to AntD (or anywhere else) built in from day one.",
     href: "/components",
     cta: "Browse components",
   },
   {
-    title: "Performance",
-    body: "The actual argument for building this way: comparative token-cost runs, AntD-direct vs. Rebar-then-migrate, across simple and complex component groups.",
-    href: "/performance",
-    cta: "See the methodology",
+    title: "Benchmarks",
+    body: "The actual argument for building this way, measured: AntD direct vs. Rebar built through its placement layer — cheaper, faster, and far more visually consistent, both from a text prompt and from a screenshot.",
+    href: "/benchmarks",
+    cta: "See the numbers",
   },
 ];
 
@@ -107,9 +115,10 @@ export default function Home() {
             Rebar UI
           </Heading>
           <Text size="md" color="secondary" style={{ maxWidth: 560 }}>
-            Headless-first, intentionally low-fidelity React components. Build functional,
-            accessible UI in minutes. When you&apos;re ready for production, re-skin it — the
-            structure, accessibility, and tests don&apos;t change.
+            Headless-first, intentionally low-fidelity React components, built to be built with by
+            an LLM through a small placement layer — not hand-authored. Cheapest while your UI is
+            still volatile; when flows settle and you&apos;re ready for production, migrate once to
+            a real design system — the structure, accessibility, and tests don&apos;t change.
           </Text>
 
           <Stack direction="row" gap="sm">
@@ -138,18 +147,9 @@ export default function Home() {
             npm install rebar-ui
           </Box>
 
-          <Stack direction="row" gap="xl" style={{ flexWrap: "wrap", justifyContent: "center", paddingTop: "var(--rebar-space-md)" }}>
-            {MICRO_FEATURES.map((feature) => (
-              <Stack key={feature.title} gap="xs" style={{ maxWidth: 200, textAlign: "center" }}>
-                <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
-                  {feature.title}
-                </Text>
-                <Text size="xs" color="secondary">
-                  {feature.body}
-                </Text>
-              </Stack>
-            ))}
-          </Stack>
+          <Box style={{ paddingTop: "var(--rebar-space-md)" }}>
+            <BlockRenderer blocks={[{ type: "feature-grid", items: MICRO_FEATURES }]} />
+          </Box>
         </Stack>
       </Section>
 
@@ -169,44 +169,6 @@ export default function Home() {
         </Stack>
       </Section>
 
-      <Section>
-        <Stack gap="xl">
-          <SectionHeader
-            kicker="Rich components"
-            title="Composite components, not just a button"
-            subtitle="A form and a confirmation dialog — still surviving the toggle."
-          />
-          <LivePreview>
-            <Stack gap="md" style={{ maxWidth: 360, margin: "0 auto" }}>
-              <label>
-                <Stack gap="xs">
-                  <Text as="span" size="sm">
-                    Email
-                  </Text>
-                  <Input type="email" placeholder="you@example.com" />
-                </Stack>
-              </label>
-              <Stack direction="row" gap="sm">
-                <Button variant="primary">Submit</Button>
-                <Dialog
-                  trigger={<Button variant="destructive">Delete account</Button>}
-                  title="Delete account"
-                  description="This cannot be undone."
-                  footer={
-                    <>
-                      <Button variant="secondary">Cancel</Button>
-                      <Button variant="destructive">Delete</Button>
-                    </>
-                  }
-                >
-                  <Text size="sm">All of your data will be permanently removed.</Text>
-                </Dialog>
-              </Stack>
-            </Stack>
-          </LivePreview>
-        </Stack>
-      </Section>
-
       <Section tone="muted">
         <Stack gap="xl">
           <SectionHeader
@@ -214,23 +176,7 @@ export default function Home() {
             title="Heuristics, components, and proof"
             subtitle="The design defaults, the library that implements them, and the argument that building this way actually saves time and tokens."
           />
-          <Stack direction="row" gap="lg" style={{ flexWrap: "wrap" }}>
-            {PILLARS.map((pillar) => (
-              <Card key={pillar.title} style={{ flex: "1 1 260px" }}>
-                <Stack gap="sm">
-                  <Heading level={3}>{pillar.title}</Heading>
-                  <Text size="sm" color="secondary">
-                    {pillar.body}
-                  </Text>
-                  <Link href={pillar.href}>
-                    <Button variant="secondary" size="sm">
-                      {pillar.cta}
-                    </Button>
-                  </Link>
-                </Stack>
-              </Card>
-            ))}
-          </Stack>
+          <NextBlockRenderer blocks={[{ type: "pillar-grid", items: PILLARS }]} />
         </Stack>
       </Section>
 

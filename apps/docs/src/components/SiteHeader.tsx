@@ -8,9 +8,8 @@ import corePackageJson from "../../../../packages/core/package.json";
 const NAV_LINKS = [
   { href: "/docs", label: "Docs" },
   { href: "/components", label: "Components" },
-  { href: "/performance", label: "Performance" },
+  { href: "/benchmarks", label: "Benchmarks" },
   { href: "/docs/migration", label: "Migration" },
-  { href: "/playground", label: "Playground" },
 ];
 
 export function SiteHeader() {
@@ -41,9 +40,12 @@ export function SiteHeader() {
       >
         <Stack direction="row" align="center" gap="lg">
           <Link href="/" style={{ textDecoration: "none" }}>
-            <Text as="span" size="md" style={{ fontWeight: "var(--rebar-font-weight-bold, 700)" }}>
-              Rebar UI
-            </Text>
+            <Stack direction="row" align="center" gap="xs">
+              <img src="/rebar-icon.svg" alt="" width={24} height={24} />
+              <Text as="span" size="md" style={{ fontWeight: "var(--rebar-font-weight-bold, 700)" }}>
+                Rebar UI
+              </Text>
+            </Stack>
           </Link>
           <nav>
             <Stack direction="row" gap="md">
