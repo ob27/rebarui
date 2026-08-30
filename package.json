@@ -1,6 +1,7 @@
 {
   "name": "rebarui-monorepo",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "packageManager": "pnpm@11.24.0",
   "engines": {

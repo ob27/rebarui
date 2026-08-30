@@ -2,6 +2,7 @@
   "name": "docs",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "generate:props": "node scripts/generate-props.mjs",
     "predev": "npm run generate:props",
