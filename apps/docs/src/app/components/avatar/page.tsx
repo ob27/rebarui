@@ -1,6 +1,57 @@
-import { Avatar, Box, Card, Heading, Stack, Text } from "rebar-ui";
+import { Avatar, Box, Card, Carousel, Heading, Stack, Text } from "rebar-ui";
+import type { Block } from "@rebar-ui/placement";
+import componentProps from "@/generated/component-props.json";
 import { LivePreview } from "@/components/LivePreview";
-import { PropsTable } from "@/components/PropsTable";
+import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+
+const PORTRAIT_COUNT = 30;
+
+const CODE_AND_PROPS_BLOCKS: Block[] = [
+  {
+    type: "doc-section",
+    heading: "Code",
+    body: [
+      {
+        kind: "code",
+        code: `<Avatar fallback="AL" />\n<Avatar fallback="Ada Lovelace" src="/photos/ada.jpg" />\n<Avatar fallback="Ada Lovelace" placeholder />\n<Avatar fallback="Ada Lovelace" placeholder={2} />`,
+      },
+    ],
+  },
+  { type: "props-table", heading: "Props", rows: componentProps["Avatar"] ?? [] },
+];
+
+const CLOSING_BLOCKS: Block[] = [
+  {
+    type: "doc-section",
+    heading: "Accessibility",
+    body: [
+      {
+        kind: "text",
+        text: "The fallback text (initials) is always in the DOM as real text, readable by screen readers even before/if the image never loads. Pass a meaningful `alt` when using a real `src`; when only `fallback` or `placeholder` is set, the image is decorative and `alt` is left empty automatically.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "data-rebar-* attributes",
+    body: [
+      {
+        kind: "text",
+        text: '`data-rebar-component="avatar"` on the root; `data-rebar-part="fallback"` on the initials element.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Migrating to Ant Design",
+    body: [
+      {
+        kind: "text",
+        text: "Not codemod-covered — AntD's `Avatar` takes its fallback content as `children`, while Rebar's is the `fallback` prop, a prop-to-children structural move a codemod won't attempt (see the antd adapter's README). `placeholder` has no AntD equivalent at all — AntD has no built-in illustrated-portrait fallback — so migrating a placeholder-using Avatar means supplying a real `src` (or dropping back to plain initials via `children`), not a mechanical rename.",
+      },
+    ],
+  },
+];
 
 export default function AvatarPage() {
   return (
@@ -53,29 +104,31 @@ export default function AvatarPage() {
         avatar doesn&apos;t change between renders.
       </Text>
 
-      <Stack gap="xs">
-        <Heading level={2}>Code</Heading>
-        <Text
-          as="pre"
-          size="sm"
-          style={{
-            background: "var(--rebar-color-bg-secondary, #f5f5f5)",
-            padding: "var(--rebar-space-md)",
-            borderRadius: 4,
-            overflowX: "auto",
-          }}
-        >
-          {`<Avatar fallback="AL" />
-<Avatar fallback="Ada Lovelace" src="/photos/ada.jpg" />
-<Avatar fallback="Ada Lovelace" placeholder />
-<Avatar fallback="Ada Lovelace" placeholder={2} />`}
+      <Stack gap="sm">
+        <Heading level={2}>The full portrait set</Heading>
+        <Text size="sm" color="secondary">
+          All {PORTRAIT_COUNT} illustrated portraits, shown deliberately across a range of ages and
+          ethnicities so the built-in default doesn&apos;t default to one look. Pass{" "}
+          <code>placeholder={"{"}n{"}"}</code> with a specific index to pick one directly instead of
+          relying on the name hash.
         </Text>
+        <LivePreview>
+          <Carousel aria-label="All illustrated portraits">
+            {Array.from({ length: PORTRAIT_COUNT }, (_, i) => (
+              <Stack key={i} gap="xs" style={{ alignItems: "center", padding: 24 }}>
+                <Avatar fallback={String(i)} placeholder={i} />
+                <Text size="xs" color="secondary">
+                  placeholder={"{"}
+                  {i}
+                  {"}"}
+                </Text>
+              </Stack>
+            ))}
+          </Carousel>
+        </LivePreview>
       </Stack>
 
-      <Stack gap="xs">
-        <Heading level={2}>Props</Heading>
-        <PropsTable component="Avatar" />
-      </Stack>
+      <NextBlockRenderer blocks={CODE_AND_PROPS_BLOCKS} />
 
       <Stack gap="sm">
         <Heading level={2}>Composition: a profile card</Heading>
@@ -109,38 +162,6 @@ export default function AvatarPage() {
             </Stack>
           </Card>
         </LivePreview>
-      </Stack>
-
-      <Stack gap="xs">
-        <Heading level={2}>Accessibility</Heading>
-        <Text size="sm">
-          The fallback text (initials) is always in the DOM as real text, readable by screen
-          readers even before/if the image never loads. Pass a meaningful <code>alt</code> when
-          using a real <code>src</code>; when only <code>fallback</code> or{" "}
-          <code>placeholder</code> is set, the image is decorative and <code>alt</code> is left
-          empty automatically.
-        </Text>
-      </Stack>
-
-      <Stack gap="xs">
-        <Heading level={2}>data-rebar-* attributes</Heading>
-        <Text size="sm">
-          <code>data-rebar-component=&quot;avatar&quot;</code> on the root;{" "}
-          <code>data-rebar-part=&quot;fallback&quot;</code> on the initials element.
-        </Text>
-      </Stack>
-
-      <Stack gap="xs">
-        <Heading level={2}>Migrating to Ant Design</Heading>
-        <Text size="sm">
-          Not codemod-covered — AntD&apos;s <code>Avatar</code> takes its fallback content as{" "}
-          <code>children</code>, while Rebar&apos;s is the <code>fallback</code> prop, a
-          prop-to-children structural move a codemod won&apos;t attempt (see the antd adapter&apos;s
-          README). <code>placeholder</code> has no AntD equivalent at all — AntD has no built-in
-          illustrated-portrait fallback — so migrating a placeholder-using Avatar means supplying a
-          real <code>src</code> (or dropping back to plain initials via <code>children</code>), not
-          a mechanical rename.
-        </Text>
       </Stack>
     </Stack>
   );

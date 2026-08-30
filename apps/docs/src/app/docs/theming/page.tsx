@@ -1,13 +1,83 @@
 import { Heading, Stack, Text } from "rebar-ui";
-import { PropsTable } from "@/components/PropsTable";
+import type { Block } from "@rebar-ui/placement";
+import componentProps from "@/generated/component-props.json";
+import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
-function TokenRow({ name, value }: { name: string; value: string }) {
-  return (
-    <Text size="sm">
-      <code>{name}</code> — {value}
-    </Text>
-  );
-}
+const BLOCKS: Block[] = [
+  {
+    type: "doc-section",
+    heading: "Spacing — 8pt grid",
+    body: [
+      {
+        kind: "text",
+        text: "Convention shared by Material Design, IBM Carbon, and USWDS. All spacing is a multiple of 8px; 4px exists only for micro-adjustments.",
+      },
+      {
+        kind: "list",
+        items: [
+          "`--rebar-space-xs` — 4px",
+          "`--rebar-space-sm` — 8px",
+          "`--rebar-space-md` — 16px",
+          "`--rebar-space-lg` — 24px",
+          "`--rebar-space-xl` — 32px",
+          "`--rebar-space-2xl` — 48px",
+        ],
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Typography",
+    body: [
+      {
+        kind: "text",
+        text: "A six-step type scale, system font stack by default (no web-font loading cost until a theme opts in).",
+      },
+      {
+        kind: "list",
+        items: [
+          "`--rebar-font-size-xs` — 12px — captions, metadata",
+          "`--rebar-font-size-sm` — 14px — secondary text, inputs",
+          "`--rebar-font-size-md` — 16px — body text (base)",
+          "`--rebar-font-size-lg` — 20px — subheadings",
+          "`--rebar-font-size-xl` — 24px — section headings",
+          "`--rebar-font-size-2xl` — 32px — page titles",
+        ],
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Color — semantic tokens only",
+    body: [
+      {
+        kind: "text",
+        text: "Never a raw hex value in component source or usage — always a semantic role (`--rebar-color-primary`, `--rebar-color-danger`, ...). WCAG 2.1 AA contrast (4.5:1 body text, 3:1 large text) is the enforced minimum in the shipped themes.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Behavioral heuristics components satisfy",
+    body: [
+      {
+        kind: "text",
+        text: "From Nielsen's usability heuristics, Shneiderman's golden rules, and Gestalt principles — cited for traceability, not reproduced verbatim (see `ref/HEURISTICS.md` in the repo for full sourcing). See each rule stated with its rationale and a live, running example of the RebarUI DSL Packer applying it on [Design Heuristics](/docs/heuristics).",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Example: Button's full prop surface",
+    body: [
+      {
+        kind: "text",
+        text: "Generated from the real TypeScript types — see any [component reference page](/components) for the rest.",
+      },
+    ],
+  },
+  { type: "props-table", rows: componentProps["Button"] ?? [] },
+];
 
 export default function TheimingPage() {
   return (
@@ -21,67 +91,7 @@ export default function TheimingPage() {
         project, Rebar or not, as a design-defaults reference for developers or an AI coding
         agent.
       </Text>
-
-      <Stack gap="sm">
-        <Heading level={2}>Spacing — 8pt grid</Heading>
-        <Text size="sm" color="secondary">
-          Convention shared by Material Design, IBM Carbon, and USWDS. All spacing is a multiple
-          of 8px; 4px exists only for micro-adjustments.
-        </Text>
-        <TokenRow name="--rebar-space-xs" value="4px" />
-        <TokenRow name="--rebar-space-sm" value="8px" />
-        <TokenRow name="--rebar-space-md" value="16px" />
-        <TokenRow name="--rebar-space-lg" value="24px" />
-        <TokenRow name="--rebar-space-xl" value="32px" />
-        <TokenRow name="--rebar-space-2xl" value="48px" />
-      </Stack>
-
-      <Stack gap="sm">
-        <Heading level={2}>Typography</Heading>
-        <Text size="sm" color="secondary">
-          A six-step type scale, system font stack by default (no web-font loading cost until a
-          theme opts in).
-        </Text>
-        <TokenRow name="--rebar-font-size-xs" value="12px — captions, metadata" />
-        <TokenRow name="--rebar-font-size-sm" value="14px — secondary text, inputs" />
-        <TokenRow name="--rebar-font-size-md" value="16px — body text (base)" />
-        <TokenRow name="--rebar-font-size-lg" value="20px — subheadings" />
-        <TokenRow name="--rebar-font-size-xl" value="24px — section headings" />
-        <TokenRow name="--rebar-font-size-2xl" value="32px — page titles" />
-      </Stack>
-
-      <Stack gap="sm">
-        <Heading level={2}>Color — semantic tokens only</Heading>
-        <Text size="sm" color="secondary">
-          Never a raw hex value in component source or usage — always a semantic role
-          (<code>--rebar-color-primary</code>, <code>--rebar-color-danger</code>, ...). WCAG 2.1
-          AA contrast (4.5:1 body text, 3:1 large text) is the enforced minimum in the shipped
-          themes.
-        </Text>
-      </Stack>
-
-      <Stack gap="sm">
-        <Heading level={2}>Behavioral heuristics components satisfy</Heading>
-        <Text size="sm" color="secondary">
-          From Nielsen&apos;s usability heuristics, Shneiderman&apos;s golden rules, and Gestalt
-          principles — cited for traceability, not reproduced verbatim (see{" "}
-          <code>ref/HEURISTICS.md</code> in the repo for full sourcing).
-        </Text>
-        <Text size="sm">
-          Visibility of system status · Match with the real world · User control and freedom ·
-          Consistency · Error prevention · Recognition over recall · Full keyboard operability ·
-          Minimalism · Clear error recovery
-        </Text>
-      </Stack>
-
-      <Stack gap="sm">
-        <Heading level={2}>Example: Button&apos;s full prop surface</Heading>
-        <Text size="sm" color="secondary">
-          Generated from the real TypeScript types — see any{" "}
-          <a href="/components">component reference page</a> for the rest.
-        </Text>
-        <PropsTable component="Button" />
-      </Stack>
+      <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );
 }

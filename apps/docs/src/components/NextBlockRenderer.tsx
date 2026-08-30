@@ -11,6 +11,13 @@ import { BlockRenderer, type Block } from "@rebar-ui/placement";
  */
 export function NextBlockRenderer({ blocks }: { blocks: Block[] }) {
   return (
-    <BlockRenderer blocks={blocks} renderLink={({ href, children }) => <Link href={href}>{children}</Link>} />
+    <BlockRenderer
+      blocks={blocks}
+      renderLink={({ href, children }) => (
+        <Link href={href} className="rebar-link">
+          {children}
+        </Link>
+      )}
+    />
   );
 }

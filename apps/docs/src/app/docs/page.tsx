@@ -42,11 +42,11 @@ export default function IntroductionPage() {
         </Text>
         <Text size="sm" color="secondary">
           This is genuinely this project&apos;s own homepage, not just a demo: the feature-card row
-          and three-pillars grid on <Link href="/">the homepage</Link> are real{" "}
+          and three-pillars grid on <Link href="/" className="rebar-link">the homepage</Link> are real{" "}
           <code>BlockRenderer</code> output, not hand-authored <code>Stack</code>/<code>Card</code>{" "}
           JSX (<code>apps/docs/src/app/page.tsx</code>, if you&apos;re reading the source). It&apos;s
           a small, fixed vocabulary of six blocks today, not a general &quot;any UI&quot; engine —
-          the real, repeated measurements on <Link href="/benchmarks">/benchmarks</Link> are what
+          the real, repeated measurements on <Link href="/benchmarks" className="rebar-link">/benchmarks</Link> are what
           back the three it was validated on; the rest were added to build this site with, not
           measured in isolation the same way.
         </Text>
@@ -62,7 +62,7 @@ export default function IntroductionPage() {
           precisely because it&apos;s volatile: every round of change pays a styling/constraint tax
           again, reconciling the new logic with the target library&apos;s component shapes, prop
           conventions, and visual rules. That volatility is exactly where Rebar, built through its
-          placement layer, is cheapest — <Link href="/benchmarks">measured, not modeled</Link>: no
+          placement layer, is cheapest — <Link href="/benchmarks" className="rebar-link">measured, not modeled</Link>: no
           visual decisions in the loop, so iteration is fast, and (per the same benchmark&apos;s
           visual-consistency numbers) far more predictable in cost than a design-system build,
           where nominally identical requests still land on visibly different output each time.
@@ -70,7 +70,7 @@ export default function IntroductionPage() {
         <Text>
           Once the UI has actually stabilized — the flows are settled, the project is heading to
           production — the right move is to migrate once, via{" "}
-          <Link href="/docs/migration">a codemod or the migration prompt</Link>, to a real design
+          <Link href="/docs/migration" className="rebar-link">a codemod or the migration prompt</Link>, to a real design
           system that can be customized for the long term. Rebar isn&apos;t meant to compete with a
           production design system on visual fidelity, or to be the permanent choice; it&apos;s
           meant to be the cheapest way to get through the volatile phase before you need one.

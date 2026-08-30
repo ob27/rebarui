@@ -1,15 +1,33 @@
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { Box, Button, Card, Heading, Stack, Text } from "rebar-ui";
-import { BlockRenderer, type FeatureGridItem, type PillarGridItem } from "@rebar-ui/placement";
-import { LivePreview } from "@/components/LivePreview";
+import type { Block, FeatureGridItem, PillarGridItem } from "@rebar-ui/placement";
+import { MigrationComparison } from "@/components/MigrationComparison";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
-// This homepage is itself built partly through the placement layer, not just hand-authored Rebar
-// components — the feature row and three-pillars grid below are `BlockRenderer` output from a
-// `feature-grid`/`pillar-grid` document, the same mechanism /benchmarks measures. Proof-by-
-// existence, per ref/MARKETING_SITE.md: this site really is built the way it says Rebar is meant
-// to be used, not just described that way.
+// This homepage is itself built through the placement layer (the "RebarUI DSL Packer"), not
+// hand-authored Rebar components — the hero, both section headers, the feature row, the
+// three-pillars grid, and the "get started" section below are all `BlockRenderer` output from
+// plain Block[] documents, the same mechanism /benchmarks measures and /docs/heuristics explains.
+// Proof-by-existence, per ref/MARKETING_SITE.md: this site really is built the way it says Rebar
+// is meant to be used, not just described that way. `Section` (page-chrome padding/background) and
+// `LivePreview` (a genuinely interactive, theme-toggling demo) are the two things the Packer
+// itself is built from, or can't express as static content — they stay hand-authored.
+
+const HERO_BLOCKS: Block[] = [
+  {
+    type: "hero",
+    badge: "🚧 v0.1 — actively building, see [/status](/status)",
+    title: "Rebar UI",
+    subtitle:
+      "Headless-first, intentionally low-fidelity React components, built to be built with by an LLM through a small placement layer — not hand-authored. Measured cheaper, faster, and more consistent than hand-authored Ant Design on a single build — and once a design goes through 15+ rounds of revision, still cheaper overall even after fully migrating to a real design system for production.",
+    actions: [
+      { label: "Getting Started", href: "/docs/getting-started", variant: "primary" },
+      { label: "Design Heuristics", href: "/docs/heuristics" },
+    ],
+    codeSnippet: "npm install rebar-ui",
+  },
+];
 
 const MICRO_FEATURES: FeatureGridItem[] = [
   {
@@ -26,22 +44,66 @@ const MICRO_FEATURES: FeatureGridItem[] = [
   },
 ];
 
+const THEME_SECTION_HEADER: Block[] = [
+  {
+    type: "section-header",
+    kicker: "The migration path",
+    title: "Build in Rebar, migrate when it's time to theme for real",
+    subtitle:
+      "The exact same Composite-tier spec from /benchmarks — a filterable project list with a New Project modal — rendered live on the left, and the real, measured build after migrating away to Ant Design on the right.",
+  },
+];
+
+const COMPOSITE_DEMO_BLOCKS: Block[] = [
+  {
+    type: "filter-bar",
+    searchPlaceholder: "Search projects…",
+    filterLabel: "Status",
+    filterOptions: ["All", "Active", "Archived"],
+    actionLabel: "New Project",
+  },
+  {
+    type: "data-list",
+    items: [
+      { title: "Marketing Site Redesign", badge: "Active" },
+      { title: "Q3 Budget Review", badge: "Active" },
+      { title: "Legacy API Migration", badge: "Archived" },
+      { title: "Customer Portal Beta", badge: "Active" },
+    ],
+  },
+  // The full Composite-tier spec also has a "New Project" modal — deliberately left out of this
+  // live demo. The `modal` archetype always renders forced-open (see /docs/heuristics#control for
+  // why), which is correct for a benchmark scaffold that's the whole page, but would cover this
+  // entire homepage as a fixed overlay here. The antd screenshot on the right still shows it —
+  // that's a real difference between "a live demo embedded in a bigger page" and "the whole spec."
+];
+
+const PILLARS_HEADER: Block[] = [
+  {
+    type: "section-header",
+    kicker: "Three pillars",
+    title: "Heuristics, components, and proof",
+    subtitle:
+      "The design defaults, the library that implements them, and the argument that building this way actually saves time and tokens.",
+  },
+];
+
 const PILLARS: PillarGridItem[] = [
   {
     title: "Design Heuristics",
-    body: "Spacing, type scale, color, and interaction defaults baked in — cited to Nielsen, Shneiderman, Material, Carbon, and USWDS, not invented. Published standalone as HEURISTICS.md for any project.",
-    href: "/docs/theming",
+    body: "Spacing, type scale, color, and interaction defaults baked in — cited to Nielsen, Shneiderman, Material, Carbon, and USWDS, not invented. See each rule applied live by the DSL Packer.",
+    href: "/docs/heuristics",
     cta: "Read the heuristics",
   },
   {
     title: "Design Components",
-    body: "30 components and counting, working toward full Ant Design v6 parity — real Radix primitives, tested, with a migration path back to AntD (or anywhere else) built in from day one.",
+    body: "38 components and counting, working toward full Ant Design v6 parity — real Radix primitives, tested, with a migration path back to AntD (or anywhere else) built in from day one.",
     href: "/components",
     cta: "Browse components",
   },
   {
     title: "Benchmarks",
-    body: "The actual argument for building this way, measured: AntD direct vs. Rebar built through its placement layer — cheaper, faster, and far more visually consistent, both from a text prompt and from a screenshot.",
+    body: "The actual argument for building this way, measured: cheaper, faster, and far more visually consistent than hand-authored AntD on a single build — and cheaper overall even after migrating away for real theming, once a design goes through 15+ rounds of revision.",
     href: "/benchmarks",
     cta: "See the numbers",
   },
@@ -69,113 +131,43 @@ function Section({
   );
 }
 
-function SectionHeader({
-  kicker,
-  title,
-  subtitle,
-}: {
-  kicker: string;
-  title: string;
-  subtitle: string;
-}) {
-  return (
-    <Stack gap="sm" style={{ alignItems: "center", textAlign: "center", maxWidth: 640, margin: "0 auto" }}>
-      <Text
-        size="sm"
-        color="secondary"
-        style={{ textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: "var(--rebar-font-weight-semibold)" }}
-      >
-        {kicker}
-      </Text>
-      <Heading level={2}>{title}</Heading>
-      <Text color="secondary">{subtitle}</Text>
-    </Stack>
-  );
-}
-
 export default function Home() {
   return (
     <>
       <Section>
-        <Stack gap="lg" style={{ alignItems: "center", textAlign: "center" }}>
-          <Box
-            style={{
-              display: "inline-block",
-              padding: "var(--rebar-space-xs) var(--rebar-space-md)",
-              background: "var(--rebar-color-bg-secondary, #f5f5f5)",
-              border: "var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0)",
-              borderRadius: 999,
-              fontSize: "var(--rebar-font-size-xs)",
-            }}
-          >
-            🚧 v0.1 — actively building, see <Link href="/status">/status</Link>
-          </Box>
-
-          <Heading level={1} style={{ fontSize: 56, lineHeight: 1.1 }}>
-            Rebar UI
-          </Heading>
-          <Text size="md" color="secondary" style={{ maxWidth: 560 }}>
-            Headless-first, intentionally low-fidelity React components, built to be built with by
-            an LLM through a small placement layer — not hand-authored. Cheapest while your UI is
-            still volatile; when flows settle and you&apos;re ready for production, migrate once to
-            a real design system — the structure, accessibility, and tests don&apos;t change.
-          </Text>
-
-          <Stack direction="row" gap="sm">
-            <Link href="/docs/getting-started">
-              <Button variant="primary" size="lg">
-                Getting Started
-              </Button>
-            </Link>
-            <Link href="/docs/theming">
-              <Button variant="secondary" size="lg">
-                Design Heuristics
-              </Button>
-            </Link>
-          </Stack>
-
-          <Box
-            as="code"
-            style={{
-              display: "inline-block",
-              padding: "var(--rebar-space-sm) var(--rebar-space-md)",
-              background: "var(--rebar-color-bg-secondary, #f5f5f5)",
-              borderRadius: 4,
-              fontFamily: "monospace",
-            }}
-          >
-            npm install rebar-ui
-          </Box>
-
+        <Stack gap="lg" style={{ alignItems: "center" }}>
+          <NextBlockRenderer blocks={HERO_BLOCKS} />
           <Box style={{ paddingTop: "var(--rebar-space-md)" }}>
-            <BlockRenderer blocks={[{ type: "feature-grid", items: MICRO_FEATURES }]} />
+            <NextBlockRenderer blocks={[{ type: "feature-grid", items: MICRO_FEATURES }]} />
           </Box>
         </Stack>
       </Section>
 
       <Section tone="muted">
         <Stack gap="xl">
-          <SectionHeader
-            kicker="Theme customization"
-            title="Sketch today, anything tomorrow"
-            subtitle="Same component tree, toggled live — no code changes, just a theme swap."
+          <NextBlockRenderer blocks={THEME_SECTION_HEADER} />
+          <MigrationComparison
+            rebar={<NextBlockRenderer blocks={COMPOSITE_DEMO_BLOCKS} />}
+            iframeSrc="/demos/antd-composite/index.html"
+            iframeTitle="The same list view, built directly in Ant Design — a real, separately-built live app, not a screenshot"
           />
-          <LivePreview>
-            <Stack direction="row" gap="sm" style={{ justifyContent: "center" }}>
-              <Button variant="primary">Save changes</Button>
-              <Button variant="secondary">Cancel</Button>
-            </Stack>
-          </LivePreview>
+          <Text size="xs" color="secondary" style={{ textAlign: "center" }}>
+            Both sides are genuinely live implementations, not a real one next to a screenshot: the
+            left renders in this page directly from a ~15-line <code>Block[]</code> document; the
+            right is a real, separate Vite+antd build (see{" "}
+            <code>apps/docs/scripts/build-antd-demo.sh</code>) embedded live in an iframe. Both
+            intentionally show the base list view rather than the &quot;New Project&quot; modal
+            from the full spec, so the comparison is of the same thing on both sides — see the
+            modal itself, live and properly closable, on the{" "}
+            <a href="/components/dialog" className="rebar-link">Dialog reference page</a>. Same underlying spec as the{" "}
+            <a href="/benchmarks#tiers" className="rebar-link">Composite tier</a> benchmark.
+          </Text>
         </Stack>
       </Section>
 
       <Section tone="muted">
         <Stack gap="xl">
-          <SectionHeader
-            kicker="Three pillars"
-            title="Heuristics, components, and proof"
-            subtitle="The design defaults, the library that implements them, and the argument that building this way actually saves time and tokens."
-          />
+          <NextBlockRenderer blocks={PILLARS_HEADER} />
           <NextBlockRenderer blocks={[{ type: "pillar-grid", items: PILLARS }]} />
         </Stack>
       </Section>

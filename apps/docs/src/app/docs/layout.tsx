@@ -4,6 +4,8 @@ import { DocsShell } from "@/components/DocsShell";
 const DOCS_SECTIONS = [
   { href: "/docs", label: "Introduction" },
   { href: "/docs/getting-started", label: "Getting Started" },
+  { href: "/docs/heuristics", label: "Design Heuristics" },
+  { href: "/docs/archetypes", label: "Archetype Library" },
   { href: "/docs/theming", label: "Theming & Defaults" },
   { href: "/docs/migration", label: "Migration" },
   { href: "/docs/devtools", label: "DevTools" },

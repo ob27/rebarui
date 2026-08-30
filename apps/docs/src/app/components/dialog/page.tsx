@@ -1,6 +1,52 @@
 import { Button, Dialog, Heading, Stack, Text } from "rebar-ui";
+import type { Block } from "@rebar-ui/placement";
+import componentProps from "@/generated/component-props.json";
 import { LivePreview } from "@/components/LivePreview";
-import { PropsTable } from "@/components/PropsTable";
+import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+
+const BLOCKS: Block[] = [
+  {
+    type: "doc-section",
+    heading: "Code",
+    body: [
+      {
+        kind: "code",
+        code: `<Dialog\n  trigger={<Button variant="destructive">Delete account</Button>}\n  title="Delete account"\n  description="This cannot be undone."\n  footer={<>\n    <Button variant="secondary">Cancel</Button>\n    <Button variant="destructive">Delete</Button>\n  </>}\n>\n  <Text size="sm">All of your data will be permanently removed.</Text>\n</Dialog>`,
+      },
+    ],
+  },
+  { type: "props-table", heading: "Props", rows: componentProps["Dialog"] ?? [] },
+  {
+    type: "doc-section",
+    heading: "Accessibility",
+    body: [
+      {
+        kind: "text",
+        text: '`role="dialog"` with `aria-modal="true"` set explicitly — this Radix version doesn\'t set `aria-modal` itself, found by testing against real accessibility assertions, not assumed. Esc closes it, Tab cycles focus only within the dialog while open.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "data-rebar-* attributes",
+    body: [
+      {
+        kind: "text",
+        text: '`data-rebar-component="dialog"` on the content; `data-rebar-part="title" | "description" | "body" | "footer" | "close"`. Radix\'s own `data-state="open"|"closed"` is read directly, not duplicated.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Migrating to Ant Design",
+    body: [
+      {
+        kind: "text",
+        text: "`@rebar-ui/migrate-antd` renames the element to `Modal` (`open`/`title`/`footer` are already compatible names). `onOpenChange` is renamed to `onCancel`, but flagged with a review comment — AntD's `onCancel` takes no argument, while `onOpenChange(open: boolean)` does. `description` (a prop `Modal` doesn't have) is promoted into a child paragraph instead of being dropped.",
+      },
+    ],
+  },
+];
 
 export default function DialogPage() {
   return (
@@ -29,70 +75,7 @@ export default function DialogPage() {
         </Dialog>
       </LivePreview>
 
-      <Stack gap="xs">
-        <Heading level={2}>Code</Heading>
-        <Text
-          as="pre"
-          size="sm"
-          style={{
-            background: "var(--rebar-color-bg-secondary, #f5f5f5)",
-            padding: "var(--rebar-space-md)",
-            borderRadius: 4,
-            overflowX: "auto",
-          }}
-        >
-          {`<Dialog
-  trigger={<Button variant="destructive">Delete account</Button>}
-  title="Delete account"
-  description="This cannot be undone."
-  footer={<>
-    <Button variant="secondary">Cancel</Button>
-    <Button variant="destructive">Delete</Button>
-  </>}
->
-  <Text size="sm">All of your data will be permanently removed.</Text>
-</Dialog>`}
-        </Text>
-      </Stack>
-
-      <Stack gap="xs">
-        <Heading level={2}>Props</Heading>
-        <PropsTable component="Dialog" />
-      </Stack>
-
-      <Stack gap="xs">
-        <Heading level={2}>Accessibility</Heading>
-        <Text size="sm">
-          <code>role=&quot;dialog&quot;</code> with <code>aria-modal=&quot;true&quot;</code> set
-          explicitly — this Radix version doesn&apos;t set <code>aria-modal</code> itself, found
-          by testing against real accessibility assertions, not assumed. Esc closes it, Tab cycles
-          focus only within the dialog while open.
-        </Text>
-      </Stack>
-
-      <Stack gap="xs">
-        <Heading level={2}>data-rebar-* attributes</Heading>
-        <Text size="sm">
-          <code>data-rebar-component=&quot;dialog&quot;</code> on the content;{" "}
-          <code>data-rebar-part=&quot;title&quot; | &quot;description&quot; | &quot;body&quot; |
-          &quot;footer&quot; | &quot;close&quot;</code>. Radix&apos;s own{" "}
-          <code>data-state=&quot;open&quot;|&quot;closed&quot;</code> is read directly, not
-          duplicated.
-        </Text>
-      </Stack>
-
-      <Stack gap="xs">
-        <Heading level={2}>Migrating to Ant Design</Heading>
-        <Text size="sm">
-          <code>@rebar-ui/migrate-antd</code> renames the element to <code>Modal</code>
-          (<code>open</code>/<code>title</code>/<code>footer</code> are already compatible names).{" "}
-          <code>onOpenChange</code> is renamed to <code>onCancel</code>, but flagged with a review
-          comment — AntD&apos;s <code>onCancel</code> takes no argument, while{" "}
-          <code>onOpenChange(open: boolean)</code> does. <code>description</code> (a prop{" "}
-          <code>Modal</code> doesn&apos;t have) is promoted into a child paragraph instead of
-          being dropped.
-        </Text>
-      </Stack>
+      <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );
 }

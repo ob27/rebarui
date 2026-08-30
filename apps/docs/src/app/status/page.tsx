@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   Box,
@@ -30,11 +30,25 @@ const PHASES = [
 
 export default function StatusPage() {
   const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
+  // This page forces data-rebar-theme="sketch" (below), but dark mode is a separate attribute
+  // toggled globally by DevTools on <html> — mirroring it here too is required, since the theme
+  // stylesheets' dark overrides are compound selectors (e.g.
+  // [data-rebar-theme="sketch"][data-theme="dark"]) that only match when both attributes sit on
+  // the same element.
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    const read = () => setDark(document.documentElement.getAttribute("data-theme") === "dark");
+    read();
+    const observer = new MutationObserver(read);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <Box
       as="main"
       data-rebar-theme="sketch"
+      data-theme={dark ? "dark" : undefined}
       style={{ maxWidth: 720, margin: "0 auto", padding: "var(--rebar-space-xl)" }}
     >
       <Stack gap="lg">

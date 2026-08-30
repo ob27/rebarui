@@ -3,22 +3,19 @@
 import dynamic from "next/dynamic";
 
 /**
- * The internal `NODE_ENV === 'development'` check inside RebarDevTools itself is not enough
- * to keep it out of production bundles — verified empirically (grepped .next/static/chunks
- * after a production build; the panel's strings and useComponentCounts logic were present).
- * Turbopack does not fold process.env.NODE_ENV checks inside bundled node_modules code the
- * way it does for app-owned source, so nothing gets eliminated there.
- *
- * The reliable pattern: evaluate the environment check here, in app code, and only issue the
- * dynamic import() when true. Since the condition is resolved in a module Next's own build
- * treats as first-party, the dead branch (and therefore the import) is actually eliminated.
+ * Deliberately mounted in production too, on this site only — this is the marketing/docs site
+ * for the panel itself, so the panel stays visible as part of the pitch (component counts,
+ * theme/dark toggle, migration-effort and token-estimate numbers, ComponentInspector). This is
+ * NOT the general guidance: see /docs/devtools, which still tells a real consuming app to gate
+ * this behind `NODE_ENV === 'development'` in its own app code (RebarDevTools's own internal
+ * NODE_ENV check isn't enough on its own to keep it out of a production bundle — Turbopack
+ * doesn't fold that check inside bundled node_modules code the way it does for app-owned source
+ * — verified empirically by grepping .next/static/chunks after a production build).
  */
-const RebarDevTools =
-  process.env.NODE_ENV === "development"
-    ? dynamic(() => import("@rebar-ui/devtools").then((mod) => mod.RebarDevTools), {
-        ssr: false,
-      })
-    : () => null;
+const RebarDevTools = dynamic(
+  () => import("@rebar-ui/devtools").then((mod) => mod.RebarDevTools),
+  { ssr: false },
+);
 
 export function DevToolsMount() {
   return <RebarDevTools />;

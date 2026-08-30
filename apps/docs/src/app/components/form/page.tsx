@@ -2,8 +2,55 @@
 
 import { useState } from "react";
 import { Button, Form, FormItem, Heading, Input, Stack, Text } from "rebar-ui";
+import type { Block } from "@rebar-ui/placement";
+import componentProps from "@/generated/component-props.json";
 import { LivePreview } from "@/components/LivePreview";
-import { PropsTable } from "@/components/PropsTable";
+import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+
+const BLOCKS: Block[] = [
+  {
+    type: "doc-section",
+    heading: "Code",
+    body: [
+      {
+        kind: "code",
+        code: `<Form<{ email: string }> onSubmit={(values) => save(values.email)}>\n  <FormItem name="email" label="Email" required>\n    {(field) => <Input type="email" placeholder="you@example.com" {...field} />}\n  </FormItem>\n  <Button type="submit" variant="primary">Submit</Button>\n</Form>`,
+      },
+    ],
+  },
+  { type: "props-table", heading: "Form props", rows: componentProps["Form"] ?? [] },
+  { type: "props-table", heading: "FormItem props", rows: componentProps["FormItem"] ?? [] },
+  {
+    type: "doc-section",
+    heading: "Accessibility",
+    body: [
+      {
+        kind: "text",
+        text: "Label sits above the input (Nielsen: recognition over recall) and is associated via a native `<label>` wrap; required fields show a visible asterisk; validation errors render inline below the field with `role=\"alert\"` so screen readers announce them immediately.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "data-rebar-* attributes",
+    body: [
+      {
+        kind: "text",
+        text: '`data-rebar-component="form" | "form-item"`, `data-rebar-part="label" | "error"`.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Migrating to Ant Design",
+    body: [
+      {
+        kind: "text",
+        text: "The most involved migration of the three pages here, because AntD's `Form` is a genuinely different runtime (its own form store via `Form.useForm()`), not just different prop names. The codemod renames `onSubmit` to `onFinish` (compatible signature — both `(values) => void`), converts `FormItem` to `Form.Item`, keeps `required` and adds a matching `rules={[{ required: true }]}` (AntD's actual validation lives in `rules`, not the boolean alone), and unwraps the render-prop children pattern into a plain child — `Form.Item` clones a single direct child rather than calling a render function.",
+      },
+    ],
+  },
+];
 
 export default function FormPage() {
   const [submitted, setSubmitted] = useState<string | null>(null);
@@ -36,67 +83,7 @@ export default function FormPage() {
         </Form>
       </LivePreview>
 
-      <Stack gap="xs">
-        <Heading level={2}>Code</Heading>
-        <Text
-          as="pre"
-          size="sm"
-          style={{
-            background: "var(--rebar-color-bg-secondary, #f5f5f5)",
-            padding: "var(--rebar-space-md)",
-            borderRadius: 4,
-            overflowX: "auto",
-          }}
-        >
-          {`<Form<{ email: string }> onSubmit={(values) => save(values.email)}>
-  <FormItem name="email" label="Email" required>
-    {(field) => <Input type="email" placeholder="you@example.com" {...field} />}
-  </FormItem>
-  <Button type="submit" variant="primary">Submit</Button>
-</Form>`}
-        </Text>
-      </Stack>
-
-      <Stack gap="xs">
-        <Heading level={2}>Form props</Heading>
-        <PropsTable component="Form" />
-        <Heading level={2}>FormItem props</Heading>
-        <PropsTable component="FormItem" />
-      </Stack>
-
-      <Stack gap="xs">
-        <Heading level={2}>Accessibility</Heading>
-        <Text size="sm">
-          Label sits above the input (Nielsen: recognition over recall) and is associated via a
-          native <code>&lt;label&gt;</code> wrap; required fields show a visible asterisk;
-          validation errors render inline below the field with{" "}
-          <code>role=&quot;alert&quot;</code> so screen readers announce them immediately.
-        </Text>
-      </Stack>
-
-      <Stack gap="xs">
-        <Heading level={2}>data-rebar-* attributes</Heading>
-        <Text size="sm">
-          <code>data-rebar-component=&quot;form&quot; | &quot;form-item&quot;</code>,{" "}
-          <code>data-rebar-part=&quot;label&quot; | &quot;error&quot;</code>.
-        </Text>
-      </Stack>
-
-      <Stack gap="xs">
-        <Heading level={2}>Migrating to Ant Design</Heading>
-        <Text size="sm">
-          The most involved migration of the three pages here, because AntD&apos;s{" "}
-          <code>Form</code> is a genuinely different runtime (its own form store via{" "}
-          <code>Form.useForm()</code>), not just different prop names. The codemod renames{" "}
-          <code>onSubmit</code> to <code>onFinish</code> (compatible signature — both{" "}
-          <code>(values) =&gt; void</code>), converts <code>FormItem</code> to{" "}
-          <code>Form.Item</code>, keeps <code>required</code> and adds a matching{" "}
-          <code>rules={"{"}[{"{"} required: true {"}"}]{"}"}</code> (AntD&apos;s actual validation
-          lives in <code>rules</code>, not the boolean alone), and unwraps the render-prop
-          children pattern into a plain child — <code>Form.Item</code> clones a single direct
-          child rather than calling a render function.
-        </Text>
-      </Stack>
+      <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );
 }

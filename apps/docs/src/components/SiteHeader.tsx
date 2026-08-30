@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Button, Stack, Text } from "rebar-ui";
+import { Stack, Text } from "rebar-ui";
 import corePackageJson from "../../../../packages/core/package.json";
 
 const NAV_LINKS = [
@@ -12,17 +11,10 @@ const NAV_LINKS = [
   { href: "/docs/migration", label: "Migration" },
 ];
 
+// No light/dark toggle here — DevTools (🔧, bottom-right) already owns dark-mode via the same
+// data-theme attribute, and stays mounted on this marketing site for now. A second independent
+// toggle would fight it over the same DOM attribute rather than just duplicating a button.
 export function SiteHeader() {
-  const [dark, setDark] = useState(false);
-
-  useEffect(() => {
-    if (dark) {
-      document.documentElement.setAttribute("data-theme", "dark");
-    } else {
-      document.documentElement.removeAttribute("data-theme");
-    }
-  }, [dark]);
-
   return (
     <header
       style={{
@@ -60,14 +52,9 @@ export function SiteHeader() {
           </nav>
         </Stack>
 
-        <Stack direction="row" align="center" gap="sm">
-          <Text size="xs" color="secondary">
-            v{corePackageJson.version}
-          </Text>
-          <Button size="sm" variant="tertiary" onClick={() => setDark((value) => !value)}>
-            {dark ? "☀️" : "🌙"}
-          </Button>
-        </Stack>
+        <Text size="xs" color="secondary">
+          v{corePackageJson.version}
+        </Text>
       </Stack>
     </header>
   );

@@ -46,6 +46,20 @@ const COMPONENT_FILES = [
   "AspectRatio.tsx",
   "Accordion.tsx",
   "Toast.tsx",
+  "Carousel.tsx",
+  "Divider.tsx",
+  "Tag.tsx",
+  "Badge.tsx",
+  "Empty.tsx",
+  "Skeleton.tsx",
+  "Spin.tsx",
+  "Breadcrumb.tsx",
+  "Steps.tsx",
+  "Statistic.tsx",
+  "Result.tsx",
+  "Descriptions.tsx",
+  "Timeline.tsx",
+  "Rate.tsx",
 ];
 
 const result = {};

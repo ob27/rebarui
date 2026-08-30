@@ -1,6 +1,52 @@
 import { Button, Heading, Stack, Text } from "rebar-ui";
+import type { Block } from "@rebar-ui/placement";
+import componentProps from "@/generated/component-props.json";
 import { LivePreview } from "@/components/LivePreview";
-import { PropsTable } from "@/components/PropsTable";
+import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+
+const BLOCKS: Block[] = [
+  {
+    type: "doc-section",
+    heading: "Code",
+    body: [
+      {
+        kind: "code",
+        code: `<Button variant="primary">Save changes</Button>\n<Button variant="destructive" onClick={handleDelete}>Delete</Button>`,
+      },
+    ],
+  },
+  { type: "props-table", heading: "Props", rows: componentProps["Button"] ?? [] },
+  {
+    type: "doc-section",
+    heading: "Accessibility",
+    body: [
+      {
+        kind: "text",
+        text: 'Real `<button type="button">` by default (pass `type="submit"` for form submission) — Tab to focus, Enter/Space to activate, native focus-visible outline. `aria-busy` is set while `loading`.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "data-rebar-* attributes",
+    body: [
+      {
+        kind: "text",
+        text: '`data-rebar-component="button"`, `data-rebar-variant`, `data-rebar-size`, `data-rebar-state="idle" | "loading"`.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Migrating to Ant Design",
+    body: [
+      {
+        kind: "text",
+        text: "`@rebar-ui/migrate-antd` renames `variant` to AntD's `type`/`danger` vocabulary and `size=\"sm\"|\"md\"|\"lg\"` to `\"small\"|\"middle\"|\"large\"`. If the element already has a native `type` (e.g. `type=\"submit\"`), it's moved to AntD's `htmlType` prop first, since AntD's own `type` means visual variant, not HTML button type.",
+      },
+    ],
+  },
+];
 
 export default function ButtonPage() {
   return (
@@ -29,58 +75,7 @@ export default function ButtonPage() {
         </Stack>
       </LivePreview>
 
-      <Stack gap="xs">
-        <Heading level={2}>Code</Heading>
-        <Text
-          as="pre"
-          size="sm"
-          style={{
-            background: "var(--rebar-color-bg-secondary, #f5f5f5)",
-            padding: "var(--rebar-space-md)",
-            borderRadius: 4,
-            overflowX: "auto",
-          }}
-        >
-          {`<Button variant="primary">Save changes</Button>
-<Button variant="destructive" onClick={handleDelete}>Delete</Button>`}
-        </Text>
-      </Stack>
-
-      <Stack gap="xs">
-        <Heading level={2}>Props</Heading>
-        <PropsTable component="Button" />
-      </Stack>
-
-      <Stack gap="xs">
-        <Heading level={2}>Accessibility</Heading>
-        <Text size="sm">
-          Real <code>&lt;button type=&quot;button&quot;&gt;</code> by default (pass{" "}
-          <code>type=&quot;submit&quot;</code> for form submission) — Tab to focus, Enter/Space to
-          activate, native focus-visible
-          outline. <code>aria-busy</code> is set while <code>loading</code>.
-        </Text>
-      </Stack>
-
-      <Stack gap="xs">
-        <Heading level={2}>data-rebar-* attributes</Heading>
-        <Text size="sm">
-          <code>data-rebar-component=&quot;button&quot;</code>,{" "}
-          <code>data-rebar-variant</code>, <code>data-rebar-size</code>,{" "}
-          <code>data-rebar-state=&quot;idle&quot; | &quot;loading&quot;</code>.
-        </Text>
-      </Stack>
-
-      <Stack gap="xs">
-        <Heading level={2}>Migrating to Ant Design</Heading>
-        <Text size="sm">
-          <code>@rebar-ui/migrate-antd</code> renames <code>variant</code> to AntD&apos;s{" "}
-          <code>type</code>/<code>danger</code> vocabulary and <code>size=&quot;sm&quot;|&quot;md&quot;|&quot;lg&quot;</code>{" "}
-          to <code>&quot;small&quot;|&quot;middle&quot;|&quot;large&quot;</code>. If the element
-          already has a native <code>type</code> (e.g. <code>type=&quot;submit&quot;</code>),
-          it&apos;s moved to AntD&apos;s <code>htmlType</code> prop first, since AntD&apos;s own{" "}
-          <code>type</code> means visual variant, not HTML button type.
-        </Text>
-      </Stack>
+      <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );
 }
