@@ -16,9 +16,12 @@ jobs:
       # from package.json is also the one place the real version can't drift out of sync.
       - uses: pnpm/action-setup@v4
 
+      # pnpm@11.24.0 (package.json's packageManager) requires Node >=22.13 — Node 20 fails at the
+      # pnpm-install step itself (ERR_UNKNOWN_BUILTIN_MODULE: node:sqlite) before any project code
+      # even runs. package.json's engines.node matches this too.
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
