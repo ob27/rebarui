@@ -18,7 +18,6 @@ export const blocks: Block[] = [
       {
         kind: "checkbox",
         label: "Email me about product updates",
-        checked: false,
       },
       {
         kind: "checkbox",

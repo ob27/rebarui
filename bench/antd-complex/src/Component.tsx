@@ -1,7 +1,6 @@
 import React from 'react';
-import { Tabs, Table, Form, Input, Select, Modal, Button, Typography, DatePicker } from 'antd';
+import { Tabs, Table, Form, Input, Select, Modal, Button, Typography } from 'antd';
 import type { TabsProps } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
 
 const { Title, Text } = Typography;
 
@@ -19,7 +18,7 @@ const teamData: TeamRow[] = [
 ];
 
 export const OnboardingWizard: React.FC = () => {
-  const columns: ColumnsType<TeamRow> = [
+  const columns = [
     {
       title: 'Team',
       dataIndex: 'team',
@@ -38,7 +37,7 @@ export const OnboardingWizard: React.FC = () => {
     {
       title: '',
       key: 'action',
-      render: () => <Button type="link">Select</Button>,
+      render: () => <Button size="small">Select</Button>,
     },
   ];
 
@@ -53,18 +52,17 @@ export const OnboardingWizard: React.FC = () => {
       label: 'Details',
       children: (
         <Form layout="vertical" style={{ maxWidth: 480 }}>
-          <Form.Item label="Full name">
-            <Input placeholder="Full name" />
+          <Form.Item label="Full name" name="fullName">
+            <Input />
           </Form.Item>
-          <Form.Item label="Start date">
-            <DatePicker style={{ width: '100%' }} />
+          <Form.Item label="Start date" name="startDate">
+            <Input type="date" />
           </Form.Item>
-          <Form.Item label="Role">
+          <Form.Item label="Role" name="role">
             <Select
-              placeholder="Select a role"
               options={[
                 { value: 'ic', label: 'Individual Contributor' },
-                { value: 'team-lead', label: 'Team Lead' },
+                { value: 'lead', label: 'Team Lead' },
                 { value: 'manager', label: 'Manager' },
               ]}
             />
@@ -89,7 +87,7 @@ export const OnboardingWizard: React.FC = () => {
               </Button>,
             ]}
             closable={false}
-            maskClosable={false}
+            mask={true}
             getContainer={false}
           >
             <p>Are you sure you want to onboard this employee to the selected team?</p>

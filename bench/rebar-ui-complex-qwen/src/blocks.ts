@@ -26,11 +26,7 @@ export const blocks: Block[] = [
             fields: [
               { kind: "text", label: "Full name" },
               { kind: "date", label: "Start date" },
-              {
-                kind: "select",
-                label: "Role",
-                options: ["Individual Contributor", "Team Lead", "Manager"],
-              },
+              { kind: "select", label: "Role", options: ["Individual Contributor", "Team Lead", "Manager"] },
             ],
           },
         ],
@@ -54,8 +50,7 @@ export const blocks: Block[] = [
                 type: "callout",
                 tone: "warning",
                 title: "Are you sure?",
-                subtitle:
-                  "This will onboard the selected employee to the selected team.",
+                subtitle: "This will onboard the selected employee to the selected team.",
               },
             ],
           },

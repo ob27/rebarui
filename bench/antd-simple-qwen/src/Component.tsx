@@ -1,47 +1,24 @@
-import { Button, Card, Checkbox, Form, Input, Typography } from "antd";
+import React from "react";
+import { Form, Input, Checkbox, Button, Typography, Card } from "antd";
 
 const { Title } = Typography;
 
 export const AccountSettings: React.FC = () => {
-  const [form] = Form.useForm();
-
-  const onFinish = (values: {
-    displayName?: string;
-    email?: string;
-    productUpdates?: boolean;
-    securityAlerts?: boolean;
-  }) => {
-    // Submission handler placeholder.
-    // eslint-disable-next-line no-console
-    console.log("Account settings saved:", values);
-  };
-
   return (
     <Card>
-      <Title level={3} style={{ marginTop: 0 }}>
-        Account Settings
-      </Title>
-
+      <Title level={2}>Account Settings</Title>
       <Form
-        form={form}
         layout="vertical"
         initialValues={{
           productUpdates: false,
           securityAlerts: true,
         }}
-        onFinish={onFinish}
       >
-        <Form.Item
-          label="Display name"
-          name="displayName"
-        >
+        <Form.Item label="Display name" name="displayName">
           <Input placeholder="e.g. Jane Doe" />
         </Form.Item>
 
-        <Form.Item
-          label="Email address"
-          name="email"
-        >
+        <Form.Item label="Email address" name="email">
           <Input placeholder="you@example.com" />
         </Form.Item>
 
@@ -62,5 +39,3 @@ export const AccountSettings: React.FC = () => {
     </Card>
   );
 };
-
-export default AccountSettings;

@@ -89,6 +89,22 @@ const scaffoldMap: Record<string, { dir: string; target: string; model: string }
   // recorded before that happened were unaffected (saved to JSON independent of the file), but
   // the actual code was gone, unrecoverable (never committed). Isolating scaffolds per model,
   // same fix as the earlier PreviewPanel n=15 batches.
+  // A third, genuinely different model family (not another Qwen tier) — DashScope's intl endpoint
+  // also hosts third-party models beyond Qwen, e.g. Moonshot's Kimi. kimi-k3 confirmed reachable
+  // and reliable via a pilot on both real prompts below (DeepSeek's deepseek-v4-pro-0813, tried
+  // first, burned its entire 4096-token budget on internal reasoning with zero actual output —
+  // not viable at this max_tokens; not pursued further). Dedicated *-kimi-NN scaffold clones,
+  // same isolation discipline as every other batch.
+  "antd-text-kimi": {
+    dir: `bench/antd-text-kimi-${String(runNumber).padStart(2, "0")}`,
+    target: "src/Component.tsx",
+    model: "kimi-k3",
+  },
+  "rebar-ui-text-kimi": {
+    dir: `bench/rebar-dsl-kimi-${String(runNumber).padStart(2, "0")}`,
+    target: "src/panel.ts",
+    model: "kimi-k3",
+  },
   "antd-simple": { dir: "bench/antd-simple-qwen", target: "src/Component.tsx", model: "qwen3.7-max" },
   "rebar-ui-simple": { dir: "bench/rebar-ui-simple-qwen", target: "src/blocks.ts", model: "qwen3.7-max" },
   "antd-composite": { dir: "bench/antd-composite-qwen", target: "src/Component.tsx", model: "qwen3.7-max" },
@@ -188,7 +204,10 @@ Write \`blocks\` as an array containing exactly one \`tabs\` block with three ta
 After writing, run \`npx tsc --noEmit\` to verify it typechecks. Do not run a dev server or take screenshots.`,
 };
 
-const prompt = prompts[condition];
+// "*-kimi" conditions reuse the exact same prompt as their base condition — same spec, only the
+// model and scaffold differ — so there's no separate prompt entry to keep in sync by hand.
+const promptKey = condition.replace(/-kimi$/, "");
+const prompt = prompts[promptKey];
 if (!prompt) {
   console.error(`No prompt defined for condition: ${condition}`);
   process.exit(1);
@@ -240,12 +259,17 @@ if (imageBase64) {
   });
 }
 
-const requestBody = {
+// kimi-k3 rejects any explicit `temperature` (400 InvalidParameter, confirmed by every one of the
+// first 30 dispatches of this condition failing identically) — omit it for that model rather than
+// hardcoding 0.7 for everyone.
+const requestBody: Record<string, unknown> = {
   model,
   messages,
   max_tokens: 4096,
-  temperature: 0.7,
 };
+if (model !== "kimi-k3") {
+  requestBody.temperature = 0.7;
+}
 
 console.log(`\n=== Qwen Benchmark Run ===`);
 console.log(`Condition: ${condition}`);
@@ -414,11 +438,19 @@ try {
           // Check for <read_file> or <readFile> XML tags (model trying to read files)
           const readFileXmlMatch = content.match(/<(?:read_file|readFile)>/i);
           // Check for summary format (model describing code instead of outputting it)
+          // kimi-k3 sometimes narrates a future-tense plan instead of just outputting code —
+          // "I'll start by exploring the project setup...", "I'll write the file exactly per the
+          // spec, then typecheck." — never reaching an actual code block in that same response.
+          // Caught by inspecting real failures from a live batch: 5 of ~23 real attempts hit this
+          // exact pattern (a genuine ~22% failure rate), none of them matched by the patterns
+          // below, so they fell straight to a recorded failure instead of the same automatic
+          // follow-up retry other narration/summary variants already get.
           const summaryMatch =
             content.match(/Here's a summary of the implementation/i) ||
             content.match(/The component (?:is structured|uses|includes)/i) ||
             content.match(/Here'?s a summary of what (?:was created|I created|I wrote)/i) ||
-            content.match(/has been written and .{0,40}(?:typechecks?|passes?|completed)/i);
+            content.match(/has been written and .{0,40}(?:typechecks?|passes?|completed)/i) ||
+            content.match(/^I'?ll (?:start by|write|explore|inspect|first)\b/i);
           if (toolCallsMatch || toolCallsTextMatch || readFileXmlMatch || summaryMatch) {
           console.log("Model returned tool calls instead of code. Making follow-up request...");
           

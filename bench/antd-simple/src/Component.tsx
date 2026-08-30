@@ -13,6 +13,8 @@ export const AccountSettings = () => {
         form={form}
         layout="vertical"
         initialValues={{
+          displayName: '',
+          email: '',
           productUpdates: false,
           securityAlerts: true,
         }}

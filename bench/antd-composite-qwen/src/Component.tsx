@@ -1,11 +1,11 @@
 import React from 'react';
-import { Input, Select, Button, Tag, Modal, Form, Typography, Space } from 'antd';
+import { Button, Form, Input, Modal, Select, Space, Tag, Typography } from 'antd';
 
-const { Title } = Typography;
+type Status = 'Active' | 'Archived';
 
 interface Project {
   name: string;
-  status: 'Active' | 'Archived';
+  status: Status;
 }
 
 const projects: Project[] = [
@@ -15,57 +15,49 @@ const projects: Project[] = [
   { name: 'Customer Portal Beta', status: 'Active' },
 ];
 
-const statusColor: Record<string, string> = {
+const statusColor: Record<Status, string> = {
   Active: 'green',
   Archived: 'default',
 };
 
+const statusOptions = [
+  { value: 'All', label: 'All' },
+  { value: 'Active', label: 'Active' },
+  { value: 'Archived', label: 'Archived' },
+];
+
 export const ProjectsList: React.FC = () => {
   return (
     <div style={{ padding: 24 }}>
-      <Title level={2}>Projects</Title>
-
-      {/* Filter bar */}
-      <Space style={{ marginBottom: 24 }} wrap>
-        <Input.Search
-          placeholder="Search projects…"
-          style={{ width: 240 }}
-        />
+      <Space style={{ marginBottom: 24, width: '100%' }} wrap>
+        <Input placeholder="Search projects…" style={{ width: 240 }} allowClear />
         <Select
           defaultValue="All"
+          options={statusOptions}
           style={{ width: 140 }}
-          options={[
-            { value: 'All', label: 'All' },
-            { value: 'Active', label: 'Active' },
-            { value: 'Archived', label: 'Archived' },
-          ]}
         />
         <Button type="primary">New Project</Button>
       </Space>
 
-      {/* Project list */}
-      <div>
+      <Space direction="vertical" style={{ width: '100%' }} size="middle">
         {projects.map((project) => (
           <div
             key={project.name}
             style={{
               display: 'flex',
-              alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '12px 0',
-              borderBottom: '1px solid #f0f0f0',
+              alignItems: 'center',
             }}
           >
-            <span>{project.name}</span>
+            <Typography.Text>{project.name}</Typography.Text>
             <Tag color={statusColor[project.status]}>{project.status}</Tag>
           </div>
         ))}
-      </div>
+      </Space>
 
-      {/* New Project modal — rendered open */}
       <Modal
         title="New Project"
-        open={true}
+        open
         footer={[
           <Button key="cancel">Cancel</Button>,
           <Button key="create" type="primary">
@@ -82,7 +74,7 @@ export const ProjectsList: React.FC = () => {
             <Input placeholder="Required" />
           </Form.Item>
           <Form.Item label="Description">
-            <Input.TextArea placeholder="Optional" />
+            <Input.TextArea placeholder="Optional" rows={4} />
           </Form.Item>
         </Form>
       </Modal>
