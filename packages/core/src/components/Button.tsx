@@ -1,12 +1,17 @@
 import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import clsx from "clsx";
+import { useBionicChildren } from "../bionic";
+import type { BionicOptions } from "../bionic";
 
 export interface ButtonProps extends Omit<ComponentPropsWithoutRef<"button">, "children"> {
   variant?: "primary" | "secondary" | "tertiary" | "destructive";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
   children?: ReactNode;
+  /** Force bionic reading on/off for this instance, overriding the ambient data-rebar-bionic setting. */
+  bionic?: boolean;
+  bionicOptions?: BionicOptions;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
@@ -17,11 +22,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     disabled,
     className,
     children,
+    bionic,
+    bionicOptions,
     type = "button",
     ...props
   },
   ref,
 ) {
+  const content = useBionicChildren(children, bionic, bionicOptions);
   return (
     <button
       ref={ref}
@@ -36,7 +44,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       {...props}
     >
       {loading ? <span aria-hidden="true">⏳</span> : null}
-      {children}
+      {content}
     </button>
   );
 });

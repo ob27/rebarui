@@ -2,6 +2,8 @@ import { forwardRef } from "react";
 import * as RadixRadioGroup from "@radix-ui/react-radio-group";
 import type { ReactNode } from "react";
 import clsx from "clsx";
+import { useBionicChildren } from "../bionic";
+import type { BionicOptions } from "../bionic";
 
 export type RadioGroupProps = RadixRadioGroup.RadioGroupProps;
 
@@ -21,12 +23,16 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(function R
 
 export interface RadioProps extends Omit<RadixRadioGroup.RadioGroupItemProps, "asChild"> {
   children?: ReactNode;
+  /** Force bionic reading on/off for the label, overriding the ambient data-rebar-bionic setting. */
+  bionic?: boolean;
+  bionicOptions?: BionicOptions;
 }
 
 export const Radio = forwardRef<HTMLButtonElement, RadioProps>(function Radio(
-  { className, children, id, ...props },
+  { className, children, bionic, bionicOptions, id, ...props },
   ref,
 ) {
+  const label = useBionicChildren(children, bionic, bionicOptions);
   return (
     <label className="rebar-radio-label" htmlFor={id}>
       <RadixRadioGroup.Item
@@ -38,7 +44,7 @@ export const Radio = forwardRef<HTMLButtonElement, RadioProps>(function Radio(
       >
         <RadixRadioGroup.Indicator className="rebar-radio-indicator" data-rebar-part="indicator" />
       </RadixRadioGroup.Item>
-      {children ? <span data-rebar-part="label">{children}</span> : null}
+      {children ? <span data-rebar-part="label">{label}</span> : null}
     </label>
   );
 });

@@ -217,4 +217,173 @@ describe("BlockRenderer", () => {
     expect(screen.getByRole("button", { name: "Create" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
   });
+
+  it("tags every top-level block with a schema-shaped data-rebar-block-path", () => {
+    const blocks: Block[] = [
+      { type: "header", title: "Preview" },
+      { type: "checklist", items: ["A", "B"] },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(document.querySelector('[data-rebar-block-path="blocks[0]"]')).not.toBeNull();
+    expect(document.querySelector('[data-rebar-block-path="blocks[1]"]')).not.toBeNull();
+  });
+
+  it("tags individual checklist items with an item-level path and label", () => {
+    const blocks: Block[] = [{ type: "checklist", items: ["First item", "Second item"] }];
+    render(<BlockRenderer blocks={blocks} />);
+    const first = document.querySelector('[data-rebar-block-path="blocks[0].items[0]"]');
+    const second = document.querySelector('[data-rebar-block-path="blocks[0].items[1]"]');
+    expect(first).toHaveAttribute("data-rebar-block-item-label", "First item");
+    expect(second).toHaveAttribute("data-rebar-block-item-label", "Second item");
+  });
+
+  it("nests the path through tabs and modal, matching the real schema shape", () => {
+    const blocks: Block[] = [
+      {
+        type: "tabs",
+        tabs: [
+          {
+            label: "Team",
+            blocks: [
+              {
+                type: "modal",
+                title: "Confirm",
+                blocks: [{ type: "callout", tone: "info", title: "Are you sure?" }],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    // blocks[0] (tabs) -> tabs[0] (Team) -> blocks[0] (modal) -> blocks[0] (callout)
+    expect(
+      document.querySelector('[data-rebar-block-path="blocks[0].tabs[0].blocks[0].blocks[0]"]'),
+    ).not.toBeNull();
+  });
+
+  it("tags a form field with its path and label", () => {
+    const blocks: Block[] = [
+      { type: "form", fields: [{ kind: "text", label: "Project name" }] },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    const field = document.querySelector('[data-rebar-block-path="blocks[0].fields[0]"]');
+    expect(field).toHaveAttribute("data-rebar-block-item-label", "Project name");
+  });
+
+  it("renders a hero block with badge, title, subtitle, actions, and a code snippet", () => {
+    const blocks: Block[] = [
+      {
+        type: "hero",
+        badge: "v0.1",
+        title: "Rebar UI",
+        subtitle: "Headless-first, low-fidelity components.",
+        actions: [
+          { label: "Getting Started", href: "/docs/getting-started", variant: "primary" },
+          { label: "Design Heuristics", href: "/docs/theming" },
+        ],
+        codeSnippet: "npm install rebar-ui",
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("heading", { name: "Rebar UI", level: 1 })).toBeInTheDocument();
+    expect(screen.getByText("v0.1")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Getting Started" })).toHaveAttribute(
+      "href",
+      "/docs/getting-started",
+    );
+    expect(screen.getByText("npm install rebar-ui")).toBeInTheDocument();
+  });
+
+  it("renders a section-header block with kicker, title, and subtitle", () => {
+    const blocks: Block[] = [
+      { type: "section-header", kicker: "Theme customization", title: "Sketch today, anything tomorrow", subtitle: "No code changes, just a theme swap." },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Theme customization")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Sketch today, anything tomorrow" })).toBeInTheDocument();
+    expect(screen.getByText("No code changes, just a theme swap.")).toBeInTheDocument();
+  });
+
+  it("renders a doc-section block's prose, code, and list nodes in order", () => {
+    const blocks: Block[] = [
+      {
+        type: "doc-section",
+        heading: "1. Install",
+        body: [
+          { kind: "code", code: "npm install rebar-ui" },
+          { kind: "text", text: "Swap `@rebar-ui/theme-sketch` for a different theme any time." },
+          { kind: "list", items: ["First step", "Second step"] },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    const root = screen.getByText("1. Install").closest("[data-rebar-placement-block='doc-section']") as HTMLElement;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const texts: string[] = [];
+    let node: Node | null;
+    // eslint-disable-next-line no-cond-assign
+    while ((node = walker.nextNode())) {
+      const value = node.textContent?.trim();
+      if (value) texts.push(value);
+    }
+    expect(texts).toEqual([
+      "1. Install",
+      "npm install rebar-ui",
+      "Swap",
+      "@rebar-ui/theme-sketch",
+      "for a different theme any time.",
+      "First step",
+      "Second step",
+    ]);
+  });
+
+  it("parses inline backtick-code and markdown-style links in doc-section prose", () => {
+    const blocks: Block[] = [
+      {
+        type: "doc-section",
+        body: [{ kind: "text", text: "See the [component reference](/components) for details." }],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("link", { name: "component reference" })).toHaveAttribute(
+      "href",
+      "/components",
+    );
+  });
+
+  it("renders a props-table block with prop rows", () => {
+    const blocks: Block[] = [
+      {
+        type: "props-table",
+        rows: [
+          { name: "variant", type: '"primary" | "secondary"', required: false, defaultValue: '"secondary"', description: null },
+          { name: "onClick", type: "() => void", required: true, defaultValue: null, description: null },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("variant")).toBeInTheDocument();
+    expect(screen.getByText('"secondary"')).toBeInTheDocument();
+    expect(screen.getAllByText("Yes")).toHaveLength(1);
+    expect(screen.getAllByText("No")).toHaveLength(1);
+    expect(screen.getByText("—")).toBeInTheDocument();
+  });
+
+  it("renders a fallback message for a props-table block with no rows", () => {
+    const blocks: Block[] = [{ type: "props-table", rows: [] }];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(
+      screen.getByText("No component-specific props (only standard HTML/ARIA attributes, forwarded as-is)."),
+    ).toBeInTheDocument();
+  });
+
+  it("tags a props-table block with its schema-shaped path", () => {
+    const blocks: Block[] = [{ type: "props-table", rows: [{ name: "x", type: "string", required: false, defaultValue: null, description: null }] }];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(container.querySelector('[data-rebar-placement-block="props-table"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0]",
+    );
+  });
 });

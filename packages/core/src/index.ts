@@ -69,3 +69,48 @@ export type { AccordionProps, AccordionItemProps } from "./components/Accordion"
 
 export { ToastProvider, Toast } from "./components/Toast";
 export type { ToastProps } from "./components/Toast";
+
+export { Carousel } from "./components/Carousel";
+export type { CarouselProps } from "./components/Carousel";
+
+export { Divider } from "./components/Divider";
+export type { DividerProps } from "./components/Divider";
+
+export { Tag } from "./components/Tag";
+export type { TagProps, TagTone } from "./components/Tag";
+
+export { Badge } from "./components/Badge";
+export type { BadgeProps, BadgeTone } from "./components/Badge";
+
+export { Empty } from "./components/Empty";
+export type { EmptyProps } from "./components/Empty";
+
+export { Skeleton } from "./components/Skeleton";
+export type { SkeletonProps, SkeletonVariant } from "./components/Skeleton";
+
+export { Spin } from "./components/Spin";
+export type { SpinProps, SpinSize, SpinVariant } from "./components/Spin";
+
+export { Breadcrumb } from "./components/Breadcrumb";
+export type { BreadcrumbProps, BreadcrumbItem } from "./components/Breadcrumb";
+
+export { Steps } from "./components/Steps";
+export type { StepsProps, StepItem, StepStatus } from "./components/Steps";
+
+export { Statistic } from "./components/Statistic";
+export type { StatisticProps } from "./components/Statistic";
+
+export { Result } from "./components/Result";
+export type { ResultProps, ResultStatus } from "./components/Result";
+
+export { Descriptions } from "./components/Descriptions";
+export type { DescriptionsProps, DescriptionItem } from "./components/Descriptions";
+
+export { Timeline } from "./components/Timeline";
+export type { TimelineProps, TimelineItem, TimelineDotTone } from "./components/Timeline";
+
+export { Rate } from "./components/Rate";
+export type { RateProps } from "./components/Rate";
+
+export { toBionicSegments, useAmbientBionic, DEFAULT_BIONIC_OPTIONS } from "./bionic";
+export type { BionicOptions, BionicSegment } from "./bionic";

@@ -2,6 +2,8 @@ import { forwardRef } from "react";
 import * as RadixTabs from "@radix-ui/react-tabs";
 import type { ComponentPropsWithoutRef } from "react";
 import clsx from "clsx";
+import { useBionicChildren } from "../bionic";
+import type { BionicOptions } from "../bionic";
 
 export type TabsProps = ComponentPropsWithoutRef<typeof RadixTabs.Root>;
 
@@ -35,19 +37,26 @@ export const TabList = forwardRef<HTMLDivElement, TabListProps>(function TabList
   );
 });
 
-export type TabProps = ComponentPropsWithoutRef<typeof RadixTabs.Trigger>;
+export type TabProps = ComponentPropsWithoutRef<typeof RadixTabs.Trigger> & {
+  /** Force bionic reading on/off for the tab label, overriding the ambient data-rebar-bionic setting. */
+  bionic?: boolean;
+  bionicOptions?: BionicOptions;
+};
 
 export const Tab = forwardRef<HTMLButtonElement, TabProps>(function Tab(
-  { className, ...props },
+  { className, children, bionic, bionicOptions, ...props },
   ref,
 ) {
+  const label = useBionicChildren(children, bionic, bionicOptions);
   return (
     <RadixTabs.Trigger
       ref={ref}
       className={clsx("rebar-tab", className)}
       data-rebar-part="tab"
       {...props}
-    />
+    >
+      {label}
+    </RadixTabs.Trigger>
   );
 });
 

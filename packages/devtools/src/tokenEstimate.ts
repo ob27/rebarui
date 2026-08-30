@@ -21,12 +21,25 @@ const BASE_AUTHORING_COST: Record<Complexity, number> = {
 
 // Extra tokens paid on EACH iteration when building directly against AntD instead of headless
 // — reconciling a logic change with AntD's specific prop names, component shape, and visual
-// rules. This is the core thesis made concrete: this tax is zero for the headless path and
-// paid once per iteration for the direct-AntD path.
+// rules.
 const ANTD_ITERATION_TAX: Record<Complexity, number> = {
   simple: 10,
   medium: 25,
   complex: 50,
+};
+
+// rebar-ui's own per-iteration cost — NOT zero. Previously this model assumed the headless path
+// had no iteration tax at all, which the real iteration experiment on /benchmarks (three tiers,
+// iterated round-by-round to an actual measured crossover, not an extrapolation) contradicts:
+// rebar-ui's average per-round cost across that experiment was ~92.5% of antd's own — a real,
+// modest ~7.5% saving per round, not the ~0% this model previously implied. Grounded here at a
+// slightly more conservative 93% of ANTD_ITERATION_TAX (rounded up, so this model doesn't overstate
+// rebar's per-round advantage beyond what was actually measured), same rounding discipline as
+// REBAR_FIRST_BUILD_DISCOUNT below.
+const REBAR_ITERATION_TAX: Record<Complexity, number> = {
+  simple: 9,
+  medium: 23,
+  complex: 47,
 };
 
 // One-time cost to migrate a single already-built Rebar component to AntD. Codemod-covered
@@ -84,22 +97,41 @@ export interface TokenEstimate {
   rebarOnly: number;
   rebarThenMigrate: number;
   migrationCost: number;
+  /**
+   * The iteration count at which rebar-ui-then-migrate first becomes cheaper than antd built
+   * directly, solved in closed form (both totals are linear in iteration count). `null` only if
+   * rebar's per-iteration tax is somehow not lower than antd's for this exact component mix — a
+   * crossover always exists given the constants above, but this stays a real check rather than an
+   * assumed one.
+   *
+   * Checked against the real, measured /benchmarks iteration experiment (13-17 rounds) before
+   * trusting this — it does NOT land in that range (this model predicts ~44-74 for representative
+   * mixes, several times higher). That's a real, understood gap, not a bug: /benchmarks measured
+   * cost via fresh one-shot dispatches per round (each re-paying close to a full build's worth of
+   * tokens), while this model assumes a lighter per-iteration "reconciliation tax" representing a
+   * continuous, already-open coding session. Different iteration styles, not the same quantity
+   * measured twice — see /docs/token-estimate for the full explanation. Do not "fix" the constants
+   * below to force agreement with 13-17; that would fabricate a match that isn't real.
+   */
+  breakevenIterations: number | null;
   breakdown: TokenEstimateBreakdownRow[];
 }
 
 export function estimateTokenCost(counts: ComponentCounts, iterations: number): TokenEstimate {
-  let antdDirect = 0;
-  let rebarOnly = 0;
+  let antdBase = 0;
+  let antdTaxPerIteration = 0;
+  let rebarBase = 0;
+  let rebarTaxPerIteration = 0;
   let migrationCost = 0;
   const breakdown: TokenEstimateBreakdownRow[] = [];
 
   for (const [type, count] of Object.entries(counts.byType)) {
     const complexity = COMPLEXITY[type] ?? "medium";
-    const base = BASE_AUTHORING_COST[complexity] * count;
-    const tax = ANTD_ITERATION_TAX[complexity] * count * iterations;
 
-    antdDirect += base + tax;
-    rebarOnly += base * (1 - REBAR_FIRST_BUILD_DISCOUNT);
+    antdBase += BASE_AUTHORING_COST[complexity] * count;
+    antdTaxPerIteration += ANTD_ITERATION_TAX[complexity] * count;
+    rebarBase += BASE_AUTHORING_COST[complexity] * count * (1 - REBAR_FIRST_BUILD_DISCOUNT);
+    rebarTaxPerIteration += REBAR_ITERATION_TAX[complexity] * count;
 
     const codemodSupported = CODEMOD_SUPPORTED.has(type);
     migrationCost += codemodSupported
@@ -109,12 +141,24 @@ export function estimateTokenCost(counts: ComponentCounts, iterations: number): 
     breakdown.push({ type, count, complexity, codemodSupported });
   }
 
+  const antdDirect = antdBase + antdTaxPerIteration * iterations;
+  const rebarOnly = rebarBase + rebarTaxPerIteration * iterations;
+  const rebarThenMigrate = rebarOnly + migrationCost;
+
+  // antdDirect(n) = antdBase + antdTaxPerIteration * n
+  // rebarThenMigrate(n) = rebarBase + migrationCost + rebarTaxPerIteration * n
+  // Solve antdDirect(n) = rebarThenMigrate(n) for n.
+  const taxGap = antdTaxPerIteration - rebarTaxPerIteration;
+  const breakevenIterations =
+    taxGap > 0 ? Math.max(0, (rebarBase + migrationCost - antdBase) / taxGap) : null;
+
   return {
     iterations,
     antdDirect,
     rebarOnly,
-    rebarThenMigrate: rebarOnly + migrationCost,
+    rebarThenMigrate,
     migrationCost,
+    breakevenIterations,
     breakdown: breakdown.sort((a, b) => b.count - a.count),
   };
 }

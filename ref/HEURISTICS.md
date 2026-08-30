@@ -122,6 +122,46 @@ drops below that ratio.
   size threshold; skeleton loading state, not a spinner, for row-level loading.
 - **Modals** — close button top-right, backdrop-click-to-close, Esc-to-close, focus trap while
   open, primary action right-aligned in the footer.
+- **Clear layer separation** — whenever one piece of content renders in front of another on the
+  same screen (a modal over the page, a dropdown over a list, a loading overlay over dimmed
+  content), the two layers need their own distinct visual surface, not just z-index stacking. This
+  is Material Design's elevation system made explicit: shadow, a scrim, a background color change,
+  or a blur are what tell a viewer which layer is "in front" — z-index alone is invisible, so
+  without one of these, content on both layers can visually blend into an ambiguous mess, especially
+  if the front layer has no background of its own and just floats directly over the back layer's
+  content. Found concretely in `Spin`: its loading overlay originally had no background at all — a
+  bare icon and label floating directly on top of the dimmed content underneath, with nothing
+  marking it as a separate surface — fixed by giving the overlay its own background (see
+  `.rebar-spin-overlay` in `packages/core/src/styles/style.css`), the same treatment `Dialog`'s
+  backdrop and `Dropdown`'s panel already had.
+- **Space-dense content on a text-dominant page** — once a page whose content is mostly prose
+  needs to show more than ~4 non-text elements in a row (screenshots, photos, cards), they belong
+  in a space-minimizing container (`Carousel` is the default) rather than an inline grid. A wall of
+  thumbnails breaks reading flow and works against heuristic #8 above (aesthetic and minimalist
+  design) — showing all of them at once isn't more informative, it's more to scroll past. The ~4
+  threshold is a starting default, not a hard rule; override it per page if the content genuinely
+  needs to be scannable all at once (e.g. a dedicated gallery page, where images *are* the content).
+- **A carousel holds one aspect ratio, never mixed, no exceptions** — every slide in a single
+  `Carousel` must share the same aspect ratio (e.g. all 16:9, or all square). This isn't just a
+  coherence preference: `Carousel`'s viewport has one fixed height sized to its content, so a
+  shorter-ratio slide next to a taller one leaves visible dead space rather than the container
+  resizing per slide — a real layout bug, not a matter of taste. If a page has both, e.g. portrait
+  photos and landscape photos to show, that's two separate `Carousel` instances (each internally
+  consistent), not one mixed one. A reference catalog that needs to show many *different* ratios
+  side by side (e.g. "here is every supported aspect ratio") is exactly the case a `Carousel` can't
+  serve — use a plain wrapping grid instead (each item sized to its own ratio, no shared viewport
+  height to break), same as the space-dense-content heuristic's own gallery-page exception above.
+- **Long text-dominant pages need a section index** — once a text-dominant page has more than 3
+  sections (top-level headings), add an index nav linking to each one, so a reader can jump
+  straight to the part they need rather than scrolling past everything else — this is heuristic #6
+  above (recognition over recall) applied at the page-navigation level, not just within a
+  component. Side convention: **left is reserved for cross-page/site navigation** (switching to a
+  *different* page — the existing sidebar pattern on `/components/*` and `/docs/*`); an in-page
+  section index (jumping between headings on the *current* page) goes on the **right**, so the two
+  kinds of navigation never compete for the same slot. The ~3 threshold is a starting default, not
+  a hard rule; a short page that happens to have 4 brief headings doesn't need one if it's all one
+  scroll's worth of content anyway — judge by whether scrolling past unrelated sections to reach
+  the target one is actually the friction, not by the raw heading count alone.
 
 These defaults live in `packages/core` component implementations and `packages/theme-*`
 stylesheets — this document is the reference for what those values *should* be and why, kept in

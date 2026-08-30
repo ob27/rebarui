@@ -32,6 +32,14 @@ describe("AspectRatio", () => {
     render(<AspectRatio src="https://example.com/photo.jpg" placeholder alt="Real" />);
     expect(screen.getByAltText("Real")).toHaveAttribute("src", "https://example.com/photo.jpg");
   });
+
+  it("picks a different variant of the same ratio when placeholder is a number", () => {
+    render(<AspectRatio ratio={16 / 9} placeholder={0} alt="First" />);
+    const first = (screen.getByAltText("First") as HTMLImageElement).src;
+    render(<AspectRatio ratio={16 / 9} placeholder={1} alt="Second" />);
+    const second = (screen.getByAltText("Second") as HTMLImageElement).src;
+    expect(first).not.toBe(second);
+  });
 });
 
 describe("resolveRatioPlaceholder", () => {
@@ -49,5 +57,17 @@ describe("resolveRatioPlaceholder", () => {
 
   it("is deterministic for the same ratio", () => {
     expect(resolveRatioPlaceholder(4 / 3)).toBe(resolveRatioPlaceholder(4 / 3));
+  });
+
+  it("has more than one variant for at least one ratio", () => {
+    const counts = new Map<number, number>();
+    for (const p of RATIO_PLACEHOLDERS) counts.set(p.ratio, (counts.get(p.ratio) ?? 0) + 1);
+    expect(Math.max(...counts.values())).toBeGreaterThan(1);
+  });
+
+  it("selects among same-ratio variants by index", () => {
+    const a = resolveRatioPlaceholder(16 / 9, 0);
+    const b = resolveRatioPlaceholder(16 / 9, 1);
+    expect(a).not.toBe(b);
   });
 });

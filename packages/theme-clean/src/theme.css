@@ -67,4 +67,12 @@
   --rebar-color-bg-secondary: #2a2a2a;
   --rebar-color-border: #444444;
   --rebar-color-border-strong: #555555;
+  /* The pale light-mode "-bg" washes (e.g. #fff3e0) are near-white — left unpatched, dark-mode
+     text-primary (#f5f5f5) renders almost invisibly on top of them. Dark, subtly-tinted
+     equivalents instead. Deliberately not touching --rebar-color-danger/success/warning/info
+     themselves: those are also used as solid button/badge fills with white text on top, and
+     already carry as much contrast headroom as their hue allows without weakening that pairing. */
+  --rebar-color-danger-bg: #3a1f20;
+  --rebar-color-success-bg: #16261a;
+  --rebar-color-warning-bg: #3a2a14;
 }

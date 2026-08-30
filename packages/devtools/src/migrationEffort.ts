@@ -28,7 +28,21 @@ export const COMPLEXITY: Record<string, Complexity> = {
   slider: "medium",
   accordion: "medium",
   toast: "medium",
+  carousel: "medium",
   form: "complex",
+  divider: "simple",
+  tag: "simple",
+  badge: "simple",
+  empty: "simple",
+  skeleton: "simple",
+  spin: "simple",
+  breadcrumb: "simple",
+  statistic: "simple",
+  steps: "medium",
+  result: "simple",
+  descriptions: "simple",
+  timeline: "simple",
+  rate: "medium",
 };
 
 const WEIGHT: Record<Complexity, number> = { simple: 1, medium: 2, complex: 3 };

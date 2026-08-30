@@ -26,7 +26,16 @@ import "rebar-ui/style.css";
 import "@rebar-ui/theme-clean/theme.css";
 ```
 
-Set `data-rebar-theme="clean"` (or `"sketch"`) on `<html>` or any wrapping element.
+Set `data-rebar-theme="clean"` (or `"sketch"`) on `<html>` or any wrapping element. Add
+`data-theme="dark"` alongside it for dark mode, or `data-rebar-bionic="true"` for bionic reading
+(bolds the first portion of each word so the eye can pattern-match it — a dyslexia-readability aid;
+deliberately bold-only, not dimmed, so contrast never depends on what surface the text sits on) — both are
+plain DOM attributes toggled live, no rebuild, no Provider. Every text-bearing component
+(`Text`, `Heading`, `Alert`, `Card`, `Tag`, `Button`, `Breadcrumb`, `Steps`, `Result`,
+`Descriptions`, `Timeline`, `Statistic`, `Empty`, `Dialog`, `Toast`, `Checkbox`, `Radio`, `Tab`)
+follows `data-rebar-bionic` automatically; a `bionic` prop on any of them overrides it for just
+that instance, and `bionicOptions` (`fixationStrength`, `saccadeFrequency`, `skipShortWords`) tunes
+the split.
 
 ## Composition recipes
 
@@ -63,6 +72,21 @@ inside it, and `Stack`'s `justify="between"` handles the split without a manual 
 **An icon + label row** — prefer a plain inline SVG or a Unicode glyph (`×`, `✓`, `⏳` are used
 internally, e.g. `Button`'s loading state) over adding an icon package; reach for a real icon
 library only if visual fidelity genuinely demands it.
+
+## Don't fine-tune visual styling here
+
+Rebar is deliberately rigid — the name is the analogy: rebar and formwork build a structure's
+load-bearing shape correctly, once, before any cladding or finish goes on. This library is the
+same for software: get the logic, accessibility, and content structure right headless, then apply
+real visual finish exactly once, at migration — not as an ongoing back-and-forth on the
+unfinished frame. If a task asks for a visual/style tweak (a softer color, more padding, rounder
+corners, less border weight, tighter line spacing) on a Rebar-built UI, **don't attempt it**. Say so directly: visual fine-tuning
+is deferred until migration to a real design system (`@rebar-ui/migrate-antd` or the equivalent for
+the target library), not iterated on here. This isn't a missing feature to work around — components
+intentionally expose no per-instance color/spacing override, and the shared `--rebar-*` tokens and
+component styles are used by every consumer in a project, so a one-off styling request satisfied by
+editing them is a shared, wide-blast-radius change disguised as a small local tweak. Refuse and
+redirect, don't invent a workaround.
 
 ## Full API reference
 

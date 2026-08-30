@@ -64,6 +64,7 @@ export function RebarDevTools({ forceEnabled }: RebarDevToolsProps) {
       : "clean",
   );
   const [dark, setDark] = useState(false);
+  const [bionic, setBionic] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [showInspector, setShowInspector] = useState(false);
 
@@ -84,6 +85,15 @@ export function RebarDevTools({ forceEnabled }: RebarDevToolsProps) {
       document.documentElement.removeAttribute("data-theme");
     }
   }, [isDev, dark]);
+
+  useEffect(() => {
+    if (!isDev) return;
+    if (bionic) {
+      document.documentElement.setAttribute("data-rebar-bionic", "true");
+    } else {
+      document.documentElement.removeAttribute("data-rebar-bionic");
+    }
+  }, [isDev, bionic]);
 
   if (!isDev) return null;
 
@@ -163,8 +173,13 @@ export function RebarDevTools({ forceEnabled }: RebarDevToolsProps) {
                 </li>
               </ul>
               <p className="rebar-devtools-hint">
-                A documented model with stated, editable assumptions — not a measured cost. Full
-                methodology and reasoning: {MODEL_DOCS_PATH}
+                {tokenEstimate.breakevenIterations !== null
+                  ? `Pays for itself after ~${Math.ceil(tokenEstimate.breakevenIterations)} revisions of this page, migration included.`
+                  : "No breakeven for this component mix — antd direct stays cheaper at any iteration count."}
+              </p>
+              <p className="rebar-devtools-hint">
+                A documented model with stated, editable assumptions — not a measured cost. See the
+                real measured numbers on the <a href="/benchmarks">benchmarks page</a>.
               </p>
             </div>
 
@@ -194,6 +209,14 @@ export function RebarDevTools({ forceEnabled }: RebarDevToolsProps) {
                   onChange={(event) => setDark(event.target.checked)}
                 />
                 Dark mode
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={bionic}
+                  onChange={(event) => setBionic(event.target.checked)}
+                />
+                Bionic reading
               </label>
               <label>
                 <input

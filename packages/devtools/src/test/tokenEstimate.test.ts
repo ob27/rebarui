@@ -9,21 +9,38 @@ describe("estimateTokenCost", () => {
     expect(estimate.rebarThenMigrate).toBe(0);
   });
 
-  it("rebarOnly does not grow with iteration count (the core thesis: no re-styling tax)", () => {
+  it("rebarOnly grows with iteration count, but slower than antdDirect (real per-round tax, not zero)", () => {
     const counts = { total: 3, byType: { button: 3 } };
     const at1 = estimateTokenCost(counts, 1);
     const at10 = estimateTokenCost(counts, 10);
-    expect(at1.rebarOnly).toBe(at10.rebarOnly);
+    expect(at10.rebarOnly).toBeGreaterThan(at1.rebarOnly);
+    expect(at10.rebarOnly - at1.rebarOnly).toBeLessThan(at10.antdDirect - at1.antdDirect);
   });
 
-  it("antdDirect grows linearly with iteration count, rebarOnly stays flat", () => {
+  it("antdDirect grows faster per iteration than rebarOnly (real, measured gap — not zero for rebar)", () => {
     const counts = { total: 3, byType: { button: 3 } };
     const at1 = estimateTokenCost(counts, 1);
     const at2 = estimateTokenCost(counts, 2);
     const antdGrowth = at2.antdDirect - at1.antdDirect;
     const rebarGrowth = at2.rebarOnly - at1.rebarOnly;
     expect(antdGrowth).toBeGreaterThan(0);
-    expect(rebarGrowth).toBe(0);
+    expect(rebarGrowth).toBeGreaterThan(0);
+    expect(rebarGrowth).toBeLessThan(antdGrowth);
+  });
+
+  it("computes a breakevenIterations that actually matches where the totals cross", () => {
+    const counts = { total: 1, byType: { form: 1 } };
+    const estimate = estimateTokenCost(counts, 5);
+    expect(estimate.breakevenIterations).not.toBeNull();
+    const n = estimate.breakevenIterations as number;
+    expect(n).toBeGreaterThan(0);
+
+    const justBefore = estimateTokenCost(counts, Math.max(0, n - 1));
+    const justAfter = estimateTokenCost(counts, n + 1);
+    // Before the computed breakeven point, antd is still cheaper (or roughly tied); after it,
+    // rebar-ui-plus-migration has genuinely pulled ahead.
+    expect(justBefore.rebarThenMigrate).toBeGreaterThanOrEqual(justBefore.antdDirect - 1);
+    expect(justAfter.rebarThenMigrate).toBeLessThan(justAfter.antdDirect);
   });
 
   it("crosses over: rebarThenMigrate beats antdDirect once enough iterations accumulate", () => {

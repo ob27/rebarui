@@ -191,6 +191,31 @@ body {
   font-weight: var(--rebar-font-weight-semibold, 600);
 }
 
+.rebar-link {
+  color: var(--rebar-color-primary, #0066cc);
+}
+
+.rebar-link:hover {
+  text-decoration: none;
+}
+
+/* Bionic reading — see packages/core/src/bionic.tsx. Bold the fixation portion of a word so the
+   eye can pattern-match a word from its first few letters alone.
+   Deliberately NOT dimming the rest portion via opacity: opacity blends toward whatever's behind
+   the element, not toward the text's own color. On a plain page background that's a harmless
+   fade, but on a saturated surface a component's own text color is tuned against (a primary
+   button's white-on-blue, a destructive button's white-on-red, a tertiary button's blue-on-white)
+   it washes the "rest" letters toward the surface color instead — on a real screen at real size
+   this reads as some letters going near-invisible, not just dimmer. Bold-only has identical
+   contrast to plain text on every surface, by construction, so it can't reproduce that failure. */
+.rebar-bionic-fixation {
+  font-weight: var(--rebar-font-weight-bold, 700);
+}
+
+.rebar-bionic-rest {
+  font-weight: var(--rebar-font-weight-normal, 400);
+}
+
 .rebar-dialog-overlay {
   position: fixed;
   inset: 0;
@@ -223,13 +248,17 @@ body {
 }
 
 .rebar-dialog-close {
+  display: inline-flex;
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: var(--rebar-font-size-lg, 20px);
-  line-height: 1;
   color: var(--rebar-color-text-secondary, #757575);
   padding: var(--rebar-space-xs, 4px);
+}
+
+.rebar-dialog-close svg {
+  width: 20px;
+  height: 20px;
 }
 
 .rebar-dialog-close:focus-visible {
@@ -430,6 +459,7 @@ body {
   border: var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0);
   border-radius: var(--rebar-radius, 4px);
   background: var(--rebar-color-bg-primary, #ffffff);
+  color: var(--rebar-color-text-primary, #212121);
   font-family: inherit;
   font-size: var(--rebar-font-size-sm, 14px);
   min-width: 160px;
@@ -450,6 +480,7 @@ body {
 .rebar-select-item {
   padding: var(--rebar-space-sm, 8px) var(--rebar-space-md, 16px);
   font-size: var(--rebar-font-size-sm, 14px);
+  color: var(--rebar-color-text-primary, #212121);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -710,9 +741,665 @@ body {
   position: absolute;
   top: var(--rebar-space-sm, 8px);
   right: var(--rebar-space-sm, 8px);
+  display: inline-flex;
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: var(--rebar-font-size-lg, 20px);
   color: var(--rebar-color-text-secondary, #757575);
+}
+
+.rebar-toast-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Carousel */
+.rebar-carousel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rebar-space-md, 16px);
+}
+
+.rebar-carousel:focus-visible {
+  outline: 2px solid var(--rebar-color-border-focus, #0066cc);
+  outline-offset: 2px;
+}
+
+.rebar-carousel-viewport {
+  overflow: hidden;
+  border: var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0);
+  border-radius: var(--rebar-radius, 4px);
+}
+
+.rebar-carousel-track {
+  display: flex;
+  transition: transform 0.2s ease;
+}
+
+.rebar-carousel-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+.rebar-carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rebar-space-md, 16px);
+}
+
+.rebar-carousel-status {
+  font-size: var(--rebar-font-size-sm, 14px);
+  color: var(--rebar-color-text-secondary, #757575);
+  min-width: 4.5em;
+  text-align: center;
+}
+
+.rebar-carousel-dots {
+  display: flex;
+  gap: var(--rebar-space-xs, 4px);
+}
+
+.rebar-carousel-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border-radius: 50%;
+  border: var(--rebar-border-width, 1px) solid var(--rebar-color-border-strong, #333333);
+  background: transparent;
+  cursor: pointer;
+}
+
+.rebar-carousel-dot[aria-current="true"] {
+  background: var(--rebar-color-primary, #0066cc);
+  border-color: var(--rebar-color-primary, #0066cc);
+}
+
+/* Divider */
+.rebar-divider {
+  background: var(--rebar-color-border, #e0e0e0);
+  border: none;
+}
+
+.rebar-divider[data-orientation="horizontal"] {
+  height: 1px;
+  width: 100%;
+  margin: var(--rebar-space-md, 16px) 0;
+}
+
+.rebar-divider[data-orientation="vertical"] {
+  width: 1px;
+  height: 100%;
+  margin: 0 var(--rebar-space-md, 16px);
+}
+
+.rebar-divider-with-text {
+  display: flex;
+  align-items: center;
+  gap: var(--rebar-space-sm, 8px);
+  margin: var(--rebar-space-md, 16px) 0;
+  background: none;
+}
+
+.rebar-divider-with-text .rebar-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--rebar-color-border, #e0e0e0);
+}
+
+.rebar-divider-text {
+  color: var(--rebar-color-text-secondary, #757575);
+  font-size: var(--rebar-font-size-sm, 14px);
+  white-space: nowrap;
+}
+
+/* Tag */
+.rebar-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rebar-space-xs, 4px);
+  padding: 2px var(--rebar-space-sm, 8px);
+  border-radius: var(--rebar-radius, 4px);
+  border: var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0);
+  background: var(--rebar-color-bg-secondary, #f5f5f5);
+  color: var(--rebar-color-text-primary, #212121);
+  font-size: var(--rebar-font-size-sm, 14px);
+  line-height: 1.5;
+}
+
+.rebar-tag[data-rebar-tone="info"] {
+  border-color: var(--rebar-color-info, #0288d1);
+  color: var(--rebar-color-info, #0288d1);
+}
+.rebar-tag[data-rebar-tone="success"] {
+  background: var(--rebar-color-success-bg, #e8f5e9);
+  border-color: var(--rebar-color-success, #2e7d32);
+  color: var(--rebar-color-success, #2e7d32);
+}
+.rebar-tag[data-rebar-tone="warning"] {
+  background: var(--rebar-color-warning-bg, #fff3e0);
+  border-color: var(--rebar-color-warning, #f57c00);
+  color: var(--rebar-color-warning, #f57c00);
+}
+.rebar-tag[data-rebar-tone="error"] {
+  background: var(--rebar-color-danger-bg, #ffebee);
+  border-color: var(--rebar-color-danger, #d32f2f);
+  color: var(--rebar-color-danger, #d32f2f);
+}
+
+.rebar-tag-close {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  font-size: inherit;
+  line-height: 1;
+  padding: 0;
+  opacity: 0.6;
+}
+.rebar-tag-close:hover {
+  opacity: 1;
+}
+
+/* Badge */
+.rebar-badge {
+  position: relative;
+  display: inline-flex;
+}
+
+.rebar-badge-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--rebar-color-danger, #d32f2f);
+  color: var(--rebar-color-danger-text, #ffffff);
+  font-size: var(--rebar-font-size-xs, 12px);
+  line-height: 1;
+  font-weight: var(--rebar-font-weight-semibold, 600);
+}
+
+.rebar-badge > .rebar-badge-indicator {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+}
+
+.rebar-badge-indicator[data-rebar-tone="info"] {
+  background: var(--rebar-color-info, #0288d1);
+}
+.rebar-badge-indicator[data-rebar-tone="success"] {
+  background: var(--rebar-color-success, #2e7d32);
+}
+.rebar-badge-indicator[data-rebar-tone="warning"] {
+  background: var(--rebar-color-warning, #f57c00);
+}
+
+.rebar-badge-dot {
+  min-width: 8px;
+  width: 8px;
+  height: 8px;
+  padding: 0;
+}
+
+/* Empty */
+.rebar-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--rebar-space-sm, 8px);
+  padding: var(--rebar-space-xl, 32px);
+  color: var(--rebar-color-text-secondary, #757575);
+}
+
+.rebar-empty-icon {
+  width: 80px;
+  height: 80px;
+  opacity: 0.6;
+}
+
+/* The raster illustration is baked-in dark ink on white — wrong against a dark theme's
+   background. The vector fallback picks up currentColor instead, so it stays legible. Only one
+   of the two is ever visible; toggled by [data-theme="dark"] (this project's real dark-mode
+   attribute — see RebarDevTools.tsx's own toggle — no prefers-color-scheme fallback exists here). */
+.rebar-empty-icon-vector {
+  display: none;
+  color: var(--rebar-color-text-secondary, #757575);
+}
+
+[data-theme="dark"] .rebar-empty-icon-raster {
+  display: none;
+}
+
+[data-theme="dark"] .rebar-empty-icon-vector {
+  display: block;
+}
+
+.rebar-empty-description {
+  font-size: var(--rebar-font-size-sm, 14px);
+}
+
+/* Skeleton */
+.rebar-skeleton,
+.rebar-skeleton-line {
+  display: block;
+  background: var(--rebar-color-border, #e0e0e0);
+  border-radius: var(--rebar-radius, 4px);
+}
+
+.rebar-skeleton-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rebar-space-sm, 8px);
+}
+
+.rebar-skeleton-line {
+  height: 14px;
+  width: 100%;
+}
+
+.rebar-skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.rebar-skeleton-button {
+  width: 80px;
+  height: 32px;
+  border-radius: var(--rebar-radius, 4px);
+}
+
+.rebar-skeleton-rect {
+  width: 100%;
+  height: 100px;
+}
+
+.rebar-skeleton-active {
+  animation: rebar-skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes rebar-skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rebar-skeleton-active {
+    animation: none;
+    opacity: 0.75;
+  }
+}
+
+/* Spin */
+.rebar-spin-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rebar-space-sm, 8px);
+  color: var(--rebar-color-primary, #0066cc);
+}
+
+.rebar-spin-icon {
+  display: block;
+  object-fit: contain;
+}
+
+.rebar-spin-icon-sm { width: 16px; height: 16px; }
+.rebar-spin-icon-md { width: 24px; height: 24px; }
+.rebar-spin-icon-lg { width: 32px; height: 32px; }
+
+/* The three illustrated variants each ship a light-mode AND a dark-mode redraw (same hand-
+   sketched frames, light ink on transparent instead of dark ink on white) — only one of the two
+   is ever visible, toggled by [data-theme="dark"], so the illustration itself survives a theme
+   switch rather than being replaced by something generic. */
+.rebar-spin-icon-raster-dark {
+  display: none;
+}
+
+[data-theme="dark"] .rebar-spin-icon-raster-light {
+  display: none;
+}
+
+[data-theme="dark"] .rebar-spin-icon-raster-dark {
+  display: block;
+}
+
+/* "classic" has no illustrated art at all — always this plain vector spinner, in any theme, not
+   just as a fallback for the other three variants. */
+.rebar-spin-icon-vector {
+  display: none;
+}
+
+.rebar-spin-icon-vector.rebar-spin-icon-classic {
+  display: block;
+  color: var(--rebar-color-primary, #0066cc);
+  animation: rebar-spin-rotate 0.8s linear infinite;
+}
+
+@keyframes rebar-spin-rotate {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rebar-spin-icon-vector.rebar-spin-icon-classic {
+    animation: none;
+  }
+}
+
+.rebar-spin-tip {
+  font-size: var(--rebar-font-size-sm, 14px);
+  color: var(--rebar-color-text-secondary, #757575);
+}
+
+/* NOTE: the illustrated variants (drums/hourglass/papers) are real animated GIFs in both light
+   and dark mode — a GIF's frame animation can't be paused by prefers-reduced-motion the way the
+   "classic" variant's CSS-driven rotation above can, since it isn't a CSS animation at all. A
+   full fix would need a static poster-frame swap under that query, via a client-side check (this
+   component currently has no "use client" requirement) — a real, disclosed follow-up, not
+   silently dropped. */
+
+.rebar-spin-container {
+  position: relative;
+}
+
+.rebar-spin-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Clear layer separation (see ref/HEURISTICS.md) — a real background, not just a bare icon
+     floating over the dimmed content below, so the overlay reads as its own surface in front,
+     not part of the same layer as the content it's covering. color-mix against the existing
+     --rebar-color-bg-primary token (not a hardcoded color) so this automatically resolves to the
+     right translucent light/dark shade from whichever theme is active — core styles reference
+     tokens only, themes own the actual light/dark values, never the other way around. */
+  background: color-mix(in srgb, var(--rebar-color-bg-primary, #ffffff) 75%, transparent);
+  backdrop-filter: blur(1.5px);
+}
+
+/* Breadcrumb */
+.rebar-breadcrumb-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--rebar-font-size-sm, 14px);
+}
+
+.rebar-breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: var(--rebar-space-xs, 4px);
+}
+
+.rebar-breadcrumb-item a {
+  color: var(--rebar-color-text-secondary, #757575);
+  text-decoration: none;
+}
+.rebar-breadcrumb-item a:hover {
+  color: var(--rebar-color-primary, #0066cc);
+  text-decoration: underline;
+}
+
+.rebar-breadcrumb-item [aria-current="page"] {
+  color: var(--rebar-color-text-primary, #212121);
+  font-weight: var(--rebar-font-weight-medium, 500);
+}
+
+.rebar-breadcrumb-separator {
+  color: var(--rebar-color-text-secondary, #757575);
+  margin: 0 var(--rebar-space-xs, 4px);
+}
+
+/* Steps */
+.rebar-steps {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: var(--rebar-space-md, 16px);
+}
+
+.rebar-steps-vertical {
+  flex-direction: column;
+}
+
+.rebar-steps-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rebar-space-sm, 8px);
+  flex: 1;
+}
+
+.rebar-steps-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0);
+  color: var(--rebar-color-text-secondary, #757575);
+  font-size: var(--rebar-font-size-sm, 14px);
+}
+
+.rebar-steps-item[data-rebar-status="process"] .rebar-steps-icon {
+  border-color: var(--rebar-color-primary, #0066cc);
+  color: var(--rebar-color-primary, #0066cc);
+}
+.rebar-steps-item[data-rebar-status="finish"] .rebar-steps-icon {
+  border-color: var(--rebar-color-primary, #0066cc);
+  background: var(--rebar-color-primary, #0066cc);
+  color: var(--rebar-color-primary-text, #ffffff);
+}
+.rebar-steps-item[data-rebar-status="error"] .rebar-steps-icon {
+  border-color: var(--rebar-color-danger, #d32f2f);
+  color: var(--rebar-color-danger, #d32f2f);
+}
+
+.rebar-steps-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.rebar-steps-title {
+  font-size: var(--rebar-font-size-sm, 14px);
+  font-weight: var(--rebar-font-weight-medium, 500);
+  color: var(--rebar-color-text-primary, #212121);
+}
+
+.rebar-steps-description {
+  font-size: var(--rebar-font-size-xs, 12px);
+  color: var(--rebar-color-text-secondary, #757575);
+}
+
+/* Statistic */
+.rebar-statistic-title {
+  font-size: var(--rebar-font-size-sm, 14px);
+  color: var(--rebar-color-text-secondary, #757575);
+  margin-bottom: var(--rebar-space-xs, 4px);
+}
+
+.rebar-statistic-value {
+  display: flex;
+  align-items: baseline;
+  gap: var(--rebar-space-xs, 4px);
+  font-size: var(--rebar-font-size-2xl, 32px);
+  font-weight: var(--rebar-font-weight-semibold, 600);
+  color: var(--rebar-color-text-primary, #212121);
+}
+
+.rebar-statistic-affix {
+  font-size: var(--rebar-font-size-md, 16px);
+}
+
+/* Result */
+.rebar-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--rebar-space-sm, 8px);
+  padding: var(--rebar-space-2xl, 48px) var(--rebar-space-xl, 32px);
+}
+
+.rebar-result-icon {
+  width: 56px;
+  height: 56px;
+  color: var(--rebar-color-info, #0288d1);
+}
+.rebar-result[data-rebar-status="success"] .rebar-result-icon {
+  color: var(--rebar-color-success, #2e7d32);
+}
+.rebar-result[data-rebar-status="error"] .rebar-result-icon {
+  color: var(--rebar-color-danger, #d32f2f);
+}
+.rebar-result[data-rebar-status="warning"] .rebar-result-icon {
+  color: var(--rebar-color-warning, #f57c00);
+}
+
+.rebar-result-title {
+  font-size: var(--rebar-font-size-lg, 20px);
+  font-weight: var(--rebar-font-weight-semibold, 600);
+  color: var(--rebar-color-text-primary, #212121);
+}
+
+.rebar-result-subtitle {
+  font-size: var(--rebar-font-size-sm, 14px);
+  color: var(--rebar-color-text-secondary, #757575);
+}
+
+.rebar-result-extra {
+  display: flex;
+  gap: var(--rebar-space-sm, 8px);
+  margin-top: var(--rebar-space-sm, 8px);
+}
+
+.rebar-result-content {
+  margin-top: var(--rebar-space-md, 16px);
+  width: 100%;
+  text-align: left;
+}
+
+/* Descriptions */
+.rebar-descriptions-title {
+  font-size: var(--rebar-font-size-md, 16px);
+  font-weight: var(--rebar-font-weight-semibold, 600);
+  margin-bottom: var(--rebar-space-md, 16px);
+}
+
+.rebar-descriptions-grid {
+  display: grid;
+  gap: var(--rebar-space-md, 16px);
+  margin: 0;
+}
+
+.rebar-descriptions-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-bottom: var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0);
+  padding-bottom: var(--rebar-space-sm, 8px);
+}
+
+.rebar-descriptions-label {
+  font-size: var(--rebar-font-size-xs, 12px);
+  color: var(--rebar-color-text-secondary, #757575);
+}
+
+.rebar-descriptions-value {
+  margin: 0;
+  font-size: var(--rebar-font-size-sm, 14px);
+  color: var(--rebar-color-text-primary, #212121);
+}
+
+/* Timeline */
+.rebar-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rebar-timeline-item {
+  position: relative;
+  display: flex;
+  gap: var(--rebar-space-md, 16px);
+  padding-bottom: var(--rebar-space-lg, 24px);
+}
+
+.rebar-timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.rebar-timeline-dot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: var(--rebar-color-primary, #0066cc);
+  position: relative;
+}
+
+.rebar-timeline-item[data-rebar-tone="success"] .rebar-timeline-dot {
+  background: var(--rebar-color-success, #2e7d32);
+}
+.rebar-timeline-item[data-rebar-tone="warning"] .rebar-timeline-dot {
+  background: var(--rebar-color-warning, #f57c00);
+}
+.rebar-timeline-item[data-rebar-tone="error"] .rebar-timeline-dot {
+  background: var(--rebar-color-danger, #d32f2f);
+}
+
+.rebar-timeline-item:not(:last-child) .rebar-timeline-dot::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: calc(100% + var(--rebar-space-lg, 24px) - 14px);
+  background: var(--rebar-color-border, #e0e0e0);
+}
+
+.rebar-timeline-label {
+  font-size: var(--rebar-font-size-xs, 12px);
+  color: var(--rebar-color-text-secondary, #757575);
+  margin-bottom: 2px;
+}
+
+.rebar-timeline-content {
+  font-size: var(--rebar-font-size-sm, 14px);
+  color: var(--rebar-color-text-primary, #212121);
+}
+
+/* Rate */
+.rebar-rate {
+  display: inline-flex;
+  gap: var(--rebar-space-xs, 4px);
+}
+
+.rebar-rate-star {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--rebar-color-border-strong, #ccc);
+}
+
+.rebar-rate-star-filled {
+  color: var(--rebar-color-warning, #f57c00);
+}
+
+.rebar-rate-disabled .rebar-rate-star {
+  cursor: not-allowed;
 }

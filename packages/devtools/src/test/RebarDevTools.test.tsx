@@ -120,4 +120,14 @@ describe("RebarDevTools", () => {
     expect(screen.getByText("Rebar, then migrate once")).toBeInTheDocument();
     expect(screen.queryByLabelText("Assumed logic iterations")).not.toBeInTheDocument();
   });
+
+  it("shows a breakeven-iterations hint derived from the estimate, not a fixed claim", async () => {
+    document.body.innerHTML = `<div data-rebar-component="form"></div>`;
+    const user = userEvent.setup();
+    render(<RebarDevTools forceEnabled />);
+    await user.click(screen.getByRole("button", { name: "Rebar DevTools" }));
+    await screen.findByText("Rebar only");
+
+    expect(screen.getByText(/Pays for itself after ~\d+ revisions/)).toBeInTheDocument();
+  });
 });

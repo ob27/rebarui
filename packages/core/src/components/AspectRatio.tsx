@@ -10,19 +10,22 @@ export interface AspectRatioProps {
   alt?: string;
   className?: string;
   /**
-   * Shows one of Rebar's built-in illustrated placeholder images when `src` isn't set yet —
-   * opt-in, off by default. Picks whichever embedded placeholder's own ratio is numerically
-   * closest to `ratio` (there's one per standard ratio, not one per possible value), then lets
-   * it crop to fit exactly via the same `object-fit: cover` any real photo would use.
+   * Shows one of Rebar's built-in placeholder photos when `src` isn't set yet — opt-in, off by
+   * default. Picks whichever embedded placeholder's own ratio is numerically closest to `ratio`;
+   * several placeholders share each ratio, so pass a number (e.g. a Carousel's slide index) to
+   * pick a specific variant instead of always the same one — `true` defaults to the first.
    */
-  placeholder?: boolean;
+  placeholder?: boolean | number;
 }
 
 export const AspectRatio = forwardRef<HTMLDivElement, AspectRatioProps>(function AspectRatio(
   { ratio = 1, src, alt, className, placeholder },
   ref,
 ) {
-  const imageSrc = src ?? (placeholder ? resolveRatioPlaceholder(ratio) : undefined);
+  const imageSrc =
+    src ?? (placeholder !== undefined && placeholder !== false
+      ? resolveRatioPlaceholder(ratio, typeof placeholder === "number" ? placeholder : undefined)
+      : undefined);
 
   return (
     <RadixAspectRatio.Root

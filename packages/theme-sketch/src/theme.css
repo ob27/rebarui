@@ -89,4 +89,9 @@
   --rebar-color-bg-secondary: #131316;
   --rebar-color-border: #45454a;
   --rebar-color-border-strong: #a1a1aa;
+  /* See theme-clean/src/theme.css for why these three exist and why danger/success/warning/info
+     themselves are left alone. */
+  --rebar-color-danger-bg: #3a1f20;
+  --rebar-color-success-bg: #16261a;
+  --rebar-color-warning-bg: #3a2a14;
 }

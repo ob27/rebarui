@@ -190,32 +190,90 @@ reference page, and — once it has a plausible AntD mapping — an entry in
 `@rebar-ui/migrate-antd`'s transform, verified by dogfooding against real usage, not just its own
 fixtures (per the `htmlType` lesson from Phase 5).
 
-### Phase 8 — Performance benchmark (empirical, not yet started)
+### Phase 8 — Performance benchmark (empirical) — done, real n=15 data, real measured crossover
 
-The marketing site now has three pillars on the homepage (per the user's ant.design-inspired
-homepage restructure): Design Heuristics (`/docs/theming`), Design Components (`/components`),
-and **Benchmarks** (`/benchmarks`) — a real, measured comparison, not another model. The
-DevTools token estimate (`/docs/token-estimate`) already makes the case theoretically (documented
-constants, editable assumptions); this phase replaces "theoretical" with "measured": build the
-same UI twice — once against AntD directly, once with Rebar and a single migration pass — across
-a spread of example groups from simple to complex, and capture real token usage from the actual
-build runs, not an estimate applied after the fact.
+`/benchmarks` is real, measured, and extensive: four independent n=15 experiments (two models ×
+two prompt modalities) all show rebar-ui cheaper/faster/more visually consistent than antd direct;
+a Simple/Composite/Complex tier follow-up (n=5 Claude, n=3-5 Qwen) confirms the same direction on
+both models; and the Condition A/B iterate-then-migrate experiment (originally scoped in this
+phase, below) was actually run to a **real measured crossover** — antd's head start survives for a
+while, but rebar-ui-then-migrate overtakes it by round 13-17 depending on spec complexity, not an
+extrapolation. The DevTools token estimate (`/docs/token-estimate`) is the separate theoretical
+model this phase's real data is checked against — including one place they *don't* agree (see that
+page for why, and don't try to force them into agreement). Full history of how this was built,
+including real mistakes made and fixed along the way, lives in this session's own plan file, not
+duplicated here — this file only needs to track that it's done and what's still open (see
+Backlog below).
 
-**Explicitly blocked on more of the component library existing first** — the user's own
-observation, not an excuse: representative example groups (a settings form up through a
-multi-step wizard with a table, form, dialog, and tabs) need enough real component coverage that
-the comparison isn't just picking convenient narrow cases to fit whatever's built. Tier 1 (Phase
-7 above) covers the common Radix-backed set; Tiers 2–3 aren't built yet. `/benchmarks` currently
-documents the planned methodology and this dependency honestly rather than shipping placeholder
-or fabricated results — the same "no silent fabrication" standard as everything else in this
-project, applied to what would otherwise be the single most reputation-sensitive page on the
-site (a claimed empirical proof that turned out to be invented would be far worse than the
-original brainstorm's fabricated token counter, since this one explicitly claims to be measured).
+## Backlog — open items, roughly in priority order
 
-Open before this can start: how token usage gets captured per run (need a controlled, repeatable
-build harness — likely a `Workflow` orchestrating both conditions per example group, but that
-needs explicit user opt-in per this session's tooling rules, and a real methodology design pass
-of its own before committing to it).
+Captured here so none of these get lost in conversation. Update in place as items complete or
+priorities shift, per this document's own stated discipline.
+
+1. **Archetype library reference page — DONE.** `/docs/archetypes`: every `@rebar-ui/placement`
+   block type (15: `header`, `banner`, `checklist`, `callout`, `feature-grid`, `pillar-grid`,
+   `form`, `table`, `data-list`, `filter-bar`, `tabs`, `modal`, `hero`, `section-header`,
+   `doc-section`), each with its schema shape and a live rendered example — the analog of
+   `/components` but for the placement layer. `modal` shows code + prose only (no live
+   forced-open render), linking to `/components/dialog`, per the same rule established on
+   `/docs/heuristics` and the homepage. Wired into the docs nav, cross-linked both ways with
+   `/docs/heuristics`. Complements (doesn't replace) that page, which ties a handful of these to
+   specific design rules rather than acting as a complete catalog. (A 16th archetype, `props-table`,
+   was added afterward by item 3 below and is documented on this same page.)
+
+2. **Rebuild the remaining `/docs/*` pages through the DSL Packer — DONE.** `getting-started`,
+   `contributing`, `migration`, `devtools`, and `token-estimate` are now fully `doc-section` blocks
+   rendered via `NextBlockRenderer`, `theming` fully included (its `PropsTable` section now uses
+   the `props-table` archetype from item 3, done in the same pass). Each page keeps its H1 +
+   intro paragraph hand-authored as page chrome (same convention as `/docs/heuristics` and
+   `/docs/archetypes`), with everything below it as Packer output. Typecheck, build, and a
+   Playwright pass (zero console errors across all six) confirmed clean.
+
+3. **Rebuild `/components/*` reference pages through the DSL Packer — DONE.** Added a 16th
+   archetype, `props-table` (`{ heading?: string, rows: PropRow[] }`), and documented it on
+   `/docs/archetypes`. It takes already-generated `PropRow[]` data rather than reading
+   `component-props.json` itself — `packages/placement` has no dependency on any one consuming
+   app's build output, same principle as `renderLink`. All 6 full reference pages (Button, Avatar,
+   Carousel, Dialog, Form, AspectRatio) converted: `Code`/`Props`/`Accessibility`/
+   `data-rebar-*`/`Migrating to Ant Design` sections are now Packer output; `LivePreview` blocks
+   (and the prose paragraphs directly introducing one, on Avatar/AspectRatio) stay hand-authored,
+   same documented exception as the homepage's hero section. The old hand-authored `PropsTable`
+   React component is deleted — nothing references it anymore. 6 new/updated `BlockRenderer`
+   tests (props-table with rows, empty-rows fallback, path-tagging); full `pnpm turbo run test
+   typecheck build` and a Playwright pass (zero console errors across all 8 touched pages)
+   confirmed clean.
+
+4. **Third-model benchmark comparison — DONE.** Ran text-prompt (antd + rebar-ui, n=15 each)
+   against **Kimi-K3** (Moonshot AI), reachable via the same DashScope-intl endpoint as Qwen —
+   a genuinely different model family, not another Qwen tier. Two other candidates were tried and
+   set aside first: `deepseek-v4-pro-0813` burned its entire token budget on internal reasoning
+   with zero output at the same 4,096-token cap that worked for Kimi-K3; `glm-5.2` does produce
+   valid output but needs ~1.6× the budget and returns messier multi-draft responses, so wasn't
+   run at full n=15 this round. Two real bugs in `bench/run-qwen-benchmark.ts` caught and fixed
+   before trusting the data: a hardcoded `temperature: 0.7` that Kimi-K3 rejects outright (every
+   run in the first attempt failed identically, none silently lost); and a future-tense
+   narration pattern ("I'll start by exploring...") the existing retry-detection regex didn't
+   recognize, causing 5 of ~23 real attempts (~22%) to fail before the regex was extended and
+   those slots re-run clean. Final: 15/15 both conditions, all typechecked, a Playwright-verified
+   subset (min/median/max per condition) confirmed clean render and correct DOM order, full
+   30-shot gallery captured (`bench/screenshot-kimi.mjs`, a new persisted utility alongside
+   `run-qwen-benchmark.ts`/`compute-stats.ts`). **Result: rebar-ui costs 67.7% less** (vs. 63.8%
+   on Qwen3.7, 3.1-3.3% on Claude) **and is 76.6% faster** — a third model, a different vendor,
+   same direction, an even larger gap. Published as a new "Kimi-K3" section on `/benchmarks`,
+   right after the Qwen section.
+
+5. **Repeat the iteration experiment at real n≥3-5 per round instead of n=1.** The single biggest
+   remaining rigor gap on `/benchmarks` — round 15's temporary reversal on the Simple tier shows
+   individual rounds do swing; the crossover-round numbers (13/14/17) could land a few rounds
+   earlier or later on a repeat. 97 dispatches were needed for the n=1 version across three tiers;
+   n=3-5 would mean 3-5× that.
+
+6. **Widen the tier specs beyond the three hand-picked examples** (Simple/Composite/Complex) —
+   more variety would strengthen confidence that the findings generalize past one spec family per
+   tier.
+
+7. **Expand `@rebar-ui/placement`'s block vocabulary further** as needed — tied to items 2-3;
+   don't invent new archetypes speculatively ahead of an actual page that needs them.
 
 ## Non-goals
 
