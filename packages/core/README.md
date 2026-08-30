@@ -4,6 +4,18 @@ Headless-first, intentionally low-fidelity React components — real Radix UI un
 purely via `--rebar-*` CSS custom properties (swap `@rebar-ui/theme-sketch` for
 `@rebar-ui/theme-clean`, or write your own, without touching component code).
 
+## Building a whole page or screen? Use `@rebar-ui/placement` instead
+
+If the task is "build a UI with rebar-ui" rather than "this one component, right here" — install
+`@rebar-ui/placement` and compose a small `Block[]` document instead of hand-authoring `Stack`/
+`Box`/`Card` JSX against these components directly. Real, repeated measurement found hand-authored
+`rebar-ui` JSX loses to hand-authored Ant Design (an unfamiliar library costs more tokens than a
+familiar one, even a simpler one); building the same UI through the placement layer instead beats
+Ant Design outright, on tokens, wall-clock time, and consistency. See that package's own README for
+the full case and the archetype list. What follows below is for direct component-level use — a
+single component, a custom composition the placement layer's archetypes don't cover — not for
+composing a whole screen.
+
 ## For coding agents: read this first, not the source
 
 **The exact prop shape of every component is in `dist/index.d.ts`** (~220 lines, one file, every

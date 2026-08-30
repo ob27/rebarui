@@ -1,0 +1,8 @@
+# @rebar-ui/placement
+
+The recommended way to build with rebar-ui: compose a `Block[]` document (a fixed vocabulary of
+named archetypes) and render it through `BlockRenderer`, instead of hand-authoring `Stack`/`Box`/
+`Card` JSX against `rebar-ui` directly — measured cheaper, faster, and far more consistent. See
+`README.md` for the full archetype list and per-harness prompt guidance (agentic vs.
+single-completion-call, and image-driven tasks specifically). Read `dist/index.d.ts` for exact
+current TypeScript shapes, not `src/`.

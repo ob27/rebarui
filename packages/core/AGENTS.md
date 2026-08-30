@@ -1,5 +1,10 @@
 # Agent guidance for `rebar-ui`
 
+**Building a whole page or screen?** Use `@rebar-ui/placement` instead of hand-authoring JSX
+against these components directly — measured cheaper, faster, and more consistent than both
+hand-authored `rebar-ui` and hand-authored Ant Design. See that package's `AGENTS.md`/README.
+Everything below is for direct component-level use only.
+
 For exact prop shapes, read `dist/index.d.ts` (~220 lines, every component's interface in one
 file) — do not open `src/components/*.tsx` for API lookups; that source carries implementation
 detail (Radix wiring, `forwardRef` boilerplate) irrelevant to prop shapes and far more expensive
