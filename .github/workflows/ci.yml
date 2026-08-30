@@ -11,9 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # No `version:` here — pnpm/action-setup now errors if it conflicts with package.json's
+      # own "packageManager" field (pnpm@11.24.0), rather than just preferring one. Reading it
+      # from package.json is also the one place the real version can't drift out of sync.
       - uses: pnpm/action-setup@v4
-        with:
-          version: 11
 
       - uses: actions/setup-node@v4
         with:

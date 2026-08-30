@@ -59,7 +59,6 @@ function Spinner({ size, variant, tip }: { size: SpinSize; variant: SpinVariant;
     >
       {raster ? (
         <>
-          {/* eslint-disable-next-line jsx-a11y/alt-text -- alt="" is intentional, purely decorative next to the role="status" label above */}
           <img
             className={clsx(
               "rebar-spin-icon",
@@ -70,7 +69,6 @@ function Spinner({ size, variant, tip }: { size: SpinSize; variant: SpinVariant;
             src={raster.light}
             alt=""
           />
-          {/* eslint-disable-next-line jsx-a11y/alt-text -- alt="" is intentional, purely decorative next to the role="status" label above */}
           <img
             className={clsx(
               "rebar-spin-icon",

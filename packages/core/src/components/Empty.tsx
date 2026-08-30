@@ -47,7 +47,6 @@ export const Empty = forwardRef<HTMLDivElement, EmptyProps>(function Empty(
   return (
     <div ref={ref} className={clsx("rebar-empty", className)} data-rebar-component="empty">
       {showRaster ? (
-        // eslint-disable-next-line jsx-a11y/alt-text -- alt="" is intentional, see comment above
         <img
           className="rebar-empty-icon rebar-empty-icon-raster"
           data-rebar-part="icon"
