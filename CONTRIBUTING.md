@@ -48,8 +48,9 @@ Next's generated route types, which only exist after a build has run once.
 - `packages/theme-sketch`, `packages/theme-clean` — the two shipped themes.
 - `packages/devtools` — the dev-only `RebarDevTools` panel.
 - `packages/adapters/antd` (published as `@rebar-ui/migrate-antd`) — the migration codemod.
-- `apps/docs` — the marketing/docs site (also the live dogfooding ground — every component is
-  demoed here, and the homepage itself renders through `@rebar-ui/placement`).
+- `apps/docs` — the marketing/docs site, and the demo app `pnpm dev` launches at
+  `localhost:3000` after you clone the repo. Also the live dogfooding ground — every component is
+  demoed here, and the homepage itself renders through `@rebar-ui/placement`.
 - `bench/` — disposable benchmark scaffolds from measuring rebar-ui against Ant Design across
   models (see `/benchmarks` on the site, and `ref/PLAN.md` for the full methodology history).
   **Not part of the library — don't send changes here** unless you're specifically extending the

@@ -25,7 +25,7 @@ const BLOCKS: Block[] = [
           "packages/theme-sketch, packages/theme-clean — the two shipped themes",
           "packages/devtools — the dev-only RebarDevTools panel",
           "packages/adapters/antd (@rebar-ui/migrate-antd) — the migration codemod",
-          "apps/docs — this site",
+          "apps/docs — this site, and the demo app `pnpm dev` launches at localhost:3000 after you clone the repo",
           "bench/ — disposable benchmark scaffolds (see /benchmarks) — not for PRs",
           "ref/ — planning/architecture docs, updated in place as decisions change",
         ],
