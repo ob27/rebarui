@@ -97,7 +97,7 @@ const PILLARS: PillarGridItem[] = [
   },
   {
     title: "Design Components",
-    body: "38 components and counting, working toward full Ant Design v6 parity — real Radix primitives, tested, with a migration path back to AntD (or anywhere else) built in from day one.",
+    body: "38 components and counting, working toward full Ant Design v6 parity — v1's supported migration target for web components, with a real codemod, not just a prompt. Other targets (and other component sets, like mobile) get the generic migration prompt for now.",
     href: "/components",
     cta: "Browse components",
   },

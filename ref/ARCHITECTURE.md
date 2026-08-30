@@ -163,6 +163,11 @@ system status" instead of contradicting it.
 
 ## Migration adapters
 
+v1's officially supported migration target for the web component set is Ant Design v6 — the only
+target with a real codemod, not just the generic prompt. Other component sets (mobile, once it
+ships) may target something else entirely; a shared component library across sets doesn't imply a
+shared migration target.
+
 Pattern, not a one-off: an adapter package (`packages/adapters/<name>`, published as
 `@rebar-ui/migrate-<name>`) ships a jscodeshift codemod that partitions a file's `rebar-ui`
 imports into "has a target equivalent" (moved to the target library's import, renamed/flattened

@@ -52,6 +52,13 @@ export default function MigrationPage() {
         one-time cost of a real, customizable design system.&quot; Two complementary paths get you
         there, depending on whether a dedicated adapter exists for your target design system yet.
       </Text>
+      <Text color="secondary">
+        <strong>v1&apos;s officially supported migration target for web components is Ant Design
+        v6</strong> — the only one with a real codemod (below), not just the generic prompt.
+        Other component sets (mobile, once it ships) may target something different; a shared
+        component library and a shared migration path aren&apos;t the same commitment, and mobile
+        UI conventions don&apos;t map onto AntD&apos;s web components anyway.
+      </Text>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );
