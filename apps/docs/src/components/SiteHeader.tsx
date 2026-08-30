@@ -6,9 +6,11 @@ import corePackageJson from "../../../../packages/core/package.json";
 
 const NAV_LINKS = [
   { href: "/docs", label: "Docs" },
-  { href: "/components", label: "Components" },
+  { href: "/components", label: "Web Components" },
+  { href: "/mobile", label: "Mobile Components" },
+  { href: "/diagrams", label: "Diagrams" },
   { href: "/benchmarks", label: "Benchmarks" },
-  { href: "/docs/migration", label: "Migration" },
+  { href: "/about", label: "About" },
 ];
 
 // No light/dark toggle here — DevTools (🔧, bottom-right) already owns dark-mode via the same
