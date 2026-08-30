@@ -105,4 +105,116 @@ describe("BlockRenderer", () => {
     render(<BlockRenderer blocks={blocks} />);
     expect(screen.getByRole("link", { name: "Go" })).toHaveAttribute("href", "/docs");
   });
+
+  it("renders a form block with each field kind and a submit button", () => {
+    const blocks: Block[] = [
+      {
+        type: "form",
+        heading: "Account Settings",
+        fields: [
+          { kind: "text", label: "Display name", placeholder: "e.g. Jane Doe" },
+          { kind: "email", label: "Email address" },
+          { kind: "textarea", label: "Bio" },
+          { kind: "select", label: "Role", options: ["Admin", "Member"] },
+          { kind: "checkbox", label: "Email me updates", checked: true },
+        ],
+        submitLabel: "Save changes",
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("heading", { name: "Account Settings" })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("e.g. Jane Doe")).toBeInTheDocument();
+    expect(screen.getByText("Email address")).toBeInTheDocument();
+    expect(screen.getByText("Bio")).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: "Email me updates" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Save changes" })).toBeInTheDocument();
+  });
+
+  it("omits the submit button when a form has no submitLabel (e.g. nested inside a modal)", () => {
+    const blocks: Block[] = [
+      { type: "form", fields: [{ kind: "text", label: "Project name" }] },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Project name")).toBeInTheDocument();
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+  });
+
+  it("renders a table block with columns, rows, and a per-row action", () => {
+    const blocks: Block[] = [
+      {
+        type: "table",
+        columns: ["Team", "Lead"],
+        rows: [
+          { cells: ["Engineering", "Priya Shah"], actionLabel: "Select" },
+          { cells: ["Design", "Marcus Webb"], actionLabel: "Select" },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Team")).toBeInTheDocument();
+    expect(screen.getByText("Priya Shah")).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Select" })).toHaveLength(2);
+  });
+
+  it("renders a data-list block with a badge per item", () => {
+    const blocks: Block[] = [
+      {
+        type: "data-list",
+        items: [
+          { title: "Marketing Site Redesign", badge: "Active" },
+          { title: "Legacy API Migration", badge: "Archived" },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Marketing Site Redesign")).toBeInTheDocument();
+    expect(screen.getByText("Archived")).toBeInTheDocument();
+  });
+
+  it("renders a filter-bar block with search, a select, and an action button", () => {
+    const blocks: Block[] = [
+      {
+        type: "filter-bar",
+        searchPlaceholder: "Search projects…",
+        filterOptions: ["All", "Active", "Archived"],
+        actionLabel: "New Project",
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByPlaceholderText("Search projects…")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "New Project" })).toBeInTheDocument();
+  });
+
+  it("renders a tabs block, showing the first tab's blocks by default", () => {
+    const blocks: Block[] = [
+      {
+        type: "tabs",
+        tabs: [
+          { label: "Team", blocks: [{ type: "callout", tone: "info", title: "Team panel" }] },
+          { label: "Details", blocks: [{ type: "callout", tone: "info", title: "Details panel" }] },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("tab", { name: "Team" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Details" })).toBeInTheDocument();
+    expect(screen.getByText("Team panel")).toBeInTheDocument();
+  });
+
+  it("renders a modal block as an open dialog with its own blocks and footer actions", () => {
+    const blocks: Block[] = [
+      {
+        type: "modal",
+        title: "New Project",
+        blocks: [{ type: "form", fields: [{ kind: "text", label: "Project name" }] }],
+        confirmLabel: "Create",
+        cancelLabel: "Cancel",
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("heading", { name: "New Project" })).toBeInTheDocument();
+    expect(screen.getByText("Project name")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Create" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+  });
 });

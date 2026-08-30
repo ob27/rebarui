@@ -16,6 +16,7 @@ export const COMPLEXITY: Record<string, Complexity> = {
   radio: "simple",
   switch: "simple",
   avatar: "simple",
+  "aspect-ratio": "simple",
   progress: "simple",
   dialog: "medium",
   tabs: "medium",

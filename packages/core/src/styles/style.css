@@ -607,6 +607,26 @@ body {
   color: var(--rebar-color-text-secondary, #757575);
 }
 
+.rebar-aspect-ratio {
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--rebar-color-bg-secondary, #f5f5f5);
+}
+
+.rebar-aspect-ratio-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rebar-aspect-ratio-empty {
+  width: 100%;
+  height: 100%;
+  background: var(--rebar-color-bg-secondary, #f5f5f5);
+  border: var(--rebar-border-width, 1px) dashed var(--rebar-color-border, #e0e0e0);
+}
+
 /* Accordion */
 .rebar-accordion {
   border-top: var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0);

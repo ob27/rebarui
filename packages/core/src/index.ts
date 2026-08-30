@@ -61,6 +61,9 @@ export type { ProgressProps } from "./components/Progress";
 export { Avatar } from "./components/Avatar";
 export type { AvatarProps } from "./components/Avatar";
 
+export { AspectRatio } from "./components/AspectRatio";
+export type { AspectRatioProps } from "./components/AspectRatio";
+
 export { Accordion, AccordionItem } from "./components/Accordion";
 export type { AccordionProps, AccordionItemProps } from "./components/Accordion";
 

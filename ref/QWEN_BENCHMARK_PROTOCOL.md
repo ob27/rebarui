@@ -211,19 +211,50 @@ a condition gets the *identical* prompt — the only thing that varies is the mo
 
 ### 2. rebar-ui-text
 
-> You do NOT write JSX for this component — you author a typed data document, and a renderer
-> already in this project turns it into the actual UI. Read `src/schema.ts` (the types you must
-> satisfy) first. Implement `src/panel.ts`, exporting `panel: PanelDocument`, describing a "Preview"
-> panel: a title bar with "Preview" and a close-icon header action; an info banner (icon "info",
-> text "Preview — nothing entered here is saved.", action label "Reset" with icon "refresh"); a
-> checklist section (heading "Checklist", items: "Pre-Fab Checkprint comments resolved", "Pre-Fab
-> Attribute Matrix comments resolved", "Pre-Fab Data Release form comments resolved", "As Built
-> model data supplied by DE", "No blocking quality items", "All anticipated Post-fab decisions
-> documented"); and a callout section (tone "warning", icon "clock", title "DPK can now move to
-> Post-fab In Progress", subtitle "Some required items in this section are still incomplete.").
-> Do not add any layout/styling props — the renderer decides all layout. After writing, run
-> `npx tsc --noEmit` to verify it typechecks against the real `schema.ts`. Do not run a dev server
-> or take screenshots.
+**Do not use a "read `schema.ts` first" style prompt here if your model is a single completion
+call with no file access** (no agentic tool use, no ability to actually open a file) — a first
+pass of this protocol used exactly that style, scored 0/15, and every failure traced back to the
+model guessing the schema's shape from prose alone (inventing `"info-banner"` instead of
+`"banner"`, wrapping checklist items in `{ label: string }` objects instead of plain strings) since
+the "read the file" instruction was simply unreachable. Rewriting to inline the full schema
+directly, exactly the same way the `rebar-ui-image` prompt already does below, took it to 15/15.
+Use this version:
+
+> Your only task: write `src/panel.ts`. Do NOT read `schema.ts`, `PanelRenderer.tsx`, or
+> `icons.tsx` — everything you need is below (this is a single API call with no file access, so
+> those files aren't actually reachable regardless). Write `src/panel.ts` with exactly this shape:
+>
+> ```ts
+> import type { PanelDocument } from "./schema";
+> export const panel: PanelDocument = {
+>   type: "panel",
+>   header: { title: string, action?: { label?: string, icon?: "close"|"info"|"refresh"|"clock" } },
+>   sections: [ /* array of Section, see below */ ],
+> };
+> ```
+>
+> A `Section` is one of exactly these three shapes — use these exact `type` strings, no others,
+> and `items` must be plain strings, never objects:
+> - `{ type: "banner", tone: "info"|"warning"|"success"|"error", icon?: "close"|"info"|"refresh"|"clock", text: string, action?: { label?: string, icon?: "close"|"info"|"refresh"|"clock" } }`
+> - `{ type: "checklist", heading?: string, items: string[] }` — items is an array of plain strings
+>   like `["First item", "Second item"]`, NOT `[{ label: "..." }]`.
+> - `{ type: "callout", tone: "info"|"warning"|"success"|"error", icon?: "close"|"info"|"refresh"|"clock", title: string, subtitle?: string }`
+>
+> Describe a "Preview" panel: header title "Preview" with a close-icon action; a banner section
+> (tone "info", icon "info", text "Preview — nothing entered here is saved.", action label "Reset"
+> with icon "refresh"); a checklist section (heading "Checklist", items: "Pre-Fab Checkprint
+> comments resolved", "Pre-Fab Attribute Matrix comments resolved", "Pre-Fab Data Release form
+> comments resolved", "As Built model data supplied by DE", "No blocking quality items", "All
+> anticipated Post-fab decisions documented"); and a callout section (tone "warning", icon "clock",
+> title "DPK can now move to Post-fab In Progress", subtitle "Some required items in this section
+> are still incomplete."). After writing, run `npx tsc --noEmit` to verify it typechecks. Do not
+> run a dev server or take screenshots.
+
+The general lesson, not specific to this one condition: **before using any prompt from an agentic
+context (one that says "read this file," "look at that component," etc.) against a non-agentic,
+single-completion-call harness, inline whatever it references directly instead.** A prompt that
+assumes tool access silently breaks the moment it runs somewhere without it — on any model, not
+just Qwen.
 
 ### 3. antd-image
 

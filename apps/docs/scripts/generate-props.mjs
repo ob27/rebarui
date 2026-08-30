@@ -43,6 +43,7 @@ const COMPONENT_FILES = [
   "Slider.tsx",
   "Progress.tsx",
   "Avatar.tsx",
+  "AspectRatio.tsx",
   "Accordion.tsx",
   "Toast.tsx",
 ];

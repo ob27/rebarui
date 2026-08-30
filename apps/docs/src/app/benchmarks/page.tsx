@@ -525,6 +525,333 @@ export default function BenchmarksPage() {
           </Text>
         </Stack>
 
+        <Stack gap="sm" id="experiment-2">
+          <Heading level={2}>Does a cheaper model benefit even more?</Heading>
+          <Text size="sm">
+            Everything above is one model (Claude Sonnet 5). The real open question that leaves:
+            does the placement layer help a <em>cheaper</em>, weaker model even more than it helps
+            a frontier one? Its whole mechanism is removing layout/composition decisions from the
+            model — a weaker model is plausibly worse at open-ended JSX/AntD authoring and no worse
+            at filling in a small typed schema, which would make this a real argument for cheaper-
+            model viability, not just lower cost on a model that&apos;s already good. Ran the exact
+            same spec, prompts, and archetypes (see <code>ref/QWEN_BENCHMARK_PROTOCOL.md</code> in
+            the repo) against Qwen (qwen3.7-max for text, qwen3.7-plus for image) via the DashScope
+            API, n=15 per condition.
+          </Text>
+
+          <Alert type="warning" title="Not directly comparable to the numbers above — different measurement basis">
+            Qwen&apos;s numbers come from a single raw completion API call: one system message, one
+            user message, one response — no agentic tool use, no file access, no ~22,000-token
+            harness/tool-definition overhead every Claude run above pays. That&apos;s why Qwen&apos;s
+            totals (roughly 1,000-4,000 tokens) look dramatically smaller than Claude&apos;s
+            (roughly 30,000+) — it&apos;s measuring a fundamentally thinner slice of work, not a
+            more efficient model. The only fair comparison here is <em>within</em> Qwen&apos;s own
+            results: antd vs. rebar-ui, same model, same harness, same everything else.
+          </Alert>
+
+          <Heading level={3}>Text prompt (qwen3.7-max)</Heading>
+          <Box as="table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "var(--rebar-font-size-sm)" }}>
+            <Box as="thead">
+              <Box as="tr">
+                {["Condition", "Mean", "Median", "Min", "Max", "Std. dev.", "Success"].map((h) => (
+                  <Box key={h} as="th" style={{ textAlign: "left", padding: "8px 12px", borderBottom: "2px solid var(--rebar-color-border, #e0e0e0)" }}>
+                    {h}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            <Box as="tbody">
+              {[
+                { condition: "antd (n=15)", mean: "3,388", median: "2,989", min: "1,597", max: "6,446", stdev: "1,376 (40.6%)", success: "15/15" },
+                { condition: "rebar-ui (n=15)", mean: "1,228", median: "1,065", min: "994", max: "2,028", stdev: "278 (22.6%)", success: "15/15" },
+              ].map((row) => (
+                <Box as="tr" key={row.condition}>
+                  {Object.values(row).map((val, i) => (
+                    <Box as="td" key={i} style={{ padding: "8px 12px", borderBottom: "1px solid var(--rebar-color-border, #e0e0e0)" }}>
+                      {val}
+                    </Box>
+                  ))}
+                </Box>
+              ))}
+            </Box>
+          </Box>
+          <Text size="sm" color="secondary">
+            <strong>~64% fewer tokens</strong> and a tighter CV (22.6% vs. 40.6%).
+          </Text>
+
+          <Box as="table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "var(--rebar-font-size-sm)" }}>
+            <Box as="thead">
+              <Box as="tr">
+                {["Wall-clock", "Mean", "Median", "Min", "Max", "Std. dev."].map((h) => (
+                  <Box key={h} as="th" style={{ textAlign: "left", padding: "8px 12px", borderBottom: "2px solid var(--rebar-color-border, #e0e0e0)" }}>
+                    {h}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            <Box as="tbody">
+              {[
+                { condition: "antd (n=15)", mean: "46.6s", median: "40.3s", min: "19.7s", max: "88.3s", stdev: "20.8s (44.6%)" },
+                { condition: "rebar-ui (n=15)", mean: "10.3s", median: "9.4s", min: "6.0s", max: "21.7s", stdev: "3.9s (37.8%)" },
+              ].map((row) => (
+                <Box as="tr" key={row.condition}>
+                  {Object.values(row).map((val, i) => (
+                    <Box as="td" key={i} style={{ padding: "8px 12px", borderBottom: "1px solid var(--rebar-color-border, #e0e0e0)" }}>
+                      {val}
+                    </Box>
+                  ))}
+                </Box>
+              ))}
+            </Box>
+          </Box>
+          <Text size="sm" color="secondary">
+            <strong>~78% faster</strong> — same direction and a similar magnitude as Claude&apos;s
+            own wall-clock win, on a different model and a different (non-agentic) harness.
+          </Text>
+
+          <Box as="table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "var(--rebar-font-size-sm)" }}>
+            <Box as="thead">
+              <Box as="tr">
+                {["Visual consistency", "Avg. per-pixel std. dev.", "Pixels that vary run-to-run"].map((h) => (
+                  <Box key={h} as="th" style={{ textAlign: "left", padding: "8px 12px", borderBottom: "2px solid var(--rebar-color-border, #e0e0e0)" }}>
+                    {h}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            <Box as="tbody">
+              {[
+                { condition: "antd (n=15)", stdev: "15.3 / 255", pct: "30.5%" },
+                { condition: "rebar-ui (n=15)", stdev: "~0 / 255", pct: "0%" },
+              ].map((row) => (
+                <Box as="tr" key={row.condition}>
+                  {Object.values(row).map((val, i) => (
+                    <Box as="td" key={i} style={{ padding: "8px 12px", borderBottom: "1px solid var(--rebar-color-border, #e0e0e0)" }}>
+                      {val}
+                    </Box>
+                  ))}
+                </Box>
+              ))}
+            </Box>
+          </Box>
+          <Text size="xs" color="secondary">
+            Same pixel-alignment method as the Claude galleries above, applied to these 30
+            screenshots. antd (Qwen) shows even more run-to-run drift than antd (Claude) did
+            (30.5% of pixels vs. 27.0%); rebar-ui (Qwen) is pixel-identical across all 15 runs,
+            same as every other rebar-ui condition measured this way regardless of model.
+          </Text>
+
+          {(
+            [
+              { key: "antd-text", label: "antd (n=15)" },
+              { key: "rebar-ui-text", label: "rebar-ui (n=15)" },
+            ] as const
+          ).map((cond) => (
+            <Stack key={cond.key} gap="xs">
+              <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
+                {cond.label}
+              </Text>
+              <Box
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))",
+                  gap: 8,
+                }}
+              >
+                {Array.from({ length: 15 }, (_, i) => {
+                  const n = String(i + 1).padStart(2, "0");
+                  return (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      key={n}
+                      src={`/benchmark-screenshots-qwen/${cond.key}-${n}.png`}
+                      alt={`${cond.label}, run ${n}`}
+                      loading="lazy"
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        border: "1px solid var(--rebar-color-border, #e0e0e0)",
+                        borderRadius: 4,
+                      }}
+                    />
+                  );
+                })}
+              </Box>
+            </Stack>
+          ))}
+
+          <Heading level={3}>Image prompt (qwen3.7-plus)</Heading>
+          <Box as="table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "var(--rebar-font-size-sm)" }}>
+            <Box as="thead">
+              <Box as="tr">
+                {["Condition", "Mean", "Median", "Min", "Max", "Std. dev.", "Success"].map((h) => (
+                  <Box key={h} as="th" style={{ textAlign: "left", padding: "8px 12px", borderBottom: "2px solid var(--rebar-color-border, #e0e0e0)" }}>
+                    {h}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            <Box as="tbody">
+              {[
+                { condition: "antd (n=15)", mean: "3,948", median: "3,667", min: "3,243", max: "5,882", stdev: "726 (18.4%)", success: "15/15" },
+                { condition: "rebar-ui (n=15)", mean: "2,956", median: "2,965", min: "2,839", max: "3,129", stdev: "90.3 (3.1%)", success: "15/15" },
+              ].map((row) => (
+                <Box as="tr" key={row.condition}>
+                  {Object.values(row).map((val, i) => (
+                    <Box as="td" key={i} style={{ padding: "8px 12px", borderBottom: "1px solid var(--rebar-color-border, #e0e0e0)" }}>
+                      {val}
+                    </Box>
+                  ))}
+                </Box>
+              ))}
+            </Box>
+          </Box>
+          <Text size="sm" color="secondary">
+            <strong>~25% fewer tokens</strong> and a far tighter CV (3.1% vs. 18.4%).
+          </Text>
+
+          <Box as="table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "var(--rebar-font-size-sm)" }}>
+            <Box as="thead">
+              <Box as="tr">
+                {["Wall-clock", "Mean", "Median", "Min", "Max", "Std. dev."].map((h) => (
+                  <Box key={h} as="th" style={{ textAlign: "left", padding: "8px 12px", borderBottom: "2px solid var(--rebar-color-border, #e0e0e0)" }}>
+                    {h}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            <Box as="tbody">
+              {[
+                { condition: "antd (n=15)", mean: "33.2s", median: "29.2s", min: "20.5s", max: "64.6s", stdev: "11.9s (35.8%)" },
+                { condition: "rebar-ui (n=15)", mean: "13.8s", median: "13.9s", min: "11.2s", max: "17.6s", stdev: "1.7s (12.1%)" },
+              ].map((row) => (
+                <Box as="tr" key={row.condition}>
+                  {Object.values(row).map((val, i) => (
+                    <Box as="td" key={i} style={{ padding: "8px 12px", borderBottom: "1px solid var(--rebar-color-border, #e0e0e0)" }}>
+                      {val}
+                    </Box>
+                  ))}
+                </Box>
+              ))}
+            </Box>
+          </Box>
+          <Text size="sm" color="secondary">
+            <strong>~58% faster</strong> — the same near-zero-variance, faster-and-cheaper pattern
+            found on Claude, on a completely different model.
+          </Text>
+
+          <Box as="table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "var(--rebar-font-size-sm)" }}>
+            <Box as="thead">
+              <Box as="tr">
+                {["Visual consistency", "Avg. per-pixel std. dev.", "Pixels that vary run-to-run"].map((h) => (
+                  <Box key={h} as="th" style={{ textAlign: "left", padding: "8px 12px", borderBottom: "2px solid var(--rebar-color-border, #e0e0e0)" }}>
+                    {h}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            <Box as="tbody">
+              {[
+                { condition: "antd (n=15)", stdev: "13.1 / 255", pct: "29.1%" },
+                { condition: "rebar-ui (n=15)", stdev: "~0 / 255", pct: "0%" },
+              ].map((row) => (
+                <Box as="tr" key={row.condition}>
+                  {Object.values(row).map((val, i) => (
+                    <Box as="td" key={i} style={{ padding: "8px 12px", borderBottom: "1px solid var(--rebar-color-border, #e0e0e0)" }}>
+                      {val}
+                    </Box>
+                  ))}
+                </Box>
+              ))}
+            </Box>
+          </Box>
+          <Text size="xs" color="secondary">
+            Same method, same result: antd (Qwen) drifts visually run to run; rebar-ui (Qwen) is
+            pixel-identical across all 15 runs.
+          </Text>
+
+          {(
+            [
+              { key: "antd-image", label: "antd (n=15)" },
+              { key: "rebar-ui-image", label: "rebar-ui (n=15)" },
+            ] as const
+          ).map((cond) => (
+            <Stack key={cond.key} gap="xs">
+              <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
+                {cond.label}
+              </Text>
+              <Box
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))",
+                  gap: 8,
+                }}
+              >
+                {Array.from({ length: 15 }, (_, i) => {
+                  const n = String(i + 1).padStart(2, "0");
+                  return (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      key={n}
+                      src={`/benchmark-screenshots-qwen-image/${cond.key}-${n}.png`}
+                      alt={`${cond.label}, run ${n}`}
+                      loading="lazy"
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        border: "1px solid var(--rebar-color-border, #e0e0e0)",
+                        borderRadius: 4,
+                      }}
+                    />
+                  );
+                })}
+              </Box>
+            </Stack>
+          ))}
+
+          <Alert type="info" title="The relative gap is bigger on the cheaper model, not smaller">
+            On Claude, rebar-ui won by 3.1-3.3% on tokens. On Qwen, the same comparison shows a{" "}
+            <strong>25-64% advantage</strong> — a much larger relative win, in the direction the
+            original hypothesis predicted: removing layout/composition decisions seems to help more
+            when the model doing the composing is weaker at open-ended authoring to begin with.
+            One caveat this page isn&apos;t going to paper over: two models, two conditions each,
+            is not enough to call this a general law — it&apos;s a real, measured data point in
+            the predicted direction, not proof the effect scales smoothly with model capability.
+          </Alert>
+
+          <Text size="sm">
+            <strong>The reliability story, reported as it happened:</strong> the first attempt at
+            rebar-ui-text scored <strong>0/15</strong> — every single run failed to typecheck or
+            extract cleanly. The prompt (reused verbatim from the original Claude-era text-prompt
+            experiment) told the model to &quot;read <code>schema.ts</code> first&quot; — an
+            instruction that made sense for an agentic session that can actually read files, and
+            means nothing for a single raw completion call that can&apos;t. Qwen, left to guess the
+            schema&apos;s exact shape from prose alone, invented plausible-sounding alternatives
+            (<code>&quot;info-banner&quot;</code> instead of <code>&quot;banner&quot;</code>,
+            checklist items as <code>{"{ label: string }"}</code> objects instead of plain
+            strings) — a real, honest finding, not a model failure being hidden. Rewriting the
+            prompt to be fully self-contained (the exact fix already validated for Claude&apos;s
+            own image-prompt condition back in Part 5) — spelling out the literal type strings and
+            shapes directly, no file reference at all — took it to <strong>15/15</strong>, and
+            that&apos;s the number reported above. The lesson travels: a prompt that assumes tool
+            access silently breaks the moment it&apos;s run somewhere without it, on any model.
+          </Text>
+
+          <Text size="xs" color="secondary">
+            <strong>Caveats:</strong> n=15 per condition, one day (2026-08-29/30), same spec and
+            archetypes as the Claude experiments above. All 60 runs were written to disk and
+            typechecked (not just token-counted) — an earlier version of the run script extracted
+            code from the API response but never saved or verified it, which would have made
+            &quot;success&quot; meaningless; fixed before any number here was trusted. 12 of 60
+            (min/median/max per condition) were Playwright-verified directly (clean render, zero
+            console errors, DOM order matching the reference). All 60 were also screenshotted for
+            the visual-consistency galleries above — that capture wasn&apos;t done in the first
+            pass and was added afterward so it matches the Claude experiments&apos; methodology,
+            not just their headline numbers. antd&apos;s output shows the same deprecated{" "}
+            <code>Alert message</code> warning found on Claude&apos;s antd runs.
+          </Text>
+        </Stack>
+
         <Stack gap="sm">
           <Heading level={2}>Why this needs to be a real run, not another model</Heading>
           <Text size="sm">
@@ -535,6 +862,129 @@ export default function BenchmarksPage() {
             version of the same claim is empirical: build the same thing twice, under real
             conditions, and count what it actually costs — no assumed iteration count, no
             estimated tax, just measured token usage from two real build runs.
+          </Text>
+        </Stack>
+
+        <Stack gap="sm" id="experiment-3">
+          <Heading level={2}>Simple, Composite, Complex — one-shot, across both models</Heading>
+          <Text size="sm">
+            A first look at the three complexity tiers below (still not the full iterate-then-
+            migrate experiment described next — that&apos;s a separate, bigger, still-unrun piece
+            of work). One-shot, text-prompt only, n=1 per condition, run against both Claude and
+            Qwen. Building these required six new archetypes in <code>@rebar-ui/placement</code> —{" "}
+            <code>form</code>, <code>table</code>, <code>data-list</code>, <code>filter-bar</code>,{" "}
+            <code>tabs</code>, and <code>modal</code> — since none of the specs below fit the
+            existing six blocks; not measured in isolation the way banner/checklist/callout were.
+          </Text>
+
+          <Box as="table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "var(--rebar-font-size-sm)" }}>
+            <Box as="thead">
+              <Box as="tr">
+                {["Tier", "Condition", "Claude (marginal)", "Qwen"].map((h) => (
+                  <Box key={h} as="th" style={{ textAlign: "left", padding: "8px 12px", borderBottom: "2px solid var(--rebar-color-border, #e0e0e0)" }}>
+                    {h}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+            <Box as="tbody">
+              {[
+                { tier: "Simple", condition: "antd", claude: "6,767", qwen: "775" },
+                { tier: "", condition: "rebar-ui", claude: "6,676 (−1.3%)", qwen: "2,396 (+209%)" },
+                { tier: "Composite", condition: "antd", claude: "7,251", qwen: "1,839" },
+                { tier: "", condition: "rebar-ui", claude: "7,004 (−3.4%)", qwen: "2,158 (+17.3%)" },
+                { tier: "Complex", condition: "antd", claude: "7,602", qwen: "3,048" },
+                { tier: "", condition: "rebar-ui", claude: "7,384 (−2.9%)", qwen: "2,332 (−23.5%)" },
+              ].map((row, i) => (
+                <Box as="tr" key={i}>
+                  {Object.values(row).map((val, j) => (
+                    <Box as="td" key={j} style={{ padding: "8px 12px", borderBottom: "1px solid var(--rebar-color-border, #e0e0e0)" }}>
+                      {val}
+                    </Box>
+                  ))}
+                </Box>
+              ))}
+            </Box>
+          </Box>
+          <Text size="xs" color="secondary">
+            "Claude (marginal)" = total tokens minus the ~20,644-token shared harness/tool-
+            definition overhead (verified directly from each agent&apos;s own transcript, same
+            method as Part 3a) — Claude has no way to skip its own agent harness the way Qwen&apos;s
+            raw completion call does, so this is the fairest number available, not a perfectly
+            clean one.
+          </Text>
+
+          <Alert type="warning" title="n=1 flips sign — shown directly, not asserted">
+            Rerunning the exact same six Qwen prompts a second time (after fixing an unrelated
+            scaffold-isolation bug) gave genuinely different numbers: Simple went from rebar-ui{" "}
+            <strong>55.8% cheaper</strong> to rebar-ui <strong>209% more expensive</strong> —
+            a dead sign-flip on identical inputs. Composite went from rebar-ui costing{" "}
+            <strong>219% more</strong> to only <strong>17.3% more</strong> — same direction, wildly
+            different magnitude. Only Complex stayed directionally consistent (rebar-ui cheaper
+            both times, 8.0% then 23.5%). This is the same lesson Part 1d already demonstrated with
+            Claude earlier on this page (a re-run scoring worse than the original unfixed
+            baseline) — n=1 is a real data point, not a verdict, and the table above should be read
+            that way. A trustworthy answer needs the same n=15 rigor as everything else here.
+          </Alert>
+
+          <Box
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
+              gap: 8,
+            }}
+          >
+            {(
+              [
+                { key: "claude-antd-simple", label: "Claude · antd · Simple" },
+                { key: "claude-rebar-ui-simple", label: "Claude · rebar-ui · Simple" },
+                { key: "qwen-antd-simple", label: "Qwen · antd · Simple" },
+                { key: "qwen-rebar-ui-simple", label: "Qwen · rebar-ui · Simple" },
+                { key: "claude-antd-composite", label: "Claude · antd · Composite" },
+                { key: "claude-rebar-ui-composite", label: "Claude · rebar-ui · Composite" },
+                { key: "qwen-antd-composite", label: "Qwen · antd · Composite" },
+                { key: "qwen-rebar-ui-composite", label: "Qwen · rebar-ui · Composite" },
+                { key: "claude-antd-complex", label: "Claude · antd · Complex" },
+                { key: "claude-rebar-ui-complex", label: "Claude · rebar-ui · Complex" },
+                { key: "qwen-antd-complex", label: "Qwen · antd · Complex" },
+                { key: "qwen-rebar-ui-complex", label: "Qwen · rebar-ui · Complex" },
+              ] as const
+            ).map((shot) => (
+              <Stack key={shot.key} gap="xs">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`/benchmark-screenshots-tiers/${shot.key}.png`}
+                  alt={shot.label}
+                  loading="lazy"
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    border: "1px solid var(--rebar-color-border, #e0e0e0)",
+                    borderRadius: 4,
+                  }}
+                />
+                <Text size="xs" color="secondary" style={{ textAlign: "center" }}>
+                  {shot.label}
+                </Text>
+              </Stack>
+            ))}
+          </Box>
+
+          <Text size="xs" color="secondary">
+            <strong>Caveats:</strong> n=1, one day (2026-08-30). All 12 typechecked and were
+            Playwright-verified (clean render, zero console errors beyond antd&apos;s already-noted
+            deprecation warnings). Claude was instructed to build one-shot (no file exploration, no
+            self-verification) to mirror what Qwen&apos;s raw completion call structurally can&apos;t
+            do either way — confirmed genuinely one-shot afterward (exactly one tool call per run).
+            A real mistake happened and was fixed during this run: the first Qwen pass and the
+            Claude pass initially shared the same six scaffold directories, so Claude&apos;s later
+            write silently overwrote Qwen&apos;s already-measured source code — the token/duration
+            numbers taken before that (saved to JSON independent of the file) were unaffected, but
+            re-verifying required isolating Qwen into its own dedicated scaffolds and re-running,
+            which is where the sign-flip above was discovered. Two of Qwen&apos;s runs also
+            hallucinated tool calls or a prose summary instead of outputting code at all — retried
+            until a real, extractable, typechecked result came back, same discipline as every other
+            Qwen condition on this page.
           </Text>
         </Stack>
 
