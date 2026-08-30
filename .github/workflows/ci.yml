@@ -26,6 +26,11 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm run lint
-      - run: pnpm run typecheck
       - run: pnpm run test
+      # build before typecheck, not after: apps/docs's typecheck needs Next's generated
+      # .next/types (created by `next build`) to resolve LayoutProps in layout.tsx. On a fresh
+      # checkout there's no .next yet, so typecheck-before-build fails with "Cannot find name
+      # 'LayoutProps'" — a known race documented in ref/PLAN.md, hit here because CI always
+      # starts from a clean checkout.
       - run: pnpm run build
+      - run: pnpm run typecheck

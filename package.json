@@ -8,7 +8,7 @@
     "node": ">=22.13"
   },
   "scripts": {
-    "build": "turbo run build",
+    "build": "turbo run build --filter=!./bench/*",
     "dev": "turbo run dev",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
