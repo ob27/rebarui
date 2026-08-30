@@ -12,6 +12,11 @@ import { LivePreview } from "./LivePreview";
  * rendered height (ResizeObserver, so it re-measures on theme toggle and window resize too) and
  * matches the antd iframe's box to it, so the two panels are always visually the same height.
  */
+function readAmbientDark(): boolean {
+  if (typeof document === "undefined") return false;
+  return document.documentElement.getAttribute("data-theme") === "dark";
+}
+
 export function MigrationComparison({
   rebar,
   iframeSrc,
@@ -23,6 +28,17 @@ export function MigrationComparison({
 }) {
   const rebarRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number | null>(null);
+  // The antd iframe is a separate document — DevTools' dark-mode toggle on the parent page can't
+  // reach into it directly, so the theme is passed in via a query param instead (read by
+  // bench/antd-composite-demo/src/main.tsx). Changing an iframe's src reloads it; a brief reload
+  // on theme toggle is an acceptable, honest cost for a genuinely separate embedded app.
+  const [dark, setDark] = useState(readAmbientDark);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => setDark(readAmbientDark()));
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const el = rebarRef.current;
@@ -51,7 +67,7 @@ export function MigrationComparison({
         </Text>
         <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, overflow: "hidden" }}>
           <iframe
-            src={iframeSrc}
+            src={`${iframeSrc}?theme=${dark ? "dark" : "light"}`}
             title={iframeTitle}
             style={{ width: "100%", height: height ?? 300, border: "none", display: "block" }}
           />
