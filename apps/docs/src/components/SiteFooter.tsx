@@ -26,7 +26,11 @@ export function SiteFooter() {
         }}
       >
         <Text size="xs" color="secondary">
-          MIT licensed. No GitHub link yet — this repo hasn&apos;t been pushed anywhere public.
+          MIT licensed.{" "}
+          <Link href="https://github.com/ob27/rebarui" className="rebar-link">
+            Source on GitHub
+          </Link>
+          .
         </Text>
         <Stack direction="row" gap="md">
           {FOOTER_LINKS.map((link) => (

@@ -1,0 +1,8 @@
+{
+  "hosting": {
+    "public": "apps/docs/out",
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+  }
+}
