@@ -1,26 +1,46 @@
+"use client";
+
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Box, Stack, Text } from "rebar-ui";
+import { Box, NavIndex, Stack } from "rebar-ui";
+import type { NavIndexItem } from "rebar-ui";
+
+export interface DocsShellSection {
+  href: string;
+  label: string;
+  /** Optional category tag (e.g. "web" / "mobile" / "diagram"). Sections without one always show. */
+  category?: string;
+  status?: string;
+}
 
 interface DocsShellProps {
-  sections: { href: string; label: string }[];
+  sections: DocsShellSection[];
+  /** Display label per category key, e.g. { web: "Web", mobile: "Mobile" }. */
+  categoryLabels?: Record<string, string>;
+  /** Label for the status-filter chip covering sections with no `status` set — see
+   * ref/HEURISTICS.md #42 (category and status are independent filter dimensions). */
+  unstatusedLabel?: string;
   children: ReactNode;
 }
 
-export function DocsShell({ sections, children }: DocsShellProps) {
+export function DocsShell({ sections, categoryLabels, unstatusedLabel, children }: DocsShellProps) {
+  const items: NavIndexItem[] = sections;
+
   return (
     <Box as="main" style={{ maxWidth: 960, margin: "0 auto", padding: "var(--rebar-space-xl)" }}>
       <Stack direction="row" gap="xl" style={{ alignItems: "flex-start", flexWrap: "wrap" }}>
-        <Box as="nav" style={{ width: 200, flexShrink: 0 }}>
-          <Stack gap="xs">
-            {sections.map((section) => (
-              <Link key={section.href} href={section.href} style={{ textDecoration: "none" }}>
-                <Text as="span" size="sm" color="secondary">
-                  {section.label}
-                </Text>
+        <Box style={{ width: 200, flexShrink: 0 }}>
+          <NavIndex
+            items={items}
+            categoryLabels={categoryLabels}
+            unstatusedLabel={unstatusedLabel}
+            searchPlaceholder="Search components…"
+            renderLink={({ href, children: linkChildren, className }) => (
+              <Link href={href} className={className}>
+                {linkChildren}
               </Link>
-            ))}
-          </Stack>
+            )}
+          />
         </Box>
         <Box style={{ flex: 1, minWidth: 0 }}>{children}</Box>
       </Stack>

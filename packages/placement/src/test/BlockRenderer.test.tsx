@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { BlockRenderer } from "../BlockRenderer";
 import type { Block } from "../schema";
 
@@ -9,6 +10,300 @@ describe("BlockRenderer", () => {
     render(<BlockRenderer blocks={blocks} />);
     expect(screen.getByText("Preview")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
+  });
+
+  it("renders a nav-bar block as real links, in order", () => {
+    const blocks: Block[] = [
+      {
+        type: "nav-bar",
+        ariaLabel: "Main",
+        items: [
+          { label: "Docs", href: "/docs" },
+          { label: "About", href: "/about" },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("navigation", { name: "Main" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Docs" })).toHaveAttribute("href", "/docs");
+    expect(screen.getByRole("link", { name: "About" })).toHaveAttribute("href", "/about");
+  });
+
+  it("wraps a nav-bar block in a real, hand-resizable demo box when resizable is set, distinct from the real NavBar nested inside it", () => {
+    const blocks: Block[] = [
+      { type: "nav-bar", ariaLabel: "Main", resizable: true, items: [{ label: "Docs", href: "/docs" }] },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("navigation", { name: "Main" })).toBeInTheDocument();
+    const root = container.querySelector('[data-rebar-placement-block="nav-bar"]') as HTMLElement;
+    expect(root).toHaveAttribute("data-rebar-block-path", "blocks[0]");
+    expect(root.style.resize).toBe("horizontal");
+    const navBarRoot = root.querySelector('[data-rebar-component="navbar"]');
+    expect(navBarRoot).not.toBeNull();
+    expect(navBarRoot).not.toBe(root);
+  });
+
+  it("tags the real NavBar itself as the block root, with no resizable wrapper, when resizable is unset", () => {
+    const blocks: Block[] = [{ type: "nav-bar", ariaLabel: "Main", items: [{ label: "Docs", href: "/docs" }] }];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    const root = container.querySelector('[data-rebar-placement-block="nav-bar"]') as HTMLElement;
+    expect(root).toHaveAttribute("data-rebar-component", "navbar");
+    expect(root.style.resize).toBe("");
+  });
+
+  it("renders a nav-index block with search chrome hidden under the threshold", () => {
+    const blocks: Block[] = [
+      {
+        type: "nav-index",
+        ariaLabel: "Docs",
+        items: [
+          { label: "Introduction", href: "/docs" },
+          { label: "Getting Started", href: "/docs/getting-started" },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("navigation", { name: "Docs" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Introduction" })).toHaveAttribute("href", "/docs");
+    expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+  });
+
+  it("derives a page-index block's sections from sibling doc-section headings, and assigns matching anchor ids", () => {
+    const blocks: Block[] = [
+      { type: "page-index" },
+      { type: "doc-section", heading: "Getting Started", body: [{ kind: "text", text: "Intro" }] },
+      { type: "doc-section", heading: "Advanced Usage!", body: [{ kind: "text", text: "More" }] },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("link", { name: "Getting Started" })).toHaveAttribute(
+      "href",
+      "#getting-started",
+    );
+    expect(screen.getByRole("heading", { name: "Getting Started" })).toHaveAttribute(
+      "id",
+      "getting-started",
+    );
+    expect(screen.getByRole("link", { name: "Advanced Usage!" })).toHaveAttribute(
+      "href",
+      "#advanced-usage",
+    );
+  });
+
+  it("uses a page-index block's own explicit sections instead of deriving them, for a page with no doc-section content", () => {
+    const blocks: Block[] = [
+      {
+        type: "page-index",
+        sections: [
+          { id: "intro", label: "Introduction" },
+          { id: "usage", label: "Usage" },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("link", { name: "Introduction" })).toHaveAttribute("href", "#intro");
+    expect(screen.getByRole("link", { name: "Usage" })).toHaveAttribute("href", "#usage");
+  });
+
+  it("prefers a page-index block's explicit sections over sibling doc-section headings when both are present", () => {
+    const blocks: Block[] = [
+      { type: "page-index", sections: [{ id: "custom", label: "Custom Section" }] },
+      { type: "doc-section", heading: "Ignored Heading", body: [{ kind: "text", text: "x" }] },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("link", { name: "Custom Section" })).toHaveAttribute("href", "#custom");
+    expect(screen.queryByRole("link", { name: "Ignored Heading" })).not.toBeInTheDocument();
+  });
+
+  it("renders a lone page-index block without the normal wrapping Box/Stack, so its real position:sticky element gets a containing block from whatever the caller places it in, not a collapsed single-child wrapper", () => {
+    const blocks: Block[] = [{ type: "page-index", sections: [{ id: "a", label: "A" }] }];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(container.querySelector("[data-rebar-placement-root]")).toBeNull();
+    expect(container.firstElementChild).toHaveAttribute("data-rebar-placement-block", "page-index");
+    expect(container.firstElementChild).toHaveAttribute("data-rebar-block-path", "blocks[0]");
+  });
+
+  it("still wraps normally when page-index shares the document with other blocks", () => {
+    const blocks: Block[] = [
+      { type: "page-index", sections: [{ id: "a", label: "A" }] },
+      { type: "doc-section", heading: "A", body: [{ kind: "text", text: "x" }] },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(container.querySelector("[data-rebar-placement-root]")).not.toBeNull();
+  });
+
+  it("renders a lone site-header block without the normal wrapping Box/Stack, so it's a clean top-level <header> landmark", () => {
+    const blocks: Block[] = [{ type: "site-header", logo: { label: "Acme" }, items: [] }];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(container.querySelector("[data-rebar-placement-root]")).toBeNull();
+    expect(container.firstElementChild?.tagName).toBe("HEADER");
+  });
+
+  it("renders a card-grid block with optional body, tags, and link per item", () => {
+    const blocks: Block[] = [
+      {
+        type: "card-grid",
+        items: [
+          { title: "Avatar", body: "Illustrated placeholder art.", href: "/components/avatar", linkLabel: "View reference →" },
+          { title: "Accordion", tags: [{ label: "No reference page", tone: "warning" }] },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Avatar")).toBeInTheDocument();
+    expect(screen.getByText("Illustrated placeholder art.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "View reference →" })).toHaveAttribute(
+      "href",
+      "/components/avatar",
+    );
+    expect(screen.getByText("Accordion")).toBeInTheDocument();
+    expect(screen.getByText("No reference page")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "View →" })).not.toBeInTheDocument();
+  });
+
+  it("renders a persona-card block", () => {
+    const blocks: Block[] = [
+      { type: "persona-card", items: [{ name: "Priya Shah", meta: "Engineering lead" }] },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Priya Shah")).toBeInTheDocument();
+    expect(screen.getByText("Engineering lead")).toBeInTheDocument();
+  });
+
+  it("renders a data-list block's extended item shape (avatar, meta, action)", () => {
+    const blocks: Block[] = [
+      {
+        type: "data-list",
+        items: [
+          {
+            title: "Priya Shah",
+            meta: "Engineering",
+            badge: "Active",
+            avatarPlaceholder: true,
+            action: { label: "View", href: "/team/priya" },
+          },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Priya Shah")).toBeInTheDocument();
+    expect(screen.getByText("Engineering")).toBeInTheDocument();
+    expect(screen.getByText("Active")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "View" })).toHaveAttribute("href", "/team/priya");
+  });
+
+  it("renders a wizard block via the real Wizard component, gating Next on a required field", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      {
+        type: "wizard",
+        steps: [
+          { label: "Team", fields: [{ kind: "text", label: "Team name", required: true }] },
+          { label: "Details", fields: [{ kind: "text", label: "Notes" }] },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    const next = screen.getByRole("button", { name: "Next" });
+    expect(next).toBeDisabled();
+    await user.type(screen.getByLabelText("Team name *"), "Rebar");
+    expect(next).toBeEnabled();
+  });
+
+  it("renders a card-kanban block with its title, columns, and cards", () => {
+    const blocks: Block[] = [
+      {
+        type: "card-kanban",
+        title: "Sprint board",
+        columns: [
+          { id: "todo", title: "To do", sections: [{ id: "todo-main", cardIds: ["a"] }] },
+          { id: "done", title: "Done", sections: [{ id: "done-main", cardIds: [] }] },
+        ],
+        cards: { a: { id: "a", title: "Write spec" } },
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Sprint board")).toBeInTheDocument();
+    expect(screen.getByText("To do")).toBeInTheDocument();
+    expect(screen.getByText("Write spec")).toBeInTheDocument();
+    expect(container.querySelector('[data-rebar-placement-block="card-kanban"]')).toBeInTheDocument();
+  });
+
+  it("shows a card-kanban block's shared-with avatars and copies a share link on click", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      {
+        type: "card-kanban",
+        title: "Sprint board",
+        sharedWith: [{ name: "Priya Shah" }],
+        shareUrl: "https://example.com/board/1",
+        columns: [{ id: "todo", title: "To do", sections: [{ id: "todo-main", cardIds: [] }] }],
+        cards: {},
+      },
+    ];
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: vi.fn().mockResolvedValue(undefined) },
+      configurable: true,
+    });
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByLabelText("Shared with Priya Shah")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Share" }));
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith("https://example.com/board/1");
+  });
+
+  it("filters a card-kanban block's visible cards via its search box", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      {
+        type: "card-kanban",
+        title: "Sprint board",
+        columns: [{ id: "todo", title: "To do", sections: [{ id: "todo-main", cardIds: ["a", "b"] }] }],
+        cards: { a: { id: "a", title: "Write spec" }, b: { id: "b", title: "Ship it" } },
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    await user.type(screen.getByLabelText("Search cards"), "write");
+    expect(screen.getByText("Write spec")).toBeInTheDocument();
+    expect(screen.queryByText("Ship it")).not.toBeInTheDocument();
+  });
+
+  it("shows a card-kanban block's board-settings button only when settingsBlocks is set", () => {
+    const base = {
+      type: "card-kanban" as const,
+      title: "Sprint board",
+      columns: [{ id: "todo", title: "To do", sections: [{ id: "todo-main", cardIds: [] }] }],
+      cards: {},
+    };
+    const withSettings = render(
+      <BlockRenderer
+        blocks={[
+          { ...base, settingsBlocks: [{ type: "banner", tone: "info", icon: "info", text: "Board settings go here" }] },
+        ]}
+      />,
+    );
+    expect(withSettings.queryByRole("button", { name: "Board settings" })).toBeInTheDocument();
+    withSettings.unmount();
+
+    const withoutSettings = render(<BlockRenderer blocks={[base]} />);
+    expect(withoutSettings.queryByRole("button", { name: "Board settings" })).not.toBeInTheDocument();
+  });
+
+  it("renders a sticky-kanban block with the same chrome as card-kanban but capped-at-3, click-to-edit stickies", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      {
+        type: "sticky-kanban",
+        title: "Retro board",
+        columns: [{ id: "board", title: "Board", sections: [{ id: "board-main", cardIds: ["a"] }] }],
+        cards: { a: { id: "a", title: "Went well" } },
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Retro board")).toBeInTheDocument();
+    expect(container.querySelector('[data-rebar-placement-block="sticky-kanban"]')).toBeInTheDocument();
+    expect(screen.getByText("Went well")).toBeInTheDocument();
+
+    await user.click(screen.getByText("Went well"));
+    expect(screen.getByRole("dialog", { name: "Edit sticky" })).toBeInTheDocument();
   });
 
   it("renders a banner block with an action label", () => {
@@ -154,6 +449,143 @@ describe("BlockRenderer", () => {
     expect(screen.getByText("Team")).toBeInTheDocument();
     expect(screen.getByText("Priya Shah")).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "Select" })).toHaveLength(2);
+  });
+
+  it("renders a table block via the real Table component, sortable by default", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      {
+        type: "table",
+        columns: ["Team"],
+        rows: [{ cells: ["Zebra"] }, { cells: ["Alpha"] }],
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(container.querySelector('[data-rebar-component="table"]')).toBeInTheDocument();
+    const cellsInOrder = () => Array.from(container.querySelectorAll("tbody td")).map((el) => el.textContent);
+    expect(cellsInOrder()).toEqual(["Zebra", "Alpha"]);
+
+    await user.click(screen.getByRole("columnheader", { name: /Team/ }).querySelector("button")!);
+    expect(cellsInOrder()).toEqual(["Alpha", "Zebra"]);
+  });
+
+  it("filters a table block's rows via its own search box", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      {
+        type: "table",
+        columns: ["Team", "Lead"],
+        searchPlaceholder: "Search teams...",
+        rows: [
+          { cells: ["Engineering", "Priya Shah"] },
+          { cells: ["Design", "Marcus Webb"] },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    await user.type(screen.getByPlaceholderText("Search teams..."), "priya");
+    expect(screen.getByText("Engineering")).toBeInTheDocument();
+    expect(screen.queryByText("Design")).not.toBeInTheDocument();
+  });
+
+  it("filters a table block's rows via a named exact-match filter, collapsing extras into a More filters popover", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      {
+        type: "table",
+        columns: ["Team", "Status"],
+        rows: [
+          { cells: ["Engineering", "Active"] },
+          { cells: ["Design", "Archived"] },
+        ],
+        filters: [
+          { label: "Status", columnIndex: 1, options: ["Active", "Archived"] },
+          { label: "Extra 1", columnIndex: 0, options: ["Engineering"] },
+          { label: "Extra 2", columnIndex: 0, options: ["Design"] },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    // First filter renders inline; with 3 filters and an inline limit of 2, the rest collapse
+    // behind a "More filters" trigger.
+    expect(screen.getByRole("combobox", { name: "Status" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "More filters" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "More filters" }));
+    expect(screen.getByRole("combobox", { name: "Extra 1" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("combobox", { name: "Status" }));
+    await user.click(screen.getByRole("option", { name: "Active" }));
+    expect(screen.getByText("Engineering")).toBeInTheDocument();
+    expect(screen.queryByText("Design")).not.toBeInTheDocument();
+  });
+
+  it("adds a row to a table block via its own add-row form, without persisting past the local view", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      {
+        type: "table",
+        columns: ["Team", "Lead"],
+        rows: [{ cells: ["Engineering", "Priya Shah"] }],
+        addable: { label: "Add team" },
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    await user.click(screen.getByRole("button", { name: "Add team" }));
+    await user.type(screen.getByRole("textbox", { name: "Team" }), "Design");
+    await user.type(screen.getByRole("textbox", { name: "Lead" }), "Marcus Webb");
+    await user.click(screen.getByRole("button", { name: "Add team" }));
+    expect(screen.getByText("Design")).toBeInTheDocument();
+    expect(screen.getByText("Marcus Webb")).toBeInTheDocument();
+  });
+
+  it("exports a table block's currently visible rows as a downloaded CSV", async () => {
+    const user = userEvent.setup();
+    const createObjectURL = vi.fn().mockReturnValue("blob:mock");
+    const revokeObjectURL = vi.fn();
+    Object.assign(URL, { createObjectURL, revokeObjectURL });
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    const blobParts: string[] = [];
+    const BlobSpy = vi.spyOn(globalThis, "Blob").mockImplementation((parts?: BlobPart[]) => {
+      blobParts.push(String(parts?.[0] ?? ""));
+      return {} as Blob;
+    });
+
+    const blocks: Block[] = [
+      {
+        type: "table",
+        columns: ["Team", "Lead"],
+        rows: [{ cells: ["Engineering", "Priya Shah"] }],
+        exportable: true,
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    await user.click(screen.getByRole("button", { name: "Export CSV" }));
+    expect(createObjectURL).toHaveBeenCalledTimes(1);
+    expect(blobParts[0]).toBe("Team,Lead\r\nEngineering,Priya Shah");
+    expect(clickSpy).toHaveBeenCalledTimes(1);
+    expect(revokeObjectURL).toHaveBeenCalledWith("blob:mock");
+    clickSpy.mockRestore();
+    BlobSpy.mockRestore();
+  });
+
+  it("copies a table block's currently visible rows to the clipboard as tab-separated values", async () => {
+    const user = userEvent.setup();
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: vi.fn().mockResolvedValue(undefined) },
+      configurable: true,
+    });
+    const blocks: Block[] = [
+      {
+        type: "table",
+        columns: ["Team", "Lead"],
+        rows: [{ cells: ["Engineering", "Priya Shah"] }],
+        copyable: true,
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    await user.click(screen.getByRole("button", { name: "Copy" }));
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith("Team\tLead\nEngineering\tPriya Shah");
+    expect(await screen.findByRole("button", { name: "Copied!" })).toBeInTheDocument();
   });
 
   it("renders a data-list block with a badge per item", () => {
@@ -305,6 +737,18 @@ describe("BlockRenderer", () => {
     expect(screen.getByText("No code changes, just a theme swap.")).toBeInTheDocument();
   });
 
+  it("renders a doc-section block's heading at level 1, for a page's own title", () => {
+    const blocks: Block[] = [{ type: "doc-section", heading: "Page Title", level: 1, body: [{ kind: "text", text: "Intro." }] }];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("heading", { level: 1, name: "Page Title" })).toBeInTheDocument();
+  });
+
+  it("defaults a doc-section block's heading to level 2 when level is omitted", () => {
+    const blocks: Block[] = [{ type: "doc-section", heading: "Section", body: [{ kind: "text", text: "Text." }] }];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("heading", { level: 2, name: "Section" })).toBeInTheDocument();
+  });
+
   it("renders a doc-section block's prose, code, and list nodes in order", () => {
     const blocks: Block[] = [
       {
@@ -329,6 +773,7 @@ describe("BlockRenderer", () => {
     }
     expect(texts).toEqual([
       "1. Install",
+      "Copy",
       "npm install rebar-ui",
       "Swap",
       "@rebar-ui/theme-sketch",
@@ -350,6 +795,26 @@ describe("BlockRenderer", () => {
       "href",
       "/components",
     );
+  });
+
+  it("parses inline *emphasis* markup in doc-section prose, in both text and list items", () => {
+    const blocks: Block[] = [
+      {
+        type: "doc-section",
+        body: [
+          { kind: "text", text: "This is *emphasized* text." },
+          { kind: "list", items: ["An *emphasized* list item."] },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    const emphasized = screen.getAllByText("emphasized");
+    expect(emphasized).toHaveLength(2);
+    for (const el of emphasized) {
+      expect(el.tagName).toBe("EM");
+    }
+    // The asterisks themselves must not leak through as literal characters.
+    expect(screen.queryByText(/\*/)).not.toBeInTheDocument();
   });
 
   it("renders a props-table block with prop rows", () => {
@@ -385,5 +850,395 @@ describe("BlockRenderer", () => {
       "data-rebar-block-path",
       "blocks[0]",
     );
+  });
+
+  it("renders an iframe block with its src, title, and a default height when none is set", () => {
+    const blocks: Block[] = [{ type: "iframe", src: "https://example.com", title: "Migrated build" }];
+    render(<BlockRenderer blocks={blocks} />);
+    const iframe = screen.getByTitle("Migrated build");
+    expect(iframe.tagName).toBe("IFRAME");
+    expect(iframe).toHaveAttribute("src", "https://example.com");
+    expect(iframe).toHaveStyle({ height: "300px" });
+  });
+
+  it("respects an iframe block's own explicit height", () => {
+    const blocks: Block[] = [{ type: "iframe", src: "https://example.com", title: "Migrated build", height: 480 }];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByTitle("Migrated build")).toHaveStyle({ height: "480px" });
+  });
+
+  it("renders a comparison block's two labeled panels with their own nested blocks, in DOM order", () => {
+    const blocks: Block[] = [
+      {
+        type: "comparison",
+        leftLabel: "Rebar",
+        leftBlocks: [{ type: "checklist", heading: "Checklist", items: ["One", "Two"] }],
+        rightLabel: "Ant Design",
+        rightBlocks: [{ type: "iframe", src: "https://example.com", title: "antd build" }],
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Rebar")).toBeInTheDocument();
+    expect(screen.getByText("Ant Design")).toBeInTheDocument();
+    expect(screen.getByText("One")).toBeInTheDocument();
+    expect(screen.getByTitle("antd build")).toBeInTheDocument();
+
+    const labels = Array.from(container.querySelectorAll('[data-rebar-placement-block="comparison"] > * > p')).map(
+      (el) => el.textContent,
+    );
+    expect(labels).toEqual(["Rebar", "Ant Design"]);
+  });
+
+  it("tags a comparison block and its nested left/right blocks with schema-shaped paths", () => {
+    const blocks: Block[] = [
+      {
+        type: "comparison",
+        leftLabel: "Rebar",
+        leftBlocks: [{ type: "checklist", heading: "Checklist", items: ["One"] }],
+        rightLabel: "Ant Design",
+        rightBlocks: [{ type: "iframe", src: "https://example.com", title: "antd build" }],
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(container.querySelector('[data-rebar-placement-block="comparison"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0]",
+    );
+    expect(container.querySelector('[data-rebar-placement-block="checklist"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0].leftBlocks[0]",
+    );
+    expect(container.querySelector('[data-rebar-placement-block="iframe"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0].rightBlocks[0]",
+    );
+  });
+
+  it("renders a heuristic block's title, rule, rationale, code sample, and anchor id", () => {
+    const blocks: Block[] = [
+      {
+        type: "heuristic",
+        id: "recognition",
+        title: "1. Recognition over recall",
+        rule: "Labels above inputs, visible options over hidden menus.",
+        rationale: [{ kind: "text", text: "From `Nielsen`'s heuristics — see [the source](https://example.com)." }],
+        code: '{ type: "form" }',
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("heading", { name: "1. Recognition over recall" })).toBeInTheDocument();
+    expect(document.getElementById("recognition")).toContainElement(
+      screen.getByRole("heading", { name: "1. Recognition over recall" }),
+    );
+    expect(screen.getByText("Labels above inputs, visible options over hidden menus.")).toBeInTheDocument();
+    expect(screen.getByText("Nielsen", { selector: "code" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "the source" })).toHaveAttribute("href", "https://example.com");
+    expect(screen.getByText('{ type: "form" }')).toBeInTheDocument();
+    expect(container.querySelector('[data-rebar-placement-block="heuristic"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0]",
+    );
+  });
+
+  it("renders a heuristic block's optional live exampleBlocks recursively, and omits the demo box when absent", () => {
+    const withExample: Block[] = [
+      {
+        type: "heuristic",
+        id: "consistency",
+        title: "2. Consistency",
+        rule: "One token set.",
+        rationale: [{ kind: "text", text: "Rationale text." }],
+        exampleBlocks: [{ type: "checklist", heading: "Checklist", items: ["One"] }],
+      },
+    ];
+    const { container: withExampleContainer } = render(<BlockRenderer blocks={withExample} />);
+    expect(withExampleContainer.querySelector('[data-rebar-placement-block="checklist"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0].exampleBlocks[0]",
+    );
+
+    const withoutExample: Block[] = [
+      {
+        type: "heuristic",
+        id: "no-example",
+        title: "No example",
+        rule: "Rule.",
+        rationale: [{ kind: "text", text: "Rationale text." }],
+      },
+    ];
+    const { container: withoutExampleContainer } = render(<BlockRenderer blocks={withoutExample} />);
+    expect(withoutExampleContainer.querySelector('[data-rebar-placement-block="checklist"]')).toBeNull();
+  });
+
+  it("renders a spin-card block's items inside a real Spin/Card, with its own tip and sizing", () => {
+    const blocks: Block[] = [
+      { type: "spin-card", tip: "Fetching", items: ["Project A", "Project B", "Project C"], width: 220, minHeight: 120 },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Project A")).toBeInTheDocument();
+    expect(screen.getByText("Project B")).toBeInTheDocument();
+    expect(screen.getByText("Project C")).toBeInTheDocument();
+    expect(screen.getByText("Fetching")).toBeInTheDocument();
+    expect(container.querySelector('[data-rebar-placement-block="spin-card"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0]",
+    );
+    expect(container.querySelector('[data-rebar-block-path="blocks[0].items[1]"]')).toHaveTextContent("Project B");
+  });
+
+  it("defaults a spin-card block's tip when omitted", () => {
+    const blocks: Block[] = [{ type: "spin-card", items: ["Row"] }];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Loading")).toBeInTheDocument();
+  });
+
+  it("renders a site-header block's logo, nav-bar, and no trailing content when trailing is omitted", () => {
+    const blocks: Block[] = [
+      {
+        type: "site-header",
+        logo: { label: "Acme", href: "/" },
+        items: [{ label: "Docs", href: "/docs" }],
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Acme")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Acme" })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("navigation", { name: "Main" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Docs" })).toHaveAttribute("href", "/docs");
+    const root = container.querySelector('[data-rebar-placement-block="site-header"]');
+    expect(root?.tagName).toBe("HEADER");
+    expect(root).toHaveAttribute("data-rebar-block-path", "blocks[0]");
+  });
+
+  it("renders a site-header block's text trailing content", () => {
+    const blocks: Block[] = [
+      {
+        type: "site-header",
+        logo: { label: "Acme" },
+        items: [{ label: "Docs", href: "/docs" }],
+        trailing: { kind: "text", text: "v1.0.0" },
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("v1.0.0")).toBeInTheDocument();
+  });
+
+  it("renders a site-header block's login trailing content as a real link when href is set", () => {
+    const blocks: Block[] = [
+      {
+        type: "site-header",
+        logo: { label: "Acme" },
+        items: [{ label: "Docs", href: "/docs" }],
+        trailing: { kind: "login", label: "Sign in", href: "/login" },
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/login");
+  });
+
+  it("renders a site-header block's avatar trailing content", () => {
+    const blocks: Block[] = [
+      {
+        type: "site-header",
+        logo: { label: "Acme" },
+        items: [{ label: "Docs", href: "/docs" }],
+        trailing: { kind: "avatar", name: "Jane Doe", href: "/account" },
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("link", { name: "Jane Doe" })).toHaveAttribute("href", "/account");
+  });
+
+  it("omits the theme toggle when themeToggle is unset", () => {
+    const blocks: Block[] = [{ type: "site-header", logo: { label: "Acme" }, items: [] }];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.queryByRole("button", { name: "Theme" })).not.toBeInTheDocument();
+  });
+
+  it("shows the real ThemeToggle component alongside its own trailing content when themeToggle is set", () => {
+    const blocks: Block[] = [
+      {
+        type: "site-header",
+        logo: { label: "Acme" },
+        items: [],
+        trailing: { kind: "text", text: "v1.0" },
+        themeToggle: true,
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("v1.0")).toBeInTheDocument();
+    expect(container.querySelector('[data-rebar-component="theme-toggle"]')).toBeInTheDocument();
+    // ThemeToggle's own toggling behavior (data-rebar-theme/data-theme/data-rebar-bionic) is
+    // covered by its own component tests (packages/core) — this only confirms the block wires it.
+  });
+
+  it("renders a scatter-chart block with its series and title", () => {
+    const blocks: Block[] = [
+      {
+        type: "scatter-chart",
+        title: "Token cost",
+        series: [
+          { label: "antd", values: [10, 11] },
+          { label: "rebar-ui", values: [8, 9] },
+        ],
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("img", { name: "Token cost" })).toBeInTheDocument();
+    expect(screen.getByText("Token cost")).toBeInTheDocument();
+    expect(container.querySelectorAll("circle")).toHaveLength(4);
+    expect(container.querySelector('[data-rebar-placement-block="scatter-chart"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0]",
+    );
+  });
+
+  it("filters a scatter-chart block's series via its own filter footer, and omits the footer for a single series", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      {
+        type: "scatter-chart",
+        series: [
+          { label: "antd", values: [10, 11] },
+          { label: "rebar-ui", values: [8, 9] },
+        ],
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(container.querySelectorAll("circle")).toHaveLength(4);
+
+    await user.click(screen.getByRole("button", { name: "rebar-ui" }));
+    expect(container.querySelectorAll("circle")).toHaveLength(2);
+    expect(screen.getByRole("button", { name: "rebar-ui" })).toHaveAttribute("aria-pressed", "false");
+
+    const single = render(<BlockRenderer blocks={[{ type: "scatter-chart", series: [{ label: "antd", values: [1] }] }]} />);
+    expect(within(single.container).queryByRole("button", { name: "antd" })).not.toBeInTheDocument();
+  });
+
+  it("renders a line-chart block with a crossover marker", () => {
+    const blocks: Block[] = [
+      {
+        type: "line-chart",
+        title: "Cumulative cost",
+        xLabels: ["R0", "R1"],
+        crossoverIndex: 1,
+        series: [
+          { label: "antd", values: [10, 20] },
+          { label: "rebar-ui + migration", values: [15, 18], dashed: true },
+        ],
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("img", { name: "Cumulative cost" })).toBeInTheDocument();
+    expect(screen.getByText("crossover")).toBeInTheDocument();
+    expect(container.querySelector('[data-rebar-placement-block="line-chart"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0]",
+    );
+  });
+
+  it("filters a line-chart block's series via its own filter footer", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      {
+        type: "line-chart",
+        xLabels: ["R0", "R1"],
+        series: [
+          { label: "antd", values: [10, 20] },
+          { label: "rebar-ui", values: [15, 18] },
+        ],
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(container.querySelectorAll("polyline")).toHaveLength(2);
+
+    await user.click(screen.getByRole("button", { name: "antd" }));
+    expect(container.querySelectorAll("polyline")).toHaveLength(1);
+    expect(screen.getByRole("button", { name: "antd" })).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByRole("button", { name: "rebar-ui" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("renders a stacked-bar-chart block with its bars and total labels", () => {
+    const blocks: Block[] = [
+      {
+        type: "stacked-bar-chart",
+        title: "Cost composition",
+        bars: [
+          {
+            label: "Hire developers",
+            segments: [{ label: "Build", value: 16800 }],
+          },
+        ],
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("img", { name: "Cost composition" })).toBeInTheDocument();
+    expect(screen.getByText("Hire developers")).toBeInTheDocument();
+    expect(screen.getByText("$16,800")).toBeInTheDocument();
+    expect(container.querySelector('[data-rebar-placement-block="stacked-bar-chart"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0]",
+    );
+  });
+
+  it("filters a stacked-bar-chart block's segment labels across every bar at once", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      {
+        type: "stacked-bar-chart",
+        bars: [
+          { label: "2024", segments: [{ label: "Build", value: 100 }, { label: "Support", value: 20 }] },
+          { label: "2025", segments: [{ label: "Build", value: 80 }, { label: "Support", value: 30 }] },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("$120")).toBeInTheDocument(); // 2024 total: 100+20
+    expect(screen.getByText("$110")).toBeInTheDocument(); // 2025 total: 80+30
+
+    await user.click(screen.getByRole("button", { name: "Support" }));
+    expect(screen.getByText("$100")).toBeInTheDocument(); // 2024 total, Support removed
+    expect(screen.getByText("$80")).toBeInTheDocument(); // 2025 total, Support removed
+    expect(screen.queryByText("$120")).not.toBeInTheDocument();
+  });
+
+  it("renders a stats-table block's headers and rows through the real Table component", () => {
+    const blocks: Block[] = [
+      {
+        type: "stats-table",
+        headers: ["Condition", "Mean", "Std. dev."],
+        rows: [
+          ["antd", "31,231", "294"],
+          ["rebar-ui", "30,211", "28.6"],
+        ],
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByRole("columnheader", { name: "Mean" })).toBeInTheDocument();
+    expect(screen.getByText("31,231")).toBeInTheDocument();
+    expect(screen.getByText("rebar-ui")).toBeInTheDocument();
+    expect(container.querySelector('[data-rebar-placement-block="stats-table"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0]",
+    );
+  });
+
+  it("renders a gallery block as a labeled Carousel of numbered screenshots", () => {
+    const blocks: Block[] = [
+      { type: "gallery", label: "antd", dir: "/shots", prefix: "antd-text", count: 3 },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("antd")).toBeInTheDocument();
+    const images = container.querySelectorAll("img");
+    expect(images).toHaveLength(3);
+    expect(images[0]).toHaveAttribute("src", "/shots/antd-text-01.png");
+    expect(images[0]).toHaveAttribute("alt", "antd, run 01");
+    expect(container.querySelector('[data-rebar-placement-block="gallery"]')).toBeInTheDocument();
+  });
+
+  it("defaults a gallery block's count to 15", () => {
+    const blocks: Block[] = [{ type: "gallery", label: "rebar-ui", dir: "/shots", prefix: "rebar-text" }];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(container.querySelectorAll("img")).toHaveLength(15);
   });
 });

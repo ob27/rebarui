@@ -1,9 +1,19 @@
-import { Heading, Stack, Text } from "rebar-ui";
 import type { Block } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const BLOCKS: Block[] = [
+  {
+    type: "doc-section",
+    heading: "Theming & Defaults",
+    level: 1,
+    body: [
+      {
+        kind: "text",
+        text: "Rebar bakes in defaults so you never make a spacing, color, or type-scale decision unless you choose to. Every value below is a CSS custom property — fully overridable, but chosen so most projects never need to. The behavioral guidance (not the CSS specifics) is also published standalone as `HEURISTICS.md` in the repo root — copy it into any project, Rebar or not, as a design-defaults reference for developers or an AI coding agent.",
+      },
+    ],
+  },
   {
     type: "doc-section",
     heading: "Spacing — 8pt grid",
@@ -80,18 +90,5 @@ const BLOCKS: Block[] = [
 ];
 
 export default function TheimingPage() {
-  return (
-    <Stack gap="lg">
-      <Heading level={1}>Theming & Defaults</Heading>
-      <Text>
-        Rebar bakes in defaults so you never make a spacing, color, or type-scale decision unless
-        you choose to. Every value below is a CSS custom property — fully overridable, but chosen
-        so most projects never need to. The behavioral guidance (not the CSS specifics) is also
-        published standalone as <code>HEURISTICS.md</code> in the repo root — copy it into any
-        project, Rebar or not, as a design-defaults reference for developers or an AI coding
-        agent.
-      </Text>
-      <NextBlockRenderer blocks={BLOCKS} />
-    </Stack>
-  );
+  return <NextBlockRenderer blocks={BLOCKS} />;
 }

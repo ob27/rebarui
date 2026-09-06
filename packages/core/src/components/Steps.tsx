@@ -1,4 +1,5 @@
 import { forwardRef } from "react";
+import type { ReactNode } from "react";
 import clsx from "clsx";
 import { renderBionicChildren, useAmbientBionic } from "../bionic";
 import type { BionicOptions } from "../bionic";
@@ -9,6 +10,10 @@ export interface StepItem {
   title: string;
   description?: string;
   status?: StepStatus;
+  /** Overrides the icon slot's default (a 1-based index, or ✓/✕ for finish/error) — e.g. a
+   * `Wizard`'s overflow window uses this to show a step's real, absolute number rather than its
+   * position within the shortened list, or a glyph for a "N done"/"N todo" bucket item. */
+  icon?: ReactNode;
 }
 
 export interface StepsProps {
@@ -53,7 +58,7 @@ export const Steps = forwardRef<HTMLOListElement, StepsProps>(function Steps(
             aria-current={status === "process" ? "step" : undefined}
           >
             <span className="rebar-steps-icon" data-rebar-part="icon" aria-hidden="true">
-              {status === "finish" ? "✓" : status === "error" ? "✕" : index + 1}
+              {item.icon ?? (status === "finish" ? "✓" : status === "error" ? "✕" : index + 1)}
             </span>
             <span className="rebar-steps-content" data-rebar-part="content">
               <span className="rebar-steps-title">

@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
 import { Spin } from "../components/Spin";
 import { DRUM_ROLL_SPINNER, DRUM_ROLL_SPINNER_DARK } from "../assets/drumRollSpinner";
 import { HOURGLASS_SPINNER, HOURGLASS_SPINNER_DARK } from "../assets/hourglassSpinner";
@@ -83,5 +83,30 @@ describe("Spin", () => {
     );
     expect(screen.getByText("Project list").parentElement).toHaveAttribute("aria-busy", "false");
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  describe("bionic reading on the tip", () => {
+    afterEach(() => {
+      cleanup();
+      document.documentElement.removeAttribute("data-rebar-bionic");
+    });
+
+    it("renders the tip plainly by default", () => {
+      const { container } = render(<Spin tip="Loading" />);
+      expect(container.querySelector(".rebar-bionic-fixation")).not.toBeInTheDocument();
+      expect(screen.getByText("Loading")).toBeInTheDocument();
+    });
+
+    it("follows the ambient data-rebar-bionic attribute", () => {
+      document.documentElement.setAttribute("data-rebar-bionic", "true");
+      const { container } = render(<Spin tip="Loading" />);
+      expect(container.querySelector(".rebar-bionic-fixation")).toBeInTheDocument();
+    });
+
+    it("lets an explicit bionic prop override the ambient setting", () => {
+      document.documentElement.setAttribute("data-rebar-bionic", "true");
+      const { container } = render(<Spin tip="Loading" bionic={false} />);
+      expect(container.querySelector(".rebar-bionic-fixation")).not.toBeInTheDocument();
+    });
   });
 });

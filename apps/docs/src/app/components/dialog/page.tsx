@@ -75,6 +75,35 @@ export default function DialogPage() {
         </Dialog>
       </LivePreview>
 
+      <Heading level={2}>Flags</Heading>
+      <Text color="secondary">
+        <code>activeBorder</code> (an animated drop-target signal, ref/HEURISTICS.md #47),{" "}
+        <code>autoDismiss</code> (closes itself after N ms), and <code>fullscreen</code> (fills the
+        viewport, no dead backdrop margin).
+      </Text>
+      <LivePreview>
+        <Stack direction="row" gap="md" style={{ flexWrap: "wrap" }}>
+          <Dialog
+            trigger={<Button>Active border</Button>}
+            title="Active border"
+            activeBorder
+            footer={<Button variant="secondary">Close</Button>}
+          >
+            <Text size="sm">This dialog has the animated active-border signal turned on.</Text>
+          </Dialog>
+          <Dialog
+            trigger={<Button>Auto-dismiss (2s)</Button>}
+            title="Closing soon"
+            autoDismiss={2000}
+          >
+            <Text size="sm">This dialog closes itself after 2 seconds — no button needed.</Text>
+          </Dialog>
+          <Dialog trigger={<Button>Fullscreen</Button>} title="Fullscreen" fullscreen>
+            <Text size="sm">This dialog fills the entire viewport, with no visible backdrop.</Text>
+          </Dialog>
+        </Stack>
+      </LivePreview>
+
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

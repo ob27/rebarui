@@ -3,6 +3,10 @@
 Headless-first, low-fidelity React components (real Radix UI underneath, styled via `--rebar-*`
 CSS custom properties).
 
+Read `robot.md` (ships in this package) first — a single compressed context file covering
+Framework Rules vs. Heuristics, component/block-authoring conventions, and using
+`@rebar-ui/placement` to build a page. What follows here is a narrower, component-only excerpt.
+
 Building a whole page or screen? Use `@rebar-ui/placement` instead of hand-authoring JSX against
 these components directly — measured cheaper, faster, and more consistent than both hand-authored
 rebar-ui and hand-authored Ant Design. See that package's own llms.txt/README. What follows is for

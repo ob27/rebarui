@@ -40,6 +40,20 @@ describe("AspectRatio", () => {
     const second = (screen.getByAltText("Second") as HTMLImageElement).src;
     expect(first).not.toBe(second);
   });
+
+  it("wraps the image in a real Watermark overlay when set", () => {
+    const { container } = render(
+      <AspectRatio src="https://example.com/photo.jpg" alt="Licensed photo" watermark="© Example Co." />,
+    );
+    const watermark = container.querySelector('[data-rebar-component="watermark"]');
+    expect(watermark).toBeInTheDocument();
+    expect(screen.getByAltText("Licensed photo")).toBeInTheDocument();
+  });
+
+  it("omits the watermark overlay by default", () => {
+    const { container } = render(<AspectRatio src="https://example.com/photo.jpg" />);
+    expect(container.querySelector('[data-rebar-component="watermark"]')).not.toBeInTheDocument();
+  });
 });
 
 describe("resolveRatioPlaceholder", () => {

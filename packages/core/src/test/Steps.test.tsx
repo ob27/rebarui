@@ -37,4 +37,9 @@ describe("Steps", () => {
     render(<Steps items={[{ title: "Team", description: "Pick a team" }]} />);
     expect(screen.getByText("Pick a team")).toBeInTheDocument();
   });
+
+  it("lets an explicit icon override the derived index/✓/✕", () => {
+    const { container } = render(<Steps items={[{ title: "Bucket", status: "wait", icon: "⋯" }]} />);
+    expect(container.querySelector('[data-rebar-part="icon"]')).toHaveTextContent("⋯");
+  });
 });

@@ -1,5 +1,10 @@
 # Agent guidance for `rebar-ui`
 
+**Read `robot.md` first** (ships alongside this file) — a single compressed context covering
+Framework Rules vs. Heuristics, component/block-authoring conventions, using `@rebar-ui/placement`
+to build a page, and the full component/block catalogs. Everything below is a narrower, component-
+only excerpt of it.
+
 **Building a whole page or screen?** Use `@rebar-ui/placement` instead of hand-authoring JSX
 against these components directly — measured cheaper, faster, and more consistent than both
 hand-authored `rebar-ui` and hand-authored Ant Design. See that package's `AGENTS.md`/README.

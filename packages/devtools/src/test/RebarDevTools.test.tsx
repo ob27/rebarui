@@ -6,6 +6,8 @@ import { RebarDevTools } from "../RebarDevTools";
 afterEach(() => {
   document.documentElement.removeAttribute("data-rebar-theme");
   document.documentElement.removeAttribute("data-theme");
+  document.documentElement.removeAttribute("data-rebar-bionic");
+  localStorage.clear();
 });
 
 describe("RebarDevTools", () => {
@@ -65,6 +67,38 @@ describe("RebarDevTools", () => {
 
     await user.click(screen.getByRole("checkbox", { name: "Dark mode" }));
     expect(document.documentElement).not.toHaveAttribute("data-theme");
+  });
+
+  it("persists theme/dark/bionic choices in localStorage so they survive a real page refresh", async () => {
+    // Regression test: these three toggles used to live only in React state with no persistence
+    // at all — dark/bionic were hardcoded to false on every mount, and theme's "read the current
+    // DOM attribute" trick only helped across a client-side navigation within the same document,
+    // never a real hard refresh (which serves fresh HTML with none of these attributes baked in).
+    const user = userEvent.setup();
+    const { unmount } = render(<RebarDevTools forceEnabled />);
+    await user.click(screen.getByRole("button", { name: "Rebar DevTools" }));
+
+    await user.click(screen.getByRole("radio", { name: "Sketch theme" }));
+    await user.click(screen.getByRole("checkbox", { name: "Dark mode" }));
+    await user.click(screen.getByRole("checkbox", { name: "Bionic reading" }));
+
+    unmount();
+    // Simulate what a real hard refresh presents: a fresh document with none of these attributes
+    // carried over (a real browser reload does NOT clear localStorage, only in-memory state and
+    // whatever attributes JS had set on the previous document).
+    document.documentElement.removeAttribute("data-rebar-theme");
+    document.documentElement.removeAttribute("data-theme");
+    document.documentElement.removeAttribute("data-rebar-bionic");
+
+    render(<RebarDevTools forceEnabled />);
+    await user.click(screen.getByRole("button", { name: "Rebar DevTools" }));
+
+    expect(document.documentElement).toHaveAttribute("data-rebar-theme", "sketch");
+    expect(document.documentElement).toHaveAttribute("data-theme", "dark");
+    expect(document.documentElement).toHaveAttribute("data-rebar-bionic", "true");
+    expect(screen.getByRole("radio", { name: "Sketch theme" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Dark mode" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Bionic reading" })).toBeChecked();
   });
 
   it("shows the 8pt grid overlay only once toggled on", async () => {

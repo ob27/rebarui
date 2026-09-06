@@ -1,18 +1,21 @@
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
-import { Box, Button, Card, Heading, Stack, Text } from "rebar-ui";
+import { Box, Button, Card, CodeBlock, Heading, Stack, Text } from "rebar-ui";
 import type { Block, FeatureGridItem, PillarGridItem } from "@rebar-ui/placement";
-import { MigrationComparison } from "@/components/MigrationComparison";
+import { ComparisonDemo } from "@/components/ComparisonDemo";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 // This homepage is itself built through the placement layer (the "RebarUI DSL Packer"), not
 // hand-authored Rebar components — the hero, both section headers, the feature row, the
-// three-pillars grid, and the "get started" section below are all `BlockRenderer` output from
-// plain Block[] documents, the same mechanism /benchmarks measures and /docs/heuristics explains.
-// Proof-by-existence, per ref/MARKETING_SITE.md: this site really is built the way it says Rebar
-// is meant to be used, not just described that way. `Section` (page-chrome padding/background) and
-// `LivePreview` (a genuinely interactive, theme-toggling demo) are the two things the Packer
-// itself is built from, or can't express as static content — they stay hand-authored.
+// three-pillars grid, the migration comparison (a `comparison` block, both sides real: the Rebar
+// side rendered live, the antd side a real separate build embedded via an `iframe` block), and the
+// "get started" section below are all `BlockRenderer` output from plain Block[] documents, the same
+// mechanism /benchmarks measures and /docs/heuristics explains. Proof-by-existence, per
+// ref/MARKETING_SITE.md: this site really is built the way it says Rebar is meant to be used, not
+// just described that way. `Section` (page-chrome padding/background) is the one thing the Packer
+// itself is built from and stays hand-authored; `ComparisonDemo` isn't hand-drawn content either —
+// it's a thin client wrapper that keeps the comparison's iframe src in sync with the ambient theme
+// toggle, then hands the resulting `Block[]` straight to the Packer like everything else here.
 
 const HERO_BLOCKS: Block[] = [
   {
@@ -72,7 +75,7 @@ const COMPOSITE_DEMO_BLOCKS: Block[] = [
     ],
   },
   // The full Composite-tier spec also has a "New Project" modal — deliberately left out of this
-  // live demo. The `modal` archetype always renders forced-open (see /docs/heuristics#control for
+  // live demo. The `modal` block always renders forced-open (see /docs/heuristics#control for
   // why), which is correct for a benchmark scaffold that's the whole page, but would cover this
   // entire homepage as a fixed overlay here. The antd screenshot on the right still shows it —
   // that's a real difference between "a live demo embedded in a bigger page" and "the whole spec."
@@ -146,8 +149,10 @@ export default function Home() {
       <Section tone="muted">
         <Stack gap="xl">
           <NextBlockRenderer blocks={THEME_SECTION_HEADER} />
-          <MigrationComparison
-            rebar={<NextBlockRenderer blocks={COMPOSITE_DEMO_BLOCKS} />}
+          <ComparisonDemo
+            leftLabel="Rebar (live — toggle the theme via 🔧 DevTools)"
+            leftBlocks={COMPOSITE_DEMO_BLOCKS}
+            rightLabel="→ migrated to Ant Design (live — a real, separate build)"
             iframeSrc="/demos/antd-composite/index.html"
             iframeTitle="The same list view, built directly in Ant Design — a real, separately-built live app, not a screenshot"
           />
@@ -160,7 +165,7 @@ export default function Home() {
             from the full spec, so the comparison is of the same thing on both sides — see the
             modal itself, live and properly closable, on the{" "}
             <a href="/components/dialog" className="rebar-link">Dialog reference page</a>. Same underlying spec as the{" "}
-            <a href="/benchmarks#tiers" className="rebar-link">Composite tier</a> benchmark.
+            <a href="/benchmarks/tiers" className="rebar-link">Composite tier</a> benchmark.
           </Text>
         </Stack>
       </Section>
@@ -176,17 +181,8 @@ export default function Home() {
         <Card>
           <Stack gap="md">
             <Heading level={2}>Get started</Heading>
-            <Box
-              as="pre"
-              style={{
-                background: "var(--rebar-color-bg-secondary, #f5f5f5)",
-                padding: "var(--rebar-space-md)",
-                borderRadius: 4,
-                overflowX: "auto",
-                margin: 0,
-              }}
-            >
-              <code>{`npm install rebar-ui @rebar-ui/theme-sketch
+            <CodeBlock
+              code={`npm install rebar-ui @rebar-ui/theme-sketch
 
 import "rebar-ui/style.css";
 import "@rebar-ui/theme-sketch/theme.css";
@@ -194,8 +190,8 @@ import { Button } from "rebar-ui";
 
 <html data-rebar-theme="sketch">
   <Button variant="primary">Ship it</Button>
-</html>`}</code>
-            </Box>
+</html>`}
+            />
             <Stack direction="row" gap="md">
               <Link href="/docs/getting-started">
                 <Button variant="primary">Read the docs</Button>

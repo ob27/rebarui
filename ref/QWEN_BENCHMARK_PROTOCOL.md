@@ -11,6 +11,10 @@ model** than the one that produced the numbers currently published there (Claude
 instructions — it should be able to execute this without any other context from this repo's
 history, though it does need working code access to a `rebar-ui` + `antd` environment (see Setup).
 
+See `ref/BENCHMARK_CONTRIBUTING.md` for the general rules this protocol is one worked example
+of (n=15, isolation, verification, stats, harness-adjustment) — read it first if you're adapting
+this protocol to a different model/spec rather than reproducing it exactly as written.
+
 ## Why this matters — the actual research question
 
 The current `/benchmarks` findings are all measured on one model. There's a real open question

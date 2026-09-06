@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
 import { toBionicSegments } from "../bionic";
 import { Text } from "../components/Text";
 import { Heading } from "../components/Heading";
@@ -107,6 +108,44 @@ describe("Text and Heading bionic support", () => {
     document.documentElement.setAttribute("data-rebar-bionic", "true");
     const { container } = render(<Box as="span">Revisions</Box>);
     expect(container.querySelector(".rebar-bionic-fixation")).toBeInTheDocument();
+  });
+
+  it("doesn't remount a non-string child (losing its own internal state) when ambient bionic toggles on", async () => {
+    // Real, hit-directly bug: Children.map (used to split string children) re-keys every child
+    // it processes, even ones it leaves untouched — calling it unconditionally the moment bionic
+    // turns on silently changed a non-string child's React key, so React treated it as a new
+    // element and remounted it, discarding whatever internal state it had (e.g. closed an open
+    // popover). A stateful counter child proves identity survives the toggle: its count must not
+    // reset to 0.
+    function Counter() {
+      const [count, setCount] = useState(0);
+      return (
+        <button type="button" onClick={() => setCount((c) => c + 1)}>
+          {count}
+        </button>
+      );
+    }
+
+    document.documentElement.removeAttribute("data-rebar-bionic");
+    const { container } = render(
+      <div>
+        <Box>
+          <Counter />
+        </Box>
+        {/* A sibling that DOES visibly react to the ambient flip — the sync point this test
+            waits on, confirming useAmbientBionic's MutationObserver actually fired (a plain
+            rerender() right after setAttribute wouldn't, since the hook's own state updates
+            asynchronously — exactly why the original repro needed a real DOM mutation to surface,
+            not a synchronous rerender). */}
+        <Text>Reading</Text>
+      </div>,
+    );
+    fireEvent.click(container.querySelector("button")!);
+    expect(container.querySelector("button")).toHaveTextContent("1");
+
+    document.documentElement.setAttribute("data-rebar-bionic", "true");
+    await waitFor(() => expect(container.querySelector(".rebar-bionic-fixation")).toBeInTheDocument());
+    expect(container.querySelector("button")).toHaveTextContent("1");
   });
 
   it("never bionic-splits code/syntax content, even with bionic forced on", () => {

@@ -46,6 +46,55 @@ Gestalt principles of visual perception (1920s psychology, public domain):
 10. **Proximity, similarity, closure (Gestalt)** — enforce these structurally via a consistent
     spacing scale and composition rules, not left to per-screen judgment.
 
+### Additional heuristics from empirical research
+
+Synthesized from analysis of 22+ design books and historical GUI systems (documented in
+`ref/research/patterns.md` and `ref/research/anti-patterns.md`):
+
+11. **Respect user intelligence** — treat users as capable problem-solvers, not children who need
+    to be protected from complexity or manipulated into decisions. Avoid condescending UI patterns:
+    excessive confirmations, hidden advanced features, dark patterns that trick users into actions
+    they didn't intend.
+12. **Design for honesty** — the interface should never mislead, hide costs, or make the easy path
+    the wrong one. No dark patterns (disguised ads, hidden costs, forced continuity, privacy
+    zuckering). Make the user's intended action clear and easy, not buried under opt-out checkboxes
+    and misleading button labels.
+13. **Co-locate related controls** — controls that affect the same object or task should be
+    physically near each other, not scattered across the screen. Toolbar buttons for text formatting
+    should be near the text, playback controls near the media, filter options near the filtered
+    content. Avoid control-device misalignment where the control and the thing it controls are
+    separated by distance or hierarchy.
+14. **Make displays distinctive** — different modes, states, and content types should look visually
+    distinct, not interchangeable. Use color, iconography, layout, or typography to make state
+    changes obvious. Avoid display confusion where different states look so similar that users can't
+    distinguish them without reading tiny labels or hovering for tooltips.
+15. **Make controls visible** — if a control exists, the user should be able to see it — not have
+    to guess it's there or discover it by accident. Hidden affordances are a failure of design.
+    Controls should be visible by default, or at minimum, there should be a clear visual indicator
+    that something is there to be discovered. Avoid hidden or missing affordances where the
+    interface doesn't signal what actions are possible.
+16. **Communicate unambiguously** — labels, messages, and feedback should be specific and clear,
+    not vague or open to interpretation. Error messages should be actionable ("Email is required"),
+    status messages should be specific ("3 files uploaded successfully"), and labels should be
+    unambiguous ("Delete" not "Remove" when the action is permanent). Avoid ambiguous communication
+    where the interface speaks in riddles.
+17. **Context-aware design** — the interface should adapt to the user's situation: device, task,
+    environment, and experience level. A mobile interface shouldn't be a shrunken desktop. A novice
+    user shouldn't see the same density of options as an expert. A user in a bright environment
+    shouldn't struggle with low-contrast text. Avoid context ignorance where the interface treats
+    all situations as identical.
+18. **Accessible by default** — accessibility is not a feature to add later; it's the baseline. If
+    it's not accessible, it's broken. Keyboard navigation, screen reader support, sufficient color
+    contrast, focus management, and operable controls are not "nice to haves" — they're the minimum
+    viable interface. Design for the full range of human capability from the start, not as an
+    afterthought.
+19. **Prevent errors before they happen** — the best error message is the one the user never sees.
+    Design to prevent mistakes, not just recover from them. Required fields should be marked before
+    the user tries to submit. Destructive actions should require confirmation. Invalid input should
+    be caught on blur, not on submit. Dangerous buttons should be visually distinct from safe ones.
+    Constrain choices to valid options where possible (dropdowns, date pickers, input masks) and
+    validate early where it can't.
+
 ## Token defaults
 
 ### Spacing — 8pt grid

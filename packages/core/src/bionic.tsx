@@ -149,6 +149,19 @@ export function renderBionicChildren(
     return splitStringToNodes(children, options, "bionic");
   }
 
+  // A real bug, not just an optimization: Children.map re-keys every child it touches (React's
+  // own documented behavior, to avoid key collisions across nested maps) — so calling it
+  // unconditionally here, even when nothing among `children` is actually a string worth
+  // splitting, silently changes the React key of every element child the moment bionic mode
+  // toggles on. That makes React treat an unkeyed non-string child (a nested stateful component,
+  // e.g. an open Popover) as a *different* element and remount it — losing its own state (a real,
+  // hit-directly repro: a `Box`-wrapped popover with a bionic-reading toggle inside it closed
+  // itself the instant that toggle flipped ambient bionic on, since flipping it made every
+  // ambient-bionic `Box`/`Text` up the tree re-run this function and remount their children).
+  // Skip Children.map entirely unless splitting is actually going to happen.
+  const hasStringChild = Children.toArray(children).some((child) => typeof child === "string");
+  if (!hasStringChild) return children;
+
   return Children.map(children, (child, index) =>
     typeof child === "string" ? splitStringToNodes(child, options, `bionic-${index}`) : child,
   );

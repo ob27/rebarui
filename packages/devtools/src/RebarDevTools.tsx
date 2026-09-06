@@ -50,23 +50,78 @@ function downloadReport(
   URL.revokeObjectURL(url);
 }
 
+// A hard page refresh serves fresh HTML with none of these attributes baked in — the DevTools
+// panel is the only thing that ever sets them, client-side, after mount. Without persisting the
+// user's actual choice somewhere that survives a reload, every refresh silently reset theme/dark/
+// bionic back to their defaults regardless of what was picked. localStorage read failures (private
+// browsing, disabled storage) fall back to the same defaults that shipped before this fix existed —
+// never crash the panel over a missing preference.
+const STORAGE_KEYS = {
+  theme: "rebar-devtools-theme",
+  dark: "rebar-devtools-dark",
+  bionic: "rebar-devtools-bionic",
+} as const;
+
+function readStoredTheme(): "sketch" | "clean" | null {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.theme);
+    return stored === "sketch" || stored === "clean" ? stored : null;
+  } catch {
+    return null;
+  }
+}
+
+function readStoredBoolean(key: string): boolean | null {
+  try {
+    const stored = localStorage.getItem(key);
+    return stored === null ? null : stored === "true";
+  } catch {
+    return null;
+  }
+}
+
+function writeStored(key: string, value: string) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // Private browsing / storage disabled — the toggle still works for this page load via state,
+    // it just won't survive a refresh. Not worth surfacing to the user over a devtools panel.
+  }
+}
+
 export function RebarDevTools({ forceEnabled }: RebarDevToolsProps) {
   const isDev = forceEnabled ?? process.env.NODE_ENV === "development";
 
   const [isOpen, setIsOpen] = useState(false);
-  // Lazily read the page's actual current theme rather than hardcoding "sketch" — the effect
-  // below writes this state straight back to <html> on mount, so a hardcoded default would
-  // silently clobber whatever the consuming app really configured (e.g. layout.tsx's "clean")
-  // the instant DevTools mounts, before anyone touches the panel.
-  const [theme, setTheme] = useState<"sketch" | "clean">(() =>
-    typeof document !== "undefined" && document.documentElement.getAttribute("data-rebar-theme") === "sketch"
+  // Prefer the persisted choice; fall back to the page's actual current theme attribute (helps
+  // across a client-side navigation within the same document) rather than hardcoding "sketch" —
+  // a hardcoded default would otherwise silently clobber whatever the consuming app really
+  // configured (e.g. layout.tsx's "clean") the instant DevTools mounts, before anyone touches the
+  // panel, and before either of those, there's nothing stored or set at all.
+  const [theme, setThemeState] = useState<"sketch" | "clean">(() => {
+    const stored = readStoredTheme();
+    if (stored) return stored;
+    return typeof document !== "undefined" && document.documentElement.getAttribute("data-rebar-theme") === "sketch"
       ? "sketch"
-      : "clean",
-  );
-  const [dark, setDark] = useState(false);
-  const [bionic, setBionic] = useState(false);
+      : "clean";
+  });
+  const [dark, setDarkState] = useState(() => readStoredBoolean(STORAGE_KEYS.dark) ?? false);
+  const [bionic, setBionicState] = useState(() => readStoredBoolean(STORAGE_KEYS.bionic) ?? false);
   const [showGrid, setShowGrid] = useState(false);
   const [showInspector, setShowInspector] = useState(false);
+
+  const setTheme = (next: "sketch" | "clean") => {
+    setThemeState(next);
+    writeStored(STORAGE_KEYS.theme, next);
+  };
+  const setDark = (next: boolean) => {
+    setDarkState(next);
+    writeStored(STORAGE_KEYS.dark, String(next));
+  };
+  const setBionic = (next: boolean) => {
+    setBionicState(next);
+    writeStored(STORAGE_KEYS.bionic, String(next));
+  };
 
   const counts = useComponentCounts(isDev && isOpen);
   const { score, effort } = estimateMigrationEffort(counts);

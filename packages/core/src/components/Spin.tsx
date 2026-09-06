@@ -1,6 +1,8 @@
 import { forwardRef } from "react";
 import type { ReactNode } from "react";
 import clsx from "clsx";
+import { useBionicChildren } from "../bionic";
+import type { BionicOptions } from "../bionic";
 import { HOURGLASS_SPINNER, HOURGLASS_SPINNER_DARK } from "../assets/hourglassSpinner";
 import { DRUM_ROLL_SPINNER, DRUM_ROLL_SPINNER_DARK } from "../assets/drumRollSpinner";
 import { FLYING_PAPERS_SPINNER, FLYING_PAPERS_SPINNER_DARK } from "../assets/flyingPapersSpinner";
@@ -21,6 +23,9 @@ export interface SpinProps {
   tip?: string;
   children?: ReactNode;
   className?: string;
+  /** Force bionic reading on/off for `tip`, overriding the ambient data-rebar-bionic setting. */
+  bionic?: boolean;
+  bionicOptions?: BionicOptions;
 }
 
 function VectorSpinner({ size, className }: { size: SpinSize; className?: string }) {
@@ -48,8 +53,21 @@ function VectorSpinner({ size, className }: { size: SpinSize; className?: string
 // which is visible via [data-theme="dark"], so the illustration itself survives a theme switch
 // instead of falling back to a generic spinner. "classic" has no illustrated art at all — it's
 // always the plain vector spinner, selectable directly, in any theme, not just as a fallback.
-function Spinner({ size, variant, tip }: { size: SpinSize; variant: SpinVariant; tip?: string }) {
+function Spinner({
+  size,
+  variant,
+  tip,
+  bionic,
+  bionicOptions,
+}: {
+  size: SpinSize;
+  variant: SpinVariant;
+  tip?: string;
+  bionic?: boolean;
+  bionicOptions?: BionicOptions;
+}) {
   const raster = variant !== "classic" ? VARIANT_SRC[variant] : null;
+  const tipContent = useBionicChildren(tip, bionic, bionicOptions);
   return (
     <span
       className="rebar-spin-indicator"
@@ -85,7 +103,7 @@ function Spinner({ size, variant, tip }: { size: SpinSize; variant: SpinVariant;
       )}
       {tip ? (
         <span className="rebar-spin-tip" data-rebar-part="tip">
-          {tip}
+          {tipContent}
         </span>
       ) : null}
     </span>
@@ -93,13 +111,13 @@ function Spinner({ size, variant, tip }: { size: SpinSize; variant: SpinVariant;
 }
 
 export const Spin = forwardRef<HTMLDivElement, SpinProps>(function Spin(
-  { spinning = true, size = "md", variant = "drums", tip, children, className },
+  { spinning = true, size = "md", variant = "drums", tip, children, className, bionic, bionicOptions },
   ref,
 ) {
   if (!children) {
     return spinning ? (
       <div ref={ref} className={className} data-rebar-component="spin">
-        <Spinner size={size} variant={variant} tip={tip} />
+        <Spinner size={size} variant={variant} tip={tip} bionic={bionic} bionicOptions={bionicOptions} />
       </div>
     ) : null;
   }
@@ -116,7 +134,7 @@ export const Spin = forwardRef<HTMLDivElement, SpinProps>(function Spin(
       </div>
       {spinning ? (
         <div className="rebar-spin-overlay" data-rebar-part="overlay">
-          <Spinner size={size} variant={variant} tip={tip} />
+          <Spinner size={size} variant={variant} tip={tip} bionic={bionic} bionicOptions={bionicOptions} />
         </div>
       ) : null}
     </div>

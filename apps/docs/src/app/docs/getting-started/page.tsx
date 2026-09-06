@@ -1,8 +1,8 @@
-import { Heading, Stack, Text } from "rebar-ui";
 import type { Block } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const BLOCKS: Block[] = [
+  { type: "doc-section", heading: "Getting Started", level: 1, body: [] },
   {
     type: "doc-section",
     heading: "1. Install",
@@ -48,10 +48,5 @@ const BLOCKS: Block[] = [
 ];
 
 export default function GettingStartedPage() {
-  return (
-    <Stack gap="lg">
-      <Heading level={1}>Getting Started</Heading>
-      <NextBlockRenderer blocks={BLOCKS} />
-    </Stack>
-  );
+  return <NextBlockRenderer blocks={BLOCKS} />;
 }

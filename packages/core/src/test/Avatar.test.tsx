@@ -19,6 +19,21 @@ describe("Avatar", () => {
     render(<Avatar fallback="AL" placeholder />);
     expect(screen.getByText("AL")).toBeInTheDocument();
   });
+
+  it("defaults data-rebar-size to md, and reflects an explicit size", () => {
+    render(<Avatar fallback="AL" />);
+    expect(screen.getByText("AL").closest('[data-rebar-component="avatar"]')).toHaveAttribute(
+      "data-rebar-size",
+      "md",
+    );
+  });
+
+  it("forwards arbitrary data-*/aria-* props onto the root, per the framework's rest-spread rule", () => {
+    render(<Avatar fallback="AL" size="lg" data-testid="my-avatar" aria-label="Ada Lovelace" />);
+    const root = screen.getByTestId("my-avatar");
+    expect(root).toHaveAttribute("data-rebar-size", "lg");
+    expect(root).toHaveAttribute("aria-label", "Ada Lovelace");
+  });
 });
 
 describe("resolvePlaceholderSrc", () => {

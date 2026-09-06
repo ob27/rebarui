@@ -9,7 +9,7 @@ This doc exists so you don't have to guess how to get from "I want to help" to a
 
 - **Check existing issues first** — someone (including the maintainer, mid-refactor) may already
   be on it.
-- **For anything bigger than a small fix** (a new component, a new archetype, a behavior change),
+- **For anything bigger than a small fix** (a new component, a new block, a behavior change),
   open an issue first and describe what you're planning. This project's whole architecture (the
   placement layer, the token-only theming discipline, the "don't fine-tune styling, defer to
   migration" rule) is deliberate, not incidental — a quick check before you write code avoids
@@ -52,7 +52,8 @@ Next's generated route types, which only exist after a build has run once.
   `localhost:3000` after you clone the repo. Also the live dogfooding ground — every component is
   demoed here, and the homepage itself renders through `@rebar-ui/placement`.
 - `bench/` — disposable benchmark scaffolds from measuring rebar-ui against Ant Design across
-  models (see `/benchmarks` on the site, and `ref/PLAN.md` for the full methodology history).
+  models (see `/benchmarks` on the site, `ref/PLAN.md` for the full methodology history, and
+  `ref/BENCHMARK_CONTRIBUTING.md` if you want to add a new condition or reproduce one).
   **Not part of the library — don't send changes here** unless you're specifically extending the
   benchmark methodology itself; some of these directories contain intentionally-broken code
   (real captured model failures), and that's correct, not a bug to fix.
@@ -72,12 +73,12 @@ value. Add tests covering role/name, keyboard operability, and the attributes ab
 `src/index.ts`, and regenerate `apps/docs`'s prop tables (`pnpm run generate:props` inside
 `apps/docs`, or it happens automatically via that app's own `predev`/`prebuild` hooks).
 
-### Adding an archetype to `packages/placement`
+### Adding a block to `packages/placement`
 
 Add the shape to the `Block` union in `src/schema.ts` (with a doc comment noting it's
-**unmeasured** until it's been through real repeated benchmarking — see the existing archetypes'
+**unmeasured** until it's been through real repeated benchmarking — see the existing blocks'
 comments for the convention), a render case in `BlockRenderer.tsx`, and tests covering its DOM
-output and (if it has one) DOM order matching visual order. Update the archetype table in that
+output and (if it has one) DOM order matching visual order. Update the block table in that
 package's `README.md`.
 
 ### Adding a migration adapter
@@ -95,9 +96,18 @@ Component defaults (spacing, sizing, when to show an icon, etc.) follow the rule
 a change would contradict one of them, that's worth flagging in your issue/PR, not silently
 deviating.
 
+### Contributing a new benchmark
+
+See `ref/BENCHMARK_CONTRIBUTING.md` before adding a new condition to `/benchmarks` or running your
+own comparable measurement (e.g. against a different model) — it covers the disciplines (n=15,
+isolated scaffolds, verification before trusting a number, harness-adjustment across agentic vs.
+raw-API comparisons) that make a new result genuinely comparable to what's already published,
+rather than a number that merely looks similar. `ref/QWEN_BENCHMARK_PROTOCOL.md` is a full worked
+example of applying it to one specific case.
+
 ## Opening a PR
 
-- Keep it scoped — one component, one fix, one archetype. Large multi-part changes are harder to
+- Keep it scoped — one component, one fix, one block. Large multi-part changes are harder to
   review and more likely to conflict with parallel work on a fast-moving v0.1 project.
 - Make sure `pnpm run lint`, `test`, `build`, and `typecheck` all pass locally before pushing —
   CI runs the same four checks and will block merge if any fail.
@@ -115,7 +125,7 @@ deviating.
 - A new small component filling a gap `dist/index.d.ts` doesn't cover yet.
 - Improving a `/components/*` or `/docs/*` reference page — more examples, clearer prop
   descriptions, a missed accessibility note.
-- A `chart` archetype for `@rebar-ui/placement` (scatter/line/bar) — `/benchmarks`' three
+- A `chart` block for `@rebar-ui/placement` (scatter/line/bar) — `/benchmarks`' three
   hand-authored SVG chart helpers are the reference implementation to generalize from; see that
   page's `page.tsx` for the existing, already-correct rendering logic.
 

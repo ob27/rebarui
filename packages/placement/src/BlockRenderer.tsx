@@ -1,29 +1,65 @@
 import type { CSSProperties, ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
+  Avatar,
   Box,
   Button,
   Card,
+  Carousel,
   Checkbox,
+  CodeBlock,
   Dialog,
   Heading,
+  Iframe,
   Input,
+  Kanban,
+  LineChart,
+  NavBar,
+  NavIndex,
+  Popover,
+  ScatterChart,
+  SectionNav,
   Select,
+  Spin,
   Stack,
+  StackedBarChart,
   Tab,
   TabList,
   TabPanel,
+  Table,
   Tabs,
+  Tag,
   Text,
+  ThemeToggle,
+  Wizard,
 } from "rebar-ui";
-import type { Action, Block, FormField, ProseNode } from "./schema";
+import type { TableColumn } from "rebar-ui";
+import type { Action, Block, FormField, KanbanCardData, KanbanColumnData, ProseNode, TableFilter } from "./schema";
 import { ICONS } from "./icons";
 
-// Parses the tiny inline markup `doc-section` prose supports: `` `code` `` and `[label](href)`.
-// Deliberately not a markdown library — two patterns, checked in document order, everything else
-// passes through as plain text. Good enough for the prose this project's own docs actually need;
-// anything more ambitious belongs in a real markdown renderer, not this schema.
-const INLINE_MARKUP = /`([^`]+)`|\[([^\]]+)\]\(([^)]+)\)/g;
+// Parses the tiny inline markup `doc-section` prose supports: `` `code` ``, `[label](href)`, and
+// `*emphasis*`. Deliberately not a markdown library — three patterns, checked in document order,
+// everything else passes through as plain text. Good enough for the prose this project's own docs
+// actually need; anything more ambitious belongs in a real markdown renderer, not this schema.
+const INLINE_MARKUP = /`([^`]+)`|\[([^\]]+)\]\(([^)]+)\)|\*([^*]+)\*/g;
+
+/** `Avatar`'s `fallback` prop is meant to be short initials, not a full name — Radix always
+ * renders it as real visible text (until/unless an image loads), so passing the full name here
+ * would duplicate it right next to the name the block already displays as its own label. */
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  return (parts[0]?.[0] ?? "") + (parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? "") : "");
+}
+
+/** A `doc-section`'s anchor id, derived from its heading text so a `page-index` block can link to
+ * it without the document author separately inventing and wiring up an id by hand. */
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 const propsTableCellStyle: CSSProperties = {
   padding: "var(--rebar-space-sm, 8px)",
@@ -41,6 +77,8 @@ function renderInline(text: string, renderLink: NonNullable<BlockRendererProps["
     if (match.index > lastIndex) nodes.push(text.slice(lastIndex, match.index));
     if (match[1] !== undefined) {
       nodes.push(<code key={key++}>{match[1]}</code>);
+    } else if (match[4] !== undefined) {
+      nodes.push(<em key={key++}>{match[4]}</em>);
     } else {
       nodes.push(<span key={key++}>{renderLink({ href: match[3]!, children: match[2] })}</span>);
     }
@@ -63,20 +101,7 @@ function renderProseNode(
         </Text>
       );
     case "code":
-      return (
-        <Box
-          key={index}
-          as="pre"
-          style={{
-            background: "var(--rebar-color-bg-secondary, #f5f5f5)",
-            padding: "var(--rebar-space-md)",
-            borderRadius: 4,
-            overflowX: "auto",
-          }}
-        >
-          <code>{node.code}</code>
-        </Box>
-      );
+      return <CodeBlock key={index} code={node.code} />;
     case "list": {
       const ListTag = node.ordered ? "ol" : "ul";
       return (
@@ -160,6 +185,7 @@ function renderFormField(field: FormField, index: number, blockPath: string) {
         <Stack key={index} gap="xs" data-rebar-block-path={fieldPath} data-rebar-block-item-label={field.label}>
           <Text as="label" size="sm">
             {field.label}
+            {field.required ? " *" : ""}
           </Text>
           <Input type={field.kind} placeholder={field.placeholder} />
         </Stack>
@@ -169,6 +195,7 @@ function renderFormField(field: FormField, index: number, blockPath: string) {
         <Stack key={index} gap="xs" data-rebar-block-path={fieldPath} data-rebar-block-item-label={field.label}>
           <Text as="label" size="sm">
             {field.label}
+            {field.required ? " *" : ""}
           </Text>
           <textarea className="rebar-input" placeholder={field.placeholder} rows={3} />
         </Stack>
@@ -178,6 +205,7 @@ function renderFormField(field: FormField, index: number, blockPath: string) {
         <Stack key={index} gap="xs" data-rebar-block-path={fieldPath} data-rebar-block-item-label={field.label}>
           <Text as="label" size="sm">
             {field.label}
+            {field.required ? " *" : ""}
           </Text>
           <Select
             aria-label={field.label}
@@ -195,6 +223,7 @@ function renderFormField(field: FormField, index: number, blockPath: string) {
           data-rebar-block-item-label={field.label}
         >
           {field.label}
+          {field.required ? " *" : ""}
         </Checkbox>
       );
     default:
@@ -202,11 +231,556 @@ function renderFormField(field: FormField, index: number, blockPath: string) {
   }
 }
 
+// Patches any top-level `iframe` block in `blocks` with a measured `height`, unless the document
+// already set one explicitly (an explicit height always wins). An iframe has no natural content
+// height, unlike everything else this schema renders — see schema.ts's doc comment on `iframe`.
+function withMeasuredHeight(blocks: Block[], height: number | undefined): Block[] {
+  if (height === undefined) return blocks;
+  return blocks.map((block) => (block.type === "iframe" ? { ...block, height: block.height ?? height } : block));
+}
+
+// `renderBlock` is a plain function (recursive, imperative — see the `tabs` case above), not a
+// component, so it can't itself use hooks. `comparison` is the first block that needs one (to
+// measure the left panel's real rendered height via `ResizeObserver` and match it onto the right
+// panel's iframe) — hence this dedicated component, delegated to from the `comparison` case below.
+function ComparisonBlockView({
+  block,
+  index,
+  path,
+  renderLink,
+}: {
+  block: Extract<Block, { type: "comparison" }>;
+  index: number;
+  path: string;
+  renderLink: NonNullable<BlockRendererProps["renderLink"]>;
+}) {
+  const leftRef = useRef<HTMLDivElement>(null);
+  const [leftHeight, setLeftHeight] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    const el = leftRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver((entries) => {
+      const rect = entries[0]?.contentRect;
+      if (rect) setLeftHeight(Math.round(rect.height));
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const rightBlocks = withMeasuredHeight(block.rightBlocks, leftHeight);
+
+  return (
+    <Stack
+      key={index}
+      direction="row"
+      gap="lg"
+      style={{ flexWrap: "wrap", alignItems: "flex-start" }}
+      data-rebar-placement-block="comparison"
+      data-rebar-block-path={path}
+    >
+      <Stack gap="xs" style={{ flex: "1 1 380px", minWidth: 0 }}>
+        <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)", textAlign: "center" }}>
+          {block.leftLabel}
+        </Text>
+        <div ref={leftRef}>
+          <Stack gap="lg" data-rebar-block-path={`${path}.leftBlocks`}>
+            {block.leftBlocks.map((inner, innerIndex) => renderBlock(inner, innerIndex, renderLink, `${path}.leftBlocks`))}
+          </Stack>
+        </div>
+      </Stack>
+      <Stack gap="xs" style={{ flex: "1 1 380px", minWidth: 0 }}>
+        <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)", textAlign: "center" }}>
+          {block.rightLabel}
+        </Text>
+        <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, overflow: "hidden" }}>
+          <Stack gap="lg" data-rebar-block-path={`${path}.rightBlocks`}>
+            {rightBlocks.map((inner, innerIndex) => renderBlock(inner, innerIndex, renderLink, `${path}.rightBlocks`))}
+          </Stack>
+        </Box>
+      </Stack>
+    </Stack>
+  );
+}
+
+function KanbanBoardBlockView({
+  block,
+  index,
+  path,
+  renderLink,
+  variant,
+}: {
+  block: Extract<Block, { type: "card-kanban" | "sticky-kanban" }>;
+  index: number;
+  path: string;
+  renderLink: NonNullable<BlockRendererProps["renderLink"]>;
+  variant: "default" | "sticky";
+}) {
+  const [board, setBoard] = useState<{ columns: KanbanColumnData[]; cards: Record<string, KanbanCardData> }>({
+    columns: block.columns,
+    cards: block.cards,
+  });
+  const [search, setSearch] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(
+        block.shareUrl ?? (typeof window !== "undefined" ? window.location.href : ""),
+      );
+    } catch {
+      return;
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Stack key={index} gap="md" data-rebar-placement-block={block.type} data-rebar-block-path={path}>
+      <Stack direction="row" gap="sm" style={{ flexWrap: "wrap", justifyContent: "space-between", alignItems: "center" }}>
+        <Heading level={3} style={{ margin: 0 }}>
+          {block.title}
+        </Heading>
+        <Stack direction="row" gap="sm" align="center">
+          {block.sharedWith?.length ? (
+            <div style={{ display: "flex" }} aria-label={`Shared with ${block.sharedWith.map((p) => p.name).join(", ")}`}>
+              {block.sharedWith.map((person, personIndex) => (
+                <span
+                  key={person.name}
+                  style={{
+                    marginLeft: personIndex === 0 ? 0 : -8,
+                    border: "2px solid var(--rebar-color-bg-primary, #ffffff)",
+                    borderRadius: "50%",
+                  }}
+                >
+                  <Avatar fallback={initials(person.name)} src={person.avatarSrc} alt={person.name} />
+                </span>
+              ))}
+            </div>
+          ) : null}
+          <Button variant="secondary" size="sm" onClick={handleShare}>
+            {copied ? "Copied!" : "Share"}
+          </Button>
+          {block.settingsBlocks ? (
+            <Dialog
+              title="Board settings"
+              trigger={
+                <Button variant="secondary" size="sm">
+                  Board settings
+                </Button>
+              }
+            >
+              <Stack gap="md" data-rebar-block-path={`${path}.settingsBlocks`}>
+                {block.settingsBlocks.map((inner, innerIndex) =>
+                  renderBlock(inner, innerIndex, renderLink, `${path}.settingsBlocks`),
+                )}
+              </Stack>
+            </Dialog>
+          ) : null}
+        </Stack>
+      </Stack>
+      <Input
+        aria-label="Search cards"
+        placeholder={block.searchPlaceholder ?? "Search cards..."}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+      <Kanban columns={board.columns} cards={board.cards} search={search} cardVariant={variant} onChange={setBoard} />
+    </Stack>
+  );
+}
+
+/**
+ * A row of toggle buttons, one per series/segment label — the "footer and filter buttons to
+ * control manipulation of the chart" a chart block needs to not just be its own canvas component
+ * 1:1 (see ref/ARCHITECTURE.md on why a block always makes a real composition decision). Shared
+ * across all three chart block types rather than duplicated per type, since the interaction (hide/
+ * show a labeled series by clicking its own toggle) is identical regardless of chart shape.
+ */
+function ChartFilterFooter({
+  labels,
+  hidden,
+  onToggle,
+}: {
+  labels: string[];
+  hidden: Set<string>;
+  onToggle: (label: string) => void;
+}) {
+  if (labels.length <= 1) return null;
+  return (
+    <Stack direction="row" gap="xs" style={{ flexWrap: "wrap" }} data-rebar-part="chart-filters">
+      {labels.map((label) => (
+        <button
+          key={label}
+          type="button"
+          className={
+            hidden.has(label) ? "rebar-chart-filter-button rebar-chart-filter-button-inactive" : "rebar-chart-filter-button"
+          }
+          aria-pressed={!hidden.has(label)}
+          onClick={() => onToggle(label)}
+        >
+          {label}
+        </button>
+      ))}
+    </Stack>
+  );
+}
+
+function useSeriesFilter(labels: string[]) {
+  const [hidden, setHidden] = useState<Set<string>>(new Set());
+  const toggle = (label: string) => {
+    setHidden((prev) => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  };
+  return { hidden, toggle, visible: (label: string) => !hidden.has(label) };
+}
+
+function ScatterChartBlockView({
+  block,
+  index,
+  path,
+}: {
+  block: Extract<Block, { type: "scatter-chart" }>;
+  index: number;
+  path: string;
+}) {
+  const labels = block.series.map((s) => s.label);
+  const { hidden, toggle, visible } = useSeriesFilter(labels);
+  return (
+    <Stack key={index} gap="sm" data-rebar-placement-block="scatter-chart" data-rebar-block-path={path}>
+      <ScatterChart
+        series={block.series.filter((s) => visible(s.label))}
+        title={block.title}
+        ariaLabel={block.ariaLabel}
+        height={block.height}
+      />
+      <ChartFilterFooter labels={labels} hidden={hidden} onToggle={toggle} />
+    </Stack>
+  );
+}
+
+function LineChartBlockView({
+  block,
+  index,
+  path,
+}: {
+  block: Extract<Block, { type: "line-chart" }>;
+  index: number;
+  path: string;
+}) {
+  const labels = block.series.map((s) => s.label);
+  const { hidden, toggle, visible } = useSeriesFilter(labels);
+  return (
+    <Stack key={index} gap="sm" data-rebar-placement-block="line-chart" data-rebar-block-path={path}>
+      <LineChart
+        series={block.series.filter((s) => visible(s.label))}
+        xLabels={block.xLabels}
+        labelStep={block.labelStep}
+        crossoverIndex={block.crossoverIndex}
+        title={block.title}
+        ariaLabel={block.ariaLabel}
+        height={block.height}
+      />
+      <ChartFilterFooter labels={labels} hidden={hidden} onToggle={toggle} />
+    </Stack>
+  );
+}
+
+function StackedBarChartBlockView({
+  block,
+  index,
+  path,
+}: {
+  block: Extract<Block, { type: "stacked-bar-chart" }>;
+  index: number;
+  path: string;
+}) {
+  // The "series" a stacked bar chart's viewer thinks in are the distinct segment labels repeated
+  // across every bar (a legend of categories), not the bars themselves — filtering one out drops
+  // that segment from every bar, not a whole bar.
+  const labels = [...new Set(block.bars.flatMap((bar) => bar.segments.map((s) => s.label)))];
+  const { hidden, toggle, visible } = useSeriesFilter(labels);
+  return (
+    <Stack key={index} gap="sm" data-rebar-placement-block="stacked-bar-chart" data-rebar-block-path={path}>
+      <StackedBarChart
+        bars={block.bars.map((bar) => ({ ...bar, segments: bar.segments.filter((s) => visible(s.label)) }))}
+        title={block.title}
+        ariaLabel={block.ariaLabel}
+        height={block.height}
+      />
+      <ChartFilterFooter labels={labels} hidden={hidden} onToggle={toggle} />
+    </Stack>
+  );
+}
+
+function StatsTableBlockView({
+  block,
+  index,
+  path,
+}: {
+  block: Extract<Block, { type: "stats-table" }>;
+  index: number;
+  path: string;
+}) {
+  const columns: TableColumn<Record<string, string | number>>[] = block.headers.map((header, i) => ({
+    key: String(i),
+    header,
+  }));
+  const data = block.rows.map((cells, rowIndex) => {
+    const row: Record<string, string | number> = { __rowKey: rowIndex };
+    cells.forEach((cell, cellIndex) => {
+      row[String(cellIndex)] = cell;
+    });
+    return row;
+  });
+  return (
+    <Box key={index} data-rebar-placement-block="stats-table" data-rebar-block-path={path}>
+      <Table columns={columns} data={data} rowKey="__rowKey" />
+    </Box>
+  );
+}
+
+function GalleryBlockView({
+  block,
+  index,
+  path,
+}: {
+  block: Extract<Block, { type: "gallery" }>;
+  index: number;
+  path: string;
+}) {
+  const count = block.count ?? 15;
+  return (
+    <Stack key={index} gap="xs" data-rebar-placement-block="gallery" data-rebar-block-path={path}>
+      <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
+        {block.label}
+      </Text>
+      <Carousel aria-label={`${block.label} screenshots`}>
+        {Array.from({ length: count }, (_, i) => {
+          const n = String(i + 1).padStart(2, "0");
+          return (
+            <Box key={n} style={{ maxWidth: 360, margin: "0 auto" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`${block.dir}/${block.prefix}-${n}.png`}
+                alt={`${block.label}, run ${n}`}
+                style={{ width: "100%", height: "auto", display: "block" }}
+              />
+            </Box>
+          );
+        })}
+      </Carousel>
+    </Stack>
+  );
+}
+
+/** How many named filters render inline before the rest collapse into a "More filters" popover —
+ * the same bounded-then-collapse convention `nav-bar`'s own overflow uses (ref/HEURISTICS.md "Nav
+ * overflow"), just a fixed threshold here rather than a live-measured one, since a `table` block's
+ * filter row doesn't need to react to arbitrary viewport widths the way a site nav does. */
+const INLINE_FILTER_LIMIT = 2;
+
+// RFC 4180-ish: a cell needing quoting (contains a comma, quote, or newline) gets wrapped in
+// quotes with any internal quote doubled — the minimum a spreadsheet reliably round-trips.
+function csvCell(value: string): string {
+  return /[",\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
+}
+
+function rowsToCsv(columns: string[], rows: string[][]): string {
+  const lines = [columns, ...rows].map((cells) => cells.map(csvCell).join(","));
+  return lines.join("\r\n");
+}
+
+// Tab-separated, not comma — this is what Excel/Sheets expect on the clipboard for a clean paste,
+// not a downloaded file. A literal tab/newline inside a cell would corrupt the grid on paste, so
+// both are flattened to a single space rather than escaped (there's no clipboard-TSV quoting
+// convention spreadsheets agree on, unlike CSV's).
+function rowsToTsv(columns: string[], rows: string[][]): string {
+  const flatten = (cell: string) => cell.replace(/[\t\n]/g, " ");
+  const lines = [columns, ...rows].map((cells) => cells.map(flatten).join("\t"));
+  return lines.join("\n");
+}
+
+function downloadCsv(filename: string, csv: string) {
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function DataTableBlockView({
+  block,
+  index,
+  path,
+}: {
+  block: Extract<Block, { type: "table" }>;
+  index: number;
+  path: string;
+}) {
+  const [search, setSearch] = useState("");
+  const [activeFilters, setActiveFilters] = useState<Record<number, string>>({});
+  const [localRows, setLocalRows] = useState(block.rows);
+  const [addOpen, setAddOpen] = useState(false);
+  const [draftCells, setDraftCells] = useState<string[]>(() => block.columns.map(() => ""));
+  const [copied, setCopied] = useState(false);
+
+  const hasActions = localRows.some((r) => r.actionLabel);
+  const columns: TableColumn<Record<string, unknown>>[] = block.columns.map((header, i) => ({
+    key: String(i),
+    header,
+    sortable: block.sortable !== false,
+  }));
+  if (hasActions) {
+    columns.push({
+      key: "__actions",
+      header: "",
+      render: (_value, row) =>
+        row.__actionLabel ? (
+          <Button variant="secondary" size="sm">
+            {row.__actionLabel as string}
+          </Button>
+        ) : null,
+    });
+  }
+
+  const rows = localRows.map((row, rowIndex) => {
+    const record: Record<string, unknown> = { __rowKey: rowIndex, __actionLabel: row.actionLabel };
+    row.cells.forEach((cell, cellIndex) => {
+      record[String(cellIndex)] = cell;
+    });
+    return record;
+  });
+
+  const needle = search.trim().toLowerCase();
+  const visibleRows = rows.filter((row) => {
+    if (needle && !block.columns.some((_, i) => String(row[String(i)] ?? "").toLowerCase().includes(needle))) {
+      return false;
+    }
+    return Object.entries(activeFilters).every(([columnIndex, value]) => {
+      if (!value) return true;
+      return String(row[columnIndex] ?? "") === value;
+    });
+  });
+  const visibleCells = visibleRows.map((row) => block.columns.map((_, i) => String(row[String(i)] ?? "")));
+
+  const filters = block.filters ?? [];
+  const inlineFilters = filters.slice(0, INLINE_FILTER_LIMIT);
+  const overflowFilters = filters.slice(INLINE_FILTER_LIMIT);
+
+  const renderFilterSelect = (filter: TableFilter) => (
+    <Select
+      key={filter.label}
+      aria-label={filter.label}
+      value={activeFilters[filter.columnIndex] ?? ""}
+      onValueChange={(value) => setActiveFilters((prev) => ({ ...prev, [filter.columnIndex]: value }))}
+      options={[{ value: "", label: `${filter.label}: All` }, ...filter.options.map((o) => ({ value: o, label: o }))]}
+    />
+  );
+
+  const addLabel = (typeof block.addable === "object" && block.addable.label) || "Add row";
+  const handleAddSubmit = () => {
+    setLocalRows((prev) => [...prev, { cells: draftCells }]);
+    setDraftCells(block.columns.map(() => ""));
+    setAddOpen(false);
+  };
+  const handleExport = () => downloadCsv("table.csv", rowsToCsv(block.columns, visibleCells));
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(rowsToTsv(block.columns, visibleCells));
+    } catch {
+      return;
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const hasToolbar = block.searchPlaceholder || filters.length || block.addable || block.exportable || block.copyable;
+
+  return (
+    <Stack key={index} gap="sm" data-rebar-placement-block="table" data-rebar-block-path={path}>
+      {hasToolbar ? (
+        <Stack direction="row" gap="sm" style={{ flexWrap: "wrap", alignItems: "center" }} data-rebar-part="table-controls">
+          {block.searchPlaceholder ? (
+            <Input
+              aria-label={block.searchPlaceholder}
+              placeholder={block.searchPlaceholder}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ maxWidth: 240 }}
+            />
+          ) : null}
+          {inlineFilters.map(renderFilterSelect)}
+          {overflowFilters.length ? (
+            <Popover trigger={<Button variant="secondary" size="sm">More filters</Button>}>
+              <Stack gap="sm" style={{ minWidth: 180 }}>
+                {overflowFilters.map(renderFilterSelect)}
+              </Stack>
+            </Popover>
+          ) : null}
+          <Stack direction="row" gap="sm" style={{ marginLeft: "auto" }}>
+            {block.copyable ? (
+              <Button variant="secondary" size="sm" onClick={handleCopy} aria-live="polite" data-rebar-part="copy-button">
+                {copied ? "Copied!" : "Copy"}
+              </Button>
+            ) : null}
+            {block.exportable ? (
+              <Button variant="secondary" size="sm" onClick={handleExport} data-rebar-part="export-button">
+                Export CSV
+              </Button>
+            ) : null}
+            {block.addable ? (
+              <Dialog
+                open={addOpen}
+                onOpenChange={setAddOpen}
+                trigger={<Button variant="primary" size="sm" data-rebar-part="add-button">{addLabel}</Button>}
+                title={addLabel}
+                footer={
+                  <>
+                    <Button variant="secondary" onClick={() => setAddOpen(false)}>Cancel</Button>
+                    <Button variant="primary" onClick={handleAddSubmit}>{addLabel}</Button>
+                  </>
+                }
+              >
+                <Stack gap="sm">
+                  {block.columns.map((header, i) => (
+                    <Input
+                      key={header}
+                      aria-label={header}
+                      placeholder={header}
+                      value={draftCells[i] ?? ""}
+                      onChange={(e) =>
+                        setDraftCells((prev) => prev.map((cell, cellIndex) => (cellIndex === i ? e.target.value : cell)))
+                      }
+                    />
+                  ))}
+                </Stack>
+              </Dialog>
+            ) : null}
+          </Stack>
+        </Stack>
+      ) : null}
+      <Table
+        columns={columns}
+        data={visibleRows}
+        rowKey="__rowKey"
+      />
+    </Stack>
+  );
+}
+
 function renderBlock(
   block: Block,
   index: number,
   renderLink: NonNullable<BlockRendererProps["renderLink"]>,
   parentPath = "blocks",
+  pageSections: { id: string; label: string }[] = [],
 ) {
   const path = `${parentPath}[${index}]`;
   switch (block.type) {
@@ -232,6 +806,149 @@ function renderBlock(
         </Stack>
       );
     }
+
+    case "nav-bar":
+      if (block.resizable) {
+        return (
+          <Box
+            key={index}
+            data-rebar-placement-block="nav-bar"
+            data-rebar-block-path={path}
+            style={{
+              border: "1px solid var(--rebar-color-border, #e0e0e0)",
+              borderRadius: 4,
+              padding: "var(--rebar-space-lg)",
+              resize: "horizontal",
+              overflow: "auto",
+              width: 320,
+              minWidth: 120,
+              maxWidth: "100%",
+            }}
+          >
+            <NavBar items={block.items} aria-label={block.ariaLabel ?? "Main"} renderLink={renderLink} />
+          </Box>
+        );
+      }
+      return (
+        <NavBar
+          key={index}
+          items={block.items}
+          aria-label={block.ariaLabel ?? "Main"}
+          renderLink={renderLink}
+          data-rebar-placement-block="nav-bar"
+          data-rebar-block-path={path}
+        />
+      );
+
+    case "site-header": {
+      const logoContent = (
+        // A logo/wordmark is never underlined, even when linked — but `renderLink`'s abstraction
+        // (a caller-supplied function) doesn't expose a way to set style on the `<a>` it returns,
+        // so the underline an ancestor link paints across inline descendants has to be interrupted
+        // from inside instead: `display: inline-block` + an explicit `textDecoration: none` on this
+        // wrapper stops that painted line from continuing through it (a standard, well-established
+        // CSS technique — text-decoration otherwise propagates through plain inline descendants
+        // regardless of their own value).
+        <span style={{ display: "inline-block", textDecoration: "none" }}>
+          <Stack direction="row" align="center" gap="xs">
+            {block.logo.iconSrc ? <img src={block.logo.iconSrc} alt="" width={24} height={24} /> : null}
+            <Text as="span" size="md" style={{ fontWeight: "var(--rebar-font-weight-bold, 700)" }}>
+              {block.logo.label}
+            </Text>
+          </Stack>
+        </span>
+      );
+      let trailingContent: ReactNode = null;
+      if (block.trailing?.kind === "text") {
+        trailingContent = (
+          <Text size="xs" color="secondary" style={{ flexShrink: 0 }}>
+            {block.trailing.text}
+          </Text>
+        );
+      } else if (block.trailing?.kind === "login") {
+        const button = (
+          <Button variant="secondary" size="sm">
+            {block.trailing.label ?? "Log in"}
+          </Button>
+        );
+        trailingContent = (
+          <span style={{ flexShrink: 0 }}>
+            {block.trailing.href ? renderLink({ href: block.trailing.href, children: button }) : button}
+          </span>
+        );
+      } else if (block.trailing?.kind === "avatar") {
+        const avatar = (
+          <span aria-label={block.trailing.name}>
+            <Avatar
+              fallback={initials(block.trailing.name)}
+              src={block.trailing.avatarSrc}
+              placeholder={block.trailing.placeholder}
+            />
+          </span>
+        );
+        trailingContent = (
+          <span style={{ flexShrink: 0 }}>
+            {block.trailing.href ? renderLink({ href: block.trailing.href, children: avatar }) : avatar}
+          </span>
+        );
+      }
+      return (
+        <Box
+          key={index}
+          as="header"
+          data-rebar-placement-block="site-header"
+          data-rebar-block-path={path}
+          style={{ borderBottom: "var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0)" }}
+        >
+          <Stack
+            direction="row"
+            align="center"
+            gap="lg"
+            style={{ padding: "var(--rebar-space-md) var(--rebar-space-xl)" }}
+          >
+            <span style={{ flexShrink: 0 }}>
+              {block.logo.href ? renderLink({ href: block.logo.href, children: logoContent }) : logoContent}
+            </span>
+            <div style={{ flex: "0 1 50%", minWidth: 0 }}>
+              <NavBar items={block.items} aria-label={block.ariaLabel ?? "Main"} renderLink={renderLink} />
+            </div>
+            {trailingContent || block.themeToggle ? (
+              <Stack direction="row" align="center" gap="sm" style={{ marginLeft: "auto", flexShrink: 0 }}>
+                {block.themeToggle ? <ThemeToggle /> : null}
+                {trailingContent}
+              </Stack>
+            ) : null}
+          </Stack>
+        </Box>
+      );
+    }
+
+    case "nav-index":
+      return (
+        <NavIndex
+          key={index}
+          items={block.items}
+          categoryLabels={block.categoryLabels}
+          statusLabels={block.statusLabels}
+          unstatusedLabel={block.unstatusedLabel}
+          searchPlaceholder={block.searchPlaceholder}
+          aria-label={block.ariaLabel ?? "Page index"}
+          renderLink={renderLink}
+          data-rebar-placement-block="nav-index"
+          data-rebar-block-path={path}
+        />
+      );
+
+    case "page-index":
+      return (
+        <SectionNav
+          key={index}
+          sections={block.sections ?? pageSections}
+          searchPlaceholder={block.searchPlaceholder}
+          data-rebar-placement-block="page-index"
+          data-rebar-block-path={path}
+        />
+      );
 
     case "banner": {
       const Icon = block.icon ? ICONS[block.icon] : null;
@@ -354,6 +1071,94 @@ function renderBlock(
         </Stack>
       );
 
+    case "card-grid":
+      return (
+        <Stack
+          key={index}
+          direction="row"
+          gap="md"
+          style={{ flexWrap: "wrap" }}
+          data-rebar-placement-block="card-grid"
+          data-rebar-block-path={path}
+        >
+          {block.items.map((item, itemIndex) => (
+            <Card
+              key={`${item.title}-${itemIndex}`}
+              style={{ flex: "1 1 200px" }}
+              data-rebar-block-path={itemPath(path, "items", itemIndex)}
+              data-rebar-block-item-label={item.title}
+            >
+              <Stack gap="xs">
+                <Stack direction="row" gap="xs" style={{ alignItems: "center", flexWrap: "wrap" }}>
+                  <Text style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
+                    {item.title}
+                  </Text>
+                  {item.tags?.map((tag) => (
+                    <Tag key={tag.label} tone={tag.tone ?? "default"}>
+                      {tag.label}
+                    </Tag>
+                  ))}
+                </Stack>
+                {item.body ? (
+                  <Text size="sm" color="secondary">
+                    {item.body}
+                  </Text>
+                ) : null}
+                {item.href
+                  ? renderLink({
+                      href: item.href,
+                      children: (
+                        <Text as="span" size="sm">
+                          {item.linkLabel ?? "View →"}
+                        </Text>
+                      ),
+                    })
+                  : null}
+              </Stack>
+            </Card>
+          ))}
+        </Stack>
+      );
+
+    case "persona-card":
+      return (
+        <Stack
+          key={index}
+          direction="row"
+          gap="md"
+          style={{ flexWrap: "wrap" }}
+          data-rebar-placement-block="persona-card"
+          data-rebar-block-path={path}
+        >
+          {block.items.map((item, itemIndex) => (
+            <Card
+              key={`${item.name}-${itemIndex}`}
+              style={{ flex: "1 1 220px" }}
+              data-rebar-block-path={itemPath(path, "items", itemIndex)}
+              data-rebar-block-item-label={item.name}
+            >
+              <Stack direction="row" align="center" gap="sm">
+                <Avatar
+                  src={item.avatarSrc}
+                  fallback={initials(item.name)}
+                  placeholder={item.avatarPlaceholder}
+                />
+                <Stack gap="xs">
+                  <Text as="span" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
+                    {item.name}
+                  </Text>
+                  {item.meta ? (
+                    <Text as="span" size="sm" color="secondary">
+                      {item.meta}
+                    </Text>
+                  ) : null}
+                </Stack>
+              </Stack>
+            </Card>
+          ))}
+        </Stack>
+      );
+
     case "form":
       return (
         <Card key={index} data-rebar-placement-block="form" data-rebar-block-path={path}>
@@ -366,80 +1171,43 @@ function renderBlock(
       );
 
     case "table":
-      return (
-        <Box
-          key={index}
-          as="table"
-          style={{ width: "100%", borderCollapse: "collapse" }}
-          data-rebar-placement-block="table"
-          data-rebar-block-path={path}
-        >
-          <Box as="thead">
-            <Box as="tr">
-              {block.columns.map((col) => (
-                <Box
-                  key={col}
-                  as="th"
-                  style={{
-                    textAlign: "left",
-                    padding: "8px 12px",
-                    borderBottom: "2px solid var(--rebar-color-border, #e0e0e0)",
-                  }}
-                >
-                  {col}
-                </Box>
-              ))}
-              {block.rows.some((r) => r.actionLabel) ? <Box as="th" /> : null}
-            </Box>
-          </Box>
-          <Box as="tbody">
-            {block.rows.map((row, rowIndex) => (
-              <Box
-                as="tr"
-                key={rowIndex}
-                data-rebar-block-path={itemPath(path, "rows", rowIndex)}
-                data-rebar-block-item-label={row.cells.join(" / ")}
-              >
-                {row.cells.map((cell, cellIndex) => (
-                  <Box
-                    key={cellIndex}
-                    as="td"
-                    style={{ padding: "8px 12px", borderBottom: "1px solid var(--rebar-color-border, #e0e0e0)" }}
-                  >
-                    {cell}
-                  </Box>
-                ))}
-                {row.actionLabel ? (
-                  <Box as="td" style={{ padding: "8px 12px", borderBottom: "1px solid var(--rebar-color-border, #e0e0e0)" }}>
-                    <Button variant="secondary" size="sm">
-                      {row.actionLabel}
-                    </Button>
-                  </Box>
-                ) : block.rows.some((r) => r.actionLabel) ? (
-                  <Box as="td" style={{ borderBottom: "1px solid var(--rebar-color-border, #e0e0e0)" }} />
-                ) : null}
-              </Box>
-            ))}
-          </Box>
-        </Box>
-      );
+      return <DataTableBlockView key={index} block={block} index={index} path={path} />;
 
     case "data-list":
       return (
         <Stack key={index} gap="sm" data-rebar-placement-block="data-list" data-rebar-block-path={path}>
           {block.items.map((item, itemIndex) => (
             <Card
-              key={item.title}
+              key={`${item.title}-${itemIndex}`}
               data-rebar-block-path={itemPath(path, "items", itemIndex)}
               data-rebar-block-item-label={item.title}
             >
-              <Stack direction="row" align="center" justify="between">
-                <Text as="span">{item.title}</Text>
-                {item.badge ? (
-                  <Text as="span" size="xs" color="secondary">
-                    {item.badge}
-                  </Text>
-                ) : null}
+              <Stack direction="row" align="center" justify="between" gap="sm">
+                <Stack direction="row" align="center" gap="sm">
+                  {item.avatarSrc || item.avatarPlaceholder ? (
+                    <Avatar
+                      src={item.avatarSrc}
+                      fallback={initials(item.title)}
+                      placeholder={item.avatarPlaceholder}
+                    />
+                  ) : null}
+                  <Stack gap="xs">
+                    <Text as="span">{item.title}</Text>
+                    {item.meta ? (
+                      <Text as="span" size="xs" color="secondary">
+                        {item.meta}
+                      </Text>
+                    ) : null}
+                  </Stack>
+                </Stack>
+                <Stack direction="row" align="center" gap="sm">
+                  {item.badge ? (
+                    <Text as="span" size="xs" color="secondary">
+                      {item.badge}
+                    </Text>
+                  ) : null}
+                  {renderAction(item.action, renderLink)}
+                </Stack>
               </Stack>
             </Card>
           ))}
@@ -518,6 +1286,29 @@ function renderBlock(
             )}
           </Stack>
         </Dialog>
+      );
+
+    case "wizard":
+      return (
+        <Wizard
+          key={index}
+          steps={block.steps}
+          submitLabel={block.submitLabel}
+          backLabel={block.backLabel}
+          nextLabel={block.nextLabel}
+          data-rebar-placement-block="wizard"
+          data-rebar-block-path={path}
+        />
+      );
+
+    case "card-kanban":
+      return (
+        <KanbanBoardBlockView key={index} block={block} index={index} path={path} renderLink={renderLink} variant="default" />
+      );
+
+    case "sticky-kanban":
+      return (
+        <KanbanBoardBlockView key={index} block={block} index={index} path={path} renderLink={renderLink} variant="sticky" />
       );
 
     case "hero":
@@ -608,7 +1399,11 @@ function renderBlock(
     case "doc-section":
       return (
         <Stack key={index} gap="sm" data-rebar-placement-block="doc-section" data-rebar-block-path={path}>
-          {block.heading ? <Heading level={block.level ?? 2}>{block.heading}</Heading> : null}
+          {block.heading ? (
+            <Heading level={block.level ?? 2} id={slugify(block.heading)}>
+              {block.heading}
+            </Heading>
+          ) : null}
           {block.body.map((node, nodeIndex) => renderProseNode(node, nodeIndex, renderLink))}
         </Stack>
       );
@@ -664,15 +1459,124 @@ function renderBlock(
         </Stack>
       );
 
+    case "iframe":
+      return (
+        <Iframe
+          key={index}
+          src={block.src}
+          title={block.title}
+          style={{ height: block.height ?? 300 }}
+          data-rebar-placement-block="iframe"
+          data-rebar-block-path={path}
+        />
+      );
+
+    case "comparison":
+      return <ComparisonBlockView key={index} block={block} index={index} path={path} renderLink={renderLink} />;
+
+    case "heuristic":
+      return (
+        <Stack key={index} gap="sm" id={block.id} data-rebar-placement-block="heuristic" data-rebar-block-path={path}>
+          <Heading level={2}>{block.title}</Heading>
+          <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
+            {renderInline(block.rule, renderLink)}
+          </Text>
+          {block.rationale.map((node, nodeIndex) => renderProseNode(node, nodeIndex, renderLink))}
+          {block.code ? renderProseNode({ kind: "code", code: block.code }, block.rationale.length, renderLink) : null}
+          {block.exampleBlocks ? (
+            <Box
+              style={{
+                border: "1px solid var(--rebar-color-border, #e0e0e0)",
+                borderRadius: 4,
+                padding: "var(--rebar-space-lg)",
+              }}
+            >
+              {block.exampleBlocks.map((inner, innerIndex) =>
+                renderBlock(inner, innerIndex, renderLink, `${path}.exampleBlocks`),
+              )}
+            </Box>
+          ) : null}
+        </Stack>
+      );
+
+    case "spin-card":
+      return (
+        <Box
+          key={index}
+          data-rebar-placement-block="spin-card"
+          data-rebar-block-path={path}
+          style={{
+            border: "1px solid var(--rebar-color-border, #e0e0e0)",
+            borderRadius: 4,
+            padding: "var(--rebar-space-lg)",
+          }}
+        >
+          <Card style={{ width: block.width ?? 220, minHeight: block.minHeight ?? 120, margin: "0 auto" }}>
+            <Spin spinning tip={block.tip ?? "Loading"}>
+              <Stack gap="sm">
+                {block.items.map((item, itemIndex) => (
+                  <Text key={itemIndex} size="sm" data-rebar-block-path={itemPath(path, "items", itemIndex)}>
+                    {item}
+                  </Text>
+                ))}
+              </Stack>
+            </Spin>
+          </Card>
+        </Box>
+      );
+
+    case "scatter-chart":
+      return <ScatterChartBlockView key={index} block={block} index={index} path={path} />;
+
+    case "line-chart":
+      return <LineChartBlockView key={index} block={block} index={index} path={path} />;
+
+    case "stacked-bar-chart":
+      return <StackedBarChartBlockView key={index} block={block} index={index} path={path} />;
+
+    case "stats-table":
+      return <StatsTableBlockView key={index} block={block} index={index} path={path} />;
+
+    case "gallery":
+      return <GalleryBlockView key={index} block={block} index={index} path={path} />;
+
     default:
       return null;
   }
 }
 
 export function BlockRenderer({ blocks, renderLink = defaultRenderLink }: BlockRendererProps) {
+  // Derived once for any `page-index` block among `blocks` — see that case's comment above and
+  // this package's schema.ts doc comment for why a page-index block takes no `sections` prop.
+  const pageSections = blocks
+    .filter((block): block is Extract<Block, { type: "doc-section" }> => block.type === "doc-section" && !!block.heading)
+    .map((block) => ({ id: slugify(block.heading!), label: block.heading! }));
+
+  // `page-index` renders a real `position: sticky` element, and sticky positioning only works when
+  // the element is a *direct* flex item of whatever row layout the calling page places it beside
+  // (see schema.ts's doc comment on `comparison`/`page-index`: that surrounding row is deliberately
+  // hand-authored page chrome, not something this package decides). The normal `<Box><Stack
+  // gap="lg">` wrapper below is harmless for every other block, but for a document that's just one
+  // lone `page-index` block, it becomes a single-child flex column whose height collapses to that
+  // one child's own height — leaving the sticky nav zero room to actually stick before scrolling
+  // away with the page. Skip the wrapper in exactly this case so the real `SectionNav` lands as a
+  // direct child of the caller's own row, identical to what hand-authoring it there directly gives.
+  //
+  // `site-header` gets the same treatment for a different reason: it's a real `<header>` landmark
+  // meant to sit at the very top of a page's DOM, not nested two levels inside this package's own
+  // generic wrapper — harmless either way (a landmark still works nested in plain divs), but a
+  // site-wide chrome element used on literally every route is worth keeping clean rather than
+  // padded with wrapper markup that exists only to support documents with more than one block.
+  const onlyBlock = blocks.length === 1 ? blocks[0] : undefined;
+  if (onlyBlock?.type === "page-index" || onlyBlock?.type === "site-header") {
+    return renderBlock(onlyBlock, 0, renderLink, "blocks", pageSections);
+  }
+
   return (
     <Box data-rebar-placement-root>
-      <Stack gap="lg">{blocks.map((block, index) => renderBlock(block, index, renderLink))}</Stack>
+      <Stack gap="lg">
+        {blocks.map((block, index) => renderBlock(block, index, renderLink, "blocks", pageSections))}
+      </Stack>
     </Box>
   );
 }

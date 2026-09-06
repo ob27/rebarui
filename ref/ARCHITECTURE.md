@@ -89,7 +89,62 @@ bounded, one-time cost of moving to a real, brand-customized design system for l
 is not meant to compete with a production design system on visual fidelity; it is meant to be the
 cheapest way to iterate before you need one.
 
-## Component API conventions
+## Mobile skew: a second print, chosen automatically (planned, not yet built)
+
+**Status: architecture doc only, per an explicit user request to write down the concept before
+building it — nothing described in this section is implemented yet.** Tracked as `ref/TOM.md`
+prompt-queue item 4.
+
+The idea: every web component and web diagram the Packer prints gets *two* prints from the same
+source data, not one — a desktop print (what exists today) and a mobile print, generated
+alongside it, not as a separate authoring step. At render time, the client picks which one to show
+based on the viewport actually in front of the user: a phone or a small tablet gets the mobile
+print; a large tablet gets the full desktop app, same as a laptop. The practical result: a site
+built through the Packer gets a mobile-optimized version of itself automatically, the same way it
+already gets a consistent, low-fidelity visual baseline automatically — no separate mobile design
+pass, no second document for the model (or a human) to author.
+
+**Why this is a placement-layer problem, not a per-component one.** A component built and used
+directly (hand-authored `Stack`/`Card` JSX, not through `@rebar-ui/placement`) can only get this
+via the conventional route — container queries or breakpoint-gated CSS baked into that one
+component, decided once at build time, the same as any other component library. That works, but it
+means every component re-solves "what does this look like small" on its own, and a hand-authored
+page combining several components has no single place that could look at the *whole* page and
+decide to restructure it for a small screen (reorder sections, promote/demote content, collapse
+what a desktop layout affords space for). The Packer already is that single place: it already owns
+every layout decision for a page built through it (anatomical order, the magnetic heuristic — see
+above) precisely so the model never has to. A second render path inside the same renderer, given
+the same `Block[]` document, is a natural extension of a decision this system already centralizes,
+not a new architectural seam — for a component used *directly*, a container-query-based mobile
+adjustation is still the right fallback, just narrower in scope (that one component's own layout,
+not the page around it).
+
+**What "mobile print" should mean, concretely** (a first-pass sketch, not committed): denser
+vertical stacking in place of a desktop row's horizontal arrangement (the same content, `anatomical
+order` still deciding internal sequence, just without a desktop row's width to spend); larger
+touch targets by default, consistent with ref/HEURISTICS.md #19 (44×44px minimum) rather than a
+separate rule; overflow-prone chrome (a `nav-bar`'s collapsed items, a `table` block's named
+filters) collapsing more aggressively, since a phone's viewport hits those overflow thresholds far
+sooner than a laptop's; anything genuinely desktop-only (a hover-triggered `HoverCard`, a
+drag-and-drop `Kanban` board without `useLongPress`'s touch pairing) either gaining its already-
+required touch equivalent (see ref/HEURISTICS.md #48) or being deliberately simplified for the
+mobile print rather than rendered unusably.
+
+**Where diagrams fit in.** The user's original framing was "every web component *and every web
+diagram*" — diagrams (flowcharts, sequence diagrams, org charts) are a separate, not-yet-built
+archetype family for `@rebar-ui/placement` (see the removed `/diagrams` "coming soon" placeholder
+for the prior state of that intent — the concept is unchanged, just no longer a stub page in the
+nav). Whenever diagram archetypes are actually built, they inherit this same two-print mechanism
+for free, for the same reason components do: they'd already be `Block[]`-described and rendered by
+the same Packer, not a bespoke SVG each diagram type invents its own responsive behavior for.
+
+**Detection.** Chosen by real viewport/device signals at render time (not, e.g., a user-agent
+string sniff alone — those are unreliable and don't track a foldable or a resized window), matching
+the breakpoint tokens ref/HEURISTICS.md already defines (`### Breakpoints`) rather than inventing a
+second set. The exact mechanism (a `matchMedia` listener driving which print `BlockRenderer`
+returns, vs. two static builds selected server-side) is an open implementation question, not
+resolved by this doc on purpose — this section exists to state the *shape* of the commitment before
+committing to one specific technical path.
 
 Core API uses its own consistent conventions rather than mimicking one specific target library
 (see [ASSESSMENT.md](ASSESSMENT.md#keep-but-change) for why):

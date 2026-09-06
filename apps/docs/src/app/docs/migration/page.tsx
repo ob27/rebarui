@@ -1,6 +1,20 @@
-import { Heading, Stack, Text } from "rebar-ui";
+import { Stack, Text } from "rebar-ui";
 import type { Block } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+
+const INTRO_BLOCKS: Block[] = [
+  {
+    type: "doc-section",
+    heading: "Migration",
+    level: 1,
+    body: [
+      {
+        kind: "text",
+        text: "Rebar is designed to be replaced, once — not iterated against forever. The signal to migrate isn't a deadline, it's *stability*: once your UI's flows and layouts have actually settled and you're heading to production, that's when the cost/benefit flips from \"keep iterating cheaply, headless\" to \"pay the one-time cost of a real, customizable design system.\" Two complementary paths get you there, depending on whether a dedicated adapter exists for your target design system yet.",
+      },
+    ],
+  },
+];
 
 const BLOCKS: Block[] = [
   {
@@ -43,15 +57,11 @@ const BLOCKS: Block[] = [
 export default function MigrationPage() {
   return (
     <Stack gap="lg">
-      <Heading level={1}>Migration</Heading>
-      <Text>
-        Rebar is designed to be replaced, once — not iterated against forever. The signal to
-        migrate isn&apos;t a deadline, it&apos;s <em>stability</em>: once your UI&apos;s flows and
-        layouts have actually settled and you&apos;re heading to production, that&apos;s when the
-        cost/benefit flips from &quot;keep iterating cheaply, headless&quot; to &quot;pay the
-        one-time cost of a real, customizable design system.&quot; Two complementary paths get you
-        there, depending on whether a dedicated adapter exists for your target design system yet.
-      </Text>
+      <NextBlockRenderer blocks={INTRO_BLOCKS} />
+      {/* Real <strong> bold, not doc-section's *emphasis* (which renders <em>/italic) — the tiny
+          inline markup deliberately doesn't support bold (see BlockRenderer.tsx's INLINE_MARKUP
+          comment), so this one statement stays hand-authored rather than silently downgrading it
+          to italic. */}
       <Text color="secondary">
         <strong>v1&apos;s officially supported migration target for web components is Ant Design
         v6</strong> — the only one with a real codemod (below), not just the generic prompt.

@@ -9,7 +9,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "Most of what makes AI-assisted coding expensive and unpredictable isn't logic — it's UI. Layout, spacing, and composition decisions are exactly the kind of open-ended judgment call a model has to re-solve from scratch on every request, and the cost shows up twice: in tokens spent deciding, and in the variance between one run and the next. Rebar removes that decision from the job entirely — an LLM picks a named archetype and supplies content, a deterministic renderer decides the rest. [The measured result](/benchmarks) is a real, repeated (n=15) one: cheaper than hand-authored Ant Design outright, faster, and close to zero run-to-run variance, not just cheaper than hand-authoring the same thing without a design system at all.",
+        text: "Most of what makes AI-assisted coding expensive and unpredictable isn't logic — it's UI. Layout, spacing, and composition decisions are exactly the kind of open-ended judgment call a model has to re-solve from scratch on every request, and the cost shows up twice: in tokens spent deciding, and in the variance between one run and the next. Rebar removes that decision from the job entirely — an LLM picks a named block and supplies content, the Packer decides the rest. [The measured result](/benchmarks) is a real, repeated (n=15) one: cheaper than hand-authored Ant Design outright, faster, and close to zero run-to-run variance, not just cheaper than hand-authoring the same thing without a design system at all.",
       },
     ],
   },
@@ -29,7 +29,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "Cheaper and faster is the headline, but it's not the point on its own. Every interactive component wraps a real Radix UI primitive underneath, so keyboard operability, focus management, and ARIA semantics are correct by construction, not bolted on. Every visual value is a `--rebar-*` CSS custom property, not a hardcoded pixel or color — which is what makes the placement layer's near-zero output variance possible in the first place: the same document renders identically every time, because a deterministic renderer decided it, not a model improvising layout from scratch.",
+        text: "Cheaper and faster is the headline, but it's not the point on its own. Every interactive component wraps a real Radix UI primitive underneath, so keyboard operability, focus management, and ARIA semantics are correct by construction, not bolted on. Every visual value is a `--rebar-*` CSS custom property, not a hardcoded pixel or color — which is what makes the placement layer's near-zero output variance possible in the first place: the same document renders identically every time, because the Packer decided it, not a model improvising layout from scratch.",
       },
     ],
   },
@@ -39,7 +39,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "A real, common failure mode inside larger organizations: many different teams — sometimes many different individual engineers — building internal tools in isolation, each with its own ad hoc styling, its own inconsistent patterns, no shared visual language at all. When every one of those tools is built the same way, through the same small archetype vocabulary and the same token set, they converge on the same look without anyone having to coordinate it by hand. That's a genuinely different scale of consistency than one team's design system — it's every team's internal tooling looking like it came from the same place, by construction, not by a style guide everyone's expected to remember.",
+        text: "A real, common failure mode inside larger organizations: many different teams — sometimes many different individual engineers — building internal tools in isolation, each with its own ad hoc styling, its own inconsistent patterns, no shared visual language at all. When every one of those tools is built the same way, through the same small block vocabulary and the same token set, they converge on the same look without anyone having to coordinate it by hand. That's a genuinely different scale of consistency than one team's design system — it's every team's internal tooling looking like it came from the same place, by construction, not by a style guide everyone's expected to remember.",
       },
     ],
   },
@@ -49,7 +49,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "A core use case for Rebar is decomposing an incumbent enterprise platform — a large, entrenched system (a CRM, an ERP, a legacy internal tool) that's expensive to replace wholesale but painful to keep extending. Reverse-engineering the pieces you actually need into a placement-layer document is cheap precisely because the composition step is free: describe what a screen needs to do, not how it should look, and rebuild it incrementally rather than committing to a single, all-or-nothing migration. [Scenario 6 on /benchmarks](/benchmarks#scenarios) works through this directly, with real numbers, not just the idea of it.",
+        text: "A core use case for Rebar is decomposing an incumbent enterprise platform — a large, entrenched system (a CRM, an ERP, a legacy internal tool) that's expensive to replace wholesale but painful to keep extending. Reverse-engineering the pieces you actually need into a placement-layer document is cheap precisely because the composition step is free: describe what a screen needs to do, not how it should look, and rebuild it incrementally rather than committing to a single, all-or-nothing migration. [Scenario 6 on /benchmarks](/benchmarks/scenarios) works through this directly, with real numbers, not just the idea of it.",
       },
     ],
   },

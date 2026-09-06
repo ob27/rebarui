@@ -1,8 +1,18 @@
-import { Heading, Stack, Text } from "rebar-ui";
 import type { Block } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const BLOCKS: Block[] = [
+  {
+    type: "doc-section",
+    heading: "Contributing",
+    level: 1,
+    body: [
+      {
+        kind: "text",
+        text: "The full guide (issue/PR conventions, the complete checklist) lives in [CONTRIBUTING.md](https://github.com/ob27/rebarui/blob/main/CONTRIBUTING.md) at the repo root — this page is a shorter, browsable version of the same thing.",
+      },
+    ],
+  },
   {
     type: "doc-section",
     heading: "Getting set up",
@@ -44,11 +54,11 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
-    heading: "Adding an archetype to @rebar-ui/placement",
+    heading: "Adding a block to @rebar-ui/placement",
     body: [
       {
         kind: "text",
-        text: "Add the shape to the `Block` union in `schema.ts` (documented as unmeasured until it's been through real repeated benchmarking, matching the existing archetypes' own doc comments), a render case in `BlockRenderer.tsx`, tests covering its DOM output and order, and a row in that package's README's archetype table.",
+        text: "Add the shape to the `Block` union in `schema.ts` (documented as unmeasured until it's been through real repeated benchmarking, matching the existing blocks' own doc comments), a render case in `BlockRenderer.tsx`, tests covering its DOM output and order, and a row in that package's README's block table.",
       },
     ],
   },
@@ -64,11 +74,21 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "Contributing a new benchmark",
+    body: [
+      {
+        kind: "text",
+        text: "See `ref/BENCHMARK_CONTRIBUTING.md` before adding a new condition to /benchmarks or running your own comparable measurement (e.g. against a different model) — it covers the disciplines (n=15, isolated scaffolds, verification before trusting a number, harness-adjustment across agentic vs. raw-API comparisons) that make a new result genuinely comparable to what's already published, rather than a number that merely looks similar. `ref/QWEN_BENCHMARK_PROTOCOL.md` is a full worked example of applying it to one specific case.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Opening a PR",
     body: [
       {
         kind: "text",
-        text: "Keep it scoped — one component, one fix, one archetype. Make sure the four checks above pass locally before pushing; CI runs the same ones and blocks merge if any fail. Describe what changed and why, and how you verified it (a specific reference page, a Playwright check) — this project verifies claims empirically throughout `ref/PLAN.md`, and PRs are held to the same bar.",
+        text: "Keep it scoped — one component, one fix, one block. Make sure the four checks above pass locally before pushing; CI runs the same ones and blocks merge if any fail. Describe what changed and why, and how you verified it (a specific reference page, a Playwright check) — this project verifies claims empirically throughout `ref/PLAN.md`, and PRs are held to the same bar.",
       },
     ],
   },
@@ -82,7 +102,7 @@ const BLOCKS: Block[] = [
           "A missing or incorrect dark-mode color pairing (check via DevTools' dark-mode toggle on any /components/* page)",
           "A new small component filling a gap dist/index.d.ts doesn't cover yet",
           "Improving a /components/* or /docs/* reference page",
-          "A chart archetype for @rebar-ui/placement — /benchmarks' three hand-authored SVG chart helpers are the reference implementation to generalize from",
+          "A chart block for @rebar-ui/placement — /benchmarks' three hand-authored SVG chart helpers are the reference implementation to generalize from",
         ],
       },
     ],
@@ -90,20 +110,5 @@ const BLOCKS: Block[] = [
 ];
 
 export default function ContributingPage() {
-  return (
-    <Stack gap="lg">
-      <Heading level={1}>Contributing</Heading>
-      <Text color="secondary">
-        The full guide (issue/PR conventions, the complete checklist) lives in{" "}
-        <a
-          href="https://github.com/ob27/rebarui/blob/main/CONTRIBUTING.md"
-          className="rebar-link"
-        >
-          CONTRIBUTING.md
-        </a>{" "}
-        at the repo root — this page is a shorter, browsable version of the same thing.
-      </Text>
-      <NextBlockRenderer blocks={BLOCKS} />
-    </Stack>
-  );
+  return <NextBlockRenderer blocks={BLOCKS} />;
 }

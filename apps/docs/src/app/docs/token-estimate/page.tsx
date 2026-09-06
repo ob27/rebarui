@@ -1,8 +1,18 @@
-import { Heading, Stack, Text } from "rebar-ui";
 import type { Block } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const BLOCKS: Block[] = [
+  {
+    type: "doc-section",
+    heading: "The token estimate: methodology and assumptions",
+    level: 1,
+    body: [
+      {
+        kind: "text",
+        text: "The DevTools panel (🔧) shows three numbers: build against AntD directly, build with Rebar alone, and build with Rebar then migrate once. This page is the full, honest accounting of how those numbers are computed — a documented estimation *model* with stated, editable assumptions, not a measured cost. The source is `packages/devtools/src/tokenEstimate.ts`, short enough to read end to end yourself.",
+      },
+    ],
+  },
   {
     type: "doc-section",
     heading: "What each number represents",
@@ -98,18 +108,5 @@ breakevenIterations = (rebarBase + migrationCost - antdBase) / (antdTaxPerIterat
 ];
 
 export default function TokenEstimatePage() {
-  return (
-    <Stack gap="lg">
-      <Heading level={1}>The token estimate: methodology and assumptions</Heading>
-      <Text color="secondary">
-        The DevTools panel (🔧) shows three numbers: build against AntD directly, build with
-        Rebar alone, and build with Rebar then migrate once. This page is the full, honest
-        accounting of how those numbers are computed — a documented estimation{" "}
-        <strong>model</strong> with stated, editable assumptions, not a measured cost. The source
-        is <code>packages/devtools/src/tokenEstimate.ts</code>, short enough to read end to end
-        yourself.
-      </Text>
-      <NextBlockRenderer blocks={BLOCKS} />
-    </Stack>
-  );
+  return <NextBlockRenderer blocks={BLOCKS} />;
 }

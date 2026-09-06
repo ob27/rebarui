@@ -79,28 +79,33 @@ measured** means real, repeated (n=15) data on `/benchmarks` backs it; **unmeasu
 real, tested, and shipped, but hasn't been through that rigor yet — treat it as correct, not yet
 as proven cheap.
 
-| Archetype | For | Status |
+| Block | For | Status |
 |---|---|---|
 | `header` | A page/panel title, optional trailing action | ✓ measured |
+| `nav-bar` | A horizontal site nav that collapses overflowing items into a trailing popover once they'd cross half the header's width (see `ref/HEURISTICS.md`'s "Nav overflow" rule) | unmeasured |
+| `nav-index` | A vertical link index — search + category chips that only appear once the list is long enough to need them | unmeasured |
+| `page-index` | An in-page content index — sections derived automatically from the document's own `doc-section` headings, no `sections` prop | unmeasured |
 | `banner` | A colored strip: icon + one line + optional trailing action | ✓ measured |
 | `checklist` | A heading over a vertical list of checkbox rows | ✓ measured |
 | `callout` | A colored box with a bold title line and a secondary line | ✓ measured |
 | `hero` | A page's top banner: badge, title, subtitle, actions, code snippet | unmeasured |
 | `section-header` | A kicker + title + subtitle above a page section | unmeasured |
-| `doc-section` | A heading over prose paragraphs/code/lists (tiny inline markup only — `` `code` `` and `[label](href)`, not full markdown) | unmeasured |
+| `doc-section` | A heading over prose paragraphs/code/lists (tiny inline markup only — `` `code` ``, `[label](href)`, `*emphasis*`, not full markdown) | unmeasured |
 | `feature-grid` | A row of title+body micro-feature cards | unmeasured |
 | `pillar-grid` | A grid of title+body+link cards | unmeasured |
+| `card-grid` | An open-ended wrapping grid of cards — title, optional body, link, and status tags per item | unmeasured |
+| `persona-card` | A row of avatar+name+meta identity cards | unmeasured |
 | `props-table` | A component's prop reference table, from already-generated `PropRow[]` data | unmeasured |
-| `form` | A labeled field list (text/email/date/textarea/select/checkbox) with an optional submit button (omit `submitLabel` when nesting inside a `modal` that has its own footer action) | unmeasured |
+| `form` | A labeled field list (text/email/date/textarea/select/checkbox, each optionally `required`) with an optional submit button (omit `submitLabel` when nesting inside a `modal` that has its own footer action) | unmeasured |
 | `table` | A column-headed data table, each row optionally ending in an action button | unmeasured |
-| `data-list` | A vertical list of title+badge rows | unmeasured |
+| `data-list` | A vertical list of rows — title, optional badge, optional avatar/meta/action | unmeasured |
 | `filter-bar` | A search input + optional filter dropdown + optional trailing action | unmeasured |
 | `tabs` | Tabbed content — each tab holds its own `Block[]` (recursive) | unmeasured |
 | `modal` | A real `Dialog`, forced open — for static-render/screenshot contexts only; on a live page with other content around it, a forced-open modal covers the whole page as a fixed overlay, so link to a normally-triggered `Dialog` instead | unmeasured |
+| `wizard` | A multi-step form — `Steps` for progress, one step's fields at a time, Next/Submit gated on that step's required fields (wraps the real `Wizard` component) | unmeasured |
 
 `IconName` is a small fixed set (`"close" | "info" | "refresh" | "clock"`) — not an arbitrary icon
-library. `Tone` is `"info" | "warning" | "success" | "error"`, shared by every archetype that has
-one.
+library. `Tone` is `"info" | "warning" | "success" | "error"`, shared by every block that has one.
 
 ## For coding agents
 

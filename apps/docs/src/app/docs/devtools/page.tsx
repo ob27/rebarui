@@ -1,8 +1,19 @@
-import { Alert, Heading, Stack, Text } from "rebar-ui";
+import { Alert, Stack, Text } from "rebar-ui";
 import type { Block } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const BLOCKS: Block[] = [
+  {
+    type: "doc-section",
+    heading: "DevTools",
+    level: 1,
+    body: [
+      {
+        kind: "text",
+        text: "`@rebar-ui/devtools` is a dev-only floating panel (🔧, bottom-right) showing real, computed data about the current page — no fabricated metrics.",
+      },
+    ],
+  },
   {
     type: "doc-section",
     heading: "What it shows",
@@ -76,11 +87,6 @@ const BLOCKS: Block[] = [
 export default function DevToolsPage() {
   return (
     <Stack gap="lg">
-      <Heading level={1}>DevTools</Heading>
-      <Text>
-        <code>@rebar-ui/devtools</code> is a dev-only floating panel (🔧, bottom-right) showing
-        real, computed data about the current page — no fabricated metrics.
-      </Text>
       <NextBlockRenderer blocks={BLOCKS} />
       <Alert type="info" title="Live example — bionic prop forced on, no DevTools toggle needed">
         <Text bionic>

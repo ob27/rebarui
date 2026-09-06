@@ -1,9 +1,13 @@
 import { useState } from "react";
-import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Dialog } from "../components/Dialog";
 import { Button } from "../components/Button";
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe("Dialog", () => {
   it("renders with an accessible role and the given title", () => {
@@ -80,5 +84,57 @@ describe("Dialog", () => {
       '[data-rebar-part="footer"]',
     );
     expect(footer).not.toBeNull();
+  });
+
+  it("adds the active-border class when set", () => {
+    render(
+      <Dialog open activeBorder title="Drop here">
+        Content
+      </Dialog>,
+    );
+    expect(screen.getByRole("dialog")).toHaveClass("rebar-active-border");
+  });
+
+  it("adds the fullscreen classes when set", () => {
+    render(
+      <Dialog open fullscreen title="Preview">
+        Content
+      </Dialog>,
+    );
+    expect(screen.getByRole("dialog")).toHaveClass("rebar-dialog-content-fullscreen");
+    expect(document.querySelector('[data-rebar-part="overlay"]')).toHaveClass("rebar-dialog-overlay-fullscreen");
+  });
+
+  it("closes itself after autoDismiss milliseconds, uncontrolled", async () => {
+    render(
+      <Dialog defaultOpen autoDismiss={50} title="Saved">
+        Your change was saved.
+      </Dialog>,
+    );
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument(), { timeout: 1000 });
+  });
+
+  it("closes itself after autoDismiss milliseconds, controlled — calling the caller's onOpenChange", async () => {
+    const onOpenChange = vi.fn();
+    function Controlled() {
+      const [open, setOpen] = useState(true);
+      return (
+        <Dialog
+          open={open}
+          onOpenChange={(next) => {
+            setOpen(next);
+            onOpenChange(next);
+          }}
+          autoDismiss={50}
+          title="Saved"
+        >
+          Your change was saved.
+        </Dialog>
+      );
+    }
+    render(<Controlled />);
+    await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false), { timeout: 1000 });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });
