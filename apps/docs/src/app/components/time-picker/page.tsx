@@ -61,7 +61,7 @@ export default function TimePickerPage() {
         a native <code>&lt;select&gt;</code>.
       </Text>
 
-      <Stack gap="sm">
+      <Stack gap="sm" align="start">
         <TimePicker value={time} onValueChange={setTime} minuteStep={15} />
         <Text size="sm" color="secondary">
           Selected: {time}

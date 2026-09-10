@@ -79,6 +79,7 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   FileUpload: "/components/file-upload",
   BubbleChart: "/components/bubble-chart",
   Heatmap: "/components/heatmap",
+  UMAPPlot: "/components/umap-plot",
   RichTextEditor: "/components/rich-text-editor",
   PullToRefresh: "/components/pull-to-refresh",
   PickerWheel: "/components/picker-wheel",

@@ -28,6 +28,7 @@ const DIAGRAM: readonly string[] = [
   "Sparkline",
   "BubbleChart",
   "Heatmap",
+  "UMAPPlot",
   "Treemap",
   "CandlestickChart",
   "GeoChart",

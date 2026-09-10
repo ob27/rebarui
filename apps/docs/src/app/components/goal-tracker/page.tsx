@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { GoalTracker, Heading, Stack, Text } from "rebar-ui";
 import type { GoalTrackerFocusArea } from "rebar-ui";
 import type { Block } from "@rebar-ui/placement";
@@ -25,7 +25,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "Aspiration → Focus Areas → Goals, each level inline-editable via the real Editable component. Completing a goal (not un-completing) fires a small celebratory particle burst, built without any new dependency, skipped entirely under prefers-reduced-motion.",
+        text: "Aspiration → Focus Areas → Goals, each level inline-editable via the real Editable component, each also carrying a small visible caption (\"Aspiration\", \"Focus area\", \"Goals\") above it rather than relying on an aria-label alone — see ref/HEURISTICS.md #6. Completing a goal (not un-completing) fires a celebratory particle burst sized by the `celebration` prop (`\"small\"` default, `\"big\"` for a larger/longer one, `\"none\"` to disable), built without any new dependency, skipped entirely under prefers-reduced-motion. `onAddFocusArea`/`onAddGoal` add the \"+ Add focus area\"/\"+ Add goal\" buttons — omitted entirely unless passed.",
       },
     ],
   },
@@ -67,6 +67,7 @@ export default function GoalTrackerPage() {
       goals: [{ id: "g3", text: "Reduce churn to under 3%", completed: false }],
     },
   ]);
+  const nextId = useRef(1);
 
   return (
     <Stack gap="lg">
@@ -79,6 +80,7 @@ export default function GoalTrackerPage() {
       <GoalTracker
         aspiration="Grow the platform business"
         focusAreas={focusAreas}
+        celebration="big"
         onGoalToggle={(focusAreaId, goalId, completed) =>
           setFocusAreas((prev) =>
             prev.map((fa) =>
@@ -88,6 +90,43 @@ export default function GoalTrackerPage() {
             ),
           )
         }
+        onFocusAreaChange={(id, text) =>
+          setFocusAreas((prev) => prev.map((fa) => (fa.id === id ? { ...fa, text } : fa)))
+        }
+        onGoalChange={(focusAreaId, goalId, text) =>
+          setFocusAreas((prev) =>
+            prev.map((fa) =>
+              fa.id !== focusAreaId
+                ? fa
+                : { ...fa, goals: fa.goals.map((g) => (g.id === goalId ? { ...g, text } : g)) },
+            ),
+          )
+        }
+        onDelete={(kind, { focusAreaId, goalId }) =>
+          setFocusAreas((prev) =>
+            kind === "focusArea"
+              ? prev.filter((fa) => fa.id !== focusAreaId)
+              : prev.map((fa) =>
+                  fa.id !== focusAreaId
+                    ? fa
+                    : { ...fa, goals: fa.goals.filter((g) => g.id !== goalId) },
+                ),
+          )
+        }
+        onAddFocusArea={() => {
+          const id = `fa${nextId.current++}`;
+          setFocusAreas((prev) => [...prev, { id, text: "", goals: [] }]);
+        }}
+        onAddGoal={(focusAreaId) => {
+          const id = `g${nextId.current++}`;
+          setFocusAreas((prev) =>
+            prev.map((fa) =>
+              fa.id !== focusAreaId
+                ? fa
+                : { ...fa, goals: [...fa.goals, { id, text: "", completed: false }] },
+            ),
+          );
+        }}
       />
 
       <NextBlockRenderer blocks={BLOCKS} />

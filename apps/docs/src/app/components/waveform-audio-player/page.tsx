@@ -53,11 +53,12 @@ export default function WaveformAudioPlayerPage() {
       </Text>
 
       <Text size="sm" color="secondary">
-        A silent placeholder clip is wired up below (a real inline data URI, not a broken link) so
-        the transport controls are genuinely interactive without needing a hosted audio file.
+        A real audio track is wired up below (Rebar&apos;s own &quot;empty state, waiting&quot;
+        music cue) so the transport controls are genuinely interactive against real, audible
+        content, not a silent placeholder clip.
       </Text>
       <WaveformAudioPlayer
-        src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="
+        src="/audio/empty-state-waiting-music.mp3"
         aria-label="Demo audio player"
       />
 

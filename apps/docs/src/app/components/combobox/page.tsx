@@ -93,6 +93,15 @@ export default function ComboboxPage() {
           />
         </Stack>
       </LivePreview>
+      <Text size="xs" color="secondary">
+        The first example above is a real, plain text field (no trigger chevron the way{" "}
+        <code>Select</code> has one) — that&apos;s deliberate, not a missing affordance: click into
+        it and start typing to see the option list filter live. If a caller wants an explicit
+        visual cue that options are browsable before typing anything, pairing it with a search-icon
+        prefix (once <code>Combobox</code> supports one) or a helper caption below it is the way to
+        signal that, rather than adding a `Select`-style chevron that would misleadingly suggest
+        browsing-only behavior.
+      </Text>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

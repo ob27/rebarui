@@ -77,6 +77,7 @@ export const COMPLEXITY: Record<string, Complexity> = {
   "file-upload": "complex",
   "bubble-chart": "medium",
   heatmap: "medium",
+  "umap-plot": "medium",
   "rich-text-editor": "complex",
   "pull-to-refresh": "medium",
   "picker-wheel": "medium",

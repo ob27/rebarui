@@ -66,6 +66,17 @@ export default function PinInputPage() {
         <PinInput length={6} />
       </LivePreview>
 
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          Set <code>mask</code> for a PIN/security-code entry where the digits shouldn&apos;t stay
+          visible on screen (each box renders as a real <code>type=&quot;password&quot;</code>{" "}
+          input, not just a visually-obscured overlay).
+        </Text>
+        <LivePreview>
+          <PinInput length={4} mask />
+        </LivePreview>
+      </Stack>
+
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

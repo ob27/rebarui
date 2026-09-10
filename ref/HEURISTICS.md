@@ -167,6 +167,17 @@ an item-count threshold) and #27 (`Select` is browsing-only today, no type-to-fi
     absent, never a blank area — see `/benchmarks`'s own `ScatterChart`/`LineChart` helpers for a
     real, shipped example of this (title and axis labels are required arguments, not optional).
 
+    A chart's context also needs to be reachable *interactively*, not just printed once as a
+    caption: hovering a data mark should surface its exact underlying value(s) in a tag, and
+    selecting a mark (click) should make that tag persist past the hover ending, so a value can be
+    read at leisure rather than only while the pointer holds still. Selecting a different mark
+    swaps which tag persists; clicking empty chart space clears the selection back to hover-only.
+    This is #1 (visibility of system status) applied to the selected mark specifically — once
+    something is "selected," a viewer shouldn't have to keep the mouse in place to keep seeing why.
+    Component rule: charts with individually-selectable marks (area/bubble/line/box-plot points,
+    heatmap cells) share one hook for this, `useChartMarkSelection`, rather than each
+    reimplementing hover/selection state independently.
+
 17. **Progressive disclosure: default to ≤7-9 visible options** — show essential options first;
     reveal advanced options on demand, respecting Miller's Law (people reliably track 7±2 items at
     once). Default state shows 5-9 visible options; longer lists need search, filtering, grouping,
@@ -599,6 +610,23 @@ applied to the #11-30 de-dup above.
     `stats-table`/`table` blocks — scrolls within itself on a narrow viewport rather than forcing
     the page to scroll horizontally. No gap found.
 
+49. **A heuristic's default mechanism is a means, not the goal** — when following a heuristic's
+    usual mechanism literally costs the user meaningfully more effort (clicks, steps, time) than
+    the problem it exists to solve justifies, prefer the lower-effort presentation instead. A
+    heuristic exists to serve the user; applying its stated mechanism somewhere it doesn't actually
+    help is optimizing for looking compliant, not for being useful. Seen concretely: the
+    "space-dense content on a text-dominant page → `Carousel`" default (see Component-level
+    defaults below) was applied to `Avatar`'s placeholder-portrait gallery — a small set of small
+    images, exactly the case that default's own gallery-page exception already carves out (content
+    that needs to be scannable all at once), just recognized one component later than it should
+    have been. A one-at-a-time carousel forces extra clicks to see a set that would fit in a plain
+    grid with room to spare and zero extra clicks needed to see everything. Component rule:
+    `Avatar`'s placeholder gallery renders as a plain wrapping grid, not a `Carousel`. Applying this
+    heuristic is itself a judgment call, not a license to skip other heuristics whenever they're
+    inconvenient — it fires specifically when a mechanism's *cost* (measured in real user effort)
+    outweighs the *problem* it's solving in this specific case, not merely when a lighter option
+    exists.
+
 ## Token values (defaults, fully overridable)
 
 ### Spacing — 8pt grid
@@ -726,6 +754,17 @@ drops below that ratio.
   the 50%-of-header budget itself is enforced by whoever places it, via a `max-width: 50%`
   container — see `packages/core/src/components/NavBar.tsx`'s own doc comment for why that split
   exists. Dogfooded on this site's own header (`SiteHeader.tsx`).
+
+- **Diagram/chart canvases default to visible padding at their own edge, never flush** — a
+  diagram or chart's content shouldn't touch its own container's border at 100% zoom/fit by
+  default; there's essentially no case where a viewer wants a node or plotted mark to start
+  exactly on the container's edge. This is heuristic #24 (whitespace as an active design element)
+  applied specifically to zoomable/pannable canvases (`Flowchart`, `MindMap`, `OrgChart`,
+  `NodeLinkGraph`, `DiagramMinimap`), which otherwise tend to fit content edge-to-edge since
+  "100%" reads as a literal, exact-fit measurement. Component rule: every diagram canvas takes a
+  `padding` prop (a CSS-length or number of px) defaulting to a real non-zero value, applied as
+  inset space the initial fit/zoom-to-fit never fills past — a prop, not a hard-coded constant,
+  so a genuine edge-to-edge use case can still opt out.
 
 These defaults live in `packages/core` component implementations and `packages/theme-*`
 stylesheets — this document is the reference for what those values *should* be and why, kept in

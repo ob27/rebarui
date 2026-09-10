@@ -72,7 +72,7 @@ export default function TreeSelectPage() {
         A trigger button opening a popover of the real <code>TreeView</code> component.
       </Text>
 
-      <Stack gap="sm">
+      <Stack gap="sm" align="start">
         <TreeSelect
           data={DATA}
           value={value}

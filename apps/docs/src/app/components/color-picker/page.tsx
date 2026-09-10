@@ -50,6 +50,22 @@ export default function ColorPickerPage() {
         <ColorPicker defaultValue="#0066cc" />
       </LivePreview>
 
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          <code>size</code> — <code>&quot;sm&quot;</code>/<code>&quot;md&quot;</code>/
+          <code>&quot;lg&quot;</code> resize the visible swatch; the real clickable footprint stays
+          a genuine ≥44×44px target at every size (padding included when the swatch itself is
+          smaller — see ref/HEURISTICS.md #19), same as any other small tap target here.
+        </Text>
+        <LivePreview>
+          <Stack direction="row" gap="md" style={{ alignItems: "center" }}>
+            <ColorPicker size="sm" defaultValue="#d32f2f" aria-label="Small" />
+            <ColorPicker size="md" defaultValue="#2e7d32" aria-label="Medium" />
+            <ColorPicker size="lg" defaultValue="#7b1fa2" aria-label="Large" />
+          </Stack>
+        </LivePreview>
+      </Stack>
+
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

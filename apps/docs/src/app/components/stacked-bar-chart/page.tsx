@@ -65,6 +65,10 @@ export default function StackedBarChartPage() {
         Each bar broken into labeled cost/quantity segments, with the bar&apos;s own total shown
         above it.
       </Text>
+      <Text size="sm" color="secondary">
+        Set <code>filterable</code> for a row of toggle buttons — one per distinct segment label
+        across every bar. Hiding one drops that segment from every bar it appears in, not just one.
+      </Text>
 
       <Box
         style={{
@@ -88,6 +92,7 @@ export default function StackedBarChartPage() {
               segments: [{ label: "Oversight", value: 3500 }],
             },
           ]}
+          filterable
         />
       </Box>
 

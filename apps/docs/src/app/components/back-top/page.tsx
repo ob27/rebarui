@@ -91,7 +91,13 @@ export default function BackTopPage() {
         <BackTop visibilityThreshold={80} target={() => scrollRef.current ?? window} />
       </Box>
       <Text size="xs" color="secondary">
-        Scroll the box above — the button appears once you've scrolled past ~80px.
+        Scroll the box above — the button appears once you&apos;ve scrolled past ~80px.{" "}
+        <strong>It appears fixed to the real browser viewport&apos;s bottom-right corner, not
+        anchored inside this small demo box</strong> — `target` only controls which element&apos;s
+        scroll position is tracked and scrolled back to, not where the button itself is drawn
+        (it&apos;s always `position: fixed` to the page). In a real full-page use, that&apos;s
+        exactly the point; in this cropped demo it can read as the button appearing somewhere
+        unexpected rather than inside the box you just scrolled.
       </Text>
 
       <NextBlockRenderer blocks={BLOCKS} />

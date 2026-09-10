@@ -65,7 +65,7 @@ export default function ButtonGroupPage() {
         A visually joined row (or column) of several equal buttons.
       </Text>
 
-      <Stack gap="md">
+      <Stack gap="md" align="start">
         <ButtonGroup>
           <Button variant="secondary">Day</Button>
           <Button variant="secondary">Week</Button>

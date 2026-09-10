@@ -1,4 +1,4 @@
-import { Avatar, Box, Card, Carousel, Heading, Stack, Text } from "rebar-ui";
+import { Avatar, Box, Card, Heading, Stack, Text } from "rebar-ui";
 import type { Block } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { LivePreview } from "@/components/LivePreview";
@@ -110,12 +110,15 @@ export default function AvatarPage() {
           All {PORTRAIT_COUNT} illustrated portraits, shown deliberately across a range of ages and
           ethnicities so the built-in default doesn&apos;t default to one look. Pass{" "}
           <code>placeholder={"{"}n{"}"}</code> with a specific index to pick one directly instead of
-          relying on the name hash.
+          relying on the name hash. Shown as a plain grid, not a <code>Carousel</code> — this is a
+          reference gallery meant to be scanned all at once (the same exception the
+          space-dense-content heuristic itself carves out for a dedicated gallery page — see
+          ref/HEURISTICS.md #49), not a one-at-a-time browsing experience.
         </Text>
         <LivePreview>
-          <Carousel aria-label="All illustrated portraits">
+          <Stack direction="row" gap="lg" style={{ flexWrap: "wrap" }} aria-label="All illustrated portraits">
             {Array.from({ length: PORTRAIT_COUNT }, (_, i) => (
-              <Stack key={i} gap="xs" style={{ alignItems: "center", padding: 24 }}>
+              <Stack key={i} gap="xs" style={{ alignItems: "center" }}>
                 <Avatar fallback={String(i)} placeholder={i} />
                 <Text size="xs" color="secondary">
                   placeholder={"{"}
@@ -124,7 +127,7 @@ export default function AvatarPage() {
                 </Text>
               </Stack>
             ))}
-          </Carousel>
+          </Stack>
         </LivePreview>
       </Stack>
 

@@ -35,6 +35,16 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "CandlestickChart vs. BoxPlot",
+    body: [
+      {
+        kind: "text",
+        text: 'Visually similar (both draw a wick plus a body per category) but answer different questions. `CandlestickChart` is a **time-ordered price record** — each candle is one period\'s literal open/high/low/close, and the body\'s two ends are exactly those two numbers, not a statistical measure. `BoxPlot` is a **statistical distribution summary** — its box spans the interquartile range (25th-75th percentile) around a visible median line, deliberately not the same thing as an "open" and "close." A candlestick\'s body doesn\'t mark a median at all, which is the concrete tell if the two ever look ambiguous side by side. Use `CandlestickChart` for a sequence of real periodic values (price, temperature range per day); use `BoxPlot` to summarize the spread of a dataset.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "data-rebar-* attributes",
     body: [
       {

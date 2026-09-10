@@ -65,6 +65,10 @@ export default function ScatterChartPage() {
         A distribution scatter plot — each series&apos; individual values plotted as a jittered
         column of points, with a dashed mean line per series.
       </Text>
+      <Text size="sm" color="secondary">
+        Set <code>filterable</code> for a row of toggle buttons below the chart — hiding a series
+        drops its whole column and reflows the rest to fill the plot width.
+      </Text>
 
       <Box
         style={{
@@ -79,6 +83,7 @@ export default function ScatterChartPage() {
             { label: "antd", values: [31231, 31131, 30891, 31921, 30950] },
             { label: "rebar-ui", values: [30211, 30212, 30149, 30253, 30180] },
           ]}
+          filterable
         />
       </Box>
 

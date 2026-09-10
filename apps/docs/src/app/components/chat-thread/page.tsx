@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { ChatThread, Heading, Stack, Text } from "rebar-ui";
+import { useRef, useState } from "react";
+import { Button, ChatThread, Heading, Stack, Text } from "rebar-ui";
 import type { ChatMessage } from "rebar-ui";
 import type { Block } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
@@ -56,8 +56,30 @@ const BLOCKS: Block[] = [
   },
 ];
 
+const DEMO_REPLIES = [
+  "Got it — anything else you'd like broken down?",
+  "New enterprise signups are the biggest driver this quarter.",
+  "Churn ticked down slightly too, so retention's trending the right way.",
+];
+
 export default function ChatThreadPage() {
-  const [messages] = useState<ChatMessage[]>(INITIAL);
+  const [messages, setMessages] = useState<ChatMessage[]>(INITIAL);
+  const nextId = useRef(messages.length + 1);
+  const nextReply = useRef(0);
+
+  const addMessage = () => {
+    const id = String(nextId.current++);
+    const lastRole = messages[messages.length - 1]?.role;
+    if (lastRole === "assistant" || lastRole === undefined) {
+      setMessages((prev) => [
+        ...prev,
+        { id, role: "user", content: "What's driving that?", status: "sent" },
+      ]);
+    } else {
+      const content = DEMO_REPLIES[nextReply.current++ % DEMO_REPLIES.length]!;
+      setMessages((prev) => [...prev, { id, role: "assistant", content, status: "sent" }]);
+    }
+  };
 
   return (
     <Stack gap="lg">
@@ -69,6 +91,9 @@ export default function ChatThreadPage() {
       <div style={{ height: 320, border: "1px solid var(--rebar-color-border)", borderRadius: 4 }}>
         <ChatThread messages={messages} />
       </div>
+      <Button type="button" variant="secondary" onClick={addMessage} style={{ alignSelf: "flex-start" }}>
+        + Add message
+      </Button>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

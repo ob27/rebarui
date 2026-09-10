@@ -113,6 +113,7 @@ const COMPONENT_FILES = [
   "FileUpload.tsx",
   "BubbleChart.tsx",
   "Heatmap.tsx",
+  "UMAPPlot.tsx",
   "RichTextEditor.tsx",
   "PullToRefresh.tsx",
   "PickerWheel.tsx",

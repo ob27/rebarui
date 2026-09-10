@@ -55,6 +55,11 @@ export default function RadarChartPage() {
         One filled polygon per series, each vertex scaled along its own axis from a shared
         center — for comparing several items across the same dimensions at a glance.
       </Text>
+      <Text size="sm" color="secondary">
+        Set <code>filterable</code> to make each legend item a real toggle button — click one to
+        hide/show its own series (try it below). The axis scale stays fixed to the full dataset
+        either way, so the remaining series don&apos;t jump to a new scale.
+      </Text>
 
       <Box
         style={{
@@ -70,6 +75,7 @@ export default function RadarChartPage() {
             { label: "Standard", values: [60, 55, 50, 80, 65] },
             { label: "Pro", values: [90, 85, 75, 40, 90] },
           ]}
+          filterable
         />
       </Box>
 

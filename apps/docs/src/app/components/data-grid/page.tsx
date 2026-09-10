@@ -76,22 +76,62 @@ export default function DataGridPage() {
         <code>Table</code>.
       </Text>
 
-      <DataGrid
-        columns={[
-          { key: "team", header: "Team" },
-          { key: "lead", header: "Lead" },
-          { key: "status", header: "Status" },
-        ]}
-        data={rows}
-        rowKey="id"
-        editable
-        groupBy="status"
-        onCellChange={(rowKey, columnKey, newValue) => {
-          setRows((prev) =>
-            prev.map((row) => (row.id === rowKey ? { ...row, [columnKey]: newValue } : row)),
-          );
-        }}
-      />
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          <code>editable</code> + <code>groupBy</code> together — every cell click-to-edit, rows
+          collapsed into their own status section.
+        </Text>
+        <DataGrid
+          columns={[
+            { key: "team", header: "Team" },
+            { key: "lead", header: "Lead" },
+            { key: "status", header: "Status" },
+          ]}
+          data={rows}
+          rowKey="id"
+          editable
+          groupBy="status"
+          onCellChange={(rowKey, columnKey, newValue) => {
+            setRows((prev) =>
+              prev.map((row) => (row.id === rowKey ? { ...row, [columnKey]: newValue } : row)),
+            );
+          }}
+        />
+      </Stack>
+
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          <code>groupBy</code> alone — plain, read-only rows, still grouped.
+        </Text>
+        <DataGrid
+          columns={[
+            { key: "team", header: "Team" },
+            { key: "lead", header: "Lead" },
+            { key: "status", header: "Status" },
+          ]}
+          data={rows}
+          rowKey="id"
+          groupBy="status"
+        />
+      </Stack>
+
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          A flat grid with neither <code>editable</code> nor <code>groupBy</code> set — every
+          other <code>Table</code> prop (sorting, selection, pagination) still applies unchanged,
+          since <code>DataGrid</code> extends <code>Table</code>&apos;s own props directly rather
+          than replacing them.
+        </Text>
+        <DataGrid
+          columns={[
+            { key: "team", header: "Team" },
+            { key: "lead", header: "Lead" },
+            { key: "status", header: "Status" },
+          ]}
+          data={rows}
+          rowKey="id"
+        />
+      </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

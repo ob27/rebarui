@@ -70,6 +70,35 @@ export default function SplitButtonPage() {
         />
       </LivePreview>
 
+      <Stack gap="sm">
+        <Text size="sm" color="secondary">
+          <code>variant</code> and <code>size</code> pass through to both the primary and caret
+          button, the same values <code>Button</code> itself takes.
+        </Text>
+        <LivePreview>
+          <Stack direction="row" gap="md" style={{ flexWrap: "wrap", alignItems: "center" }}>
+            <SplitButton
+              label="Save"
+              variant="secondary"
+              onClick={() => {}}
+              items={[{ label: "Save as draft", onSelect: () => {} }]}
+            />
+            <SplitButton
+              label="Save"
+              size="sm"
+              onClick={() => {}}
+              items={[{ label: "Save as draft", onSelect: () => {} }]}
+            />
+            <SplitButton
+              label="Save"
+              size="lg"
+              onClick={() => {}}
+              items={[{ label: "Save as draft", onSelect: () => {} }]}
+            />
+          </Stack>
+        </LivePreview>
+      </Stack>
+
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );
