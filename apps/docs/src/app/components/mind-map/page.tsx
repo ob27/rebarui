@@ -28,6 +28,16 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "Bionic reading on node labels",
+    body: [
+      {
+        kind: "text",
+        text: 'Topic/branch/child labels render as SVG `<text>`, which the ordinary `useBionicChildren` hook can\'t target — a plain HTML `<span>` isn\'t valid inside SVG `<text>` at all. `NodeLinkGraph` (which this component builds on) wires its default node/edge labels through a dedicated SVG-aware renderer instead, splitting each word into real `<tspan>` elements, so bionic reading applies here too, not just to the figcaption title.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "data-rebar-* attributes",
     body: [
       {

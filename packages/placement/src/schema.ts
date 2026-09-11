@@ -243,6 +243,18 @@ export interface DataListItem {
   action?: Action;
 }
 
+export interface GoalTrackerGoalData {
+  id: string;
+  text: string;
+  completed: boolean;
+}
+
+export interface GoalTrackerFocusAreaData {
+  id: string;
+  text: string;
+  goals: GoalTrackerGoalData[];
+}
+
 /**
  * One row of a component's prop reference, as generated from real TypeScript types (see
  * apps/docs/scripts/generate-props.mjs) — the `props-table` block renders exactly this shape, so
@@ -350,6 +362,12 @@ export type Block =
     }
   | { type: "banner"; tone: Tone; icon?: IconName; text: string; action?: Action }
   | { type: "checklist"; heading?: string; items: string[] }
+  | {
+      type: "goal-tracker";
+      aspiration: string;
+      focusAreas: GoalTrackerFocusAreaData[];
+      celebration?: "none" | "small" | "big";
+    }
   | { type: "callout"; tone: Tone; icon?: IconName; title: string; subtitle?: string }
   | { type: "feature-grid"; items: FeatureGridItem[] }
   | { type: "pillar-grid"; items: PillarGridItem[] }

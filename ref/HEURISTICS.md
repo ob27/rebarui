@@ -296,9 +296,11 @@ an item-count threshold) and #27 (`Select` is browsing-only today, no type-to-fi
     allow pasting paths. Component rule: `Select` is browsing-only (checked against source — no
     type-to-filter); `Combobox` is the shipped answer, filling in the type-to-filter half of
     `Select` — a real WAI-ARIA combobox (search-as-you-type over its own option list), single-select
-    by default or a multi-select dropdown via its `multiple` mode. `Form`'s `kind: "date"` field is
-    already the manual-text-entry half of a date input (native, not a calendar popover); a future
-    `DatePicker` fills in the remaining calendar-browsing half.
+    by default or a multi-select dropdown via its `multiple` mode. Dates get the same split across two
+    distinct, already-shipped components rather than one that tries to do both: `DatePicker` is the
+    fast, keyboard-first direct-entry shape (a bounded day/month/year numeric triplet — closer to
+    `NumberInput` than a calendar), and `Calendar` is the browsing/visual-picking shape (a real month
+    grid), reachable in a `Popover` when a trigger-button shape is wanted.
 
 28. **Information scent in navigation** — navigation labels clearly indicate what's ahead, not vague
     or clever names. Users follow "information scent" — clues that lead them to their goal.

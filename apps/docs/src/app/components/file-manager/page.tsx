@@ -46,6 +46,26 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "Arbitrary actions, not just delete",
+    body: [
+      {
+        kind: "text",
+        text: "The built-in Delete button covers exactly one operation. `actions` (an array of `{ key, label, disabled?, onSelect, variant? }`) adds arbitrary further caller-defined buttons alongside it — each fires with the current selection so a caller can wire up a zip-and-download flow, sharing, or opening in another tool without this component needing to know what any of those mean. Shown only while at least one item is selected, same as Delete; `disabled` can narrow an action to a specific selection shape (e.g. exactly one file).",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "singleFileMode — a constrained single-file picker",
+    body: [
+      {
+        kind: "text",
+        text: "For embedding a \"pick one file\" control (e.g. inside a form) rather than a full dual-pane browser: hides the folder-navigation sidebar and the grid/table view toggle (forced to grid), and selecting a file replaces the selection instead of adding to it.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Grid view supports drag-and-drop; table view uses Move to…",
     body: [
       {
@@ -76,8 +96,22 @@ const BLOCKS: Block[] = [
   },
 ];
 
+function removeIds(node: FileManagerNode, ids: string[]): FileManagerNode {
+  return {
+    ...node,
+    children: node.children?.filter((c) => !ids.includes(c.id)).map((c) => removeIds(c, ids)),
+  };
+}
+
+function renameId(node: FileManagerNode, id: string, name: string): FileManagerNode {
+  if (node.id === id) return { ...node, name };
+  return { ...node, children: node.children?.map((c) => renameId(c, id, name)) };
+}
+
 export default function FileManagerPage() {
   const [root, setRoot] = useState(INITIAL_ROOT);
+  const [lastAction, setLastAction] = useState("none yet");
+  const [pickedId, setPickedId] = useState<string[]>([]);
 
   return (
     <Stack gap="lg">
@@ -87,16 +121,41 @@ export default function FileManagerPage() {
         integration.
       </Text>
 
-      <FileManager
-        root={root}
-        onRename={(id, name) => {
-          function rename(node: FileManagerNode): FileManagerNode {
-            if (node.id === id) return { ...node, name };
-            return { ...node, children: node.children?.map(rename) };
-          }
-          setRoot(rename(root));
-        }}
-      />
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          Select an item to see Delete and a caller-supplied "Zip & download" action appear. Last
+          action fired: <strong>{lastAction}</strong>
+        </Text>
+        <FileManager
+          root={root}
+          onRename={(id, name) => setRoot(renameId(root, id, name))}
+          onDelete={(ids) => setRoot(removeIds(root, ids))}
+          onMove={(ids, targetId) => setLastAction(`move ${ids.join(", ")} to ${targetId}`)}
+          actions={[
+            {
+              key: "zip",
+              label: "Zip & download",
+              onSelect: (ids) => setLastAction(`zip & download ${ids.join(", ")}`),
+            },
+            {
+              key: "download",
+              label: "Download",
+              disabled: (ids) => ids.length !== 1,
+              onSelect: (ids) => setLastAction(`download ${ids[0]}`),
+            },
+          ]}
+        />
+      </Stack>
+
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          singleFileMode — no sidebar, no view toggle, single selection
+        </Text>
+        <FileManager root={INITIAL_ROOT} singleFileMode onSelectedIdsChange={setPickedId} />
+        <Text size="sm" color="secondary">
+          Picked: {pickedId[0] ?? "none"}
+        </Text>
+      </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

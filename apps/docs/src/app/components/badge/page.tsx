@@ -18,6 +18,16 @@ const BLOCKS: Block[] = [
   { type: "props-table", heading: "Props", rows: componentProps["Badge"] ?? [] },
   {
     type: "doc-section",
+    heading: "Emoji/icon badges — one content prop, not a separate mode",
+    body: [
+      {
+        kind: "text",
+        text: 'A `content` prop overrides the indicator with any glyph — a plain emoji character (`"🔥"`) or a small icon element from the shared `icons.tsx` set — instead of a numeric count. Deliberately not a separate "emoji mode": once the project had a real icon system (ref/HEURISTICS.md 1.4), any small glyph is just content the same indicator shell renders, matching the precedent (Simple Kanban cards using emoji badges) that originally prompted this ask. `content` takes priority over `count`/`dot` when supplied, and shows regardless of `showZero` — there\'s no "zero" concept for a decorative glyph.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Accessibility",
     body: [
       {
@@ -91,6 +101,16 @@ export default function BadgePage() {
             />
           </Badge>
           <Badge dot tone="success">
+            <Box
+              style={{
+                width: 40,
+                height: 40,
+                border: "1px solid var(--rebar-color-border, #e0e0e0)",
+                borderRadius: 4,
+              }}
+            />
+          </Badge>
+          <Badge content="🔥">
             <Box
               style={{
                 width: 40,

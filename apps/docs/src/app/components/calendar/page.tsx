@@ -57,9 +57,10 @@ export default function CalendarPage() {
     <Stack gap="lg">
       <Heading level={1}>Calendar</Heading>
       <Text color="secondary">
-        A standalone month-grid display for picking a date — not popover-wrapped itself, so a
-        future <code>DatePicker</code> can layer a real <code>Popover</code> around it instead of
-        reimplementing this shell.
+        A standalone month-grid display for picking a date — not popover-wrapped itself, so any
+        caller can layer a real <code>Popover</code> around it for a trigger-button shape. For a
+        fast, keyboard-first direct-entry alternative (typing a known date instead of browsing a
+        grid), see <code>DatePicker</code>.
       </Text>
 
       <Stack gap="sm" style={{ maxWidth: 380 }}>

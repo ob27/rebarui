@@ -28,6 +28,16 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "Bionic reading on name/role labels",
+    body: [
+      {
+        kind: "text",
+        text: 'Each person\'s name/role render as SVG `<text>` via a custom `renderNode`, which the ordinary `useBionicChildren` hook can\'t target — a plain HTML `<span>` isn\'t valid inside SVG `<text>` at all. Both fields are split through the SVG-specific `renderBionicSvgText` instead, into real `<tspan>` elements, so bionic reading applies here too, not just to the figcaption title.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "data-rebar-* attributes",
     body: [
       {

@@ -54,6 +54,7 @@ const BLOCKS: Block[] = [
 
 export default function FormPage() {
   const [submitted, setSubmitted] = useState<string | null>(null);
+  const [signupResult, setSignupResult] = useState<string | null>(null);
 
   return (
     <Stack gap="lg">
@@ -82,6 +83,52 @@ export default function FormPage() {
           </Stack>
         </Form>
       </LivePreview>
+
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          A more elaborate shape: several fields, validation rules beyond a plain `required` (a
+          pattern, a minimum length), and every error rendering inline at once on submit.
+        </Text>
+        <LivePreview>
+          <Form<{ name: string; email: string; password: string }>
+            onSubmit={(values) => setSignupResult(`${values.name} <${values.email}>`)}
+          >
+            <FormItem name="name" label="Full name" required>
+              {(field) => <Input placeholder="Ada Lovelace" {...field} />}
+            </FormItem>
+            <FormItem
+              name="email"
+              label="Work email"
+              required
+              rules={{
+                pattern: { value: /^\S+@\S+\.\S+$/, message: "Enter a valid email address" },
+              }}
+            >
+              {(field) => <Input type="email" placeholder="you@company.com" {...field} />}
+            </FormItem>
+            <FormItem
+              name="password"
+              label="Password"
+              required
+              rules={{
+                minLength: { value: 8, message: "Must be at least 8 characters" },
+              }}
+            >
+              {(field) => <Input type="password" placeholder="At least 8 characters" {...field} />}
+            </FormItem>
+            <Stack direction="row" gap="sm">
+              <Button type="submit" variant="primary">
+                Create account
+              </Button>
+              {signupResult ? (
+                <Text size="sm" color="secondary">
+                  Account created: {signupResult}
+                </Text>
+              ) : null}
+            </Stack>
+          </Form>
+        </LivePreview>
+      </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

@@ -11,6 +11,7 @@ const BLOCK_TYPES = [
   { id: "page-index", label: "page-index" },
   { id: "banner", label: "banner" },
   { id: "checklist", label: "checklist" },
+  { id: "goal-tracker", label: "goal-tracker" },
   { id: "callout", label: "callout" },
   { id: "spin-card", label: "spin-card" },
   { id: "feature-grid", label: "feature-grid" },
@@ -287,6 +288,31 @@ export default function BlocksPage() {
           description="A heading followed by a vertical stack of bordered, checkable rows."
           shape={`{ type: "checklist", heading?: string, items: string[] }`}
           blocks={[{ type: "checklist", heading: "Checklist", items: ["First item", "Second item", "Third item"] }]}
+        />
+
+        <Entry
+          id="goal-tracker"
+          measured={false}
+          description="A hierarchical goal/OKR tracker: one Aspiration, several Focus Areas, each holding several Goals — all three levels inline-editable, goals toggle complete with a celebratory confetti burst (TodoItem underneath), and Add/Delete affordances mutate the board locally, the same 'seed local state from the block's own literal data' convention card-kanban uses. Reclassified from a standalone GoalTracker component into this block — the real reusable primitive was the smaller checkable-row control (now TodoItem), not the whole hierarchy; see the Design Heuristics component-vs-block test."
+          shape={`{ type: "goal-tracker", aspiration: string, focusAreas: GoalTrackerFocusAreaData[], celebration?: "none" | "small" | "big" }
+// GoalTrackerFocusAreaData = { id: string, text: string, goals: GoalTrackerGoalData[] }
+// GoalTrackerGoalData = { id: string, text: string, completed: boolean }`}
+          blocks={[
+            {
+              type: "goal-tracker",
+              aspiration: "Become the top board network",
+              focusAreas: [
+                {
+                  id: "fa1",
+                  text: "Grow membership",
+                  goals: [
+                    { id: "g1", text: "Reach 500 members", completed: false },
+                    { id: "g2", text: "Host 3 events", completed: true },
+                  ],
+                },
+              ],
+            },
+          ]}
         />
 
         <Entry

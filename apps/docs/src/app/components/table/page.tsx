@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Heading, Stack, Table, Text } from "rebar-ui";
+import type { ReactNode } from "react";
+import { Box, Button, Heading, Stack, Table, Tag, Text } from "rebar-ui";
 import type { TableColumn, TableSort } from "rebar-ui";
 import type { Block } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
@@ -12,19 +13,34 @@ interface Row {
   team: string;
   lead: string;
   status: string;
+  members: number;
 }
 
 const ROWS: Row[] = [
-  { id: "1", team: "Engineering", lead: "Priya Shah", status: "Active" },
-  { id: "2", team: "Design", lead: "Marcus Webb", status: "Active" },
-  { id: "3", team: "Platform", lead: "Jordan Lee", status: "Archived" },
-  { id: "4", team: "Growth", lead: "Amelia Chen", status: "Active" },
+  { id: "1", team: "Engineering", lead: "Priya Shah", status: "Active", members: 12 },
+  { id: "2", team: "Design", lead: "Marcus Webb", status: "Active", members: 5 },
+  { id: "3", team: "Platform", lead: "Jordan Lee", status: "Archived", members: 3 },
+  { id: "4", team: "Growth", lead: "Amelia Chen", status: "Active", members: 7 },
+  { id: "5", team: "Data", lead: "Noah Kim", status: "Active", members: 4 },
+  { id: "6", team: "Support", lead: "Elena Ruiz", status: "Archived", members: 9 },
 ];
 
 const COLUMNS: TableColumn<Row>[] = [
   { key: "team", header: "Team", sortable: true },
   { key: "lead", header: "Lead", sortable: true },
   { key: "status", header: "Status", sortable: true },
+];
+
+const RICH_COLUMNS: TableColumn<Row>[] = [
+  { key: "team", header: "Team", sortable: true },
+  { key: "lead", header: "Lead", sortable: true },
+  {
+    key: "status",
+    header: "Status",
+    sortable: true,
+    render: (value) => <Tag tone={value === "Active" ? "success" : "default"}>{String(value)}</Tag>,
+  },
+  { key: "members", header: "Members", sortable: true, align: "right" },
 ];
 
 const BLOCKS: Block[] = [
@@ -46,6 +62,16 @@ const BLOCKS: Block[] = [
       {
         kind: "text",
         text: "`rowKey` accepts a plain property-name string (`\"id\"`) as well as a function — the common case never needs to construct a closure just to use this component. This matters beyond convenience: a component that pulls in any Radix primitive (`Table` composes `Checkbox` for row selection) becomes a client-component boundary the moment a Next.js App Router Server Component imports it, and a *function*-valued prop constructed in that calling Server Component fails at build time. `column.accessor`/`render` are optional for the same reason, defaulting to a plain `row[key]` lookup.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Real mutations beyond the baseline example",
+    body: [
+      {
+        kind: "text",
+        text: "Beyond sortable columns and row selection: a custom `render` per column (a status pill via `Tag`, right-aligned numeric column via `align`); `pageSize`/`page`/`onPageChange` for real pagination instead of one long scrolling list; `loading` (a real loading state, not just an empty table mid-fetch); `emptyMessage` for a genuinely empty dataset; `maxHeight` bounding the scrollable body under a sticky header, per ref/HEURISTICS.md #45; and a real, visible `caption`.",
       },
     ],
   },
@@ -81,9 +107,30 @@ const BLOCKS: Block[] = [
   },
 ];
 
+function Mutation({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <Stack gap="xs">
+      <Text size="sm" color="secondary">
+        {label}
+      </Text>
+      <Box
+        style={{
+          border: "1px solid var(--rebar-color-border, #e0e0e0)",
+          borderRadius: 4,
+          padding: "var(--rebar-space-lg)",
+        }}
+      >
+        {children}
+      </Box>
+    </Stack>
+  );
+}
+
 export default function TablePage() {
   const [sort, setSort] = useState<TableSort | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   return (
     <Stack gap="lg">
@@ -94,13 +141,7 @@ export default function TablePage() {
         loading/empty states.
       </Text>
 
-      <Box
-        style={{
-          border: "1px solid var(--rebar-color-border, #e0e0e0)",
-          borderRadius: 4,
-          padding: "var(--rebar-space-lg)",
-        }}
-      >
+      <Mutation label="Baseline: sortable columns + row selection">
         <Table
           columns={COLUMNS}
           data={ROWS}
@@ -110,7 +151,29 @@ export default function TablePage() {
           selectedRowKeys={selectedRowKeys}
           onSelectedRowKeysChange={setSelectedRowKeys}
         />
-      </Box>
+      </Mutation>
+
+      <Mutation label="Custom cell render (status pill via Tag) + right-aligned numeric column + caption">
+        <Table columns={RICH_COLUMNS} data={ROWS} rowKey="id" caption="Team roster" />
+      </Mutation>
+
+      <Mutation label="Pagination (pageSize=3) + a bounded maxHeight scrollable body">
+        <Table columns={COLUMNS} data={ROWS} rowKey="id" pageSize={3} page={page} onPageChange={setPage} maxHeight={220} />
+      </Mutation>
+
+      <Stack direction="row" gap="lg" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
+        <Mutation label="Loading state">
+          <Stack gap="sm">
+            <Table columns={COLUMNS} data={ROWS} rowKey="id" loading={loading} />
+            <Button variant="secondary" size="sm" onClick={() => setLoading((v) => !v)}>
+              Toggle loading
+            </Button>
+          </Stack>
+        </Mutation>
+        <Mutation label="Empty state (emptyMessage)">
+          <Table columns={COLUMNS} data={[]} rowKey="id" emptyMessage="No teams yet — add one to get started." />
+        </Mutation>
+      </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

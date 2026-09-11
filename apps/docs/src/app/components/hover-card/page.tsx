@@ -28,6 +28,16 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "No explicit dismiss icon, on purpose",
+    body: [
+      {
+        kind: "text",
+        text: 'Per heuristic #3 (user control and freedom), a dismissible surface generally needs multiple ways out — but that\'s aimed at surfaces someone deliberately opened and is actively operating (see [Popover](/components/popover), which does have a real close affordance for exactly that reason). A `HoverCard` was never "opened" in that sense: it appears as a byproduct of where the pointer/focus already is, and closes the same way — moving the pointer or focus away, the thing the viewer is already doing anyway. A dismiss icon would add a control for a situation the component\'s own trigger already resolves the instant the viewer looks away, and would need its own hit target *inside* a hover-only surface, which is exactly the kind of interaction #48 is skeptical of.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Accessibility",
     body: [
       {
@@ -69,7 +79,13 @@ export default function HoverCardPage() {
       </Text>
 
       <LivePreview>
-        <HoverCard trigger={<a href="#profile">@tom</a>}>
+        <HoverCard
+          trigger={
+            <a href="#profile">
+              <Text as="span">@tom</Text>
+            </a>
+          }
+        >
           <Stack gap="xs" style={{ minWidth: 180 }}>
             <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
               Tom

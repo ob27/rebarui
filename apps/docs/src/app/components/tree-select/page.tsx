@@ -36,7 +36,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "A trigger button opening a real `Popover` containing the real `TreeView` — no expand/collapse or keyboard navigation logic of its own, the same way `DatePicker` owns no date-grid logic and just composes `Calendar`. Picking a node closes the popover (a single choice is a complete choice). `data` uses the exact same shape `TreeView` itself accepts — a node's id lives on its `value` field.",
+        text: "A trigger button opening a real `Popover` containing the real `TreeView` — no expand/collapse or keyboard navigation logic of its own, the same way `TimePicker` owns no time-grid logic and just composes its own picker shell. Picking a node closes the popover (a single choice is a complete choice). `data` uses the exact same shape `TreeView` itself accepts — a node's id lives on its `value` field.",
       },
     ],
   },

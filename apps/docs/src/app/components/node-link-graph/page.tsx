@@ -28,6 +28,16 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "A \"floaty\" default node look — visual only, not a layout change",
+    body: [
+      {
+        kind: "text",
+        text: 'The default node renders as a solid-colored circle with a soft drop shadow and its label below it — closer to the Neo4j Bloom convention people actually expect from a node-link graph specifically, replacing the earlier bordered white box with centered text. This is purely cosmetic: positioning is exactly as deterministic as before (see the layout section above); a caller-supplied `renderNode` (as `OrgChart`/`Flowchart` both use for their own box/diamond/pill shapes) is completely unaffected.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "A real non-gesture zoom fallback",
     body: [
       {
@@ -43,6 +53,16 @@ const BLOCKS: Block[] = [
       {
         kind: "text",
         text: "`OrgChart`, `MindMap`, `Flowchart`, and `DiagramMinimap` are all built on top of this component rather than reimplementing pan/zoom/drag/layout each time — see their own reference pages for how each one specializes `NodeLinkGraph` for its own shape.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Bionic reading on node/edge labels",
+    body: [
+      {
+        kind: "text",
+        text: 'Node/edge labels render as SVG `<text>`, which the ordinary `useBionicChildren` hook can\'t target at all — a plain HTML `<span>` is invalid content inside SVG `<text>`. The default label rendering is wired through a dedicated SVG-aware renderer instead (`renderBionicSvgText`, from the same `bionic.tsx` module), splitting each word into real `<tspan>` elements. A caller-supplied `renderNode` draws its own `<text>` and is responsible for its own bionic wiring — this only covers the default node rendering, which is what `MindMap` (no custom `renderNode`) relies on; `OrgChart`/`Flowchart` wire it themselves in their own `renderNode`.',
       },
     ],
   },

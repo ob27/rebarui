@@ -10,6 +10,8 @@ import {
   Checkbox,
   CodeBlock,
   Dialog,
+  Editable,
+  Empty,
   Heading,
   Iframe,
   Input,
@@ -17,6 +19,7 @@ import {
   LineChart,
   NavBar,
   NavIndex,
+  Popconfirm,
   Popover,
   ScatterChart,
   SectionNav,
@@ -32,10 +35,20 @@ import {
   Tag,
   Text,
   ThemeToggle,
+  TodoItem,
   Wizard,
 } from "rebar-ui";
 import type { TableColumn } from "rebar-ui";
-import type { Action, Block, FormField, KanbanCardData, KanbanColumnData, ProseNode, TableFilter } from "./schema";
+import type {
+  Action,
+  Block,
+  FormField,
+  GoalTrackerFocusAreaData,
+  KanbanCardData,
+  KanbanColumnData,
+  ProseNode,
+  TableFilter,
+} from "./schema";
 import { ICONS } from "./icons";
 
 // Parses the tiny inline markup `doc-section` prose supports: `` `code` ``, `[label](href)`, and
@@ -386,6 +399,191 @@ function KanbanBoardBlockView({
         onChange={(e) => setSearch(e.target.value)}
       />
       <Kanban columns={board.columns} cards={board.cards} search={search} cardVariant={variant} onChange={setBoard} />
+    </Stack>
+  );
+}
+
+/**
+ * A hierarchical goal/OKR tracker: one Aspiration, several Focus Areas, each holding several
+ * Goals. Reclassified from a standalone `GoalTracker` component into this block — the real
+ * reusable, directly-importable primitive was the smaller `TodoItem` (a checkable row with an
+ * optional celebration burst), while the aspiration/focus-area/goal hierarchy plus inline editing
+ * plus add/delete affordances is exactly "a named, pre-decided layout of real components" per
+ * `robot.md`'s own component-vs-block test. Local-only state seeded from the block's literal
+ * data, same convention `KanbanBoardBlockView` above already uses for its own board mutations.
+ */
+function GoalTrackerBlockView({
+  block,
+  index,
+  path,
+}: {
+  block: Extract<Block, { type: "goal-tracker" }>;
+  index: number;
+  path: string;
+}) {
+  const [aspiration, setAspiration] = useState(block.aspiration);
+  const [focusAreas, setFocusAreas] = useState<GoalTrackerFocusAreaData[]>(block.focusAreas);
+  const nextIdRef = useRef(0);
+  const celebration = block.celebration ?? "small";
+
+  const nextId = (prefix: string) => `${prefix}-${nextIdRef.current++}`;
+
+  const updateFocusArea = (id: string, text: string) => {
+    setFocusAreas((prev) => prev.map((fa) => (fa.id === id ? { ...fa, text } : fa)));
+  };
+  const updateGoal = (focusAreaId: string, goalId: string, text: string) => {
+    setFocusAreas((prev) =>
+      prev.map((fa) =>
+        fa.id !== focusAreaId ? fa : { ...fa, goals: fa.goals.map((g) => (g.id === goalId ? { ...g, text } : g)) },
+      ),
+    );
+  };
+  const toggleGoal = (focusAreaId: string, goalId: string, completed: boolean) => {
+    setFocusAreas((prev) =>
+      prev.map((fa) =>
+        fa.id !== focusAreaId
+          ? fa
+          : { ...fa, goals: fa.goals.map((g) => (g.id === goalId ? { ...g, completed } : g)) },
+      ),
+    );
+  };
+  const deleteFocusArea = (id: string) => setFocusAreas((prev) => prev.filter((fa) => fa.id !== id));
+  const deleteGoal = (focusAreaId: string, goalId: string) => {
+    setFocusAreas((prev) =>
+      prev.map((fa) => (fa.id !== focusAreaId ? fa : { ...fa, goals: fa.goals.filter((g) => g.id !== goalId) })),
+    );
+  };
+  const addFocusArea = () => {
+    setFocusAreas((prev) => [...prev, { id: nextId("focus-area"), text: "", goals: [] }]);
+  };
+  const addGoal = (focusAreaId: string) => {
+    setFocusAreas((prev) =>
+      prev.map((fa) =>
+        fa.id !== focusAreaId
+          ? fa
+          : { ...fa, goals: [...fa.goals, { id: nextId("goal"), text: "", completed: false }] },
+      ),
+    );
+  };
+
+  return (
+    <Stack key={index} gap="lg" data-rebar-placement-block="goal-tracker" data-rebar-block-path={path}>
+      <Stack gap="xs" data-rebar-part="aspiration">
+        <Text size="xs" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.04em" }}>
+          Aspiration
+        </Text>
+        <Editable
+          value={aspiration}
+          onChange={setAspiration}
+          aria-label="Aspiration"
+          placeholder="Set an aspiration"
+          className="rebar-goal-tracker-aspiration-text"
+        />
+      </Stack>
+
+      {focusAreas.length === 0 ? (
+        <Empty description="No focus areas yet" />
+      ) : (
+        <Stack gap="md">
+          {focusAreas.map((focusArea, faIndex) => {
+            const faPath = itemPath(path, "focusAreas", faIndex);
+            const total = focusArea.goals.length;
+            const completedCount = focusArea.goals.filter((g) => g.completed).length;
+            return (
+              <Card key={focusArea.id} data-rebar-block-path={faPath} data-rebar-block-item-label={focusArea.text}>
+                <Stack gap="sm">
+                  <Text size="xs" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                    Focus area
+                  </Text>
+                  <Stack direction="row" gap="sm" align="center" style={{ flexWrap: "wrap" }}>
+                    <Editable
+                      value={focusArea.text}
+                      onChange={(text) => updateFocusArea(focusArea.id, text)}
+                      aria-label="Focus area"
+                      placeholder="Name this focus area"
+                      className="rebar-goal-tracker-focus-area-text"
+                    />
+                    <Text size="sm" color="secondary" data-rebar-part="focus-area-progress">
+                      {completedCount} of {total} complete
+                    </Text>
+                    <Popconfirm
+                      trigger={
+                        <Button type="button" variant="tertiary" aria-label={`Delete focus area "${focusArea.text}"`}>
+                          Delete
+                        </Button>
+                      }
+                      title={`Delete "${focusArea.text || "this focus area"}"?`}
+                      description="This removes the focus area and all of its goals."
+                      destructive
+                      onConfirm={() => deleteFocusArea(focusArea.id)}
+                    />
+                  </Stack>
+
+                  {focusArea.goals.length === 0 ? (
+                    <Text size="sm" color="secondary" data-rebar-part="no-goals">
+                      No goals yet
+                    </Text>
+                  ) : (
+                    <Stack gap="sm">
+                      {focusArea.goals.map((goal, goalIndex) => (
+                        <Stack
+                          key={goal.id}
+                          direction="row"
+                          gap="sm"
+                          align="center"
+                          data-rebar-block-path={itemPath(faPath, "goals", goalIndex)}
+                          data-rebar-block-item-label={goal.text}
+                        >
+                          <TodoItem
+                            label={
+                              <Editable
+                                value={goal.text}
+                                onChange={(text) => updateGoal(focusArea.id, goal.id, text)}
+                                aria-label="Goal"
+                                placeholder="Name this goal"
+                                className={goal.completed ? "rebar-todo-item-label-completed" : undefined}
+                              />
+                            }
+                            completed={goal.completed}
+                            onToggle={(completed) => toggleGoal(focusArea.id, goal.id, completed)}
+                            toggleLabel={`Mark "${goal.text || "this goal"}" as ${goal.completed ? "incomplete" : "complete"}`}
+                            celebration={celebration}
+                            style={{ flex: "1 1 auto" }}
+                          />
+                          <Popconfirm
+                            trigger={
+                              <Button type="button" variant="tertiary" aria-label={`Delete goal "${goal.text}"`}>
+                                Delete
+                              </Button>
+                            }
+                            title={`Delete "${goal.text || "this goal"}"?`}
+                            destructive
+                            onConfirm={() => deleteGoal(focusArea.id, goal.id)}
+                          />
+                        </Stack>
+                      ))}
+                    </Stack>
+                  )}
+
+                  <Button
+                    type="button"
+                    variant="tertiary"
+                    size="sm"
+                    onClick={() => addGoal(focusArea.id)}
+                    style={{ alignSelf: "flex-start" }}
+                  >
+                    + Add goal
+                  </Button>
+                </Stack>
+              </Card>
+            );
+          })}
+        </Stack>
+      )}
+
+      <Button type="button" variant="secondary" onClick={addFocusArea} style={{ alignSelf: "flex-start" }}>
+        + Add focus area
+      </Button>
     </Stack>
   );
 }
@@ -984,6 +1182,9 @@ function renderBlock(
           </Stack>
         </Stack>
       );
+
+    case "goal-tracker":
+      return <GoalTrackerBlockView key={index} block={block} index={index} path={path} />;
 
     case "callout": {
       const Icon = block.icon ? ICONS[block.icon] : null;

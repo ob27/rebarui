@@ -84,6 +84,12 @@ export default function SplitButtonPage() {
               items={[{ label: "Save as draft", onSelect: () => {} }]}
             />
             <SplitButton
+              label="Delete"
+              variant="destructive"
+              onClick={() => {}}
+              items={[{ label: "Delete forever", onSelect: () => {} }]}
+            />
+            <SplitButton
               label="Save"
               size="sm"
               onClick={() => {}}

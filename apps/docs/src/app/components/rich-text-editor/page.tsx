@@ -40,6 +40,16 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "No bionic reading here — checked, not skipped",
+    body: [
+      {
+        kind: "text",
+        text: 'Every other bionic-wired component splits a *display-only* text prop that\'s separate from any value the caller relies on verbatim. Here the editable region\'s rendered DOM *is* the real `value` — injecting `<span class="rebar-bionic-fixation">` wrappers into it would mean handing a caller\'s `dangerouslySetInnerHTML` consumer or server-side field a document mixed with presentation markup it never asked for, not the same content back. The empty-state placeholder has a related but distinct problem: it\'s pure CSS generated content (`content: attr(data-placeholder)`), which can\'t carry per-word span markup without injecting real DOM nodes into the otherwise-`:empty` region the CSS selector itself depends on.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "data-rebar-* attributes",
     body: [
       {

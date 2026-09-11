@@ -27,6 +27,20 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "Overall width",
+    body: [
+      {
+        kind: "text",
+        text: 'The root is a plain `display: inline-flex` — intrinsically sized to its content (the sum of its children\'s widths when horizontal, the widest child\'s width when vertical, since a column flex container\'s default `align-items: stretch` fills every child to that width). There is no `fullWidth`/`size` prop, and none is planned: pass `style={{ display: "flex" }}` (or a `className`) the same way every other `...props`-forwarding component in this library is resized, rather than a one-off sizing API just for this component.',
+      },
+      {
+        kind: "code",
+        code: '<ButtonGroup style={{ display: "flex" }}>\n  <Button variant="secondary" style={{ flex: 1 }}>Day</Button>\n  <Button variant="secondary" style={{ flex: 1 }}>Week</Button>\n  <Button variant="secondary" style={{ flex: 1 }}>Month</Button>\n</ButtonGroup>',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Distinct from SplitButton",
     body: [
       {
@@ -77,6 +91,23 @@ export default function ButtonGroupPage() {
           <Button variant="secondary">Middle</Button>
           <Button variant="secondary">Bottom</Button>
         </ButtonGroup>
+
+        <Stack gap="xs" style={{ width: "100%", maxWidth: 360 }}>
+          <Text size="sm" color="secondary">
+            Stretched to fill its container via a plain style override
+          </Text>
+          <ButtonGroup style={{ display: "flex" }}>
+            <Button variant="secondary" style={{ flex: 1 }}>
+              Day
+            </Button>
+            <Button variant="secondary" style={{ flex: 1 }}>
+              Week
+            </Button>
+            <Button variant="secondary" style={{ flex: 1 }}>
+              Month
+            </Button>
+          </ButtonGroup>
+        </Stack>
       </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />

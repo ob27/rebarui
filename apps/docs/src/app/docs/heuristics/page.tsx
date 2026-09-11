@@ -489,7 +489,7 @@ const HEURISTIC_BLOCKS: Block[] = [
     rationale: [
       {
         kind: "text",
-        text: `From *About Face*: power users want keyboard shortcuts and direct manipulation; novice users want visible options and guided workflows. Supporting both in the same component serves everyone. \`Select\` is browsing-only, with no type-to-filter — \`Combobox\` is the shipped answer for that: a real WAI-ARIA combobox (search-as-you-type over its own option list), single-select by default or a multi-select dropdown via its \`multiple\` mode. \`Form\`'s \`kind: "date"\` field is already the manual-text-entry half of a date input; a future \`DatePicker\` fills in the calendar-browsing half.`,
+        text: `From *About Face*: power users want keyboard shortcuts and direct manipulation; novice users want visible options and guided workflows. Supporting both in the same component serves everyone. \`Select\` is browsing-only, with no type-to-filter — \`Combobox\` is the shipped answer for that: a real WAI-ARIA combobox (search-as-you-type over its own option list), single-select by default or a multi-select dropdown via its \`multiple\` mode. Dates get the same split across two distinct, already-shipped components rather than one that tries to do both: \`DatePicker\` is the fast, keyboard-first direct-entry shape (a bounded day/month/year numeric triplet — closer to \`NumberInput\` than a calendar), and \`Calendar\` is the browsing/visual-picking shape (a real month grid), reachable in a \`Popover\` when a trigger-button shape is wanted.`,
       },
     ],
   },

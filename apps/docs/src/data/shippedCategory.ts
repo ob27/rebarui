@@ -16,6 +16,12 @@ const MOBILE: readonly string[] = [
   "PullToRefresh",
   "PickerWheel",
   "SwipeActions",
+  "IndexBar",
+  "ErrorBlock",
+  "NoticeBar",
+  "ProgressCircle",
+  "Selector",
+  "NumberKeyboard",
 ];
 
 const DIAGRAM: readonly string[] = [
@@ -24,6 +30,7 @@ const DIAGRAM: readonly string[] = [
   "GaugeChart",
   "FunnelChart",
   "WaterfallChart",
+  "DistributionChart",
   "BoxPlot",
   "Sparkline",
   "BubbleChart",
@@ -33,9 +40,11 @@ const DIAGRAM: readonly string[] = [
   "CandlestickChart",
   "GeoChart",
   "GanttChart",
+  "PertChart",
   "SankeyDiagram",
   "WordCloud",
   "NodeLinkGraph",
+  "GraphExplorer",
   "DataGrid",
   "PivotTable",
   "Flowchart",

@@ -327,6 +327,105 @@ describe("BlockRenderer", () => {
     expect(screen.getByText("Second item")).toBeInTheDocument();
   });
 
+  it("renders a goal-tracker block's aspiration/focus-area/goal hierarchy", () => {
+    const blocks: Block[] = [
+      {
+        type: "goal-tracker",
+        aspiration: "Become the top board network",
+        focusAreas: [
+          {
+            id: "fa1",
+            text: "Grow membership",
+            goals: [
+              { id: "g1", text: "Reach 500 members", completed: false },
+              { id: "g2", text: "Host 3 events", completed: true },
+            ],
+          },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Become the top board network")).toBeInTheDocument();
+    expect(screen.getByText("Grow membership")).toBeInTheDocument();
+    expect(screen.getByText("Reach 500 members")).toBeInTheDocument();
+    expect(screen.getByText("1 of 2 complete")).toBeInTheDocument();
+    const toggles = screen.getAllByRole("checkbox");
+    expect(toggles).toHaveLength(2);
+    expect(toggles[1]).toHaveAttribute("aria-checked", "true");
+  });
+
+  it("renders the shared Empty component for a goal-tracker block with no focus areas", () => {
+    const blocks: Block[] = [{ type: "goal-tracker", aspiration: "Aspiration", focusAreas: [] }];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("No focus areas yet")).toBeInTheDocument();
+    expect(container.querySelector("[data-rebar-component='empty']")).toBeInTheDocument();
+  });
+
+  it("toggling a goal-tracker goal flips its completed state locally", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      {
+        type: "goal-tracker",
+        aspiration: "Aspiration",
+        focusAreas: [{ id: "fa1", text: "Focus", goals: [{ id: "g1", text: "Goal", completed: false }] }],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    const toggle = screen.getByRole("checkbox");
+    expect(toggle).toHaveAttribute("aria-checked", "false");
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute("aria-checked", "true");
+  });
+
+  it("adding a focus area/goal on a goal-tracker block inserts an empty, editable entry", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [{ type: "goal-tracker", aspiration: "Aspiration", focusAreas: [] }];
+    render(<BlockRenderer blocks={blocks} />);
+
+    await user.click(screen.getByRole("button", { name: "+ Add focus area" }));
+    expect(screen.getByRole("button", { name: "Focus area, click to edit" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "+ Add goal" }));
+    expect(screen.getByRole("button", { name: "Goal, click to edit" })).toBeInTheDocument();
+    expect(screen.getByRole("checkbox")).toBeInTheDocument();
+  });
+
+  it("deleting a goal-tracker goal requires Popconfirm confirmation", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      {
+        type: "goal-tracker",
+        aspiration: "Aspiration",
+        focusAreas: [{ id: "fa1", text: "Focus", goals: [{ id: "g1", text: "Goal", completed: false }] }],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+
+    await user.click(screen.getByRole("button", { name: 'Delete goal "Goal"' }));
+    expect(screen.getByText('Delete "Goal"?')).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Yes" }));
+    expect(screen.queryByText("Goal")).not.toBeInTheDocument();
+  });
+
+  it("tags a goal-tracker block and its focus-area/goal items with block paths", () => {
+    const blocks: Block[] = [
+      {
+        type: "goal-tracker",
+        aspiration: "Aspiration",
+        focusAreas: [{ id: "fa1", text: "Focus", goals: [{ id: "g1", text: "Goal", completed: false }] }],
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(container.querySelector('[data-rebar-placement-block="goal-tracker"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0]",
+    );
+    expect(container.querySelector('[data-rebar-block-path="blocks[0].focusAreas[0]"]')).toBeInTheDocument();
+    expect(
+      container.querySelector('[data-rebar-block-path="blocks[0].focusAreas[0].goals[0]"]'),
+    ).toBeInTheDocument();
+  });
+
   it("renders a callout block with title and subtitle", () => {
     const blocks: Block[] = [
       { type: "callout", tone: "warning", icon: "clock", title: "In progress", subtitle: "Some items incomplete" },

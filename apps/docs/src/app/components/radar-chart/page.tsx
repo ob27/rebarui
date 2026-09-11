@@ -21,7 +21,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "A multi-axis polygon comparison chart (\"radar\"/\"spider\" chart) — one filled polygon per series, each vertex scaled along its own axis from a shared center. Built for comparing several items across the same small set of dimensions (e.g. a product/spec comparison) at a glance. `title` renders as a real, visible caption per [Design Heuristics](/docs/heuristics) #16 (charts ship with context, not just an accessible name); colors default to a small built-in palette, cycled by series index, when a series omits its own.",
+        text: "A multi-axis polygon comparison chart (\"radar\"/\"spider\" chart) — one filled polygon per series, each vertex scaled along its own axis from a shared center. Built for comparing several items across the same small set of dimensions (e.g. a product/spec comparison) at a glance. `title` renders as a real, visible caption per [Design Heuristics](/docs/heuristics) #16 (charts ship with context, not just an accessible name); colors default to a small built-in palette, cycled by series index, when a series omits its own — see [StackedBarChart](/components/stacked-bar-chart)'s own page for the exact default-palette order every chart in this library shares.",
       },
     ],
   },
@@ -78,6 +78,36 @@ export default function RadarChartPage() {
           filterable
         />
       </Box>
+
+      <Stack direction="row" gap="lg" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
+        <Stack gap="xs">
+          <Text size="sm" color="secondary">
+            3 axes (a triangle)
+          </Text>
+          <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-lg)" }}>
+            <RadarChart
+              title="Skill triangle"
+              axes={["Attack", "Defense", "Speed"]}
+              series={[{ label: "Hero", values: [70, 55, 85] }]}
+            />
+          </Box>
+        </Stack>
+        <Stack gap="xs">
+          <Text size="sm" color="secondary">
+            8 axes (an octagon)
+          </Text>
+          <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-lg)" }}>
+            <RadarChart
+              title="Full skill spread"
+              axes={["STR", "DEX", "CON", "INT", "WIS", "CHA", "LCK", "SPD"]}
+              series={[
+                { label: "Character A", values: [80, 60, 70, 50, 40, 65, 55, 75] },
+                { label: "Character B", values: [45, 85, 50, 70, 60, 40, 80, 55] },
+              ]}
+            />
+          </Box>
+        </Stack>
+      </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

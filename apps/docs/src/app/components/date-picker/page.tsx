@@ -13,18 +13,28 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "code",
-        code: `const [date, setDate] = useState<Date>();\n\n<DatePicker value={date} onValueChange={setDate} minDate={new Date()} />`,
+        code: `const [date, setDate] = useState<Date>(new Date());\n\n<DatePicker value={date} onValueChange={setDate} />`,
       },
     ],
   },
   { type: "props-table", heading: "Props", rows: componentProps["DatePicker"] ?? [] },
   {
     type: "doc-section",
-    heading: "Pure composition",
+    heading: "A redesign, not a popover trigger",
     body: [
       {
         kind: "text",
-        text: "A trigger button showing the picked date, opening a real `Popover` containing the real `Calendar` — this component owns no date-grid or month-navigation logic of its own, the same way `SplitButton` composes `Button` + `Popover` without reimplementing either. Picking a day closes the popover, since a single date is a complete choice (unlike `TimePicker`, which deliberately stays open across an hour-and-minute pick).",
+        text: 'This component previously opened a `Popover` containing a full `Calendar` grid — which just duplicated `Calendar` itself with an extra click in front of it. The actually distinct, useful shape is a compact day/month/year numeric triplet (three bounded `NumberInput`s: 1-31 depending on the selected month, 1-12, and a year within a real human lifetime range by default) — closer in spirit to `NumberInput` than to a second `Calendar`. It\'s the fast, keyboard-first shape for someone who already knows the date they want (a birthdate, a known deadline) and would rather type three numbers than click through a grid. Reach for `Calendar` directly (in a `Popover` for a trigger-button shape) when browsing/visual picking is actually the point.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Bounded numeric entry",
+    body: [
+      {
+        kind: "text",
+        text: 'Each field clamps to what\'s actually valid (heuristic #26: input constraints are visible, not silently enforced) — the day field\'s own max recalculates against the selected month/year (so a day past the 28th clamps down the moment the month changes to February), and month is bounded to 1-12. `minDate`/`maxDate` bound the committed result the same way as before. One deliberate exception: the year field does *not* clamp a partial, sub-1000 typed value (e.g. the "1" on the way to typing "1998") straight to its bound — doing that immediately overwrites the field back to the bound after the very first digit, making it impossible to type a multi-digit year at all. Real bounds apply once the year is a plausible 4-digit number.',
       },
     ],
   },
@@ -34,7 +44,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: '`data-rebar-component="date-picker"` on the trigger button; the popover content is a real `Calendar`, carrying its own `data-rebar-component="calendar"` and `data-rebar-part` attributes.',
+        text: '`data-rebar-component="date-picker"` on the root; parts `day`, `month`, `year` (each a real `NumberInput`, carrying its own `data-rebar-component="number-input"`).',
       },
     ],
   },
@@ -44,26 +54,26 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "AntD's own `DatePicker` is a close direct equivalent — `value`/`onValueChange` map to AntD's `value`/`onChange`. Same real difference to flag as `Calendar`'s own migration note: AntD's `DatePicker` uses a `dayjs` value, while this component uses a plain native `Date` — wrap at the boundary (`dayjs(value)` in, `.toDate()` out), not a silent drop-in.",
+        text: "Not a direct structural match anymore — AntD's own `DatePicker` is a calendar-popover shape (like this component's own previous design). A migration reimplements this as either AntD's `DatePicker` (if calendar-browsing is what's actually wanted) or three plain AntD `InputNumber`s (to keep the same compact direct-entry shape).",
       },
     ],
   },
 ];
 
 export default function DatePickerPage() {
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [date, setDate] = useState<Date>(new Date(2026, 5, 15));
 
   return (
     <Stack gap="lg">
       <Heading level={1}>DatePicker</Heading>
       <Text color="secondary">
-        A trigger button opening a popover of the real <code>Calendar</code> component.
+        A compact day/month/year numeric triplet — bounded direct entry, not a calendar popover.
       </Text>
 
       <Stack gap="sm">
-        <DatePicker value={date} onValueChange={setDate} minDate={new Date()} />
+        <DatePicker value={date} onValueChange={setDate} />
         <Text size="sm" color="secondary">
-          Selected: {date ? date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "none"}
+          Selected: {date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
         </Text>
       </Stack>
 

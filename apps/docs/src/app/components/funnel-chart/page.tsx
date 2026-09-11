@@ -21,7 +21,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "A staged, narrowing-bar chart (Visitors → Signups → Purchases, ...) — each stage's width scaled against the first stage's value, drawn as a continuous trapezoid that tapers from its own width down to the next stage's, so the whole shape reads as one funnel rather than disconnected bars. Colors default to a small built-in palette, cycled by stage index, when a stage omits its own.",
+        text: "A staged, narrowing-bar chart (Visitors → Signups → Purchases, ...) — each stage's width scaled against the first stage's value, drawn as a smoothly-curved (bezier) shape that eases from its own width down to the next stage's, so the whole shape reads as one continuous funnel rather than stacked, angular trapezoids. Colors default to a small built-in palette, cycled by stage index, when a stage omits its own. `milestones` adds a dashed target/checkpoint line (e.g. an industry benchmark) at a specific stage boundary, the same visual convention `LineChart`'s own `crossoverIndex` marker uses.",
       },
     ],
   },
@@ -70,6 +70,7 @@ export default function FunnelChartPage() {
             { label: "Signups", value: 6300 },
             { label: "Purchases", value: 1150 },
           ]}
+          milestones={[{ afterStageIndex: 0, label: "Industry benchmark: 12%" }]}
         />
       </Box>
 

@@ -27,6 +27,16 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "Default colors, stated once for every chart",
+    body: [
+      {
+        kind: "text",
+        text: 'When a series/segment/stage doesn\'t supply its own `color`, every one of `AreaChart`, `BarChart`, `BoxPlot`, `BubbleChart`, `FunnelChart`, `LineChart`, `PieChart`, `RadarChart`, `ScatterChart`, and `StackedBarChart` picks one from the same small built-in palette (`--rebar-color-primary`, `-success`, `-warning`, `-danger`, `-text-secondary`, in that order) cycled by that item\'s own index — the first series always gets the first color, the second the second, wrapping back to the first once the palette runs out. Checking this directly (not assuming it) surfaced a real inconsistency worth fixing rather than just documenting around: 6 of these 10 charts actually started their cycle at `-text-secondary` instead of `-primary` — unified to the single order stated above, so a caller can now genuinely predict which color a first, unlabeled series gets on any chart in this library. `WaterfallChart` is the one deliberate exception: its bars use fixed *semantic* colors (a total bar is always `-primary`, an increase always `-success`, a decrease always `-danger`) rather than a cycled palette, since a waterfall\'s colors encode meaning (direction), not arbitrary series identity.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "The stacked-bar-chart block adds a filter footer",
     body: [
       {

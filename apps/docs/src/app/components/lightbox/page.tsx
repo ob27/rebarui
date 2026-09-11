@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Heading, Lightbox, Stack, Text } from "rebar-ui";
 import type { Block } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
@@ -28,11 +31,21 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "Action buttons",
+    body: [
+      {
+        kind: "text",
+        text: '`onCopy`/`onDelete`/`onMove`/`onDownload` each show their own icon button in the fullscreen footer, only when the corresponding callback is actually supplied — no separate boolean flag + callback pair. `moreActions` (an array of the same `DropdownItem` shape `Dropdown` itself uses) adds an overflow "more actions" button for anything that doesn\'t warrant its own dedicated icon, opening a real `Dropdown` menu rather than a bespoke one.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "data-rebar-* attributes",
     body: [
       {
         kind: "text",
-        text: '`data-rebar-component="lightbox"`; parts: `trigger`, `thumbnail`, `image`. The fullscreen dialog itself carries `Dialog`\'s own attributes.',
+        text: '`data-rebar-component="lightbox"`; parts: `trigger`, `thumbnail`, `image`, `actions`. The fullscreen dialog itself carries `Dialog`\'s own attributes.',
       },
     ],
   },
@@ -49,6 +62,8 @@ const BLOCKS: Block[] = [
 ];
 
 export default function LightboxPage() {
+  const [lastAction, setLastAction] = useState("none yet");
+
   return (
     <Stack gap="lg">
       <Heading level={1}>Lightbox</Heading>
@@ -63,6 +78,48 @@ export default function LightboxPage() {
           alt="A random full-size placeholder photo"
         />
       </LivePreview>
+
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          Last action fired: <strong>{lastAction}</strong>
+        </Text>
+        <Stack direction="row" gap="lg" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
+          <Stack gap="xs">
+            <Text size="sm" color="secondary">
+              Full action set
+            </Text>
+            <Lightbox
+              src="https://picsum.photos/id/48/1200/800"
+              alt="A random full-size placeholder photo, second example"
+              onCopy={() => setLastAction("copy")}
+              onDownload={() => setLastAction("download")}
+              onMove={() => setLastAction("move")}
+              onDelete={() => setLastAction("delete")}
+              moreActions={[{ key: "report", label: "Report image", onSelect: () => setLastAction("report") }]}
+            />
+          </Stack>
+          <Stack gap="xs">
+            <Text size="sm" color="secondary">
+              Minimal set (copy + download only)
+            </Text>
+            <Lightbox
+              src="https://picsum.photos/id/65/1200/800"
+              alt="A random full-size placeholder photo, third example"
+              onCopy={() => setLastAction("copy")}
+              onDownload={() => setLastAction("download")}
+            />
+          </Stack>
+          <Stack gap="xs">
+            <Text size="sm" color="secondary">
+              No actions (default)
+            </Text>
+            <Lightbox
+              src="https://picsum.photos/id/76/1200/800"
+              alt="A random full-size placeholder photo, fourth example"
+            />
+          </Stack>
+        </Stack>
+      </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

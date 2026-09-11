@@ -23,6 +23,16 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "Three real mutations: micro, medium, large",
+    body: [
+      {
+        kind: "text",
+        text: '`size` (`"sm"`/`"md"`/`"lg"`) covers the visual scale; `mode="recent"` is the actual functional "micro" variant — instead of the full `presets` grid, it shows only the 3 most-recently-picked colors (seeded from the first few `presets` before anything\'s actually been picked), a real reduction in scope, not just a smaller version of the same grid. The native color input is still offered in both modes for anything not in the shown set.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "data-rebar-* attributes",
     body: [
       { kind: "text", text: '`data-rebar-component="color-picker"` on the trigger button; `data-rebar-part="presets"` on the swatch grid.' },
@@ -63,6 +73,17 @@ export default function ColorPickerPage() {
             <ColorPicker size="md" defaultValue="#2e7d32" aria-label="Medium" />
             <ColorPicker size="lg" defaultValue="#7b1fa2" aria-label="Large" />
           </Stack>
+        </LivePreview>
+      </Stack>
+
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          <code>mode=&quot;recent&quot;</code> — a real &quot;micro&quot; picker: only the 3
+          most-recently-picked colors, not the full preset grid. Pick a few different colors below
+          to see the shown set actually change.
+        </Text>
+        <LivePreview>
+          <ColorPicker mode="recent" size="sm" defaultValue="#0066cc" aria-label="Recent colors" />
         </LivePreview>
       </Stack>
 

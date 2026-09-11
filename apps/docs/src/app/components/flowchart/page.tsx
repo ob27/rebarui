@@ -38,6 +38,16 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "Bionic reading",
+    body: [
+      {
+        kind: "text",
+        text: 'Both the figcaption `title` and each step\'s own label now support bionic reading — the title via the ordinary `useBionicChildren` hook, and each step\'s SVG `<text>` label (drawn via this component\'s own `renderNode`, since a plain HTML `<span>` isn\'t valid inside SVG `<text>` at all) via the SVG-specific `renderBionicSvgText`, splitting into real `<tspan>` elements. `bionic`/`bionicOptions` props added to cover both.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "data-rebar-* attributes",
     body: [
       {

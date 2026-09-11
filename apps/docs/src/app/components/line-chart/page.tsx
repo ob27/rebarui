@@ -27,11 +27,11 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
-    heading: "The line-chart block adds a filter footer",
+    heading: "Series filtering",
     body: [
       {
         kind: "text",
-        text: "Same as `scatter-chart`: the block wraps this component with a filter footer, one toggle per series, rather than being a 1:1 pass-through. See it live on [/blocks](/blocks#line-chart).",
+        text: "Set `filterable` for a row of toggle buttons below the chart — hiding a series drops its line, its points, and its top-right label. The y-axis scale stays fixed to the full dataset regardless of what's hidden, so a remaining series' own shape never visually distorts as others are toggled. The `line-chart` placement block wraps this same capability rather than reimplementing it — see it live on [/blocks](/blocks#line-chart).",
       },
     ],
   },
@@ -83,6 +83,30 @@ export default function LineChartPage() {
           ]}
         />
       </Box>
+
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          <code>filterable</code> adds a toggle row below the chart.
+        </Text>
+        <Box
+          style={{
+            border: "1px solid var(--rebar-color-border, #e0e0e0)",
+            borderRadius: 4,
+            padding: "var(--rebar-space-lg)",
+          }}
+        >
+          <LineChart
+            title="Cumulative cost per round"
+            xLabels={["R0", "R1", "R2", "R3"]}
+            crossoverIndex={3}
+            filterable
+            series={[
+              { label: "antd", values: [10, 20, 30, 42] },
+              { label: "rebar-ui + migration", values: [22, 28, 35, 40], dashed: true },
+            ]}
+          />
+        </Box>
+      </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

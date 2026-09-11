@@ -21,7 +21,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "A distribution scatter plot — each series' individual values plotted as a jittered column of points, with a dashed line marking that series' own mean. Promoted from one-off SVG helpers this project's own [/benchmarks](/benchmarks) pages used to keep locally as one-off, un-reused code — see it at real scale there. `title` renders as a real, visible caption per [Design Heuristics](/docs/heuristics) #16 (charts ship with context, not just an accessible name); colors default to a small built-in palette, cycled by series index, when a series omits its own.",
+        text: "A distribution scatter plot — each series' individual values plotted as a jittered column of points, with a dashed line marking that series' own mean. Promoted from one-off SVG helpers this project's own [/benchmarks](/benchmarks) pages used to keep locally as one-off, un-reused code — see it at real scale there. `title` renders as a real, visible caption per [Design Heuristics](/docs/heuristics) #16 (charts ship with context, not just an accessible name); colors default to a small built-in palette, cycled by series index, when a series omits its own — see [StackedBarChart](/components/stacked-bar-chart)'s own page for the exact default-palette order every chart in this library shares.",
       },
     ],
   },
