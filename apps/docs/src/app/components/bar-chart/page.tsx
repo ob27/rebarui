@@ -27,11 +27,21 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "Trendline",
+    body: [
+      {
+        kind: "text",
+        text: "Set `trendline` to fit a dashed ordinary-least-squares line across all bars, treating bar index as x. Only meaningful when the bars represent an ordered sequence (e.g. months), not an arbitrary unordered category list.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "data-rebar-* attributes",
     body: [
       {
         kind: "text",
-        text: '`data-rebar-component="bar-chart"` on the root `<figure>`; the caption, when `title` is set, carries `data-rebar-part="title"`.',
+        text: '`data-rebar-component="bar-chart"` on the root `<figure>`; the caption, when `title` is set, carries `data-rebar-part="title"`; `data-rebar-part="trendline"` on a fitted trendline.',
       },
     ],
   },
@@ -74,6 +84,31 @@ export default function BarChartPage() {
           ]}
         />
       </Box>
+
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          <code>trendline</code> fits a dashed OLS line across all bars.
+        </Text>
+        <Box
+          style={{
+            border: "1px solid var(--rebar-color-border, #e0e0e0)",
+            borderRadius: 4,
+            padding: "var(--rebar-space-lg)",
+          }}
+        >
+          <BarChart
+            title="Monthly signups"
+            trendline
+            bars={[
+              { label: "Jan", value: 120 },
+              { label: "Feb", value: 180 },
+              { label: "Mar", value: 145 },
+              { label: "Apr", value: 210 },
+              { label: "May", value: 265 },
+            ]}
+          />
+        </Box>
+      </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

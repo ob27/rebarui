@@ -27,11 +27,21 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "Trendline",
+    body: [
+      {
+        kind: "text",
+        text: "Set `trendline` to fit and draw a dashed ordinary-least-squares line per visible series over the filled area.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "data-rebar-* attributes",
     body: [
       {
         kind: "text",
-        text: '`data-rebar-component="area-chart"` on the root `<figure>`; the caption, when `title` is set, carries `data-rebar-part="title"`.',
+        text: '`data-rebar-component="area-chart"` on the root `<figure>`; the caption, when `title` is set, carries `data-rebar-part="title"`; `data-rebar-part="trendline"` on a fitted trendline.',
       },
     ],
   },
@@ -69,6 +79,26 @@ export default function AreaChartPage() {
           series={[{ label: "Visitors", values: [1200, 1550, 1420, 1890, 2100, 1975] }]}
         />
       </Box>
+
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          <code>trendline</code> fits and draws a dashed OLS line per series.
+        </Text>
+        <Box
+          style={{
+            border: "1px solid var(--rebar-color-border, #e0e0e0)",
+            borderRadius: 4,
+            padding: "var(--rebar-space-lg)",
+          }}
+        >
+          <AreaChart
+            title="Noisy signal with trend"
+            xLabels={["W1", "W2", "W3", "W4", "W5", "W6"]}
+            trendline
+            series={[{ label: "Visitors", values: [1200, 1550, 1420, 1890, 1700, 2050] }]}
+          />
+        </Box>
+      </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

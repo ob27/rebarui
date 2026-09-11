@@ -27,11 +27,21 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "Trendline",
+    body: [
+      {
+        kind: "text",
+        text: "Set `trendline` to fit a dashed ordinary-least-squares line per series over its real `(x, y)` points, drawn from the series' own min to max x.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "data-rebar-* attributes",
     body: [
       {
         kind: "text",
-        text: '`data-rebar-component="bubble-chart"` on the root `<figure>`.',
+        text: '`data-rebar-component="bubble-chart"` on the root `<figure>`; `data-rebar-part="trendline"` on a fitted trendline.',
       },
     ],
   },
@@ -71,6 +81,28 @@ export default function BubbleChartPage() {
           },
         ]}
       />
+
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          <code>trendline</code> fits a dashed OLS line per series over its real points.
+        </Text>
+        <BubbleChart
+          title="Product lines: price vs. rating vs. sales volume"
+          trendline
+          series={[
+            {
+              label: "2026",
+              points: [
+                { x: 12, y: 4.2, size: 800 },
+                { x: 25, y: 4.6, size: 2200 },
+                { x: 8, y: 3.9, size: 400 },
+                { x: 18, y: 4.4, size: 1300 },
+                { x: 30, y: 4.1, size: 600 },
+              ],
+            },
+          ]}
+        />
+      </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

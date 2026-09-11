@@ -629,6 +629,91 @@ applied to the #11-30 de-dup above.
     outweighs the *problem* it's solving in this specific case, not merely when a lighter option
     exists.
 
+## Heuristics from a live field-trial post-mortem
+
+A different kind of source than the two passes above: not a historical-GUI critique or a
+framework-catalogue read, but a root-cause analysis of an actual agent-built consumer app
+(`ref/Tom_v2.md` — Coherence, a vector-DB/chat app built against rebar-ui with no extra direction).
+That file keeps the full, specific findings (exact files/lines, the concrete app-level bug) and a
+"derived heuristics" section phrased as rules for *that* build; what follows here is the subset of
+those that generalize into real, design-system-agnostic component/behavior heuristics, restated at
+that level rather than left as one project's specific post-mortem. Three of the nine derived
+findings there did **not** qualify for a numbered entry here, on the same "stay in genre" basis
+`ref/HEURISTICS.md` already applies to the wider research pass above: shipping a default favicon/
+logo asset is a packaging/distribution concern (`ARCHITECTURE.md` territory, if anywhere — not a
+component behavioral contract); "search the component catalog before declaring a requested feature
+out of scope" is agent-conduct, not a component design heuristic (it belongs with the Framework
+Rules in `robot.md`/`AGENTS.md`); and the chat-view state-clobbering bug was a plain app-specific
+React state/routing bug with no generalizable component-design lesson in it at all. This section is
+appendable the same way the wider-research-pass one above is — future field-trial post-mortems
+should add to it, not spawn a parallel document.
+
+50. **A variant-switching control never exposes a variant with nothing loaded behind it** — before
+    shipping or offering a toggle between visual or behavioral variants (a theme, a locale, a
+    density mode), every variant the control can switch *to* needs its runtime dependency actually
+    present. A toggle like this typically only flips a pointer or attribute; loading what each
+    variant actually needs is a separate step nothing does automatically, and offering the switch
+    is not the same as making every state it can reach real. Seen failing in: a live field build
+    whose theme toggle had a "sketch" state with no corresponding stylesheet ever imported —
+    switching to it silently did nothing, indistinguishable from a broken control to the end user,
+    since nothing on screen indicated the missing half. Component rule: `ThemeToggle` documents
+    that using it requires importing every theme package it can switch between, not just whichever
+    one is the current default; the same discipline generalizes to any future multi-variant switch
+    (locale, density, mode) a component ships.
+
+51. **A frequently-recurring compound UI shape belongs in the library as one composed unit, not
+    left for every consumer to hand-assemble from primitives** — when a shape (an app shell of
+    side-nav plus header/logo plus a control cluster plus footer, say) recurs across real builds
+    and no existing component or block already covers it, that absence is itself the signal to add
+    one — not a reason to assume every consumer will independently reassemble (and likely
+    under-refine) the same composition from scratch. Seen failing in: a live field build
+    hand-assembling its own header/logo/sub-header/footer chrome around a bare navigation-list
+    component, because nothing in the catalog composed those slots together — a reasonable
+    in-the-moment choice, but exactly the kind of one-off a shared component exists to prevent.
+    Component rule: catalog gaps surfaced this way get tracked and closed at the component or block
+    layer, whichever fits the shape, rather than patched per-consumer or per-page.
+
+52. **Loading indicators need a minimum-display or show-delay guard, not a raw boolean wired straight
+    through** — a skeleton or spinner driven directly by an unguarded `loading` flag will flash for
+    a single frame whenever the underlying operation resolves faster than a human can register a
+    loading state at all, reading as broken rather than fast. A loading indicator should either wait
+    briefly before appearing (so a near-instant operation shows nothing) or, once shown, hold for a
+    minimum duration (so it can't flicker off before it was ever really seen) — the same
+    "perceived stability over raw accuracy" reasoning behind #21's animation-duration floor, applied
+    to loading states rather than transitions. Seen failing in: a live field build whose local,
+    near-instant data loads triggered a skeleton that flashed for a single frame on every view, on
+    every load, because nothing debounced the raw loading boolean feeding it. Component rule
+    (forward-looking): `Skeleton`/`Spin` take an optional delay/minimum-duration prop, or a shared
+    `useDelayedLoading(loading, { delay, minDuration })` hook sits between any raw loading boolean
+    and either component — neither exists yet.
+
+53. **A searchable or filterable list defaults to its full (paginated) content; search narrows what's
+    already visible, it never gates initial visibility** — a list, table, or gallery over a bounded,
+    already-available dataset should render populated from the moment it mounts; a search or filter
+    control refines that view, but treating it as a precondition for showing anything at all (an
+    empty state until a query is submitted) turns a convenience into a requirement, forcing every
+    user to guess a query before they can even browse. This is #11 (IA as pyramid) and #17
+    (progressive disclosure)'s reasoning applied specifically to the search-vs-populate ordering,
+    not a new principle about disclosure itself. Seen failing in: a live field build's search view,
+    which rendered an empty table and a bare search bar until a query was submitted, with no way to
+    just browse what was already there. Component rule: the `table` archetype (`@rebar-ui/
+    placement`) already gets this right — `rows` populates up front and `searchPlaceholder` filters
+    over what's already loaded; a raw-component build reaching for `Table` directly should follow
+    the same convention rather than inventing "empty until searched."
+
+54. **A displayed count or aggregate that names a browsable set elsewhere in the same app defaults to
+    a drill-down link into that set, not inert text** — when a number on screen (an item count, a
+    total) corresponds to a real, navigable detail view showing those exact items, rendering it as
+    plain text discards a nearly-free navigation opportunity and forces the user to independently
+    relocate and re-filter that same view by hand. This sharpens #28 (information scent) with a
+    concrete default: a summary number is itself a piece of navigation, not just a statistic,
+    whenever a matching detail view exists. Seen failing in: a live field build's document list,
+    whose chunk-count column rendered as a bare, unlinked number even though a dedicated,
+    pre-filterable chunk-search view existed one click away. Component rule (forward-looking): a
+    `Table`/`table`-archetype column definition should support an optional `href`/`onClick` per
+    cell, distinct from a full-row action, so a count-like value can link out without requiring the
+    whole row to be clickable.
+
 ## Token values (defaults, fully overridable)
 
 ### Spacing — 8pt grid

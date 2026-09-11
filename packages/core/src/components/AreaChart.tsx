@@ -2,6 +2,7 @@ import type { ComponentPropsWithoutRef } from "react";
 import clsx from "clsx";
 import { renderChartEmptyState } from "../chartEmptyState";
 import { ChartValueTag, useChartMarkSelection } from "../chartMarkSelection";
+import { computeTrendline } from "../chartTrendline";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
 
@@ -23,6 +24,8 @@ export interface AreaChartProps extends Omit<ComponentPropsWithoutRef<"figure">,
   ariaLabel?: string;
   height?: number;
   labelStep?: number;
+  /** Adds a dashed linear-regression trendline per series — off by default. */
+  trendline?: boolean;
   /** Force bionic reading on/off for the title, overriding the ambient data-rebar-bionic setting. */
   bionic?: boolean;
   bionicOptions?: BionicOptions;
@@ -48,6 +51,7 @@ export function AreaChart({
   ariaLabel,
   height = 300,
   labelStep = 1,
+  trendline,
   bionic,
   bionicOptions,
   className,
@@ -133,10 +137,24 @@ export function AreaChart({
           const color = s.color ?? DEFAULT_PALETTE[i % DEFAULT_PALETTE.length];
           const linePoints = s.values.map((v, j) => `${xScale(j)},${yScale(v)}`).join(" ");
           const areaPoints = `${xScale(0)},${baselineY} ${linePoints} ${xScale(s.values.length - 1)},${baselineY}`;
+          const trend = trendline ? computeTrendline(s.values.map((v, j) => ({ x: j, y: v }))) : null;
           return (
             <g key={s.label}>
               <polygon points={areaPoints} fill={color} fillOpacity={0.18} stroke="none" />
               <polyline points={linePoints} fill="none" stroke={color} strokeWidth={2.5} />
+              {trend ? (
+                <line
+                  x1={xScale(0)}
+                  y1={yScale(trend.intercept)}
+                  x2={xScale(s.values.length - 1)}
+                  y2={yScale(trend.slope * (s.values.length - 1) + trend.intercept)}
+                  stroke={color}
+                  strokeWidth={1.5}
+                  strokeDasharray="2 4"
+                  opacity={0.6}
+                  data-rebar-part="trendline"
+                />
+              ) : null}
               {s.values.map((v, j) => {
                 const key = `${i}:${j}`;
                 const selected = isSelected(key);

@@ -37,11 +37,21 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
+    heading: "Trendline",
+    body: [
+      {
+        kind: "text",
+        text: "Set `trendline` to fit and draw a dashed ordinary-least-squares line per visible series — useful when the underlying signal is noisy and the direction matters more than any single point.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "data-rebar-* attributes",
     body: [
       {
         kind: "text",
-        text: '`data-rebar-component="line-chart"` on the root `<figure>`.',
+        text: '`data-rebar-component="line-chart"` on the root `<figure>`; `data-rebar-part="trendline"` on a fitted trendline.',
       },
     ],
   },
@@ -104,6 +114,26 @@ export default function LineChartPage() {
               { label: "antd", values: [10, 20, 30, 42] },
               { label: "rebar-ui + migration", values: [22, 28, 35, 40], dashed: true },
             ]}
+          />
+        </Box>
+      </Stack>
+
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          <code>trendline</code> fits and draws a dashed OLS line per series.
+        </Text>
+        <Box
+          style={{
+            border: "1px solid var(--rebar-color-border, #e0e0e0)",
+            borderRadius: 4,
+            padding: "var(--rebar-space-lg)",
+          }}
+        >
+          <LineChart
+            title="Noisy signal with trend"
+            xLabels={["R0", "R1", "R2", "R3", "R4", "R5"]}
+            trendline
+            series={[{ label: "Series A", values: [10, 22, 18, 30, 26, 38] }]}
           />
         </Box>
       </Stack>
