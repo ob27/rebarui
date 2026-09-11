@@ -1,6 +1,6 @@
 {
   "name": "@rebar-ui/theme-sketch",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Rebar's default hand-drawn, low-fidelity theme.",
   "type": "module",
   "files": ["dist"],

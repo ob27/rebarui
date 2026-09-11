@@ -1284,6 +1284,23 @@ describe("BlockRenderer", () => {
     expect(root).toHaveAttribute("data-rebar-block-path", "blocks[0]");
   });
 
+  it("logo.iconPath renders a real inline <svg fill=\"currentColor\"> instead of an <img>, and takes priority over iconSrc", () => {
+    const blocks: Block[] = [
+      {
+        type: "site-header",
+        logo: { label: "Acme", iconSrc: "/ignored.svg", iconPath: "M0 0h24v24H0z", iconViewBox: "0 0 24 24" },
+        items: [{ label: "Docs", href: "/docs" }],
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    const svg = container.querySelector("header svg");
+    expect(svg).toBeInTheDocument();
+    expect(svg).toHaveAttribute("fill", "currentColor");
+    expect(svg).toHaveAttribute("viewBox", "0 0 24 24");
+    expect(svg?.querySelector("path")).toHaveAttribute("d", "M0 0h24v24H0z");
+    expect(container.querySelector("header img")).not.toBeInTheDocument();
+  });
+
   it("renders a site-header block's text trailing content", () => {
     const blocks: Block[] = [
       {

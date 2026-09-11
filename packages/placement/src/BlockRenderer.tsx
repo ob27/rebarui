@@ -1121,7 +1121,19 @@ function renderBlock(
         // regardless of their own value).
         <span style={{ display: "inline-block", textDecoration: "none" }}>
           <Stack direction="row" align="center" gap="xs">
-            {block.logo.iconSrc ? <img src={block.logo.iconSrc} alt="" width={24} height={24} /> : null}
+            {block.logo.iconPath ? (
+              <svg
+                viewBox={block.logo.iconViewBox ?? "0 0 24 24"}
+                width={24}
+                height={24}
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d={block.logo.iconPath} />
+              </svg>
+            ) : block.logo.iconSrc ? (
+              <img src={block.logo.iconSrc} alt="" width={24} height={24} />
+            ) : null}
             <Text as="span" size="md" style={{ fontWeight: "var(--rebar-font-weight-bold, 700)" }}>
               {block.logo.label}
             </Text>

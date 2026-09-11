@@ -85,7 +85,14 @@
  * the plain `header` block above (a page-content title bar, not a site-wide nav) — added after this
  * project's own hand-authored `SiteHeader.tsx` component turned out to be exactly this same
  * shape, worth a real block rather than every consuming app re-inventing the same logo+nav+trailing
- * composition and 50%-width-cap flex arithmetic by hand.
+ * composition and 50%-width-cap flex arithmetic by hand. `logo.iconPath`/`iconViewBox` (an
+ * alternative to `iconSrc`) render the mark as a real inline `<svg fill="currentColor">` instead
+ * of an `<img>` — added after this project's own logo (a `currentColor` SVG loaded via `iconSrc`)
+ * turned out not to react to this site's own light/dark toggle at all: an externally-loaded image
+ * has no visibility into the host page's DOM/CSS, `currentColor` inside it just resolves to that
+ * file's own isolated default regardless of what the page's theme actually is. An inline `<svg>`
+ * doesn't have that problem — it's a real element in the page, so it inherits the ambient text
+ * color exactly like everything else already does.
  *
  * `scatter-chart`, `line-chart`, and `stacked-bar-chart` wrap `rebar-ui`'s chart components of the
  * same names — promoted from hand-drawn, one-off SVG helpers this project's own `/benchmarks`
@@ -349,7 +356,25 @@ export type Block =
     }
   | {
       type: "site-header";
-      logo: { label: string; href?: string; iconSrc?: string };
+      logo: {
+        label: string;
+        href?: string;
+        /** An image URL, rendered via a plain `<img>` — fine for a raster logo or a fixed-color
+         * brand SVG, but an `<img>`-loaded external file can never see this page's own DOM/CSS
+         * (a `currentColor` fill inside it just resolves to that file's own default, not this
+         * page's ambient text color) — so it can't react to a light/dark toggle. Use
+         * `iconPath`/`iconViewBox` instead for a mark that needs to. */
+        iconSrc?: string;
+        /** An SVG path's `d` attribute, rendered inline (`<svg fill="currentColor"><path
+         * d={iconPath} /></svg>`) instead of `iconSrc` — a real DOM element, so it inherits the
+         * ambient text color and reacts live to this page's own light/dark toggle, the one thing
+         * `iconSrc` fundamentally can't do. Takes priority over `iconSrc` when both are set. */
+        iconPath?: string;
+        /** The `viewBox` the path was drawn against — required alongside `iconPath` if it isn't
+         * the common icon default `"0 0 24 24"` (e.g. a hand-drawn wordmark drawn at its own,
+         * larger native scale). */
+        iconViewBox?: string;
+      };
       items: NavBarItem[];
       ariaLabel?: string;
       /** Right-aligned trailing content, pushed to the header's far edge. Omit for a header that
