@@ -12,6 +12,7 @@ const BLOCK_TYPES = [
   { id: "banner", label: "banner" },
   { id: "checklist", label: "checklist" },
   { id: "goal-tracker", label: "goal-tracker" },
+  { id: "ai-chat", label: "ai-chat" },
   { id: "callout", label: "callout" },
   { id: "spin-card", label: "spin-card" },
   { id: "feature-grid", label: "feature-grid" },
@@ -310,6 +311,24 @@ export default function BlocksPage() {
                     { id: "g2", text: "Host 3 events", completed: true },
                   ],
                 },
+              ],
+            },
+          ]}
+        />
+
+        <Entry
+          id="ai-chat"
+          measured={false}
+          description="A chat surface: ChatThread (the transcript) + AiChatInput (the composer) — the exact composition this project's own AiChatInput reference page already hand-authors. Local-only state seeded from the block's literal messages; sending appends the caller's own new message to the transcript, never fabricating an assistant reply, since this is a static-render demo surface, not a real backend. intent is computed from the current draft text (/ for command, ? for search), not a block-level setting, since it's about what's currently typed."
+          shape={`{ type: "ai-chat", title?: string, messages: AiChatMessageData[], placeholder?: string, dictation?: boolean, height?: number }
+// AiChatMessageData = { id: string, role: "user" | "assistant", content: string, avatarFallback?: string, avatarSrc?: string, avatarPlaceholder?: boolean }`}
+          blocks={[
+            {
+              type: "ai-chat",
+              title: "Support chat",
+              messages: [
+                { id: "1", role: "assistant", content: "How can I help today?", avatarFallback: "AI" },
+                { id: "2", role: "user", content: "My order hasn't arrived yet.", avatarFallback: "JD" },
               ],
             },
           ]}

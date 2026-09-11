@@ -22,6 +22,11 @@ const MOBILE: readonly string[] = [
   "ProgressCircle",
   "Selector",
   "NumberKeyboard",
+  "Footer",
+  "ScrollMask",
+  "Ellipsis",
+  "FloatingBubble",
+  "FloatingPanel",
 ];
 
 const DIAGRAM: readonly string[] = [

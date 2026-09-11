@@ -8,8 +8,14 @@ import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const INITIAL: ChatMessage[] = [
-  { id: "1", role: "user", content: "Can you summarize this quarter's numbers?", status: "sent" },
-  { id: "2", role: "assistant", content: "Revenue is up 12% quarter over quarter, driven mostly by the new enterprise tier.", status: "sent" },
+  { id: "1", role: "user", content: "Can you summarize this quarter's numbers?", status: "sent", avatarFallback: "JD" },
+  {
+    id: "2",
+    role: "assistant",
+    content: "Revenue is up 12% quarter over quarter, driven mostly by the new enterprise tier.",
+    status: "sent",
+    avatarFallback: "AI",
+  },
 ];
 
 const BLOCKS: Block[] = [
@@ -30,7 +36,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "This component performs no networking itself, the same convention `FileUpload` follows for uploads — the caller updates a message's `content` in place as chunks arrive and this re-renders. Only auto-scrolls to new content when the reader is already at the bottom; scrolled-up readers get a floating \"new messages\" button instead of being yanked back down.",
+        text: "This component performs no networking itself, the same convention `FileUpload` follows for uploads — the caller updates a message's `content` in place as chunks arrive and this re-renders. Only auto-scrolls to new content when the reader is already at the bottom; scrolled-up readers get a floating \"new messages\" button instead of being yanked back down. A per-message `avatarFallback` (plus `avatarSrc`/`avatarPlaceholder`, matching `Avatar`'s own props exactly) renders a real `Avatar` beside the bubble — omitted entirely, no layout change at all, on any message that doesn't set it.",
       },
     ],
   },
@@ -73,11 +79,11 @@ export default function ChatThreadPage() {
     if (lastRole === "assistant" || lastRole === undefined) {
       setMessages((prev) => [
         ...prev,
-        { id, role: "user", content: "What's driving that?", status: "sent" },
+        { id, role: "user", content: "What's driving that?", status: "sent", avatarFallback: "JD" },
       ]);
     } else {
       const content = DEMO_REPLIES[nextReply.current++ % DEMO_REPLIES.length]!;
-      setMessages((prev) => [...prev, { id, role: "assistant", content, status: "sent" }]);
+      setMessages((prev) => [...prev, { id, role: "assistant", content, status: "sent", avatarFallback: "AI" }]);
     }
   };
 

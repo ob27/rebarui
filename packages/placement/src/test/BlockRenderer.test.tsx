@@ -426,6 +426,64 @@ describe("BlockRenderer", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders an ai-chat block's transcript and title", () => {
+    const blocks: Block[] = [
+      {
+        type: "ai-chat",
+        title: "Support chat",
+        messages: [
+          { id: "1", role: "assistant", content: "How can I help?" },
+          { id: "2", role: "user", content: "My order hasn't arrived." },
+        ],
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Support chat")).toBeInTheDocument();
+    expect(screen.getByText("How can I help?")).toBeInTheDocument();
+    expect(screen.getByText("My order hasn't arrived.")).toBeInTheDocument();
+  });
+
+  it("an ai-chat block appends a sent message to the transcript locally, without fabricating a reply", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      { type: "ai-chat", messages: [{ id: "1", role: "assistant", content: "Ask me anything." }] },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+
+    const input = screen.getByRole("textbox");
+    await user.type(input, "What's my order status?");
+    await user.click(screen.getByRole("button", { name: /send/i }));
+
+    expect(screen.getByText("What's my order status?")).toBeInTheDocument();
+    // Still exactly the original assistant message plus the one new user message — nothing else
+    // was fabricated in response.
+    expect(screen.getAllByText(/Ask me anything\.|What's my order status\?/)).toHaveLength(2);
+  });
+
+  it("an ai-chat block's per-message avatar renders via the real Avatar component", () => {
+    const { container } = render(
+      <BlockRenderer
+        blocks={[
+          {
+            type: "ai-chat",
+            messages: [{ id: "1", role: "assistant", content: "Hi", avatarFallback: "Assistant" }],
+          },
+        ]}
+      />,
+    );
+    expect(container.querySelector('[data-rebar-component="avatar"]')).toBeInTheDocument();
+  });
+
+  it("tags an ai-chat block with its block path", () => {
+    const { container } = render(
+      <BlockRenderer blocks={[{ type: "ai-chat", messages: [{ id: "1", role: "user", content: "Hi" }] }]} />,
+    );
+    expect(container.querySelector('[data-rebar-placement-block="ai-chat"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0]",
+    );
+  });
+
   it("renders a callout block with title and subtitle", () => {
     const blocks: Block[] = [
       { type: "callout", tone: "warning", icon: "clock", title: "In progress", subtitle: "Some items incomplete" },
@@ -1010,6 +1068,71 @@ describe("BlockRenderer", () => {
     expect(container.querySelector('[data-rebar-placement-block="iframe"]')).toHaveAttribute(
       "data-rebar-block-path",
       "blocks[0].rightBlocks[0]",
+    );
+  });
+
+  it("renders a side-panel block's main content and panel content, panel open by default", () => {
+    const blocks: Block[] = [
+      {
+        type: "side-panel",
+        main: [{ type: "checklist", heading: "Checklist", items: ["One", "Two"] }],
+        panel: { title: "Thread", blocks: [{ type: "callout", tone: "info", title: "Reply" }] },
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("One")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Thread" })).toBeInTheDocument();
+    expect(screen.getByText("Reply")).toBeInTheDocument();
+  });
+
+  it("a side-panel block's panel collapses to a rail and reopens, without touching main content", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      {
+        type: "side-panel",
+        main: [{ type: "checklist", heading: "Checklist", items: ["One"] }],
+        panel: { title: "Thread", blocks: [{ type: "callout", tone: "info", title: "Reply" }] },
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    await user.click(screen.getByRole("button", { name: "Collapse Thread" }));
+    expect(screen.queryByText("Reply")).not.toBeInTheDocument();
+    expect(screen.getByText("One")).toBeInTheDocument();
+  });
+
+  it("respects panel.defaultOpen: false, starting collapsed", () => {
+    const blocks: Block[] = [
+      {
+        type: "side-panel",
+        main: [{ type: "checklist", heading: "Checklist", items: ["One"] }],
+        panel: { title: "Thread", blocks: [{ type: "callout", tone: "info", title: "Reply" }], defaultOpen: false },
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.queryByText("Reply")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Open Thread" })).toBeInTheDocument();
+  });
+
+  it("tags a side-panel block and its nested main/panel blocks with schema-shaped paths", () => {
+    const blocks: Block[] = [
+      {
+        type: "side-panel",
+        main: [{ type: "checklist", heading: "Checklist", items: ["One"] }],
+        panel: { title: "Thread", blocks: [{ type: "callout", tone: "info", title: "Reply" }] },
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(container.querySelector('[data-rebar-placement-block="side-panel"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0]",
+    );
+    expect(container.querySelector('[data-rebar-placement-block="checklist"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0].main[0]",
+    );
+    expect(container.querySelector('[data-rebar-placement-block="callout"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0].panel.blocks[0]",
     );
   });
 

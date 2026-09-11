@@ -11,7 +11,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "code",
-        code: '<Empty />\n<Empty description="No projects yet">\n  <Button variant="primary">Create project</Button>\n</Empty>\n<Empty icon="vector" description="No results" />',
+        code: '<Empty />\n<Empty illustration="bowl-and-spoon" description="No projects yet">\n  <Button variant="primary">Create project</Button>\n</Empty>\n<Empty icon="vector" description="No results" />',
       },
     ],
   },
@@ -42,7 +42,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "Not codemod-covered — AntD's `Empty` ships several built-in illustration presets (`Empty.PRESENTED_IMAGE_SIMPLE` etc.), while this component has one hand-drawn illustration plus a plain vector fallback, picked via `icon`, not a larger preset set. `description` and an action child map directly.",
+        text: "Not codemod-covered — AntD's `Empty` ships several built-in illustration presets (`Empty.PRESENTED_IMAGE_SIMPLE` etc.), while this component has two hand-drawn illustrations (a ghost, the default, and the original bowl-and-spoon, picked via `illustration`) plus a plain vector fallback, picked via `icon`, not a larger preset set. `description` and an action child map directly.",
       },
     ],
   },
@@ -53,18 +53,18 @@ export default function EmptyPage() {
     <Stack gap="lg">
       <Heading level={1}>Empty</Heading>
       <Text color="secondary">
-        A placeholder for a list, table, or panel with nothing to show. One hand-drawn
-        illustration (an empty bowl, from the same placeholder art set as{" "}
-        <code>Avatar</code>/<code>AspectRatio</code>), by default swapped automatically for a
-        plain vector circle-and-X in dark mode — since the illustration is a raster image, it
-        can&apos;t recolor itself for a dark background. Set <code>icon</code> to keep one or the
-        other in both themes instead.
+        A placeholder for a list, table, or panel with nothing to show. A hand-drawn illustration
+        (a ghost by default, or the original bowl-and-spoon via <code>illustration</code>, from the
+        same placeholder art set as <code>Avatar</code>/<code>AspectRatio</code>), by default
+        swapped automatically for a plain vector circle-and-X in dark mode — since the illustration
+        is a raster image, it can&apos;t recolor itself for a dark background. Set{" "}
+        <code>icon</code> to keep one or the other in both themes instead.
       </Text>
 
       <LivePreview>
         <Stack gap="lg">
           <Empty />
-          <Empty description="No projects yet">
+          <Empty illustration="bowl-and-spoon" description="No projects yet">
             <Button variant="primary">Create project</Button>
           </Empty>
           <Stack direction="row" gap="lg">

@@ -98,10 +98,16 @@ const COMPONENT_FILES = [
   "RadarChart.tsx",
   "BoxPlot.tsx",
   "Drawer.tsx",
+  "SidePanel.tsx",
   "BottomSheet.tsx",
   "ActionSheet.tsx",
   "MobileTabBar.tsx",
   "ScrollArea.tsx",
+  "Footer.tsx",
+  "ScrollMask.tsx",
+  "Ellipsis.tsx",
+  "FloatingBubble.tsx",
+  "FloatingPanel.tsx",
   "SplitButton.tsx",
   "Calendar.tsx",
   "TimePicker.tsx",
@@ -174,12 +180,23 @@ const COMPONENT_FILES = [
   "LayersPanel.tsx",
 ];
 
+// react-docgen-typescript detects every component-shaped export in a parsed file, not just the
+// one named after it — parsing "Drawer.tsx" (needed for `Drawer`'s own props) also yields
+// `DrawerPanel`, the shared internal plumbing `BottomSheet`/`ActionSheet` build on. `DrawerPanel`
+// is deliberately not exported from `packages/core/src/index.ts` (see its own doc comment) — a
+// consumer can't actually `import { DrawerPanel } from "rebar-ui"`, so it shouldn't appear
+// alongside real public components on `/components` (surfaced as a "no reference page" entry
+// nobody could ever build a real page for, since it isn't a real public API). Filtered out here
+// rather than given a fake page.
+const INTERNAL_ONLY = new Set(["DrawerPanel"]);
+
 const result = {};
 
 for (const file of COMPONENT_FILES) {
   const filePath = path.join(coreDir, "src/components", file);
   const docs = parser.parse(filePath);
   for (const doc of docs) {
+    if (INTERNAL_ONLY.has(doc.displayName)) continue;
     result[doc.displayName] = Object.values(doc.props).map((prop) => ({
       name: prop.name,
       type: prop.type?.raw ?? prop.type?.name ?? "unknown",

@@ -3,6 +3,7 @@ export type { BlockRendererProps } from "./BlockRenderer";
 
 export type {
   Action,
+  AiChatMessageData,
   Block,
   FeatureGridItem,
   GoalTrackerFocusAreaData,

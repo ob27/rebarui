@@ -134,6 +134,13 @@
  * convention `nav-bar`'s own overflow already uses). The schema shape (`columns: string[]`,
  * `rows: TableRow[]`) didn't change — every existing `table` block (the Simple/Composite/Complex
  * tier specs on /benchmarks) keeps working unmodified; the new fields are additive and optional.
+ *
+ * `side-panel` wraps `rebar-ui`'s `SidePanel` — a persistent, non-modal side panel (the Slack
+ * "thread"/"details" pattern), rendered beside a nested `main: Block[]` document rather than over
+ * it. Distinct from `modal` (a forced-open `Dialog`, a backdrop overlay meant for a static-render
+ * context only): a side panel has no backdrop and is meant for a real, live page — the main
+ * content stays fully visible and interactive while it's open. Unmeasured, like the rest of this
+ * batch.
  */
 
 export type IconName = "close" | "info" | "refresh" | "clock";
@@ -255,6 +262,17 @@ export interface GoalTrackerFocusAreaData {
   goals: GoalTrackerGoalData[];
 }
 
+export interface AiChatMessageData {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  /** An avatar shown beside this message — omitted entirely unless `avatarFallback` is set,
+   * matching `ChatThread`'s own `ChatMessage` shape exactly. */
+  avatarFallback?: string;
+  avatarSrc?: string;
+  avatarPlaceholder?: boolean;
+}
+
 /**
  * One row of a component's prop reference, as generated from real TypeScript types (see
  * apps/docs/scripts/generate-props.mjs) — the `props-table` block renders exactly this shape, so
@@ -368,6 +386,16 @@ export type Block =
       focusAreas: GoalTrackerFocusAreaData[];
       celebration?: "none" | "small" | "big";
     }
+  | {
+      type: "ai-chat";
+      title?: string;
+      messages: AiChatMessageData[];
+      placeholder?: string;
+      /** Shows the dictation (voice-to-text) toggle on the input. Default `false`. */
+      dictation?: boolean;
+      /** Height of the scrollable transcript area, in px. Default `240`. */
+      height?: number;
+    }
   | { type: "callout"; tone: Tone; icon?: IconName; title: string; subtitle?: string }
   | { type: "feature-grid"; items: FeatureGridItem[] }
   | { type: "pillar-grid"; items: PillarGridItem[] }
@@ -448,6 +476,17 @@ export type Block =
       leftBlocks: Block[];
       rightLabel: string;
       rightBlocks: Block[];
+    }
+  | {
+      type: "side-panel";
+      /** The main content area, to the panel's left. */
+      main: Block[];
+      panel: {
+        title: string;
+        blocks: Block[];
+        /** Whether the panel starts expanded or collapsed to its rail. Default `true`. */
+        defaultOpen?: boolean;
+      };
     }
   | {
       type: "heuristic";

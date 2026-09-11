@@ -2,11 +2,13 @@ import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import {
   Alert,
+  AiChatInput,
   Avatar,
   Box,
   Button,
   Card,
   Carousel,
+  ChatThread,
   Checkbox,
   CodeBlock,
   Dialog,
@@ -24,6 +26,7 @@ import {
   ScatterChart,
   SectionNav,
   Select,
+  SidePanel,
   Spin,
   Stack,
   StackedBarChart,
@@ -38,9 +41,10 @@ import {
   TodoItem,
   Wizard,
 } from "rebar-ui";
-import type { TableColumn } from "rebar-ui";
+import type { AiChatInputIntent, ChatMessage, TableColumn } from "rebar-ui";
 import type {
   Action,
+  AiChatMessageData,
   Block,
   FormField,
   GoalTrackerFocusAreaData,
@@ -584,6 +588,72 @@ function GoalTrackerBlockView({
       <Button type="button" variant="secondary" onClick={addFocusArea} style={{ alignSelf: "flex-start" }}>
         + Add focus area
       </Button>
+    </Stack>
+  );
+}
+
+let aiChatNextId = 0;
+function nextAiChatId() {
+  aiChatNextId += 1;
+  return `ai-chat-${aiChatNextId}`;
+}
+
+/**
+ * A chat surface — `ChatThread` (the transcript) + `AiChatInput` (the composer), the exact
+ * composition this project's own `AiChatInput` docs page already hand-authors. Local-only state
+ * seeded from the block's literal `messages` (same convention `card-kanban`/`goal-tracker` already
+ * use): sending appends the caller's own new message to the transcript — this is a static-render
+ * demo surface, not a real backend, so it never fabricates an assistant reply, matching the same
+ * hand-authored page's own behavior exactly (send appends, nothing more). `intent` is computed
+ * from the current draft text the same way that page does (`/` → command, `?` → search) rather
+ * than being a block-level setting, since it's inherently about *what's currently typed*, not a
+ * fixed per-block config.
+ */
+function AiChatBlockView({
+  block,
+  index,
+  path,
+}: {
+  block: Extract<Block, { type: "ai-chat" }>;
+  index: number;
+  path: string;
+}) {
+  const [messages, setMessages] = useState<ChatMessage[]>(block.messages);
+  const [draft, setDraft] = useState("");
+  const [dictating, setDictating] = useState(false);
+
+  const trimmed = draft.trim();
+  const intent: AiChatInputIntent = trimmed.startsWith("/") ? "command" : trimmed.startsWith("?") ? "search" : "message";
+
+  const handleSend = (text: string) => {
+    setMessages((prev) => [...prev, { id: nextAiChatId(), role: "user", content: text }]);
+    setDraft("");
+  };
+
+  return (
+    <Stack
+      key={index}
+      gap="sm"
+      data-rebar-placement-block="ai-chat"
+      data-rebar-block-path={path}
+      style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-md, 16px)" }}
+    >
+      {block.title ? (
+        <Text style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>{block.title}</Text>
+      ) : null}
+      <div style={{ height: block.height ?? 240, overflowY: "auto" }}>
+        <ChatThread messages={messages} />
+      </div>
+      <AiChatInput
+        value={draft}
+        onValueChange={setDraft}
+        onSend={handleSend}
+        intent={intent}
+        placeholder={block.placeholder}
+        dictation={block.dictation}
+        dictating={dictating}
+        onDictationToggle={setDictating}
+      />
     </Stack>
   );
 }
@@ -1186,6 +1256,9 @@ function renderBlock(
     case "goal-tracker":
       return <GoalTrackerBlockView key={index} block={block} index={index} path={path} />;
 
+    case "ai-chat":
+      return <AiChatBlockView key={index} block={block} index={index} path={path} />;
+
     case "callout": {
       const Icon = block.icon ? ICONS[block.icon] : null;
       return (
@@ -1674,6 +1747,35 @@ function renderBlock(
 
     case "comparison":
       return <ComparisonBlockView key={index} block={block} index={index} path={path} renderLink={renderLink} />;
+
+    case "side-panel":
+      return (
+        <Stack
+          key={index}
+          direction="row"
+          gap="lg"
+          style={{ alignItems: "stretch" }}
+          data-rebar-placement-block="side-panel"
+          data-rebar-block-path={path}
+        >
+          <Box style={{ flex: "1 1 auto", minWidth: 0 }}>
+            <Stack gap="lg" data-rebar-block-path={`${path}.main`}>
+              {block.main.map((inner, innerIndex) => renderBlock(inner, innerIndex, renderLink, `${path}.main`))}
+            </Stack>
+          </Box>
+          <SidePanel
+            title={block.panel.title}
+            defaultOpen={block.panel.defaultOpen ?? true}
+            data-rebar-block-path={`${path}.panel`}
+          >
+            <Stack gap="md" data-rebar-block-path={`${path}.panel.blocks`}>
+              {block.panel.blocks.map((inner, innerIndex) =>
+                renderBlock(inner, innerIndex, renderLink, `${path}.panel.blocks`),
+              )}
+            </Stack>
+          </SidePanel>
+        </Stack>
+      );
 
     case "heuristic":
       return (
