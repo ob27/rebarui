@@ -54,8 +54,9 @@ Two heuristics do the actual layout work, so the model never has to:
   order is the only placement decision the model makes; no `x`/`y`, no `flex`/`grid` value, ever.
 
 **Status: shipped as `@rebar-ui/placement`, dogfooded on this project's own marketing site
-(`apps/docs`)** — not just a benchmark prototype anymore. `BlockRenderer` and its six current block
-types (`header`, `banner`, `checklist`, `callout`, `feature-grid`, `pillar-grid`) live in
+(`apps/docs`)** — not just a benchmark prototype anymore. `BlockRenderer` and its block catalog
+(39 types as of this writing — see `packages/core/robot.md`'s own catalog for the full list with
+descriptions, and [`BLOCKS.md`](BLOCKS.md) for how they split across Global/Web/Mobile) live in
 `packages/placement/src`; the homepage's feature-card row and three-pillars grid
 (`apps/docs/src/app/page.tsx`) are real `BlockRenderer` output, not hand-authored `Stack`/`Card`
 JSX — proof-by-existence that the mechanism holds up outside the one benchmark component it was

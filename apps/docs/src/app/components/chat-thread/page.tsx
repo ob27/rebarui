@@ -8,11 +8,12 @@ import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const INITIAL: ChatMessage[] = [
-  { id: "1", role: "user", content: "Can you summarize this quarter's numbers?", status: "sent", avatarFallback: "JD" },
+  { id: "1", role: "user", content: "Can you summarize this quarter's numbers, and show the query?", status: "sent", avatarFallback: "JD" },
   {
     id: "2",
     role: "assistant",
-    content: "Revenue is up 12% quarter over quarter, driven mostly by the new enterprise tier.",
+    content:
+      "**Revenue is up 12%** quarter over quarter, driven mostly by the new enterprise tier:\n\n- Enterprise: +18%\n- Self-serve: +4%\n\n```sql\nSELECT sum(revenue) FROM orders WHERE tier = 'enterprise';\n```",
     status: "sent",
     avatarFallback: "AI",
   },
@@ -37,6 +38,16 @@ const BLOCKS: Block[] = [
       {
         kind: "text",
         text: "This component performs no networking itself, the same convention `FileUpload` follows for uploads — the caller updates a message's `content` in place as chunks arrive and this re-renders. Only auto-scrolls to new content when the reader is already at the bottom; scrolled-up readers get a floating \"new messages\" button instead of being yanked back down. A per-message `avatarFallback` (plus `avatarSrc`/`avatarPlaceholder`, matching `Avatar`'s own props exactly) renders a real `Avatar` beside the bubble — omitted entirely, no layout change at all, on any message that doesn't set it.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Markdown by default — real LLM responses aren't plain text",
+    body: [
+      {
+        kind: "text",
+        text: "`content` renders as styled Markdown by default (headings, lists, blockquotes, inline bold/italic/code/links) — real assistant responses from Claude, Qwen, and most other models default to Markdown prose, so this is the common case, not an opt-in extra. A fenced code block renders as a real, embedded `CodeBlock` — its own copy button and language label included, not a bare `<pre>` — see the assistant message above. Set `markdown={false}` for a transcript that's genuinely plain text, where literal `*`/`#`/backtick characters in the content shouldn't be interpreted as markup.",
       },
     ],
   },

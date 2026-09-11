@@ -1214,6 +1214,58 @@ describe("BlockRenderer", () => {
     expect(screen.getByText("Loading")).toBeInTheDocument();
   });
 
+  it("renders an error-block block with its status's default copy, full-page by default, and a real retry action", () => {
+    const blocks: Block[] = [{ type: "error-block", status: "disconnected", action: { label: "Retry" } }];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("No connection")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
+    expect(container.querySelector(".rebar-error-block-full-page")).toBeInTheDocument();
+    expect(container.querySelector('[data-rebar-placement-block="error-block"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0]",
+    );
+  });
+
+  it("an error-block block's title/description override the status default, and fullPage: false opts out of the wide layout", () => {
+    const blocks: Block[] = [
+      { type: "error-block", title: "Board failed to load", description: "Try refreshing the page.", fullPage: false },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("Board failed to load")).toBeInTheDocument();
+    expect(screen.getByText("Try refreshing the page.")).toBeInTheDocument();
+    expect(container.querySelector(".rebar-error-block-full-page")).not.toBeInTheDocument();
+  });
+
+  it("renders a footer block's label, content, links, and chips", () => {
+    const blocks: Block[] = [
+      {
+        type: "footer",
+        label: "No more results",
+        content: "© 2026 Example Inc.",
+        links: [{ text: "Terms", href: "/terms" }],
+        chips: [{ text: "New" }, { text: "Feedback", type: "link" }],
+      },
+    ];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("No more results")).toBeInTheDocument();
+    expect(screen.getByText("© 2026 Example Inc.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Terms" })).toHaveAttribute("href", "/terms");
+    expect(screen.getByText("New")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Feedback" })).toBeInTheDocument();
+    expect(container.querySelector('[data-rebar-placement-block="footer"]')).toHaveAttribute(
+      "data-rebar-block-path",
+      "blocks[0]",
+    );
+  });
+
+  it("a footer block with no sections set renders nothing but the wrapper", () => {
+    const blocks: Block[] = [{ type: "footer" }];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    const footer = container.querySelector('[data-rebar-placement-block="footer"]');
+    expect(footer).toBeInTheDocument();
+    expect(footer?.children.length).toBe(0);
+  });
+
   it("renders a site-header block's logo, nav-bar, and no trailing content when trailing is omitted", () => {
     const blocks: Block[] = [
       {

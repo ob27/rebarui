@@ -14,7 +14,7 @@ close each page actually is, not an assertion — same discipline as `/benchmark
 ## The maker's mark
 
 Every block `BlockRenderer` renders already carries `data-rebar-placement-block="<type>"` on its
-root (checked directly against `packages/placement/src/BlockRenderer.tsx` — present on all 34
+root (checked directly against `packages/placement/src/BlockRenderer.tsx` — present on all 39
 current block cases, not assumed). That attribute *is* this project's maker's mark: any
 `[data-rebar-component]` element (a real, rendered `rebar-ui` component) sitting inside a
 `[data-rebar-placement-block]` subtree was printed by the Packer; one that isn't was hand-authored

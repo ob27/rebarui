@@ -188,7 +188,11 @@ const COMPONENT_FILES = [
 // alongside real public components on `/components` (surfaced as a "no reference page" entry
 // nobody could ever build a real page for, since it isn't a real public API). Filtered out here
 // rather than given a fake page.
-const INTERNAL_ONLY = new Set(["DrawerPanel"]);
+// Same reasoning for `buildTruncated` — a plain, non-component helper function exported from
+// `Ellipsis.tsx` purely so its truncation math has a real unit test (jsdom can't exercise the
+// real measure-and-search effect, see that file's own comment); not a component, not part of the
+// public `rebar-ui` API surface.
+const INTERNAL_ONLY = new Set(["DrawerPanel", "buildTruncated"]);
 
 const result = {};
 

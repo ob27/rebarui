@@ -141,6 +141,24 @@
  * context only): a side panel has no backdrop and is meant for a real, live page — the main
  * content stays fully visible and interactive while it's open. Unmeasured, like the rest of this
  * batch.
+ *
+ * `error-block` wraps `rebar-ui`'s `ErrorBlock` — a whole-page failure/empty state (a generic
+ * error, no network, no data, the server's busy), each with a sensible default icon/copy so a
+ * document only needs `status` for the common case. This is this project's first genuinely
+ * Mobile-only block (see `ref/BLOCKS.md`'s Global/Web/Mobile split — every other antd-mobile-
+ * derived pattern shipped so far landed as a `packages/core` component only, never promoted into
+ * a block). `action` is the retry affordance, rendered the same small-secondary-button way
+ * `banner`/`header`/`callout` already render theirs — no `icon` override field, unlike the real
+ * component's own `icon` prop: an arbitrary icon isn't serializable `Block[]` data, and the
+ * per-`status` default icon already covers the archetype's real use; reach for the real
+ * `ErrorBlock` component directly if a custom icon is genuinely needed.
+ *
+ * `footer` wraps `rebar-ui`'s `Footer` — page-bottom chrome (a "no more results" label, a plain
+ * content line, a row of links, a row of chips), the second Mobile block (see `ref/BLOCKS.md`),
+ * mirroring how `site-header` already wraps `NavBar` for the top of a page. No `onLinkClick`/
+ * `onChipClick` in the schema — a click handler isn't serializable `Block[]` data; `links` render
+ * as real `<a href>`s (via `renderLink`, same as every other link-bearing block) and a plain click
+ * is the only interaction a `type: "link"` chip needs here.
  */
 
 export type IconName = "close" | "info" | "refresh" | "clock";
@@ -519,6 +537,32 @@ export type Block =
       items: string[];
       width?: number;
       minHeight?: number;
+    }
+  | {
+      type: "error-block";
+      /** Which failure state this is — each has its own default icon/title/description (all
+       * overridable below). Default `"default"`. */
+      status?: "default" | "disconnected" | "empty" | "busy";
+      /** Overrides the status's default title. */
+      title?: string;
+      /** Overrides the status's default description. */
+      description?: string;
+      /** A retry button or other recovery action. */
+      action?: Action;
+      /** Widens the icon/spacing for a whole-page failure state — on by default here, since a
+       * dedicated block for this is specifically for the full-page case (an inline, one-card
+       * failure state is small enough to just use the real `ErrorBlock` component directly). */
+      fullPage?: boolean;
+    }
+  | {
+      type: "footer";
+      /** Shown above everything else, with a dividing line on either side — e.g. "No more results". */
+      label?: string;
+      /** Plain content below the label — e.g. a copyright line. */
+      content?: string;
+      links?: { text: string; href: string }[];
+      /** `type: "link"` renders a real, focusable button instead of a non-interactive tag. */
+      chips?: { text: string; type?: "plain" | "link" }[];
     }
   | {
       type: "scatter-chart";

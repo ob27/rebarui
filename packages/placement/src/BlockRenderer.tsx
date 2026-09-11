@@ -14,6 +14,8 @@ import {
   Dialog,
   Editable,
   Empty,
+  ErrorBlock,
+  Footer,
   Heading,
   Iframe,
   Input,
@@ -1826,6 +1828,35 @@ function renderBlock(
             </Spin>
           </Card>
         </Box>
+      );
+
+    case "error-block":
+      return (
+        <ErrorBlock
+          key={index}
+          status={block.status ?? "default"}
+          title={block.title}
+          description={block.description}
+          fullPage={block.fullPage ?? true}
+          data-rebar-placement-block="error-block"
+          data-rebar-block-path={path}
+        >
+          {renderAction(block.action, renderLink)}
+        </ErrorBlock>
+      );
+
+    case "footer":
+      return (
+        <Footer
+          key={index}
+          label={block.label}
+          content={block.content}
+          links={block.links}
+          chips={block.chips}
+          renderLink={renderLink}
+          data-rebar-placement-block="footer"
+          data-rebar-block-path={path}
+        />
       );
 
     case "scatter-chart":

@@ -9,12 +9,15 @@ const BLOCK_TYPES = [
   { id: "site-header", label: "site-header" },
   { id: "nav-index", label: "nav-index" },
   { id: "page-index", label: "page-index" },
+  { id: "side-panel", label: "side-panel" },
   { id: "banner", label: "banner" },
   { id: "checklist", label: "checklist" },
   { id: "goal-tracker", label: "goal-tracker" },
   { id: "ai-chat", label: "ai-chat" },
   { id: "callout", label: "callout" },
   { id: "spin-card", label: "spin-card" },
+  { id: "error-block", label: "error-block" },
+  { id: "footer", label: "footer" },
   { id: "feature-grid", label: "feature-grid" },
   { id: "pillar-grid", label: "pillar-grid" },
   { id: "hero", label: "hero" },
@@ -271,6 +274,20 @@ export default function BlocksPage() {
           shape={`{ type: "page-index", searchPlaceholder?: string, sections?: { id: string, label: string }[] }`}
         />
 
+        <Entry
+          id="side-panel"
+          measured={false}
+          description="A persistent, non-modal side panel (the Slack 'thread'/'details' pattern) beside a nested main: Block[] document — no backdrop, the main content stays fully visible and interactive while it's open. Collapses to a slim, always-present rail with a toggle button rather than disappearing entirely, so there's always a real way back in. Distinct from modal (a forced-open, backdrop-covering Dialog for static-render contexts only)."
+          shape={`{ type: "side-panel", main: Block[], panel: { title: string, blocks: Block[], defaultOpen?: boolean } }`}
+          blocks={[
+            {
+              type: "side-panel",
+              main: [{ type: "checklist", heading: "Checklist", items: ["Reviewed", "Approved"] }],
+              panel: { title: "Thread", blocks: [{ type: "callout", tone: "info", title: "Alex", subtitle: "Can we ship this Friday?" }] },
+            },
+          ]}
+        />
+
         <GroupHeading>Feedback &amp; content</GroupHeading>
 
         <Entry
@@ -348,6 +365,30 @@ export default function BlocksPage() {
           description="A small, centered card showing a real loading overlay (Spin) over a few lines of content — for demonstrating a loading state, not a real data-bound card. Generic rather than one-off: tip, content lines, and card size are all caller-supplied, not hardcoded to any one demo."
           shape={`{ type: "spin-card", tip?: string, items: string[], width?: number, minHeight?: number }`}
           blocks={[{ type: "spin-card", tip: "Fetching", items: ["Project A", "Project B", "Project C"] }]}
+        />
+
+        <Entry
+          id="error-block"
+          measured={false}
+          description="A whole-page failure/empty state — status picks a sensible default icon/title/description (default, disconnected, empty, busy), all overridable; action renders a real retry button the same small-secondary way banner/header/callout render theirs. This project's first genuinely Mobile-only block (see ref/BLOCKS.md) — every other antd-mobile-derived pattern shipped so far landed as a packages/core component only, never promoted into a block. fullPage is on by default here, since a dedicated block for this is specifically for the whole-page case; set it false for an inline, one-card failure state."
+          shape={`{ type: "error-block", status?: "default"|"disconnected"|"empty"|"busy", title?: string, description?: string, action?: Action, fullPage?: boolean }`}
+          blocks={[{ type: "error-block", status: "disconnected", action: { label: "Retry" } }]}
+        />
+
+        <Entry
+          id="footer"
+          measured={false}
+          description="Page-bottom chrome: a 'no more results' label (a real Divider with text), a plain content line, a row of links, and a row of chips — every section independently optional. Mirrors how site-header already wraps NavBar for the top of a page; this project's second Mobile block (see ref/BLOCKS.md). No onLinkClick/onChipClick in the schema — a click handler isn't serializable Block[] data."
+          shape={`{ type: "footer", label?: string, content?: string, links?: { text: string, href: string }[], chips?: { text: string, type?: "plain"|"link" }[] }`}
+          blocks={[
+            {
+              type: "footer",
+              label: "No more results",
+              content: "© 2026 Example Inc.",
+              links: [{ text: "Terms", href: "#" }, { text: "Privacy", href: "#" }],
+              chips: [{ text: "New" }, { text: "Feedback", type: "link" }],
+            },
+          ]}
         />
 
         <GroupHeading>Marketing</GroupHeading>
