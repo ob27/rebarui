@@ -41,7 +41,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "Browse the [component reference](/components), or read about [the default heuristics baked in](/docs/theming).",
+        text: "Browse the [component reference](/docs/tiers), or read about [the default heuristics baked in](/docs/theming).",
       },
     ],
   },

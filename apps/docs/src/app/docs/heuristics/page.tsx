@@ -72,7 +72,7 @@ const HEURISTIC_BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "Every entry below is a *heuristic* — a general, judgment-requiring design principle, not a mechanical constraint. That's a deliberate distinction from a *Framework Rule* (a fixed, binary constraint on how Rebar itself is built or used — see [robot.md](/docs/robot-md)): a heuristic takes interpretation to apply to a new situation, where a Framework Rule has exactly one correct answer every time. These aren't just written guidance, though — they're what the *RebarUI DSL Packer* (`@rebar-ui/placement`'s `BlockRenderer`) actually does when it lays a screen out from a plain `Block[]` document: given a list of named blocks and their content, it packs them onto the screen the way these heuristics say to, every time, without the author making a single layout decision. Each one below shows the real JSON fed in and the real component tree it produces — not a mockup of what it would do. For the complete list of blocks the Packer understands, independent of any one heuristic, see the [block library](/blocks). This page groups heuristics by where they show up in the Packer's own output rather than by source — the numbered, sourced list in `ref/HEURISTICS.md` is the canonical one if the two ever seem to disagree on ordering.",
+        text: "Every entry below is a *heuristic* — a general, judgment-requiring design principle, not a mechanical constraint. That's a deliberate distinction from a *Framework Rule* (a fixed, binary constraint on how Rebar itself is built or used — see [robot.md](/docs/robot-md)): a heuristic takes interpretation to apply to a new situation, where a Framework Rule has exactly one correct answer every time. These aren't just written guidance, though — they're what the *RebarUI DSL Packer* (`@rebar-ui/placement`'s `BlockRenderer`) actually does when it lays a screen out from a plain `Block[]` document: given a list of named blocks and their content, it packs them onto the screen the way these heuristics say to, every time, without the author making a single layout decision. Each one below shows the real JSON fed in and the real component tree it produces — not a mockup of what it would do. For the complete list of blocks the Packer understands, independent of any one heuristic, see the [tier catalogs](/docs/tiers). This page groups heuristics by where they show up in the Packer's own output rather than by source — the numbered, sourced list in `ref/HEURISTICS.md` is the canonical one if the two ever seem to disagree on ordering.",
       },
     ],
   },
@@ -176,7 +176,7 @@ const HEURISTIC_BLOCKS: Block[] = [
     rationale: [
       {
         kind: "text",
-        text: `The \`modal\` block (shown below as JSON — one of the six added for the [tier benchmarks](/benchmarks)) renders a real Dialog underneath (Radix UI), which wires all three closing mechanisms itself. It's deliberately rendered already-open for a static screenshot in a benchmark context, which is exactly wrong for a live documentation page stacked with other examples — a forced-open modal would cover this entire page as a fixed overlay. The [Dialog reference page](/components/dialog) shows the real, normally-triggered version live: click it, then try closing it all three ways. The same discipline applies to the confirmation itself: an "Are you sure?" with no other detail isn't a real confirmation — "Delete 3 files permanently?" is. \`Dialog\`'s destructive variant names the action on the confirming button ("Delete", not "OK"), renders it in the danger color, and keeps it visually separated from any safe action nearby.`,
+        text: `The \`modal\` block (shown below as JSON — one of the six added for the [tier benchmarks](/benchmarks)) renders a real Dialog underneath (Radix UI), which wires all three closing mechanisms itself. It's deliberately rendered already-open for a static screenshot in a benchmark context, which is exactly wrong for a live documentation page stacked with other examples — a forced-open modal would cover this entire page as a fixed overlay. The [Dialog reference page](/opinions/dialog) shows the real, normally-triggered version live: click it, then try closing it all three ways. The same discipline applies to the confirmation itself: an "Are you sure?" with no other detail isn't a real confirmation — "Delete 3 files permanently?" is. \`Dialog\`'s destructive variant names the action on the confirming button ("Delete", not "OK"), renders it in the danger color, and keeps it visually separated from any safe action nearby.`,
       },
     ],
     code: `{
@@ -261,7 +261,7 @@ const HEURISTIC_BLOCKS: Block[] = [
     rationale: [
       {
         kind: "text",
-        text: "This isn't a `Block` block (the Packer doesn't currently lay out photo galleries), but the rule is applied literally everywhere on this site itself that has one — every screenshot gallery on [/benchmarks](/benchmarks), and the reference examples on the [Carousel](/components/carousel) and [AspectRatio](/components/aspect-ratio) pages, use `Carousel` instead of a grid, specifically because a wall of thumbnails works against minimalism (heuristic #7) rather than serving it. One rule for a carousel specifically: every slide inside it shares one aspect ratio, no exceptions — its viewport has one fixed height, so a mixed-ratio slide leaves visible dead space rather than the container resizing per slide. A page that genuinely needs to show many different ratios side by side (a reference catalog of every supported ratio, say) uses a plain wrapping grid instead — that's the one case a carousel can't serve.",
+        text: "This isn't a `Block` block (the Packer doesn't currently lay out photo galleries), but the rule is applied literally everywhere on this site itself that has one — every screenshot gallery on [/benchmarks](/benchmarks), and the reference examples on the [Carousel](/imitations/carousel) and [AspectRatio](/synthetics/aspect-ratio) pages, use `Carousel` instead of a grid, specifically because a wall of thumbnails works against minimalism (heuristic #7) rather than serving it. One rule for a carousel specifically: every slide inside it shares one aspect ratio, no exceptions — its viewport has one fixed height, so a mixed-ratio slide leaves visible dead space rather than the container resizing per slide. A page that genuinely needs to show many different ratios side by side (a reference catalog of every supported ratio, say) uses a plain wrapping grid instead — that's the one case a carousel can't serve.",
       },
     ],
   },
@@ -297,7 +297,7 @@ const HEURISTIC_BLOCKS: Block[] = [
     rationale: [
       {
         kind: "text",
-        text: "Start with high-level categories, then progressively reveal detail. A flat list of 30+ options or deep nesting (>2 levels) signals a failed information architecture. A future `Settings` interface (not yet built — forward guidance) uses tabbed categories or sidebar navigation; the `table` block provides search/filter before pagination; deep nesting is avoided in any navigation structure. This is the rule behind this site's own [/components](/components) and this page's nav gaining a search bar and category filter once their item count grew past a flat list a reader could scan directly.",
+        text: "Start with high-level categories, then progressively reveal detail. A flat list of 30+ options or deep nesting (>2 levels) signals a failed information architecture. A future `Settings` interface (not yet built — forward guidance) uses tabbed categories or sidebar navigation; the `table` block provides search/filter before pagination; deep nesting is avoided in any navigation structure. This is the rule behind this site's own tier catalog pages (e.g. [/opinions](/opinions)) and this page's nav gaining a search bar and category filter once their item count grew past a flat list a reader could scan directly.",
       },
     ],
   },
@@ -657,7 +657,7 @@ const HEURISTIC_BLOCKS: Block[] = [
     rationale: [
       {
         kind: "text",
-        text: "Caught on this project's own [/components](/components) page, where two different ad hoc string patterns did this same job inconsistently. Component rule: `NavIndex`'s status field, and anywhere else an item's build status needs surfacing, renders via the real `Tag` component — never string concatenation.",
+        text: "Caught on this project's own component catalog pages, where two different ad hoc string patterns did this same job inconsistently. Component rule: `NavIndex`'s status field, and anywhere else an item's build status needs surfacing, renders via the real `Tag` component — never string concatenation.",
       },
     ],
   },
@@ -670,7 +670,7 @@ const HEURISTIC_BLOCKS: Block[] = [
     rationale: [
       {
         kind: "text",
-        text: "A small fixed few is a toggle; a larger but still-scannable set where more than one value may need selecting at once is a closed-menu multi-select; a set large enough that scanning it is itself the friction is a searchable multi-select. These are genuinely different, separately-established patterns, not one restyled three ways — using the wrong tier is this same heuristic's failure, one level down. Caught on this project's own [/components](/components) sidebar, twice: once for having no status filter at all, and again when the toggle added for it overflowed its column once one label ran longer than its neighbors. Component rule: `NavIndex` picks `SegmentedControl` or `MultiSelect` per dimension based on its real cardinality, never a hand-rolled row of buttons.",
+        text: "A small fixed few is a toggle; a larger but still-scannable set where more than one value may need selecting at once is a closed-menu multi-select; a set large enough that scanning it is itself the friction is a searchable multi-select. These are genuinely different, separately-established patterns, not one restyled three ways — using the wrong tier is this same heuristic's failure, one level down. Caught on this project's own tier catalog sidebar (e.g. [/opinions](/opinions)), twice: once for having no status filter at all, and again when the toggle added for it overflowed its column once one label ran longer than its neighbors. Component rule: `NavIndex` picks `SegmentedControl` or `MultiSelect` per dimension based on its real cardinality, never a hand-rolled row of buttons.",
       },
     ],
   },
@@ -706,7 +706,7 @@ const HEURISTIC_BLOCKS: Block[] = [
     rationale: [
       {
         kind: "text",
-        text: `Content that could genuinely be unbounded goes *inside* that fixed footprint via contained scrolling (#43, #44), not by growing the footprint itself. "Infinite scroll" is license for a page-level feed to keep loading, not for an individual control to keep growing with it. Caught live in this project's own first draft of [MultiSelect](/components/multi-select), whose trigger summarized a selection by joining every picked label end to end — its own width growing without bound as more got checked, not a hypothetical failure. Component rule: \`MultiSelect\`'s trigger shows a plain count once there's more than one pick, never a growing joined string.`,
+        text: `Content that could genuinely be unbounded goes *inside* that fixed footprint via contained scrolling (#43, #44), not by growing the footprint itself. "Infinite scroll" is license for a page-level feed to keep loading, not for an individual control to keep growing with it. Caught live in this project's own first draft of [MultiSelect](/opinions/multi-select), whose trigger summarized a selection by joining every picked label end to end — its own width growing without bound as more got checked, not a hypothetical failure. Component rule: \`MultiSelect\`'s trigger shows a plain count once there's more than one pick, never a growing joined string.`,
       },
     ],
   },

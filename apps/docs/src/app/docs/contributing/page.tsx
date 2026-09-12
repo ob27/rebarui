@@ -99,9 +99,9 @@ const BLOCKS: Block[] = [
       {
         kind: "list",
         items: [
-          "A missing or incorrect dark-mode color pairing (check via DevTools' dark-mode toggle on any /components/* page)",
+          "A missing or incorrect dark-mode color pairing (check via DevTools' dark-mode toggle on any /imitations/*, /synthetics/*, /opinions/*, or /orders/* page)",
           "A new small component filling a gap dist/index.d.ts doesn't cover yet",
-          "Improving a /components/* or /docs/* reference page",
+          "Improving a component/block reference page (under /imitations, /synthetics, /opinions, /orders) or a /docs/* page",
           "A chart block for @rebar-ui/placement — /benchmarks' three hand-authored SVG chart helpers are the reference implementation to generalize from",
         ],
       },

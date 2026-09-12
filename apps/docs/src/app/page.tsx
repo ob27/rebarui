@@ -99,10 +99,10 @@ const PILLARS: PillarGridItem[] = [
     cta: "Read the heuristics",
   },
   {
-    title: "Design Components",
-    body: "38 components and counting, working toward full Ant Design v6 parity — v1's supported migration target for web components, with a real codemod, not just a prompt. Other targets (and other component sets, like mobile) get the generic migration prompt for now.",
-    href: "/components",
-    cta: "Browse components",
+    title: "Four Tiers",
+    body: "166 components and 39 blocks, classified by where they sit between a raw static primitive and a piece of page-level structural law — Imitations, Synthetics, Opinions, Orders. Working toward full Ant Design v6 parity, with a real codemod, not just a prompt.",
+    href: "/docs/tiers",
+    cta: "Browse the tiers",
   },
   {
     title: "Benchmarks",
@@ -164,7 +164,7 @@ export default function Home() {
             intentionally show the base list view rather than the &quot;New Project&quot; modal
             from the full spec, so the comparison is of the same thing on both sides — see the
             modal itself, live and properly closable, on the{" "}
-            <a href="/components/dialog" className="rebar-link">Dialog reference page</a>. Same underlying spec as the{" "}
+            <a href="/opinions/dialog" className="rebar-link">Dialog reference page</a>. Same underlying spec as the{" "}
             <a href="/benchmarks/tiers" className="rebar-link">Composite tier</a> benchmark.
           </Text>
         </Stack>
@@ -196,8 +196,8 @@ import { Button } from "rebar-ui";
               <Link href="/docs/getting-started">
                 <Button variant="primary">Read the docs</Button>
               </Link>
-              <Link href="/components">
-                <Button variant="secondary">Browse components</Button>
+              <Link href="/docs/tiers">
+                <Button variant="secondary">Browse the tiers</Button>
               </Link>
             </Stack>
           </Stack>

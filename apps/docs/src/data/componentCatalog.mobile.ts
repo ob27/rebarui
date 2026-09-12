@@ -6,6 +6,6 @@ import type { CatalogComponent } from "./componentCatalog.types";
 //
 // Every entry originally catalogued here has shipped as a real `packages/core` component:
 // Action Sheet, Bottom Sheet, Tab Bar, Pull-to-Refresh, Picker Wheel, and Swipe Actions — see
-// /components/action-sheet, /components/bottom-sheet, /components/mobile-tab-bar,
-// /components/pull-to-refresh, /components/picker-wheel, and /components/swipe-actions.
+// /opinions/action-sheet, /opinions/bottom-sheet, /orders/mobile-tab-bar,
+// /opinions/pull-to-refresh, /opinions/picker-wheel, and /opinions/swipe-actions.
 export const MOBILE_CATALOG: CatalogComponent[] = [];

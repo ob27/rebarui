@@ -82,7 +82,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "Generated from the real TypeScript types — see any [component reference page](/components) for the rest.",
+        text: "Generated from the real TypeScript types — see any [component reference pages](/docs/tiers) for the rest.",
       },
     ],
   },

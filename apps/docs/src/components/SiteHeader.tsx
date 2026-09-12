@@ -13,9 +13,10 @@ const BLOCKS: Block[] = [
     logo: { label: "Rebar UI", href: "/", iconPath: REBAR_MARK_PATH, iconViewBox: REBAR_MARK_VIEWBOX },
     items: [
       { href: "/docs", label: "Docs" },
-      { href: "/components", label: "Components" },
-      { href: "/blocks", label: "Blocks" },
-      { href: "/tiers", label: "Tiers" },
+      { href: "/imitations", label: "Imitations" },
+      { href: "/synthetics", label: "Synthetics" },
+      { href: "/opinions", label: "Opinions" },
+      { href: "/orders", label: "Orders" },
       { href: "/benchmarks", label: "Benchmarks" },
       { href: "/about", label: "About" },
     ],
