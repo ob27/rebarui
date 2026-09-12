@@ -709,10 +709,40 @@ should add to it, not spawn a parallel document.
     concrete default: a summary number is itself a piece of navigation, not just a statistic,
     whenever a matching detail view exists. Seen failing in: a live field build's document list,
     whose chunk-count column rendered as a bare, unlinked number even though a dedicated,
-    pre-filterable chunk-search view existed one click away. Component rule (forward-looking): a
-    `Table`/`table`-archetype column definition should support an optional `href`/`onClick` per
-    cell, distinct from a full-row action, so a count-like value can link out without requiring the
-    whole row to be clickable.
+    pre-filterable chunk-search view existed one click away — confirmed recurring even in a rebuild
+    of the same app against a rebar-ui version with this heuristic already written down (see
+    `ref/Tom_v2.md`'s rebuild comparison), because nothing short of a real signal at the point of
+    use catches it. Component rule: `Table` now does exactly that — a column with no `render`
+    whose `key`/`header` reads like a count/aggregate (`count`, `total`) triggers a **dev-mode-only
+    console warning** suggesting a drill-down `render`, not a build error (there's no way to know
+    for certain whether a matching detail view actually exists, so this can only ever be a nudge,
+    never a hard enforcement) — pass a `render` returning the plain value unchanged to silence a
+    genuinely non-linkable count.
+
+55. **A prop that swaps content by display mode requires every mode's variant — never lets one be
+    optional** — when a component's own prop shape is specifically "different content for
+    different states" (collapsed vs. expanded, light vs. dark, compact vs. full), every state's
+    content is a required field, not an optional one a caller can leave out and get silent,
+    mode-dependent blankness instead. The fix belongs in the type itself, not a runtime check or a
+    documentation note: if a caller genuinely wants the same content in every mode, they pass the
+    same value for each field — cheap, explicit, and impossible to accidentally skip. Sharpens #20
+    (all states are designed) for the specific case of a prop whose entire reason to exist is
+    mode-switching. Component rule: `SidebarNav`'s `logo` prop (`{ full: ReactNode; compact:
+    ReactNode }`) makes both fields required for exactly this reason — TypeScript itself refuses a
+    `logo` with only one side supplied, rather than leaving it to a code review or a runtime
+    surprise. Any future collapsed/expanded- or theme-swapping prop should follow the same shape.
+
+56. **A chat/messaging component spans the full width of its own container by default** — a chat
+    transcript and its input are read top-to-bottom in a single continuous flow the user's eyes
+    track vertically; there's no readable-line-length argument for capping their width the way
+    there is for a paragraph of prose, and an arbitrary cap just wastes the surrounding layout's
+    own space for no benefit. Seen failing in: a live field build's chat view, which wrapped
+    `ChatThread`/`AiChatInput` in a `maxWidth: 860` container for no stated reason, leaving unused
+    space on a plausible outer layout. Component rule: neither `ChatThread` nor `AiChatInput` sets
+    its own `max-width` anywhere in `packages/core`'s stylesheet — both take `width: 100%` of
+    whatever container they're given by default; a consumer who genuinely wants a narrower reading
+    column applies that constraint explicitly on their own wrapper, it's never rebar-ui's own
+    default to impose.
 
 ## Token values (defaults, fully overridable)
 

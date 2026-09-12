@@ -1,6 +1,6 @@
 # Contributing to Rebar UI
 
-Rebar UI is a small, Open Beta (0.03) project — one person plus AI-assisted development so
+Rebar UI is a small, Open Beta (0.04) project — one person plus AI-assisted development so
 far. Contributions are genuinely welcome, but the project is young enough that "meaningful
 contribution" mostly means small, well-scoped changes right now, not large architectural ones.
 This doc exists so you don't have to guess how to get from "I want to help" to an opened PR.
