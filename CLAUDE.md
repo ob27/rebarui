@@ -18,6 +18,9 @@ across the repo or left only in conversation. Current docs:
 - `ref/HEURISTICS.md` — the default design/behavior rules baked into components, with sources.
 - `ref/MARKETING_SITE.md` — the docs/marketing site plan (structure, framework, IA), benchmarked
   against mermaid.js.org.
+- `ref/PLACEMENT_LIVE_DATA.md` — a scoped, not-yet-built proposal for letting `@rebar-ui/placement`
+  blocks bind to live data/handlers instead of only static JSON, prompted by Coherence's two
+  rebuilds both bypassing the Packer entirely for exactly this reason.
 
 When plans change, update these files in place rather than creating new ones alongside them —
 they're living documents, not a changelog. New planning docs (e.g. a future phase's detailed
