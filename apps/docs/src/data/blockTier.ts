@@ -57,6 +57,7 @@ export const BLOCK_TIER = {
   "stacked-bar-chart": "opinion",
   "stats-table": "synthetic",
   gallery: "synthetic",
+  "block-entry": "synthetic",
 } satisfies Record<Block["type"], BlockTier>;
 
 export function blockTier(type: Block["type"]): BlockTier {
