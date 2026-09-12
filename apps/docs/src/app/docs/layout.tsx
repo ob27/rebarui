@@ -18,5 +18,9 @@ const DOCS_SECTIONS = [
 ];
 
 export default function DocsLayout({ children }: { children: ReactNode }) {
-  return <DocsShell sections={DOCS_SECTIONS}>{children}</DocsShell>;
+  return (
+    <DocsShell sections={DOCS_SECTIONS} searchPlaceholder="Search docs…">
+      {children}
+    </DocsShell>
+  );
 }
