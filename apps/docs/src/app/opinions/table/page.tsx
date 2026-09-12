@@ -1,5 +1,6 @@
 "use client";
 
+/// <reference types="react" />
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { Box, Button, Heading, Stack, Table, Tag, Text } from "rebar-ui";
