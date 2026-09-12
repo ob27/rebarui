@@ -46,7 +46,6 @@ import {
 import type { AiChatInputIntent, ChatMessage, TableColumn } from "rebar-ui";
 import type {
   Action,
-  AiChatMessageData,
   Block,
   FormField,
   GoalTrackerFocusAreaData,
@@ -696,7 +695,7 @@ function ChartFilterFooter({
   );
 }
 
-function useSeriesFilter(labels: string[]) {
+function useSeriesFilter(_labels: string[]) {
   const [hidden, setHidden] = useState<Set<string>>(new Set());
   const toggle = (label: string) => {
     setHidden((prev) => {
@@ -834,7 +833,6 @@ function GalleryBlockView({
           const n = String(i + 1).padStart(2, "0");
           return (
             <Box key={n} style={{ maxWidth: 360, margin: "0 auto" }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={`${block.dir}/${block.prefix}-${n}.png`}
                 alt={`${block.label}, run ${n}`}

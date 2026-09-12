@@ -539,7 +539,6 @@ describe("BlockRenderer", () => {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     const texts: string[] = [];
     let node: Node | null;
-    // eslint-disable-next-line no-cond-assign
     while ((node = walker.nextNode())) {
       const value = node.textContent?.trim();
       if (value) texts.push(value);
@@ -923,7 +922,6 @@ describe("BlockRenderer", () => {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     const texts: string[] = [];
     let node: Node | null;
-    // eslint-disable-next-line no-cond-assign
     while ((node = walker.nextNode())) {
       const value = node.textContent?.trim();
       if (value) texts.push(value);
