@@ -5,7 +5,10 @@ import { CATALOG_COMPONENTS } from "@/data/componentCatalog";
 import type { CatalogCategory } from "@/data/componentCatalog";
 import { HAS_FULL_PAGE } from "@/data/hasFullPage";
 import { shippedCategory } from "@/data/shippedCategory";
+import { componentTier } from "@/data/componentTier";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+
+const TIER_LABEL = { imitation: "Imitation", synthetic: "Synthetic", opinion: "Opinion", order: "Order" } as const;
 
 const CATEGORY_LABEL: Record<CatalogCategory, string> = {
   web: "Web",
@@ -41,6 +44,7 @@ export default function ComponentsIndexPage() {
       const href = HAS_FULL_PAGE[name];
       const tags = [
         { label: CATEGORY_LABEL[category], tone: CATEGORY_TONE[category] },
+        { label: TIER_LABEL[componentTier(name)], tone: "info" as const },
         ...(href ? [] : [{ label: "No reference page", tone: "warning" as const }]),
       ];
       return href
@@ -82,7 +86,12 @@ export default function ComponentsIndexPage() {
         migration story), and the rest of the data-display/feedback/navigation set (Badge,
         Breadcrumb, Descriptions, Divider, Empty, Rate, Result, Skeleton, Spin, Statistic, Steps,
         Tag, Timeline). The rest are listed
-        here honestly as not yet written, not silently skipped.
+        here honestly as not yet written, not silently skipped. Each card also carries its tier
+        (Imitation/Synthetic/Opinion/Order) — see{" "}
+        <a href="/tiers" className="rebar-link">
+          /tiers
+        </a>{" "}
+        for what that axis means and how it relates to this one.
       </Text>
 
       <NextBlockRenderer blocks={[shippedGrid]} />

@@ -209,6 +209,23 @@ describe("BlockRenderer", () => {
     expect(next).toBeEnabled();
   });
 
+  it("calls a wizard block's resolved onSubmit handler with the collected step values", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    const blocks: Block[] = [
+      {
+        type: "wizard",
+        steps: [{ label: "Team", fields: [{ kind: "text", label: "Team name" }] }],
+        submitLabel: "Finish",
+        onSubmit: "handleWizardSubmit",
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} handlers={{ handleWizardSubmit: onSubmit }} />);
+    await user.type(screen.getByLabelText("Team name"), "Rebar");
+    await user.click(screen.getByRole("button", { name: "Finish" }));
+    expect(onSubmit).toHaveBeenCalledWith({ "0-0": "Rebar" });
+  });
+
   it("renders a card-kanban block with its title, columns, and cards", () => {
     const blocks: Block[] = [
       {
@@ -304,6 +321,40 @@ describe("BlockRenderer", () => {
 
     await user.click(screen.getByText("Went well"));
     expect(screen.getByRole("dialog", { name: "Edit sticky" })).toBeInTheDocument();
+  });
+
+  it("a card-kanban block's live source board takes priority over its literal columns/cards", () => {
+    const blocks: Block[] = [
+      {
+        type: "card-kanban",
+        title: "Sprint board",
+        source: "board",
+        columns: [{ id: "ignored", title: "Ignored", sections: [{ id: "ignored-main", cardIds: ["b"] }] }],
+        cards: { b: { id: "b", title: "Literal card" } },
+      },
+    ];
+    const board = {
+      columns: [{ id: "todo", title: "To do", sections: [{ id: "todo-main", cardIds: ["a"] }] }],
+      cards: { a: { id: "a", title: "Live card" } },
+    };
+    render(<BlockRenderer blocks={blocks} data={{ board }} />);
+    expect(screen.getByText("Live card")).toBeInTheDocument();
+    expect(screen.queryByText("Literal card")).not.toBeInTheDocument();
+  });
+
+  it("forwards a card-kanban block's resolved onChange handler straight through to the real Kanban component, when source is set", () => {
+    const onChange = vi.fn();
+    const board = {
+      columns: [{ id: "todo", title: "To do", sections: [{ id: "todo-main", cardIds: [] }] }],
+      cards: {},
+    };
+    const blocks: Block[] = [
+      { type: "card-kanban", title: "Sprint board", source: "board", onChange: "handleBoardChange" },
+    ];
+    render(<BlockRenderer blocks={blocks} data={{ board }} handlers={{ handleBoardChange: onChange }} />);
+    // Kanban itself decides when to call onChange (drag/reorder) — this asserts the wiring reaches
+    // it, not a simulated drag.
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it("renders a banner block with an action label", () => {
@@ -426,6 +477,32 @@ describe("BlockRenderer", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders a goal-tracker block's live source state instead of its literal aspiration/focusAreas", () => {
+    const blocks: Block[] = [{ type: "goal-tracker", source: "goalState" }];
+    const goalState = { aspiration: "Live aspiration", focusAreas: [] as never[] };
+    render(<BlockRenderer blocks={blocks} data={{ goalState }} />);
+    expect(screen.getByText("Live aspiration")).toBeInTheDocument();
+  });
+
+  it("a goal-tracker block calls its resolved onChange handler with the full next state, instead of mutating local state, when source is set", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const goalState = {
+      aspiration: "Aspiration",
+      focusAreas: [{ id: "fa1", text: "Focus", goals: [{ id: "g1", text: "Goal", completed: false }] }],
+    };
+    const blocks: Block[] = [{ type: "goal-tracker", source: "goalState", onChange: "handleGoalChange" }];
+    render(<BlockRenderer blocks={blocks} data={{ goalState }} handlers={{ handleGoalChange: onChange }} />);
+
+    await user.click(screen.getByRole("checkbox"));
+    expect(onChange).toHaveBeenCalledWith({
+      aspiration: "Aspiration",
+      focusAreas: [{ id: "fa1", text: "Focus", goals: [{ id: "g1", text: "Goal", completed: true }] }],
+    });
+    // The checkbox itself doesn't flip — nothing re-renders `data` unless the live caller does.
+    expect(screen.getByRole("checkbox")).toHaveAttribute("aria-checked", "false");
+  });
+
   it("renders an ai-chat block's transcript and title", () => {
     const blocks: Block[] = [
       {
@@ -482,6 +559,50 @@ describe("BlockRenderer", () => {
       "data-rebar-block-path",
       "blocks[0]",
     );
+  });
+
+  it("renders an ai-chat block's live source messages instead of its literal messages array", () => {
+    const blocks: Block[] = [
+      { type: "ai-chat", messages: [{ id: "literal", role: "assistant", content: "Ignored" }], source: "chatMessages" },
+    ];
+    const chatMessages = [{ id: "live", role: "assistant" as const, content: "Live reply" }];
+    render(<BlockRenderer blocks={blocks} data={{ chatMessages }} />);
+    expect(screen.getByText("Live reply")).toBeInTheDocument();
+    expect(screen.queryByText("Ignored")).not.toBeInTheDocument();
+  });
+
+  it("an ai-chat block calls its resolved onSend handler instead of appending locally, when source is set", async () => {
+    const user = userEvent.setup();
+    const onSend = vi.fn();
+    const blocks: Block[] = [
+      { type: "ai-chat", source: "chatMessages", onSend: "sendChatMessage" },
+    ];
+    render(
+      <BlockRenderer
+        blocks={blocks}
+        data={{ chatMessages: [{ id: "1", role: "assistant", content: "Ask me anything." }] }}
+        handlers={{ sendChatMessage: onSend }}
+      />,
+    );
+    const input = screen.getByRole("textbox");
+    await user.type(input, "What's my order status?");
+    await user.click(screen.getByRole("button", { name: /send/i }));
+    expect(onSend).toHaveBeenCalledWith("What's my order status?");
+    // Live path never fabricates a local echo — only the resolved handler was called.
+    expect(screen.queryByText("What's my order status?")).not.toBeInTheDocument();
+  });
+
+  it("an ai-chat block falls back to local-append behavior when source is unset, even with onSend set", async () => {
+    const user = userEvent.setup();
+    const onSend = vi.fn();
+    const blocks: Block[] = [
+      { type: "ai-chat", messages: [{ id: "1", role: "assistant", content: "Ask me anything." }] },
+    ];
+    render(<BlockRenderer blocks={blocks} handlers={{ sendChatMessage: onSend }} />);
+    await user.type(screen.getByRole("textbox"), "Hello");
+    await user.click(screen.getByRole("button", { name: /send/i }));
+    expect(screen.getByText("Hello")).toBeInTheDocument();
+    expect(onSend).not.toHaveBeenCalled();
   });
 
   it("renders a callout block with title and subtitle", () => {
@@ -742,6 +863,71 @@ describe("BlockRenderer", () => {
     await user.click(screen.getByRole("button", { name: "Copy" }));
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith("Team\tLead\nEngineering\tPriya Shah");
     expect(await screen.findByRole("button", { name: "Copied!" })).toBeInTheDocument();
+  });
+
+  it("renders a table block's live source rows instead of its literal rows", () => {
+    const blocks: Block[] = [
+      { type: "table", columns: ["Team"], rows: [{ cells: ["Ignored"] }], source: "teamRows" },
+    ];
+    render(<BlockRenderer blocks={blocks} data={{ teamRows: [{ cells: ["Live team"] }] }} />);
+    expect(screen.getByText("Live team")).toBeInTheDocument();
+    expect(screen.queryByText("Ignored")).not.toBeInTheDocument();
+  });
+
+  it("fires a table block's resolved onRowAction handler with the row's index and data on action-button click", async () => {
+    const user = userEvent.setup();
+    const onRowAction = vi.fn();
+    const blocks: Block[] = [
+      {
+        type: "table",
+        columns: ["Team"],
+        source: "teamRows",
+        onRowAction: "handleRowAction",
+      },
+    ];
+    const teamRows = [{ cells: ["Engineering"], actionLabel: "Select" }];
+    render(
+      <BlockRenderer blocks={blocks} data={{ teamRows }} handlers={{ handleRowAction: onRowAction }} />,
+    );
+    await user.click(screen.getByRole("button", { name: "Select" }));
+    expect(onRowAction).toHaveBeenCalledWith(0, teamRows[0]);
+  });
+
+  it("calls a table block's resolved onAddRow handler instead of mutating local rows, when source is set", async () => {
+    const user = userEvent.setup();
+    const onAddRow = vi.fn();
+    const blocks: Block[] = [
+      {
+        type: "table",
+        columns: ["Team"],
+        source: "teamRows",
+        onAddRow: "handleAddRow",
+        addable: { label: "Add team" },
+      },
+    ];
+    render(
+      <BlockRenderer
+        blocks={blocks}
+        data={{ teamRows: [{ cells: ["Engineering"] }] }}
+        handlers={{ handleAddRow: onAddRow }}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Add team" }));
+    await user.type(screen.getByRole("textbox", { name: "Team" }), "Design");
+    await user.click(screen.getByRole("button", { name: "Add team" }));
+    expect(onAddRow).toHaveBeenCalledWith(["Design"]);
+    // Live path never mutates local state — the live `teamRows` passed in is unchanged, so no
+    // second row appears from a local append.
+    expect(screen.queryByText("Design")).not.toBeInTheDocument();
+  });
+
+  it("forwards a table block's loading prop straight through to the real Table component's skeleton rows", () => {
+    const blocks: Block[] = [{ type: "table", columns: ["Team"], rows: [{ cells: ["Engineering"] }], loading: true }];
+    const { container } = render(<BlockRenderer blocks={blocks} />);
+    // Loading renders Skeleton placeholder rows instead of the real data — the literal row's text
+    // is absent while loading.
+    expect(screen.queryByText("Engineering")).not.toBeInTheDocument();
+    expect(container.querySelector('[data-rebar-component="skeleton"]')).toBeInTheDocument();
   });
 
   it("renders a data-list block with a badge per item", () => {
@@ -1489,6 +1675,48 @@ describe("BlockRenderer", () => {
     expect(screen.getByText("$100")).toBeInTheDocument(); // 2024 total, Support removed
     expect(screen.getByText("$80")).toBeInTheDocument(); // 2025 total, Support removed
     expect(screen.queryByText("$120")).not.toBeInTheDocument();
+  });
+
+  it("renders a scatter-chart block's live source series instead of its literal series", () => {
+    const blocks: Block[] = [
+      { type: "scatter-chart", title: "Chart", series: [{ label: "Ignored", values: [1] }], source: "points" },
+    ];
+    render(<BlockRenderer blocks={blocks} data={{ points: [{ label: "Live series", values: [1, 2] }] }} />);
+    expect(screen.getByText("Live series")).toBeInTheDocument();
+    expect(screen.queryByText("Ignored")).not.toBeInTheDocument();
+  });
+
+  it("renders a line-chart block's live source series instead of its literal series", () => {
+    const blocks: Block[] = [
+      {
+        type: "line-chart",
+        title: "Chart",
+        xLabels: ["A", "B"],
+        series: [{ label: "Ignored", values: [1, 2] }],
+        source: "points",
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} data={{ points: [{ label: "Live series", values: [3, 4] }] }} />);
+    expect(screen.getByText("Live series")).toBeInTheDocument();
+    expect(screen.queryByText("Ignored")).not.toBeInTheDocument();
+  });
+
+  it("renders a stacked-bar-chart block's live source bars instead of its literal bars", () => {
+    const blocks: Block[] = [
+      {
+        type: "stacked-bar-chart",
+        bars: [{ label: "Ignored", segments: [{ label: "Ignored segment", value: 1 }] }],
+        source: "bars",
+      },
+    ];
+    render(
+      <BlockRenderer
+        blocks={blocks}
+        data={{ bars: [{ label: "Live bar", segments: [{ label: "Live segment", value: 5 }] }] }}
+      />,
+    );
+    expect(screen.getByText("Live bar")).toBeInTheDocument();
+    expect(screen.queryByText("Ignored")).not.toBeInTheDocument();
   });
 
   it("renders a stats-table block's headers and rows through the real Table component", () => {

@@ -287,10 +287,16 @@ export interface GoalTrackerFocusAreaData {
   goals: GoalTrackerGoalData[];
 }
 
+/** Mirrors `ChatThread`'s own `ChatMessage.status` — meaningful only for a live (`source`-bound)
+ * message list, where a caller needs to show "sending"/"streaming"/"error" per message the way a
+ * real streaming reply requires. Ignored by a literal, static `messages` array. */
+export type AiChatMessageStatus = "sending" | "sent" | "streaming" | "error";
+
 export interface AiChatMessageData {
   id: string;
   role: "user" | "assistant";
   content: string;
+  status?: AiChatMessageStatus;
   /** An avatar shown beside this message — omitted entirely unless `avatarFallback` is set,
    * matching `ChatThread`'s own `ChatMessage` shape exactly. */
   avatarFallback?: string;
@@ -425,14 +431,36 @@ export type Block =
   | { type: "checklist"; heading?: string; items: string[] }
   | {
       type: "goal-tracker";
-      aspiration: string;
-      focusAreas: GoalTrackerFocusAreaData[];
+      /** Literal, fixed-at-author-time seed — omit both when using `source` instead. */
+      aspiration?: string;
+      focusAreas?: GoalTrackerFocusAreaData[];
+      /** Live binding: a key into `BlockRenderer`'s `data` prop, resolving to a live
+       * `GoalTrackerSource` (`./live`) — takes priority over the literal fields above when set.
+       * Presence of this field is what makes `goal-tracker` an Opinion, not a Synthetic — see
+       * `./opinions`. */
+      source?: string;
+      /** Live binding: a key into `handlers`, resolving to a `GoalTrackerChangeHandler` — fired
+       * with the *entire* next `{aspiration, focusAreas}` state after any local edit (rename/
+       * toggle/add/delete), the same whole-state `onChange` contract `card-kanban`'s own `Kanban`
+       * already uses. Only meaningful alongside `source`. */
+      onChange?: string;
       celebration?: "none" | "small" | "big";
     }
   | {
       type: "ai-chat";
       title?: string;
-      messages: AiChatMessageData[];
+      /** A literal, fixed-at-author-time transcript — omit when using `source` instead. A
+       * document setting neither renders an empty transcript. */
+      messages?: AiChatMessageData[];
+      /** Live binding: a key into `BlockRenderer`'s `data` prop, resolving to a live `AiChatSource`
+       * (`./live`) the caller owns and mutates in place (appending/streaming into the same array) —
+       * takes priority over `messages` when both are set. Presence of this field (or `onSend`) is
+       * what makes `ai-chat` an Opinion, not a Synthetic — see `./opinions`. */
+      source?: string;
+      /** Live binding: a key into `handlers`, resolving to an `AiChatSendHandler` — replaces the
+       * local-only "append the message, never reply" demo behavior with a real send call. Only
+       * meaningful alongside `source`. */
+      onSend?: string;
       placeholder?: string;
       /** Shows the dictation (voice-to-text) toggle on the input. Default `false`. */
       dictation?: boolean;
@@ -448,7 +476,12 @@ export type Block =
   | {
       type: "table";
       columns: string[];
-      rows: TableRow[];
+      /** A literal, fixed-at-author-time row set — omit when using `source` instead. */
+      rows?: TableRow[];
+      /** Live binding: a key into `BlockRenderer`'s `data` prop, resolving to a live `TableSource`
+       * (`./live`) — takes priority over `rows` when set. Presence of this field (or `onAddRow`/
+       * `onRowAction`) is what makes `table` an Opinion, not a Synthetic — see `./opinions`. */
+      source?: string;
       /** Enables per-column sort (the real `Table` component's own sort, not a fixed order) —
        * on by default. */
       sortable?: boolean;
@@ -466,6 +499,17 @@ export type Block =
        * layer of its own; a caller needing the new row to stick needs its own storage, the same
        * way `card-kanban`'s board state is real-but-local for the same reason. */
       addable?: boolean | { label?: string };
+      /** Live binding: a key into `handlers`, resolving to a `TableAddRowHandler` — replaces the
+       * local-only append above with a real, persisted add. Falls back to the local-only append
+       * when unset, even with `source` set. */
+      onAddRow?: string;
+      /** Live binding: a key into `handlers`, resolving to a `TableRowActionHandler` — fired when
+       * a row's own `actionLabel` button is clicked (that button is a no-op with no `onRowAction`
+       * set, same as today). */
+      onRowAction?: string;
+      /** Passed straight through to the real `Table` component's own `loading` prop. Meaningful
+       * with or without `source`. */
+      loading?: boolean;
       /** Shows an "Export CSV" button — downloads the currently visible rows (post search/filter)
        * as a real `.csv` file, entirely client-side. */
       exportable?: boolean;
@@ -478,13 +522,37 @@ export type Block =
   | { type: "filter-bar"; searchPlaceholder?: string; filterLabel?: string; filterOptions?: string[]; actionLabel?: string }
   | { type: "tabs"; tabs: { label: string; blocks: Block[] }[] }
   | { type: "modal"; title: string; blocks: Block[]; confirmLabel?: string; cancelLabel?: string }
-  | { type: "wizard"; steps: WizardStep[]; submitLabel?: string; backLabel?: string; nextLabel?: string }
+  | {
+      type: "wizard";
+      steps: WizardStep[];
+      submitLabel?: string;
+      backLabel?: string;
+      nextLabel?: string;
+      /** Live binding: a key into `BlockRenderer`'s `handlers` prop, resolving to a
+       * `WizardSubmitHandler` (`./live`) — forwards the real `Wizard` component's own `onSubmit`
+       * (fired with the collected `Record<string, WizardValue>` on completion) straight through.
+       * A wizard's steps are legitimately static content, but its *result* is real live output a
+       * backend-driven app needs to receive — presence of this field is what makes `wizard` an
+       * Opinion, not a Synthetic, even though it has no `source` of its own — see `./opinions`. */
+      onSubmit?: string;
+    }
   | {
       type: "card-kanban";
       title: string;
       sharedWith?: { name: string; avatarSrc?: string }[];
-      columns: KanbanColumnData[];
-      cards: Record<string, KanbanCardData>;
+      /** Literal, fixed-at-author-time seed — omit both when using `source` instead. */
+      columns?: KanbanColumnData[];
+      cards?: Record<string, KanbanCardData>;
+      /** Live binding: a key into `BlockRenderer`'s `data` prop, resolving to a live
+       * `KanbanBoardSource` (`./live`) — takes priority over the literal fields above when set.
+       * Presence of this field is what makes `card-kanban` an Opinion, not a Synthetic — see
+       * `./opinions`. */
+      source?: string;
+      /** Live binding: a key into `handlers`, resolving to a `KanbanChangeHandler` — fired with
+       * the entire next `{columns, cards}` board state after any drag/reorder, forwarding
+       * `Kanban`'s own existing `onChange` prop straight through instead of only ever calling a
+       * local `setBoard`. Only meaningful alongside `source`. */
+      onChange?: string;
       searchPlaceholder?: string;
       shareUrl?: string;
       /** Content shown inside the "Board settings" modal — omit to hide the button entirely. */
@@ -494,8 +562,10 @@ export type Block =
       type: "sticky-kanban";
       title: string;
       sharedWith?: { name: string; avatarSrc?: string }[];
-      columns: KanbanColumnData[];
-      cards: Record<string, KanbanCardData>;
+      columns?: KanbanColumnData[];
+      cards?: Record<string, KanbanCardData>;
+      source?: string;
+      onChange?: string;
       searchPlaceholder?: string;
       shareUrl?: string;
       settingsBlocks?: Block[];
@@ -599,6 +669,11 @@ export type Block =
       ariaLabel?: string;
       height?: number;
       series: { label: string; color?: string; values: number[] }[];
+      /** Live binding: a key into `BlockRenderer`'s `data` prop, resolving to a live
+       * `ScatterChartSource` (`./live`) — takes priority over `series` when set. Read-only: a
+       * chart has no meaningful user-initiated write-back, so this is its only live field, and
+       * its presence is what makes `scatter-chart` an Opinion, not a Synthetic — see `./opinions`. */
+      source?: string;
     }
   | {
       type: "line-chart";
@@ -609,6 +684,10 @@ export type Block =
       labelStep?: number;
       crossoverIndex?: number;
       series: { label: string; color?: string; values: number[]; dashed?: boolean }[];
+      /** Live binding → `LineChartSource` (`./live`), resolved from `data` — takes priority over
+       * `series`. `xLabels` stays literal-only this pass — wire it live only when a real consumer
+       * needs it. */
+      source?: string;
     }
   | {
       type: "stacked-bar-chart";
@@ -616,6 +695,9 @@ export type Block =
       ariaLabel?: string;
       height?: number;
       bars: { label: string; segments: { label: string; value: number; color?: string }[] }[];
+      /** Live binding → `StackedBarChartSource` (`./live`), resolved from `data` — takes priority
+       * over `bars`. */
+      source?: string;
     }
   | {
       /** A small, static, presentational summary table — headers plus a plain grid of string/number

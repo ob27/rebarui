@@ -15,13 +15,14 @@ const BLOCKS: Block[] = [
       { href: "/docs", label: "Docs" },
       { href: "/components", label: "Components" },
       { href: "/blocks", label: "Blocks" },
+      { href: "/tiers", label: "Tiers" },
       { href: "/benchmarks", label: "Benchmarks" },
       { href: "/about", label: "About" },
     ],
     ariaLabel: "Main",
     // Deliberately a literal string, not derived from packages/core/package.json's real semver
-    // ("0.2.0") — the desired display wording ("0.04 Open Beta") doesn't match that format.
-    trailing: { kind: "text", text: "0.04 Open Beta" },
+    // ("0.5.0") — the desired display wording ("0.05 Open Beta") doesn't match that format.
+    trailing: { kind: "text", text: "0.05 Open Beta" },
     themeToggle: true,
   },
 ];

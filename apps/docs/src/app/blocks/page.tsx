@@ -2,6 +2,15 @@ import type { ReactNode } from "react";
 import { Alert, Box, CodeBlock, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Block } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { blockTier } from "@/data/blockTier";
+import type { Tier } from "@/data/tier.types";
+
+const TIER_LABEL: Record<Tier, string> = {
+  imitation: "Imitation",
+  synthetic: "Synthetic",
+  opinion: "Opinion",
+  order: "Order",
+};
 
 const BLOCK_TYPES = [
   { id: "header", label: "header" },
@@ -41,6 +50,8 @@ const BLOCK_TYPES = [
   { id: "scatter-chart", label: "scatter-chart" },
   { id: "line-chart", label: "line-chart" },
   { id: "stacked-bar-chart", label: "stacked-bar-chart" },
+  { id: "stats-table", label: "stats-table" },
+  { id: "gallery", label: "gallery" },
 ];
 
 
@@ -100,6 +111,7 @@ function Entry({
         <Tag tone={measured ? "success" : "warning"} style={{ textTransform: "uppercase" }}>
           {measured ? "measured" : "unmeasured"}
         </Tag>
+        <Tag tone="info">{TIER_LABEL[blockTier(id as Block["type"])]}</Tag>
       </Stack>
       <Text size="sm" color="secondary">
         {description}
@@ -147,7 +159,9 @@ export default function BlocksPage() {
             &quot;unmeasured&quot; means it&apos;s real, tested, and shipped, but hasn&apos;t been
             through that rigor yet. See{" "}
             <a href="/docs/heuristics" className="rebar-link">Design Heuristics</a> for <em>why</em> the
-            Packer renders things this way — this page is the <em>what</em>.
+            Packer renders things this way — this page is the <em>what</em>. Each entry also carries
+            its tier (Imitation/Synthetic/Opinion/Order) — see{" "}
+            <a href="/tiers" className="rebar-link">/tiers</a> for what that axis means.
           </Text>
         </Stack>
 
@@ -585,6 +599,7 @@ export default function BlocksPage() {
             <Tag tone="warning" style={{ textTransform: "uppercase" }}>
               unmeasured
             </Tag>
+            <Tag tone="info">{TIER_LABEL[blockTier("modal")]}</Tag>
           </Stack>
           <Text size="sm" color="secondary">
             A real Dialog (Radix underneath), holding its own nested <code>Block[]</code>, with
@@ -816,6 +831,32 @@ export default function BlocksPage() {
               ],
             },
           ]}
+        />
+
+        <GroupHeading>Tables &amp; galleries</GroupHeading>
+
+        <Entry
+          id="stats-table"
+          measured={false}
+          description="A small, static, presentational summary table — headers plus a plain grid of string/number cells, no sorting/selection/pagination. Distinct from table (which pairs the real Table component with search/filters over row objects): this exists for the exact headers-plus-rows-of-cells shape a benchmark results table needs, with no column-keyed object indirection to build. Renders through the same real Table component underneath, just without the extra props that would invite features this kind of static presentational table doesn't need."
+          shape={`{ type: "stats-table", headers: string[], rows: (string | number)[][] }`}
+          blocks={[
+            {
+              type: "stats-table",
+              headers: ["Metric", "antd", "rebar-ui"],
+              rows: [
+                ["Tokens", 31231, 30211],
+                ["Wall clock (s)", 42, 18],
+              ],
+            },
+          ]}
+        />
+
+        <Entry
+          id="gallery"
+          measured={false}
+          description="A labeled, single-aspect-ratio image carousel — screenshots named ${prefix}-01.png through ${prefix}-NN.png inside dir (a public/ path), per Design Heuristics' carousel rule (one aspect ratio only, no exceptions). count defaults to 15 to match this project's own standard benchmark sample size."
+          shape={`{ type: "gallery", label: string, dir: string, prefix: string, count?: number }`}
         />
         </Stack>
         <NextBlockRenderer blocks={[{ type: "page-index", sections: BLOCK_TYPES }]} />

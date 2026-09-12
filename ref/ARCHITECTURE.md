@@ -63,6 +63,22 @@ JSX — proof-by-existence that the mechanism holds up outside the one benchmark
 validated on, per the dogfooding principle already stated in
 [MARKETING_SITE.md](MARKETING_SITE.md#what-to-change-and-why).
 
+A third, orthogonal axis classifies both components and blocks by where they sit in a
+build-lifecycle — Imitations (static primitives) → Synthetics (static compositions) → Opinions
+(real state/reactivity) → Orders (macro/page-level governance) — see
+[`TIERS.md`](TIERS.md). Read literally as a four-step ladder it doesn't quite survive contact with
+the real block catalog: "Order" turned out to be a different axis entirely (macro governance vs.
+behavioral complexity) than the Imitation→Synthetic→Opinion complexity ladder, so of the 39 blocks
+only ~8 are genuine Orders — the rest split across Synthetic (~22, plain static content) and
+Opinion (9, blocks that already embed real interactive state in `BlockRenderer.tsx` despite looking
+like static schema data). `TIERS.md` keeps that nuance explicit for whoever maintains the schema;
+`robot.md`'s own digest states the four tiers as the clean ascending lifecycle they are for
+everyday use, since that's still a genuinely good mental model for an LLM composing new content to
+hold, even though "Order" is really the frame the other three render inside rather than a fourth
+rung on their ladder. "Opinion" is not a vibe: a block *is* an Opinion iff its schema type declares
+a `source`/`onX` live-data-binding field (`packages/placement/src/opinions.ts`), a mechanical,
+compiler-checked fact, not a judgment call.
+
 The evidence for the underlying mechanism lives in
 [`/benchmarks`](../apps/docs/src/app/benchmarks/page.tsx): a hand-authored-JSX version of Rebar
 lost to AntD by ~54% in token cost; the placement-layer version not only closed that gap but beat
