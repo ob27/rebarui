@@ -1,46 +1,64 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Heading, SidebarNav, Stack, Text } from "rebar-ui";
+import {
+  Box,
+  CalendarIcon,
+  ChatIcon,
+  CreditCardIcon,
+  DashboardIcon,
+  ErrorWarningIcon,
+  FolderIcon,
+  Heading,
+  HomeIcon,
+  LineChartIcon,
+  QuestionIcon,
+  SettingsIcon,
+  SidebarNav,
+  Stack,
+  TaskIcon,
+  TeamIcon,
+  Text,
+} from "rebar-ui";
 import type { SidebarNavEntry, SidebarNavItem } from "rebar-ui";
 import type { Block } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const ITEMS: SidebarNavItem[] = [
-  { label: "Dashboard", href: "#dashboard", icon: "🏠", active: true },
-  { label: "Projects", href: "#projects", icon: "📁" },
+  { label: "Dashboard", href: "#dashboard", icon: <HomeIcon />, active: true },
+  { label: "Projects", href: "#projects", icon: <FolderIcon /> },
   {
     label: "Settings",
-    icon: "⚙️",
+    icon: <SettingsIcon />,
     items: [
       { label: "Profile", href: "#profile" },
       { label: "Billing", href: "#billing" },
       { label: "Team members", href: "#team" },
     ],
   },
-  { label: "Help", href: "#help", icon: "❓" },
+  { label: "Help", href: "#help", icon: <QuestionIcon /> },
 ];
 
 const APP_SHELL_ITEMS: SidebarNavEntry[] = [
-  { label: "Dashboard", href: "#dashboard", icon: "📊", active: true },
-  { label: "Overview", href: "#overview", icon: "📈" },
-  { label: "Chat", href: "#chat", icon: "💬", badge: "5" },
-  { label: "Team", href: "#team", icon: "👥" },
+  { label: "Dashboard", href: "#dashboard", icon: <DashboardIcon />, active: true },
+  { label: "Overview", href: "#overview", icon: <LineChartIcon /> },
+  { label: "Chat", href: "#chat", icon: <ChatIcon />, badge: "5" },
+  { label: "Team", href: "#team", icon: <TeamIcon /> },
   { type: "heading", label: "Shortcuts" },
-  { label: "Tasks", href: "#tasks", icon: "📋" },
-  { label: "Reports", href: "#reports", icon: "⚠️" },
+  { label: "Tasks", href: "#tasks", icon: <TaskIcon /> },
+  { label: "Reports", href: "#reports", icon: <ErrorWarningIcon /> },
   { type: "divider" },
-  { label: "Settings", href: "#settings", icon: "⚙️" },
+  { label: "Settings", href: "#settings", icon: <SettingsIcon /> },
 ];
 
 const GRID_ITEMS: SidebarNavItem[] = [
-  { label: "Dashboard", href: "#dashboard", icon: "📊", active: true },
-  { label: "Teams", href: "#teams", icon: "👥" },
-  { label: "Payments", href: "#payments", icon: "💳" },
-  { label: "Attendance", href: "#attendance", icon: "🗓️" },
-  { label: "Task", href: "#task", icon: "📝" },
-  { label: "Settings", href: "#settings", icon: "⚙️" },
+  { label: "Dashboard", href: "#dashboard", icon: <DashboardIcon />, active: true },
+  { label: "Teams", href: "#teams", icon: <TeamIcon /> },
+  { label: "Payments", href: "#payments", icon: <CreditCardIcon /> },
+  { label: "Attendance", href: "#attendance", icon: <CalendarIcon /> },
+  { label: "Task", href: "#task", icon: <TaskIcon /> },
+  { label: "Settings", href: "#settings", icon: <SettingsIcon /> },
 ];
 
 const BLOCKS: Block[] = [
@@ -50,7 +68,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "code",
-        code: '<SidebarNav items={[{ label: "Dashboard", href: "/dashboard", icon: <HomeIcon />, active: true }, { label: "Settings", icon: <GearIcon />, items: [{ label: "Profile", href: "/settings/profile" }] }]} />',
+        code: '<SidebarNav logo={{ full: <Wordmark />, compact: <Icon /> }} items={[{ label: "Dashboard", href: "/dashboard", icon: <HomeIcon />, active: true }, { label: "Settings", icon: <SettingsIcon />, items: [{ label: "Profile", href: "/settings/profile" }] }]} />',
       },
     ],
   },
@@ -77,11 +95,21 @@ const BLOCKS: Block[] = [
   },
   {
     type: "doc-section",
-    heading: "App-shell slots: header, workspace, search, panel, footer",
+    heading: "App-shell slots: logo, header, workspace, search, panel, footer",
     body: [
       {
         kind: "text",
-        text: "Real dashboard sidebars are rarely just a bare item list — a logo up top, an account/workspace switcher, a search box, a promo or quota widget, a profile row at the bottom. Five slots cover this without inventing a prescribed sub-component for each: `header` (logo/brand), `workspace` (a ready-made switcher row — icon/avatar, label, optional description, a trailing switch affordance), `search` (built-in, self-filtering — filters `items` by label as the user types, recursing into nested children and auto-expanding a group with a match), `panel` (anything between the list and the footer — a promo card, a storage/quota widget), and `footer` (an account row, a logout button). `header`/`panel`/`footer` accept a plain node or a function of `{ collapsed }`, so a full wordmark can degrade to a bare icon once the rail collapses.",
+        text: "Real dashboard sidebars are rarely just a bare item list — a logo up top, an account/workspace switcher, a search box, a promo or quota widget, a profile row at the bottom. Six pieces cover this without inventing a prescribed sub-component for each: `logo` (a brand mark that natively swaps between a wide `full` asset and a square `compact` one as the rail collapses — see below), `header` (anything else above the list — a tagline, a secondary brand element), `workspace` (a ready-made switcher row — icon/avatar, label, optional description, a trailing switch affordance), `search` (built-in, self-filtering — filters `items` by label as the user types, recursing into nested children and auto-expanding a group with a match), `panel` (anything between the list and the footer — a promo card, a storage/quota widget), and `footer` (an account row, a logout button). `header`/`panel`/`footer` accept a plain node or a function of `{ collapsed }` for the same kind of collapse-aware swap `logo` gives natively.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "A brand mark that swaps itself: logo",
+    body: [
+      {
+        kind: "text",
+        text: '`logo={{ full, compact }}` renders `full` (typically a wide wordmark/logo image) while expanded and `compact` (typically a square 1:1 icon mark) while collapsed, switching automatically with the sidebar\'s own collapsed state — no hand-written `collapsed ? ... : ...` ternary required. Pass real `<img>`s (a wide logo file and a square icon file) or inline SVG/React content for either side; each renders as-is, sized to fit the sidebar\'s own width via `max-width: 100%`.',
       },
     ],
   },
@@ -131,7 +159,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: '`data-rebar-component="sidebar-nav"`, `data-rebar-collapsed` when collapsed; parts: `header`, `workspace`, `search`, `list`, `heading`, `divider`, `item`, `sublist`, `subitem`, `badge`, `panel`, `footer`, `collapse-toggle`.',
+        text: '`data-rebar-component="sidebar-nav"`, `data-rebar-collapsed` when collapsed; parts: `logo`, `header`, `workspace`, `search`, `list`, `heading`, `divider`, `item`, `sublist`, `subitem`, `badge`, `panel`, `footer`, `collapse-toggle`.',
       },
     ],
   },
@@ -185,8 +213,8 @@ export default function SidebarNavPage() {
         >
           <SidebarNav
             items={APP_SHELL_ITEMS}
-            header={({ collapsed: c }) => (c ? "🧭" : <strong>Sport Live</strong>)}
-            workspace={{ label: "Saleshouse", description: "general team", icon: "🟣" }}
+            logo={{ full: <strong>Sport Live</strong>, compact: <DashboardIcon /> }}
+            workspace={{ label: "Saleshouse", description: "general team", icon: <TeamIcon /> }}
             search={{ placeholder: "Search" }}
             panel={({ collapsed: c }) =>
               c ? null : (
@@ -198,7 +226,7 @@ export default function SidebarNavPage() {
                 </div>
               )
             }
-            footer={({ collapsed: c }) => (c ? "🙂" : "Jerry Wilson")}
+            footer={({ collapsed: c }) => (c ? "JW" : "Jerry Wilson")}
           />
         </Box>
       </Stack>
