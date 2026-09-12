@@ -2122,6 +2122,65 @@ function renderBlock(
     case "gallery":
       return <GalleryBlockView key={index} block={block} index={index} path={path} />;
 
+    case "block-entry":
+      return (
+        <Box
+          data-rebar-placement-block="block-entry"
+          data-rebar-block-path={path}
+          style={{
+            border: "1px solid var(--rebar-color-border, #e0e0e0)",
+            borderRadius: "var(--rebar-radius-md, 8px)",
+            padding: "var(--rebar-space-lg, 24px)",
+            backgroundColor: "var(--rebar-color-bg-surface, #fafafa)",
+          }}
+        >
+          <Stack gap="md">
+            <Stack direction="row" gap="sm" align="center">
+              <Heading level={3}>{block.id}</Heading>
+              <Tag tone={block.measured ? "success" : "default"}>
+                {block.measured ? "Measured" : "Unmeasured"}
+              </Tag>
+            </Stack>
+            <Text>{block.description}</Text>
+            <Stack gap="sm">
+              <Text style={{ fontWeight: 600, fontSize: "var(--rebar-font-size-sm, 14px)" }}>
+                Shape
+              </Text>
+              <CodeBlock code={block.shape} language="typescript" />
+            </Stack>
+            {block.code && (
+              <Stack gap="sm">
+                <Text style={{ fontWeight: 600, fontSize: "var(--rebar-font-size-sm, 14px)" }}>
+                  Implementation
+                </Text>
+                <CodeBlock code={block.code} language="typescript" />
+              </Stack>
+            )}
+            {block.blocks && block.blocks.length > 0 && (
+              <Stack gap="sm">
+                <Text style={{ fontWeight: 600, fontSize: "var(--rebar-font-size-sm, 14px)" }}>
+                  Demo
+                </Text>
+                <Box
+                  style={{
+                    border: "1px solid var(--rebar-color-border, #e0e0e0)",
+                    borderRadius: "var(--rebar-radius-sm, 4px)",
+                    padding: "var(--rebar-space-md, 16px)",
+                    backgroundColor: "var(--rebar-color-bg, #ffffff)",
+                  }}
+                >
+                  <Stack gap="md">
+                    {block.blocks.map((b, i) =>
+                      renderBlock(b, i, renderLink, `${path}.blocks`, pageSections, data, handlers)
+                    )}
+                  </Stack>
+                </Box>
+              </Stack>
+            )}
+          </Stack>
+        </Box>
+      );
+
     default:
       return null;
   }

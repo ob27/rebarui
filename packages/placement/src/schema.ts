@@ -733,4 +733,17 @@ export type Block =
       dir: string;
       prefix: string;
       count?: number;
+    }
+  | {
+      /** A component catalog entry — heading, measured/unmeasured tag, description, shape code
+       * block, optional implementation code block, and optional live demo blocks. Encapsulates the
+       * BlockEntry pattern used across tier pages (/opinions, /synthetics, /orders) so the chrome
+       * around each block's demo is Packer-printed, not hand-authored JSX. */
+      type: "block-entry";
+      id: string;
+      measured: boolean;
+      description: string;
+      shape: string;
+      code?: string;
+      blocks?: Block[];
     };
