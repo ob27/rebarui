@@ -7,6 +7,7 @@ describe("opinions", () => {
       [
         "ai-chat",
         "table",
+        "form",
         "goal-tracker",
         "card-kanban",
         "sticky-kanban",

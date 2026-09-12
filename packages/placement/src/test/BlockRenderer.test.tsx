@@ -711,6 +711,62 @@ describe("BlockRenderer", () => {
     expect(screen.queryAllByRole("button")).toHaveLength(0);
   });
 
+  it("a form's fields are real controlled inputs, tracked in local state as the user types", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      {
+        type: "form",
+        fields: [
+          { kind: "text", label: "Display name" },
+          { kind: "checkbox", label: "Subscribe" },
+        ],
+        submitLabel: "Save",
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    const input = screen.getByLabelText("Display name") as HTMLInputElement;
+    await user.type(input, "Ada");
+    expect(input).toHaveValue("Ada");
+
+    const checkbox = screen.getByRole("checkbox", { name: "Subscribe" });
+    expect(checkbox).not.toBeChecked();
+    await user.click(checkbox);
+    expect(checkbox).toBeChecked();
+  });
+
+  it("a form with onSubmit calls the resolved handler with every field's current value, keyed by label", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    const blocks: Block[] = [
+      {
+        type: "form",
+        fields: [
+          { kind: "text", label: "Name" },
+          { kind: "checkbox", label: "Subscribe" },
+        ],
+        submitLabel: "Create",
+        onSubmit: "createRecord",
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} handlers={{ createRecord: onSubmit }} />);
+    await user.type(screen.getByLabelText("Name"), "Ada");
+    await user.click(screen.getByRole("checkbox", { name: "Subscribe" }));
+    await user.click(screen.getByRole("button", { name: "Create" }));
+    expect(onSubmit).toHaveBeenCalledWith({ Name: "Ada", Subscribe: true });
+  });
+
+  it("a form with no onSubmit set is a no-op on submit, same as before", async () => {
+    const user = userEvent.setup();
+    const blocks: Block[] = [
+      { type: "form", fields: [{ kind: "text", label: "Name" }], submitLabel: "Create" },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    await user.type(screen.getByLabelText("Name"), "Ada");
+    // No error/throw on click with no handler resolved — the assertion here is that this doesn't
+    // crash; nothing observable happens.
+    await user.click(screen.getByRole("button", { name: "Create" }));
+  });
+
   it("renders a table block with columns, rows, and a per-row action", () => {
     const blocks: Block[] = [
       {

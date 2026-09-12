@@ -20,7 +20,7 @@ import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 const HERO_BLOCKS: Block[] = [
   {
     type: "hero",
-    badge: "🚧 0.04 Open Beta — see [the repo](https://github.com/ob27/rebarui)",
+    badge: "🚧 0.06 Open Beta — see [the repo](https://github.com/ob27/rebarui)",
     title: "Rebar UI",
     subtitle:
       "Headless-first, intentionally low-fidelity React components, built to be built with by an LLM through a small placement layer — not hand-authored. Measured cheaper, faster, and more consistent than hand-authored Ant Design on a single build — and once a design goes through 15+ rounds of revision, still cheaper overall even after fully migrating to a real design system for production.",

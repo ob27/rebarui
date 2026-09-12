@@ -472,7 +472,21 @@ export type Block =
   | { type: "pillar-grid"; items: PillarGridItem[] }
   | { type: "card-grid"; items: CardGridItem[] }
   | { type: "persona-card"; items: PersonaCardItem[] }
-  | { type: "form"; heading?: string; fields: FormField[]; submitLabel?: string }
+  | {
+      type: "form";
+      heading?: string;
+      fields: FormField[];
+      submitLabel?: string;
+      /** Live binding: a key into `handlers`, resolving to a `FormSubmitHandler` (`./live`) —
+       * fired with every field's current value, keyed by that field's own `label` (fields have no
+       * separate id in this schema). Every field renders as a real controlled input either way
+       * (typing/checking/selecting always works); without this set, submitting is a no-op, same
+       * as today. Presence of this field is what makes `form` an Opinion, not a Synthetic — see
+       * `./opinions`. No `source` for initial/prefilled values yet — a real gap for an edit-in-
+       * place form, not solved in this pass (see ref/HEURISTICS.md #59's own forward-looking
+       * note on full CRUD). */
+      onSubmit?: string;
+    }
   | {
       type: "table";
       columns: string[];

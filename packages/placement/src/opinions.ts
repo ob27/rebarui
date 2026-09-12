@@ -20,6 +20,7 @@ export type OpinionBlockType = {
 export const OPINION_BLOCK_TYPES = [
   "ai-chat",
   "table",
+  "form",
   "goal-tracker",
   "card-kanban",
   "sticky-kanban",

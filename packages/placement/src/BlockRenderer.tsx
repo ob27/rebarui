@@ -43,20 +43,19 @@ import {
   TodoItem,
   Wizard,
 } from "rebar-ui";
-import type { AiChatInputIntent, ChatMessage, TableColumn } from "rebar-ui";
+import type { AiChatInputIntent, ChatMessage, TableColumn, WizardValue } from "rebar-ui";
 import type {
   Action,
   Block,
   FormField,
   GoalTrackerFocusAreaData,
-  KanbanCardData,
-  KanbanColumnData,
   ProseNode,
   TableFilter,
 } from "./schema";
 import type {
   AiChatSendHandler,
   AiChatSource,
+  FormSubmitHandler,
   GoalTrackerChangeHandler,
   GoalTrackerSource,
   KanbanBoardSource,
@@ -246,7 +245,13 @@ function itemPath(blockPath: string, arrayName: string, itemIndex: number) {
   return `${blockPath}.${arrayName}[${itemIndex}]`;
 }
 
-function renderFormField(field: FormField, index: number, blockPath: string) {
+function renderFormField(
+  field: FormField,
+  index: number,
+  blockPath: string,
+  value: WizardValue | undefined,
+  onFieldChange: (label: string, value: WizardValue) => void,
+) {
   const fieldPath = itemPath(blockPath, "fields", index);
   switch (field.kind) {
     case "text":
@@ -258,7 +263,13 @@ function renderFormField(field: FormField, index: number, blockPath: string) {
             {field.label}
             {field.required ? " *" : ""}
           </Text>
-          <Input type={field.kind} placeholder={field.placeholder} />
+          <Input
+            type={field.kind}
+            aria-label={field.label}
+            placeholder={field.placeholder}
+            value={(value as string) ?? ""}
+            onChange={(e) => onFieldChange(field.label, e.target.value)}
+          />
         </Stack>
       );
     case "textarea":
@@ -268,7 +279,14 @@ function renderFormField(field: FormField, index: number, blockPath: string) {
             {field.label}
             {field.required ? " *" : ""}
           </Text>
-          <textarea className="rebar-input" placeholder={field.placeholder} rows={3} />
+          <textarea
+            className="rebar-input"
+            aria-label={field.label}
+            placeholder={field.placeholder}
+            rows={3}
+            value={(value as string) ?? ""}
+            onChange={(e) => onFieldChange(field.label, e.target.value)}
+          />
         </Stack>
       );
     case "select":
@@ -282,6 +300,8 @@ function renderFormField(field: FormField, index: number, blockPath: string) {
             aria-label={field.label}
             options={field.options.map((o) => ({ value: o, label: o }))}
             placeholder={field.options[0]}
+            value={value as string}
+            onValueChange={(v) => onFieldChange(field.label, v)}
           />
         </Stack>
       );
@@ -289,7 +309,8 @@ function renderFormField(field: FormField, index: number, blockPath: string) {
       return (
         <Checkbox
           key={index}
-          defaultChecked={field.checked}
+          checked={(value as boolean) ?? field.checked ?? false}
+          onCheckedChange={(checked) => onFieldChange(field.label, checked === true)}
           data-rebar-block-path={fieldPath}
           data-rebar-block-item-label={field.label}
         >
@@ -300,6 +321,39 @@ function renderFormField(field: FormField, index: number, blockPath: string) {
     default:
       return null;
   }
+}
+
+function FormBlockView({
+  block,
+  path,
+  handlers,
+}: {
+  block: Extract<Block, { type: "form" }>;
+  path: string;
+  handlers: BlockRendererHandlers;
+}) {
+  const [values, setValues] = useState<Record<string, WizardValue>>({});
+  const onSubmitHandler = resolveHandler<FormSubmitHandler>(handlers, block.onSubmit);
+
+  const setFieldValue = (label: string, value: WizardValue) => {
+    setValues((prev) => ({ ...prev, [label]: value }));
+  };
+
+  return (
+    <Card data-rebar-placement-block="form" data-rebar-block-path={path}>
+      <Stack gap="md">
+        {block.heading ? <Heading level={3}>{block.heading}</Heading> : null}
+        {block.fields.map((field, fieldIndex) =>
+          renderFormField(field, fieldIndex, path, values[field.label], setFieldValue),
+        )}
+        {block.submitLabel ? (
+          <Button variant="primary" onClick={() => onSubmitHandler?.(values)}>
+            {block.submitLabel}
+          </Button>
+        ) : null}
+      </Stack>
+    </Card>
+  );
 }
 
 // Patches any top-level `iframe` block in `blocks` with a measured `height`, unless the document
@@ -1599,15 +1653,7 @@ function renderBlock(
       );
 
     case "form":
-      return (
-        <Card key={index} data-rebar-placement-block="form" data-rebar-block-path={path}>
-          <Stack gap="md">
-            {block.heading ? <Heading level={3}>{block.heading}</Heading> : null}
-            {block.fields.map((field, fieldIndex) => renderFormField(field, fieldIndex, path))}
-            {block.submitLabel ? <Button variant="primary">{block.submitLabel}</Button> : null}
-          </Stack>
-        </Card>
-      );
+      return <FormBlockView key={index} block={block} path={path} handlers={handlers} />;
 
     case "table":
       return <DataTableBlockView key={index} block={block} index={index} path={path} data={data} handlers={handlers} />;

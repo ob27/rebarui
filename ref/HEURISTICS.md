@@ -744,6 +744,65 @@ should add to it, not spawn a parallel document.
     column applies that constraint explicitly on their own wrapper, it's never rebar-ui's own
     default to impose.
 
+A third round of the same field trial — Coherence's `web-v3` rebuild, live-tested rather than just
+read — surfaced four more (`ref/Tom_v3.md`), continuing this section exactly as its own intro says
+future rounds should:
+
+57. **A streaming chat message owns its own loading-to-streaming transition — never a separate
+    "is typing" indicator stacked alongside it** — the moment a caller appends an empty,
+    `status: "streaming"` placeholder message and starts filling its `content` as tokens arrive
+    (the standard pattern this library's own docs recommend), that single message already needs to
+    show two different things at two different times: "waiting, nothing yet" and "receiving,
+    here's what's arrived so far" — never both at once, and never neither. Leaving the swap between
+    them to the caller invites exactly the failure seen: a separate `isTyping` bubble (or an
+    app's own loading indicator) rendered *alongside* the same message's own cursor, because
+    nothing forced the two to be mutually exclusive. Seen failing in: a live field build's chat
+    view, showing a loading cursor and a streaming cursor at the same time, with no clear reason
+    either was more correct than the other. Component rule: `ChatThread`'s own `MessageBubble`
+    now makes this swap itself — a `status: "streaming"` message with empty `content` renders the
+    bouncing-dots wait indicator (the same visual `isTyping`'s separate bubble uses, just inside
+    the message's own bubble instead of a second one below it); the instant `content` is non-empty,
+    it swaps to the trailing blink cursor. `isTyping` still exists for the genuinely different case
+    (no message object created yet at all) but its own doc comment now warns against combining it
+    with an already-appended empty streaming placeholder.
+
+58. **A sidebar's header and the main content area's own header default to the same height, so the
+    two read as one contiguous bar, not two misaligned ones** — when an app shell has both a
+    vertical nav with its own header/logo row and a horizontal top bar for the main content, a
+    visual seam appears the instant their heights don't match, even if each one is internally
+    correct. Seen failing in: a live field build whose `SidebarNav` header/logo row and its own
+    hand-built top bar were two different heights, with no shared reference either was measured
+    against. Component rule: `SidebarNav`'s `header`/`logo` rows default to
+    `min-height: var(--rebar-app-shell-header-height, 64px)` — a new, real, overridable token: a
+    consumer building their own top bar alongside it sets that same variable once (or just matches
+    the same explicit height by hand) rather than picking an independent value for each side.
+
+59. **Any entity a user can create needs a real CRUD view — list, edit, and delete — not just a
+    create-and-select control** — a "New X" button plus a picker to switch between existing ones
+    covers creation and selection, but omits the other two-thirds of managing real records: seeing
+    them all in one place, correcting one after the fact, and removing one that's no longer needed.
+    A picker dropdown is discovery-by-recall (you already have to know the name you're looking
+    for); a real list view is discovery-by-recognition (#6, recognition over recall), and neither
+    edit nor delete has anywhere to live at all without one. Seen failing in: a live field build
+    that gave knowledge bases a create dialog and a `Select` to switch between them, with no way to
+    rename or remove one short of editing the database directly. Component rule (forward-looking,
+    an app-architecture pattern rather than a single component fix): pair a create control with a
+    real management view built from `Table` (or the `table` block, now with live `source`/
+    `onRowAction` bindings) — a row per record, edit/delete as real row actions — rather than
+    treating create-and-select as the whole feature.
+
+60. **Form controls share one consistent size scale by default — never an independently-chosen
+    height per component** — `Button` already defines a real three-tier scale (`sm`=32px,
+    `md`=44px, `lg`=48px); any other control that can sit beside a `Button` in the same toolbar or
+    form row needs to default to the *same* scale, not a plausible-looking value picked in
+    isolation, or the two will misalign the instant they're placed next to each other regardless of
+    which size either one requests. Seen failing in: a live field build's knowledge-base `Select`
+    sitting next to a `Button`, visibly a different height with no `size` prop on `Select` at all to
+    fix it. Component rule: `Select` now takes the identical `size?: "sm" | "md" | "lg"` prop as
+    `Button`, mapped to the exact same three heights — the fix belongs in the shared scale, not a
+    per-app CSS override. Any future form control (`Combobox`, `MultiSelect`, `NumberInput`, ...)
+    found not to follow this scale is the same bug, not a new one.
+
 ## Token values (defaults, fully overridable)
 
 ### Spacing — 8pt grid
@@ -802,6 +861,14 @@ drops below that ratio.
 --rebar-breakpoint-lg: 1024px;
 --rebar-breakpoint-xl: 1280px;
 ```
+
+### App shell
+```css
+--rebar-app-shell-header-height: 64px;
+```
+Shared between `SidebarNav`'s own `header`/`logo` rows and whatever a consumer's own main-content
+header uses, so the two align by default instead of needing a one-off height match — see
+heuristic #58.
 
 ## Component-level defaults (behavior, not just tokens)
 

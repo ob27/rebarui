@@ -35,6 +35,11 @@ export type KanbanChangeHandler = (next: KanbanBoardSource) => void;
 
 export type WizardSubmitHandler = (values: Record<string, WizardValue>) => void;
 
+/** Values keyed by each field's own `label` (see the `form` block's own `onSubmit` doc comment in
+ * `schema.ts` for why label rather than a separate id). Same value shape as `WizardValue` — a form
+ * field and a wizard step's field are the same underlying control set. */
+export type FormSubmitHandler = (values: Record<string, WizardValue>) => void;
+
 export type ScatterChartSource = { label: string; color?: string; values: number[] }[];
 export type LineChartSource = { label: string; color?: string; values: number[]; dashed?: boolean }[];
 export type StackedBarChartSource = { label: string; segments: { label: string; value: number; color?: string }[] }[];

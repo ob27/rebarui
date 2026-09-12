@@ -41,7 +41,7 @@ export const BLOCK_TIER = {
   table: "opinion",
   "data-list": "synthetic",
   "filter-bar": "synthetic",
-  form: "synthetic",
+  form: "opinion",
   tabs: "order",
   modal: "order",
   wizard: "opinion",
