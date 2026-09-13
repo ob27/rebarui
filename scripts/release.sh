@@ -32,24 +32,56 @@ echo -e "${YELLOW}Step 2/6: Running tests...${NC}"
 pnpm run test
 echo -e "${GREEN}✓ Tests passed${NC}\n"
 
-# Step 3: Bump version in packages/core/package.json and update marketing page
+# Step 3: Bump version in all package.json files and update marketing page
 echo -e "${YELLOW}Step 3/6: Bumping version to ${NEW_VERSION}...${NC}"
 node -e "
 const fs = require('fs');
 
-// Update package.json
-const pkg = JSON.parse(fs.readFileSync('./packages/core/package.json', 'utf8'));
-pkg.version = '${NEW_VERSION}';
-fs.writeFileSync('./packages/core/package.json', JSON.stringify(pkg, null, 2) + '\n');
-console.log('Updated packages/core/package.json');
+// All packages that need version bumps
+const packages = [
+  './packages/core/package.json',
+  './packages/placement/package.json',
+  './packages/devtools/package.json',
+  './packages/theme-sketch/package.json',
+  './packages/theme-clean/package.json',
+  './packages/adapters/antd/package.json',
+  './apps/docs/package.json'
+];
 
-// Update homepage version badge
+// Update all package.json files
+packages.forEach(pkgPath => {
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  pkg.version = '${NEW_VERSION}';
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+  console.log('Updated ' + pkgPath);
+});
+
+// Update all version display locations (format: "0.XX Open Beta" with zero-padded minor)
+const displayVersion = \`${MAJOR}.\${String(NEW_MINOR).padStart(2, '0')}\`;
+
+// 1. Homepage badge
 const homepage = fs.readFileSync('./apps/docs/src/app/page.tsx', 'utf8');
 const badgePattern = /badge: \"🚧 [^\"]+\"/;
-const newBadge = 'badge: \"🚧 ${NEW_VERSION} Open Beta — see [the repo](https://github.com/ob27/rebarui)\"';
+const newBadge = \`badge: \"🚧 \${displayVersion} Open Beta — see [the repo](https://github.com/ob27/rebarui)\"\`;
 const updatedHomepage = homepage.replace(badgePattern, newBadge);
 fs.writeFileSync('./apps/docs/src/app/page.tsx', updatedHomepage);
-console.log('Updated homepage version badge');
+console.log('Updated homepage badge to ' + displayVersion + ' Open Beta');
+
+// 2. SiteHeader trailing text
+const siteHeader = fs.readFileSync('./apps/docs/src/components/SiteHeader.tsx', 'utf8');
+const headerPattern = /text: \"[^\"]+ Open Beta\"/;
+const newHeaderText = \`text: \"\${displayVersion} Open Beta\"\`;
+const updatedHeader = siteHeader.replace(headerPattern, newHeaderText);
+fs.writeFileSync('./apps/docs/src/components/SiteHeader.tsx', updatedHeader);
+console.log('Updated SiteHeader to ' + displayVersion + ' Open Beta');
+
+// 3. CONTRIBUTING.md
+const contributing = fs.readFileSync('./CONTRIBUTING.md', 'utf8');
+const contribPattern = /Open Beta \([^\)]+\)/;
+const newContribText = \`Open Beta (\${displayVersion})\`;
+const updatedContrib = contributing.replace(contribPattern, newContribText);
+fs.writeFileSync('./CONTRIBUTING.md', updatedContrib);
+console.log('Updated CONTRIBUTING.md to ' + displayVersion);
 "
 echo -e "${GREEN}✓ Version bumped${NC}\n"
 

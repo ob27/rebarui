@@ -23,8 +23,8 @@ const BLOCKS: Construct[] = [
     ],
     ariaLabel: "Main",
     // Deliberately a literal string, not derived from packages/core/package.json's real semver
-    // ("0.5.0") — the desired display wording ("0.06 Open Beta") doesn't match that format.
-    trailing: { kind: "text", text: "0.06 Open Beta" },
+    // ("0.8.0") — the desired display wording ("0.08 Open Beta") doesn't match that format.
+    trailing: { kind: "text", text: "0.08 Open Beta" },
     themeToggle: true,
   },
 ];
