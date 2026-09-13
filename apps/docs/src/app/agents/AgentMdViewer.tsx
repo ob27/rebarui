@@ -4,12 +4,12 @@ import { useState } from "react";
 import { Box, Button, Stack, Text } from "rebar-ui";
 
 /**
- * The code box + copy/download affordances for Agents.md — split into its own client component
+ * The code box + copy/download affordances for agent.md — split into its own client component
  * because copy-to-clipboard and the download link both need real event handlers, while the page
  * itself reads the file from disk in a server component (one file, one source of truth for both
  * what's displayed and what's downloaded — no risk of the two drifting apart).
  */
-export function AgentsMdViewer({ content }: { content: string }) {
+export function AgentMdViewer({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -25,14 +25,14 @@ export function AgentsMdViewer({ content }: { content: string }) {
           {copied ? "Copied!" : "Copy"}
         </Button>
         <a
-          href="/api/agents-md"
-          download="Agents.md"
+          href="/agent.md"
+          download="agent.md"
           className="rebar-button"
           data-rebar-variant="secondary"
           data-rebar-size="sm"
           style={{ textDecoration: "none" }}
         >
-          Download Agents.md
+          Download agent.md
         </a>
       </Stack>
 
@@ -49,16 +49,15 @@ export function AgentsMdViewer({ content }: { content: string }) {
           whiteSpace: "pre-wrap",
           wordBreak: "break-word",
           overflowX: "auto",
-          fontSize: "var(--rebar-font-size-xs)",
-          maxHeight: 640,
+          fontSize: "var(--rebar-font-size-sm)",
+          lineHeight: "var(--rebar-line-height-normal)",
+          fontFamily: "var(--rebar-font-family-mono)",
+          maxHeight: "70vh",
           overflowY: "auto",
         }}
       >
-        <code>{content}</code>
+        <Text as="code">{content}</Text>
       </Box>
-      <Text size="xs" color="secondary">
-        {content.split("\n").length} lines.
-      </Text>
     </Stack>
   );
 }

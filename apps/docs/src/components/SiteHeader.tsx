@@ -12,7 +12,7 @@ const BLOCKS: Construct[] = [
     // external file) fundamentally can't, since it has no visibility into this page's own DOM/CSS.
     logo: { label: "Rebar UI", href: "/", iconPath: REBAR_MARK_PATH, iconViewBox: REBAR_MARK_VIEWBOX },
     items: [
-      { href: "/docs", label: "Docs" },
+      { href: "/agents", label: "Agents" },
       { href: "/imitations", label: "Imitations" },
       { href: "/synthetics", label: "Synthetics" },
       { href: "/opinions", label: "Opinions" },

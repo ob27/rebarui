@@ -17,23 +17,16 @@ echo -e "${BLUE}Current version: ${CURRENT_VERSION}${NC}"
 # Parse version components
 IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
 
+# Remove leading zeros for arithmetic (bash treats 09 as invalid octal)
+MINOR=$((10#$MINOR))
+
 # Bump minor version
 NEW_MINOR=$((MINOR + 1))
 NEW_VERSION="${MAJOR}.${NEW_MINOR}.0"
 echo -e "${BLUE}New version: ${NEW_VERSION}${NC}\n"
 
-# Step 1: Run lint
-echo -e "${YELLOW}Step 1/6: Running lint...${NC}"
-pnpm run lint
-echo -e "${GREEN}✓ Lint passed${NC}\n"
-
-# Step 2: Run tests
-echo -e "${YELLOW}Step 2/6: Running tests...${NC}"
-pnpm run test
-echo -e "${GREEN}✓ Tests passed${NC}\n"
-
-# Step 3: Bump version in all package.json files and update marketing page
-echo -e "${YELLOW}Step 3/6: Bumping version to ${NEW_VERSION}...${NC}"
+# Step 1: Bump version in all package.json files and update marketing page
+echo -e "${YELLOW}Step 1/6: Bumping version to ${NEW_VERSION}...${NC}"
 node -e "
 const fs = require('fs');
 
@@ -86,21 +79,32 @@ console.log('Updated CONTRIBUTING.md to ' + displayVersion);
 // 4. REBAR_UI_VERSION constant in packages/core/src/index.ts
 const coreIndex = fs.readFileSync('./packages/core/src/index.ts', 'utf8');
 const versionPattern = /export const REBAR_UI_VERSION = \"[^\"]+\"/;
-const newVersionConst = \`export const REBAR_UI_VERSION = \"\${NEW_VERSION}\"\`;
+const newVersionConst = 'export const REBAR_UI_VERSION = \"${NEW_VERSION}\"';
 const updatedCoreIndex = coreIndex.replace(versionPattern, newVersionConst);
 fs.writeFileSync('./packages/core/src/index.ts', updatedCoreIndex);
-console.log('Updated REBAR_UI_VERSION constant to ' + NEW_VERSION);
-// 5. LLM.MD header version
-const llmMd = fs.readFileSync('./packages/core/LLM.MD', 'utf8');
-const llmVersionPattern = /# Rebar UI — Agent Context \(v[^\)]+\)/;
-const newLlmHeader = \`# Rebar UI — Agent Context (v\${NEW_VERSION})\`;
-const updatedLlmMd = llmMd.replace(llmVersionPattern, newLlmHeader);
-fs.writeFileSync('./packages/core/LLM.MD', updatedLlmMd);
-console.log('Updated LLM.MD header to v' + NEW_VERSION);"
+console.log('Updated REBAR_UI_VERSION constant to ${NEW_VERSION}');
+// 5. agent.md header version
+const agentMd = fs.readFileSync('./packages/core/agent.md', 'utf8');
+const agentVersionPattern = /# Rebar UI — Agent Context \(v[^\)]+\)/;
+const newAgentHeader = `# Rebar UI — Agent Context (v${NEW_VERSION})`;
+const updatedAgentMd = agentMd.replace(agentVersionPattern, newAgentHeader);
+fs.writeFileSync('./packages/core/agent.md', updatedAgentMd);
+console.log('Updated agent.md header to v${NEW_VERSION}');
+"
 echo -e "${GREEN}✓ Version bumped${NC}\n"
 
-# Step 4: Build
-echo -e "${YELLOW}Step 4/6: Building...${NC}"
+# Step 2: Run lint
+echo -e "${YELLOW}Step 2/6: Running lint...${NC}"
+pnpm run lint
+echo -e "${GREEN}✓ Lint passed${NC}\n"
+
+# Step 3: Run tests
+echo -e "${YELLOW}Step 3/6: Running tests...${NC}"
+pnpm run test
+echo -e "${GREEN}✓ Tests passed${NC}\n"
+
+# Step 4: Build with updated versions
+echo -e "${YELLOW}Step 4/6: Building with updated versions...${NC}"
 pnpm run build
 echo -e "${GREEN}✓ Build complete${NC}\n"
 

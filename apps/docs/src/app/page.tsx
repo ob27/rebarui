@@ -25,8 +25,8 @@ const HERO_BLOCKS: Construct[] = [
     subtitle:
       "Headless-first, intentionally low-fidelity React components, built to be built with by an LLM through a small placement layer — not hand-authored. Measured cheaper, faster, and more consistent than hand-authored Ant Design on a single build — and once a design goes through 15+ rounds of revision, still cheaper overall even after fully migrating to a real design system for production.",
     actions: [
-      { label: "Getting Started", href: "/docs/getting-started", variant: "primary" },
-      { label: "Design Heuristics", href: "/docs/heuristics" },
+      { label: "Agent Context", href: "/agents", variant: "primary" },
+      { label: "Design Heuristics", href: "/agents" },
     ],
     codeSnippet: "npm install rebar-ui",
   },
@@ -95,7 +95,7 @@ const PILLARS: PillarGridItem[] = [
   {
     title: "Design Heuristics",
     body: "Spacing, type scale, color, and interaction defaults baked in — cited to Nielsen, Shneiderman, Material, Carbon, and USWDS, not invented. See each rule applied live by the DSL Packer.",
-    href: "/docs/heuristics",
+    href: "/agents",
     cta: "Read the heuristics",
   },
   {

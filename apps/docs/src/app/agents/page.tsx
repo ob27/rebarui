@@ -1,22 +1,22 @@
 import fs from "node:fs";
 import path from "node:path";
 import { Heading, Stack, Text } from "rebar-ui";
-import { LlmMdViewer } from "./LlmMdViewer";
+import { AgentMdViewer } from "./AgentMdViewer";
 
 // Read directly from packages/core — the same file that ships inside the real rebar-ui npm
 // tarball (see its package.json "files" list) — rather than a duplicated copy under apps/docs.
-// One file, read here and by the /api/llm-md download route; the two can't drift apart.
-function readLlmMd() {
-  const filePath = path.join(process.cwd(), "..", "..", "packages", "core", "LLM.MD");
+// One file, read here and by the /api/agent-md download route; the two can't drift apart.
+function readAgentMd() {
+  const filePath = path.join(process.cwd(), "..", "..", "packages", "core", "agent.md");
   return fs.readFileSync(filePath, "utf-8");
 }
 
-export default function LlmMdPage() {
-  const content = readLlmMd();
+export default function AgentMdPage() {
+  const content = readAgentMd();
 
   return (
     <Stack gap="lg">
-      <Heading level={1}>LLM.MD</Heading>
+      <Heading level={1}>Agent.md</Heading>
       <Text color="secondary">
         The full design-heuristics checklist and framework rules for building with Rebar UI —
         everything an AI agent needs to understand the Four-Tier Typology, the distinction between
@@ -27,7 +27,7 @@ export default function LlmMdPage() {
         every contribution aligned with the project&apos;s design philosophy.
       </Text>
 
-      <LlmMdViewer content={content} />
+      <AgentMdViewer content={content} />
     </Stack>
   );
 }
