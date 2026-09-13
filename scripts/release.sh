@@ -90,7 +90,13 @@ const newVersionConst = \`export const REBAR_UI_VERSION = \"\${NEW_VERSION}\"\`;
 const updatedCoreIndex = coreIndex.replace(versionPattern, newVersionConst);
 fs.writeFileSync('./packages/core/src/index.ts', updatedCoreIndex);
 console.log('Updated REBAR_UI_VERSION constant to ' + NEW_VERSION);
-"
+// 5. LLM.MD header version
+const llmMd = fs.readFileSync('./packages/core/LLM.MD', 'utf8');
+const llmVersionPattern = /# Rebar UI — Agent Context \(v[^\)]+\)/;
+const newLlmHeader = \`# Rebar UI — Agent Context (v\${NEW_VERSION})\`;
+const updatedLlmMd = llmMd.replace(llmVersionPattern, newLlmHeader);
+fs.writeFileSync('./packages/core/LLM.MD', updatedLlmMd);
+console.log('Updated LLM.MD header to v' + NEW_VERSION);"
 echo -e "${GREEN}✓ Version bumped${NC}\n"
 
 # Step 4: Build

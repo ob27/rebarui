@@ -9,7 +9,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "A four-tier lifecycle — Imitations → Synthetics → Opinions → Orders — classifying every rebar-ui component and placement-layer block by where it sits between a raw static primitive and a piece of page-level structural law. Orthogonal to two existing axes: the [component/block split](/docs/robot-md) (what you import directly vs. what the Packer composes from content), and Web/Mobile/Diagram (components) / Global/Web/Mobile (blocks, see `ref/BLOCKS.md`) (which viewport/platform a thing targets). Every combination of tier and those other axes is legal — a Web-category, Order-tier component (`NavBar`) and a Global-category, Synthetic-tier block (`checklist`) both exist.",
+        text: "A four-tier lifecycle — Imitations → Synthetics → Opinions → Orders — classifying every rebar-ui component and placement-layer block by where it sits between a raw static primitive and a piece of page-level structural law. Orthogonal to two existing axes: the [component/block split](/docs/agents-md) (what you import directly vs. what the Packer composes from content), and Web/Mobile/Diagram (components) / Global/Web/Mobile (blocks, see `ref/BLOCKS.md`) (which viewport/platform a thing targets). Every combination of tier and those other axes is legal — a Web-category, Order-tier component (`NavBar`) and a Global-category, Synthetic-tier block (`checklist`) both exist.",
       },
     ],
   },

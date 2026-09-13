@@ -15,7 +15,7 @@ import type { CatalogConstruct } from "./constructCatalog.types";
 //
 // A second research pass, once the first catalog fully closed: specifically cross-referenced
 // against Ant Design's own current construct set (v6), since AntD is this project's own stated
-// migration target (see ref/PLAN.md / robot.md's "Migration" section) — closing a gap here also
+// migration target (see ref/PLAN.md / Agents.md's "Migration" section) — closing a gap here also
 // closes a migration-coverage gap, not just a generic "libraries have this" one. That pass's
 // seven entries — BackTop, Avatar.Group, Popconfirm, Affix, Tour, TreeSelect, and Mentions — have
 // also all shipped now, see /synthetics/back-top, /synthetics/avatar-group,

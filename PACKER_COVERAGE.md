@@ -216,7 +216,7 @@ has been rewritten to reflect this).**
 
 ## Working rule this inventory feeds
 
-See `robot.md`'s "Working on the marketing site" section: touching `apps/docs` to add new content
+See `agents.md`'s "Working on the marketing site" section: touching `apps/docs` to add new content
 is itself a signal to check this inventory and the construct catalog first — if the needed shape
 doesn't exist as a construct yet, the correct order is component (if needed) → construct → printed page,
 never a hand-authored shortcut that quietly adds to the hand-drawn count above.

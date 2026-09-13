@@ -56,7 +56,7 @@ const ROUTES = [
   "/opinions/file-manager", "/opinions/layers-panel",
   "/docs", "/docs/contributing", "/docs/design-philosophy", "/docs/devtools",
   "/docs/getting-started", "/docs/heuristics", "/docs/mobile-skew",
-  "/docs/migration", "/docs/packer-coverage", "/docs/robot-md", "/docs/theming", "/docs/token-estimate",
+  "/docs/migration", "/docs/packer-coverage", "/docs/agents-md", "/docs/theming", "/docs/token-estimate",
   "/status",
 ];
 

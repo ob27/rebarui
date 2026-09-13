@@ -1,5 +1,6 @@
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { Image, Stack } from "rebar-ui";
 
 const BLOCKS: Construct[] = [
   {
@@ -48,5 +49,14 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function BenchmarksPage() {
-  return <NextBlockRenderer blocks={BLOCKS} />;
+  return (
+    <Stack gap="lg">
+      <Image
+        src="/benchmark.jpeg"
+        alt="Benchmarks hero image"
+        style={{ width: "100%", borderRadius: "8px" }}
+      />
+      <NextBlockRenderer blocks={BLOCKS} />
+    </Stack>
+  );
 }

@@ -5,6 +5,6 @@
  */
 export type Tier = "imitation" | "synthetic" | "opinion" | "order" | "genesis";
 
-/** A block is always at least a fixed composition of components (see robot.md's own
+/** A block is always at least a fixed composition of components (see Agents.md's own
  * component/block test) — Imitation never applies to one. Geneses are starter projects, not blocks. */
 export type ConstructTier = Exclude<Tier, "imitation" | "genesis">;

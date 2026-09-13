@@ -32,10 +32,10 @@ Packer-printed vs. hand-authored, with a prioritized gap list. Regenerate the nu
 by git — `.gitignore`'s blanket `ref/` rule had silently kept it (and a couple other `ref/` docs)
 out of version control entirely.
 
-## Agent context: `robot.md`
+## Agent context: `agents.md`
 
 Before designing a new component, building a block, or using the Packer (`@rebar-ui/placement`)
-to compose a page, read `packages/core/robot.md` — the compressed, single-file context for
+to compose a page, read `packages/core/agents.md` — the compressed, single-file context for
 exactly these tasks: Framework Rules vs. Heuristics (a fixed, binary constraint vs. a
 judgment-requiring design principle — don't conflate the two), the controlled/uncontrolled
 component pattern, the block-authoring conventions, the full block/component catalogs, and the

@@ -1,6 +1,6 @@
 # Agent guidance for `@rebar-ui/placement`
 
-**Read `rebar-ui`'s `robot.md` first** (ships in that package, `node_modules/rebar-ui/robot.md`) —
+**Read `rebar-ui`'s `agents.md` first** (ships in that package, `node_modules/rebar-ui/agents.md`) —
 a single compressed context covering Framework Rules vs. Heuristics, the full block catalog, and
 component-authoring conventions, alongside everything below. This file is a narrower excerpt
 scoped to this package alone.

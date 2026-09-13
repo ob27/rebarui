@@ -41,15 +41,32 @@ export function tierBlockTypes(tier: Tier): Construct["type"][] {
   return (Object.keys(BLOCK_TIER) as Construct["type"][]).filter((type) => BLOCK_TIER[type] === tier).sort();
 }
 
+/**
+ * Sub-components that share a page with their parent — excluded from the left nav to avoid
+ * duplicate entries pointing to the same URL. Each of these is documented on its parent's page
+ * (e.g. FormItem on /opinions/form, Radio on /imitations/radio-group).
+ */
+const SUB_COMPONENT_EXCLUSIONS = new Set([
+  "FormItem",        // documented on /opinions/form with Form
+  "Radio",           // documented on /imitations/radio-group with RadioGroup
+  "AccordionItem",   // documented on /opinions/accordion with Accordion
+  "ToastProvider",   // documented on /opinions/toast with Toast
+  "TabList",         // documented on /opinions/tabs with Tabs
+  "Tab",             // documented on /opinions/tabs with Tabs
+  "TabPanel",        // documented on /opinions/tabs with Tabs
+]);
+
 export function tierDocsShellSections(tier: Tier): DocsShellSection[] {
   const route = TIER_ROUTE[tier];
-  const componentSections: DocsShellSection[] = tierComponentNames(tier).map((name) => {
-    const href = HAS_FULL_PAGE[name];
-    const category = shippedCategory(name);
-    return href ? { href, label: name, category } : { href: route, label: name, category, status: "No reference page" };
-  });
+  const componentSections: DocsShellSection[] = tierComponentNames(tier)
+    .filter((name) => !SUB_COMPONENT_EXCLUSIONS.has(name))
+    .map((name) => {
+      const href = HAS_FULL_PAGE[name];
+      const category = shippedCategory(name);
+      return href ? { href, label: name, category } : { href: route, label: name, category, status: "No reference page" };
+    });
   const blockSections: DocsShellSection[] = tierBlockTypes(tier).map((type) => ({
-    href: `${route}#${type}`,
+    href: `${route}/${type}`,
     label: type,
     category: "block",
   }));
