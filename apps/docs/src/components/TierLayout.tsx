@@ -12,7 +12,7 @@ export function TierLayout({ tier, children }: { tier: Tier; children: ReactNode
       sections={tierDocsShellSections(tier)}
       categoryLabels={TIER_CATEGORY_LABELS}
       unstatusedLabel="Documented"
-      searchPlaceholder="Search components…"
+      searchPlaceholder="Search constructs…"
     >
       {children}
     </DocsShell>

@@ -4,7 +4,6 @@ import { HAS_FULL_PAGE } from "@/data/hasFullPage";
 import { shippedCategory } from "@/data/shippedCategory";
 import { tierComponentNames } from "@/data/tierSections";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
-import { getBlocksByTier } from "@/data/catalogueBlocks";
 
 const CATEGORY_LABEL = { web: "Web", mobile: "Mobile", diagram: "Diagram" } as const;
 const CATEGORY_TONE = { web: "info", mobile: "success", diagram: "warning" } as const;
@@ -33,15 +32,6 @@ export default function OpinionsPage() {
     ],
   };
 
-  const opinionBlocks = getBlocksByTier("opinion").map(entry => ({
-    type: "construct-entry" as const,
-    id: entry.id,
-    measured: entry.measured,
-    description: entry.description,
-    shape: entry.shape,
-    blocks: entry.blocks,
-  }));
-
   return (
     <Stack gap="lg">
       <Image src="/catalogue-heros/opinions.jpeg" alt="Opinions hero image" style={{ width: "100%", borderRadius: "8px" }} />
@@ -65,10 +55,6 @@ export default function OpinionsPage() {
 
       <Heading level={2}>Components ({names.length})</Heading>
       <NextBlockRenderer blocks={[grid]} />
-
-      <Heading level={2}>Blocks (9)</Heading>
-
-      <NextBlockRenderer blocks={opinionBlocks} />
     </Stack>
   );
 }
