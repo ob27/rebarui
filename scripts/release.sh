@@ -99,9 +99,7 @@ echo -e "${GREEN}✓ Pushed to GitHub${NC}\n"
 
 # Step 6: Deploy to Firebase
 echo -e "${YELLOW}Step 6/6: Deploying to Firebase...${NC}"
-cd /Users/tom/oestler
 firebase deploy --only hosting
-cd - > /dev/null
 echo -e "${GREEN}✓ Deployed to Firebase${NC}\n"
 
 echo -e "${GREEN}✅ Release complete! Version ${NEW_VERSION} is now live.${NC}"
