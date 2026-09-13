@@ -82,6 +82,14 @@ const newContribText = \`Open Beta (\${displayVersion})\`;
 const updatedContrib = contributing.replace(contribPattern, newContribText);
 fs.writeFileSync('./CONTRIBUTING.md', updatedContrib);
 console.log('Updated CONTRIBUTING.md to ' + displayVersion);
+
+// 4. REBAR_UI_VERSION constant in packages/core/src/index.ts
+const coreIndex = fs.readFileSync('./packages/core/src/index.ts', 'utf8');
+const versionPattern = /export const REBAR_UI_VERSION = \"[^\"]+\"/;
+const newVersionConst = \`export const REBAR_UI_VERSION = \"\${NEW_VERSION}\"\`;
+const updatedCoreIndex = coreIndex.replace(versionPattern, newVersionConst);
+fs.writeFileSync('./packages/core/src/index.ts', updatedCoreIndex);
+console.log('Updated REBAR_UI_VERSION constant to ' + NEW_VERSION);
 "
 echo -e "${GREEN}✓ Version bumped${NC}\n"
 
