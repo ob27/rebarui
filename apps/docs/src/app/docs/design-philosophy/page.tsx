@@ -1,7 +1,7 @@
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Why does this look so plain?",

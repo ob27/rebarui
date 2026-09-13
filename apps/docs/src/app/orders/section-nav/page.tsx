@@ -1,5 +1,5 @@
 import { Box, Heading, SectionNav, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { LivePreview } from "@/components/LivePreview";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -13,7 +13,7 @@ const DEMO_SECTIONS = Array.from({ length: 40 }, (_, i) => ({
   label: `Section ${i + 1}`,
 }));
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

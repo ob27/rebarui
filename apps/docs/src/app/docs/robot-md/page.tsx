@@ -20,7 +20,7 @@ export default function RobotMdPage() {
       <Text color="secondary">
         A single, compressed context file for an AI agent working with Rebar UI — everything
         needed to design new components, build blocks out of those components, and use the Packer
-        (<code>@rebar-ui/placement</code>) to compose a page from a plain <code>Block[]</code>{" "}
+        (<code>@rebar-ui/placement</code>) to compose a page from a plain <code>Construct[]</code>{" "}
         document, plus the full design-heuristics checklist condensed to one line each. Paste it
         into an agent&apos;s system prompt or project context before asking it to build with (or
         extend) this framework — it trades the full sourced reasoning in{" "}

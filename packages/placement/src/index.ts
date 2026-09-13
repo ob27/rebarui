@@ -5,7 +5,7 @@ export type {
   Action,
   AiChatMessageData,
   AiChatMessageStatus,
-  Block,
+  Construct,
   FeatureGridItem,
   GoalTrackerFocusAreaData,
   GoalTrackerGoalData,
@@ -30,7 +30,7 @@ export type {
   WizardSubmitHandler,
 } from "./live";
 
-export { isOpinionBlockType, OPINION_BLOCK_TYPES } from "./opinions";
-export type { OpinionBlockType } from "./opinions";
+export { isOpinionConstructType, OPINION_CONSTRUCT_TYPES } from "./opinions";
+export type { OpinionConstructType } from "./opinions";
 
 export { ICONS, IconClock, IconClose, IconInfo, IconRefresh } from "./icons";

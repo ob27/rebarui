@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { FileManager, Heading, Stack, Text } from "rebar-ui";
 import type { FileManagerNode } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -22,7 +22,7 @@ const INITIAL_ROOT: FileManagerNode = {
   ],
 };
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

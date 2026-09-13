@@ -1,8 +1,8 @@
 import { Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
-const INTRO_BLOCKS: Block[] = [
+const INTRO_BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Migration",
@@ -16,7 +16,7 @@ const INTRO_BLOCKS: Block[] = [
   },
 ];
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "1. Codemods — for what's safe to automate",

@@ -1,9 +1,10 @@
-import { CodeBlock, Heading, Stack, Tag, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import { CodeBlock, Heading, Image, Stack, Tag, Text } from "rebar-ui";
+import type { Construct } from "@rebar-ui/placement";
 import { HAS_FULL_PAGE } from "@/data/hasFullPage";
 import { shippedCategory } from "@/data/shippedCategory";
 import { tierComponentNames } from "@/data/tierSections";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { getBlocksByTier } from "@/data/catalogueBlocks";
 
 const CATEGORY_LABEL = { web: "Web", mobile: "Mobile", diagram: "Diagram" } as const;
 const CATEGORY_TONE = { web: "info", mobile: "success", diagram: "warning" } as const;
@@ -11,7 +12,7 @@ const CATEGORY_TONE = { web: "info", mobile: "success", diagram: "warning" } as 
 export default function OrdersPage() {
   const names = tierComponentNames("order");
 
-  const grid: Block = {
+  const grid: Construct = {
     type: "card-grid",
     items: names.map((name) => {
       const href = HAS_FULL_PAGE[name];
@@ -22,6 +23,7 @@ export default function OrdersPage() {
 
   return (
     <Stack gap="lg">
+      <Image src="/catalogue-heros/orders.jpeg" alt="Orders hero image" style={{ width: "100%", borderRadius: "8px" }} />
       <Heading level={1}>Orders</Heading>
       <Text color="secondary">
         Macro/page-level structural governance — components and blocks that arrange other things
@@ -42,163 +44,17 @@ export default function OrdersPage() {
 
       <Heading level={2}>Blocks (8)</Heading>
 
-      <NextBlockRenderer
-        blocks={[
-          {
-            type: "block-entry",
-            id: "nav-bar",
-            measured: false,
-            description:
-              'A horizontal site nav that measures its own available width and collapses items that would push it past that width into a trailing "More" popover instead of wrapping or clipping — see the "Nav overflow" rule on Design Heuristics. Drag the demo box\'s own bottom-right corner to actually resize it live — resizable is off by default (a real site header should never be user-resizable); it\'s only on here to demonstrate the collapse.',
-            shape: `{ type: "nav-bar", items: { label: string, href: string }[], ariaLabel?: string, resizable?: boolean }`,
-            blocks: [
-              {
-                type: "nav-bar",
-                ariaLabel: "Example",
-                resizable: true,
-                items: [
-                  { label: "Docs", href: "#" },
-                  { label: "Imitations", href: "#" },
-                  { label: "Opinions", href: "#" },
-                  { label: "Benchmarks", href: "#" },
-                  { label: "About", href: "#" },
-                ],
-              },
-            ],
-          },
-        ]}
-      />
-
-      <NextBlockRenderer
-        blocks={[
-          {
-            type: "block-entry",
-            id: "site-header",
-            measured: false,
-            description: "A real site nav bar: logo (optionally linked, optionally with an icon image), a nav-bar capped at half the header's own width per the 'Nav overflow' heuristic (the logo and trailing content always keep guaranteed room), and optional trailing content pushed to the far edge — plain text (a version string), a login action, or a signed-in user's avatar. This project's own site header (above) is exactly this block, not hand-authored — see it at real scale there.",
-            shape: `{ type: "site-header", logo: { label: string, href?: string, iconSrc?: string }, items: { label: string, href: string }[], ariaLabel?: string, trailing?: { kind: "text", text: string } | { kind: "login", label?: string, href?: string } | { kind: "avatar", name: string, avatarSrc?: string, href?: string, placeholder?: boolean } }`,
-            blocks: [
-              {
-                type: "site-header",
-                logo: { label: "Acme", href: "#" },
-                items: [
-                  { label: "Docs", href: "#" },
-                  { label: "Pricing", href: "#" },
-                ],
-                trailing: { kind: "avatar", name: "Jane Doe", href: "#", placeholder: true },
-              },
-            ],
-          },
-        ]}
-      />
-
-      <NextBlockRenderer
-        blocks={[
-          {
-            type: "block-entry",
-            id: "nav-index",
-            measured: false,
-            description:
-              "A vertical link index — once the list passes 12 items, a search box appears, plus a real MultiSelect checklist for category and, once items carry more than one distinct status, a second, independent one for status. The cross-page counterpart to page-index below (this one links to other pages; that one links to headings on the current one). A narrow side-rail control, not center-column content — see it working at real scale on any tier page's own sidebar.",
-            shape: `{
-  type: "nav-index",
-  items: { label: string, href: string, category?: string, status?: string }[],
-  categoryLabels?: Record<string, string>,
-  statusLabels?: Record<string, string>,
-  unstatusedLabel?: string,
-  searchPlaceholder?: string,
-  ariaLabel?: string,
-}`,
-          },
-        ]}
-      />
-
-      <NextBlockRenderer
-        blocks={[
-          {
-            type: "block-entry",
-            id: "page-index",
-            measured: false,
-            description:
-              'An in-page content index — tracks which heading is currently in view and highlights it (the "beacon"), scrolling itself to keep that highlight visible as you scroll the page. Fades into a scroll "mist" at whichever edge still has more headings below the fold, stays a bounded, fixed-height rail regardless of how many headings exist, and gains its own search box once the list passes 12 headings. By default takes no sections prop: the Packer derives them itself by scanning the document\'s own doc-section blocks for a heading. A narrow, sticky side-rail, not center-column content — see it working for real, at full scale, on /docs/heuristics.',
-            shape: `{ type: "page-index", searchPlaceholder?: string, sections?: { id: string, label: string }[] }`,
-          },
-        ]}
-      />
-
-      <NextBlockRenderer
-        blocks={[
-          {
-            type: "block-entry",
-            id: "side-panel",
-            measured: false,
-            description: "A persistent, non-modal side panel (the Slack 'thread'/'details' pattern) beside a nested main: Block[] document — no backdrop, the main content stays fully visible and interactive while it's open. Collapses to a slim, always-present rail with a toggle button rather than disappearing entirely. Distinct from modal (a forced-open, backdrop-covering Dialog for static-render contexts only).",
-            shape: `{ type: "side-panel", main: Block[], panel: { title: string, blocks: Block[], defaultOpen?: boolean } }`,
-            blocks: [
-              {
-                type: "side-panel",
-                main: [{ type: "checklist", heading: "Checklist", items: ["Reviewed", "Approved"] }],
-                panel: { title: "Thread", blocks: [{ type: "callout", tone: "info", title: "Alex", subtitle: "Can we ship this Friday?" }] },
-              },
-            ],
-          },
-        ]}
-      />
-
-      <NextBlockRenderer
-        blocks={[
-          {
-            type: "block-entry",
-            id: "tabs",
-            measured: false,
-            description: "Real Tabs (Radix underneath) — each tab holds its own nested Block[], rendered recursively, so any other block type can live inside a tab panel.",
-            shape: `{ type: "tabs", tabs: { label: string, blocks: Block[] }[] }`,
-            blocks: [
-              {
-                type: "tabs",
-                tabs: [
-                  { label: "Team", blocks: [{ type: "callout", tone: "info", title: "Team panel" }] },
-                  { label: "Details", blocks: [{ type: "callout", tone: "info", title: "Details panel" }] },
-                ],
-              },
-            ],
-          },
-        ]}
-      />
-
-      <NextBlockRenderer
-        blocks={[
-          {
-            type: "block-entry",
-            id: "modal",
-            measured: false,
-            description:
-              "A real Dialog (Radix underneath), holding its own nested Block[], with confirm/cancel footer actions. Renders forced open — a convention for static-render/screenshot contexts, not for a normal live page. No live example here on purpose: a forced-open modal on a page with other content around it covers the whole page as a fixed overlay. See it live, properly triggered and closable three ways, on the /opinions/dialog Dialog reference page.",
-            shape: `{ type: "modal", title: string, blocks: Block[], confirmLabel?: string, cancelLabel?: string }`,
-          },
-        ]}
-      />
-
-      <NextBlockRenderer
-        blocks={[
-          {
-            type: "block-entry",
-            id: "comparison",
-            measured: false,
-            description: "The one block whose own layout isn't single-column: two labeled panels side by side, each holding its own nested Block[], rendered recursively the same way tabs/modal already nest. Measures the left panel's real rendered height and applies it to the right, so an embedded iframe on either side always matches its sibling instead of drifting out of sync.",
-            shape: `{ type: "comparison", leftLabel: string, leftBlocks: Block[], rightLabel: string, rightBlocks: Block[] }`,
-            blocks: [
-              {
-                type: "comparison",
-                leftLabel: "Rebar",
-                leftBlocks: [{ type: "checklist", heading: "Checklist", items: ["First item", "Second item"] }],
-                rightLabel: "Embedded page",
-                rightBlocks: [{ type: "iframe", src: "https://example.com", title: "Example embed" }],
-              },
-            ],
-          },
-        ]}
-      />
+      {(() => {
+        const orderBlocks = getBlocksByTier("order").map(entry => ({
+          type: "construct-entry" as const,
+          id: entry.id,
+          measured: entry.measured,
+          description: entry.description,
+          shape: entry.shape,
+          blocks: entry.blocks,
+        }));
+        return <NextBlockRenderer blocks={orderBlocks} />;
+      })()}
     </Stack>
   );
 }

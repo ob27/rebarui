@@ -1,11 +1,11 @@
 import { Box, Heading, Histogram, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const SAMPLE = [62, 68, 71, 74, 75, 75, 78, 80, 81, 82, 83, 84, 85, 85, 86, 88, 90, 91, 93, 96];
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

@@ -143,7 +143,7 @@
  * tier specs on /benchmarks) keeps working unmodified; the new fields are additive and optional.
  *
  * `side-panel` wraps `rebar-ui`'s `SidePanel` — a persistent, non-modal side panel (the Slack
- * "thread"/"details" pattern), rendered beside a nested `main: Block[]` document rather than over
+ * "thread"/"details" pattern), rendered beside a nested `main: Construct[]` document rather than over
  * it. Distinct from `modal` (a forced-open `Dialog`, a backdrop overlay meant for a static-render
  * context only): a side panel has no backdrop and is meant for a real, live page — the main
  * content stays fully visible and interactive while it's open. Unmeasured, like the rest of this
@@ -348,7 +348,7 @@ export interface SectionNavItem {
   label: string;
 }
 
-export type Block =
+export type Construct =
   | { type: "header"; title: string; action?: Action }
   | {
       type: "nav-bar";
@@ -534,8 +534,8 @@ export type Block =
     }
   | { type: "data-list"; items: DataListItem[] }
   | { type: "filter-bar"; searchPlaceholder?: string; filterLabel?: string; filterOptions?: string[]; actionLabel?: string }
-  | { type: "tabs"; tabs: { label: string; blocks: Block[] }[] }
-  | { type: "modal"; title: string; blocks: Block[]; confirmLabel?: string; cancelLabel?: string }
+  | { type: "tabs"; tabs: { label: string; blocks: Construct[] }[] }
+  | { type: "modal"; title: string; blocks: Construct[]; confirmLabel?: string; cancelLabel?: string }
   | {
       type: "wizard";
       steps: WizardStep[];
@@ -570,7 +570,7 @@ export type Block =
       searchPlaceholder?: string;
       shareUrl?: string;
       /** Content shown inside the "Board settings" modal — omit to hide the button entirely. */
-      settingsBlocks?: Block[];
+      settingsBlocks?: Construct[];
     }
   | {
       type: "sticky-kanban";
@@ -582,9 +582,9 @@ export type Block =
       onChange?: string;
       searchPlaceholder?: string;
       shareUrl?: string;
-      settingsBlocks?: Block[];
+      settingsBlocks?: Construct[];
     }
-  | { type: "hero"; badge?: string; title: string; subtitle: string; actions?: Action[]; codeSnippet?: string }
+  | { type: "hero"; badge?: string; title: string; subtitle: string; actions?: Action[]; codeSnippet?: string; imageSrc?: string }
   | { type: "section-header"; kicker?: string; title: string; subtitle?: string }
   | { type: "doc-section"; heading?: string; level?: 1 | 2 | 3; body: ProseNode[] }
   | { type: "props-table"; heading?: string; rows: PropRow[] }
@@ -600,17 +600,17 @@ export type Block =
   | {
       type: "comparison";
       leftLabel: string;
-      leftBlocks: Block[];
+      leftBlocks: Construct[];
       rightLabel: string;
-      rightBlocks: Block[];
+      rightBlocks: Construct[];
     }
   | {
       type: "side-panel";
       /** The main content area, to the panel's left. */
-      main: Block[];
+      main: Construct[];
       panel: {
         title: string;
-        blocks: Block[];
+        blocks: Construct[];
         /** Whether the panel starts expanded or collapsed to its rail. Default `true`. */
         defaultOpen?: boolean;
       };
@@ -632,10 +632,10 @@ export type Block =
       /** An optional code sample shown as-is (Block JSON, real component JSX, whatever illustrates
        * the point) — not necessarily runnable Block data, just illustrative text. */
       code?: string;
-      /** An optional *live*, real Block[] demo, rendered recursively the same way `tabs`/`modal`/
+      /** An optional *live*, real Construct[] demo, rendered recursively the same way `tabs`/`modal`/
        * `comparison` already nest — distinct from `code` above (which is just displayed text): a
        * heuristic can have one, both, or neither. */
-      exampleBlocks?: Block[];
+      exampleBlocks?: Construct[];
     }
   | {
       type: "spin-card";
@@ -737,13 +737,13 @@ export type Block =
   | {
       /** A component catalog entry — heading, measured/unmeasured tag, description, shape code
        * block, optional implementation code block, and optional live demo blocks. Encapsulates the
-       * BlockEntry pattern used across tier pages (/opinions, /synthetics, /orders) so the chrome
+       * ConstructEntry pattern used across tier pages (/opinions, /synthetics, /orders) so the chrome
        * around each block's demo is Packer-printed, not hand-authored JSX. */
-      type: "block-entry";
+      type: "construct-entry";
       id: string;
       measured: boolean;
       description: string;
       shape: string;
       code?: string;
-      blocks?: Block[];
+      blocks?: Construct[];
     };

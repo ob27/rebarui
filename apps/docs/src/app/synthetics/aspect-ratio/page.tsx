@@ -1,5 +1,5 @@
 import { AspectRatio, Carousel, Heading, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { LivePreview } from "@/components/LivePreview";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -25,7 +25,7 @@ const ALL_RATIOS: { label: string; ratio: number }[] = [
 
 const VARIANT_COUNT = 5;
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

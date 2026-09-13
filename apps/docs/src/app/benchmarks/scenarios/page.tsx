@@ -1,5 +1,5 @@
 import { Alert, Stack } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const SECTIONS = [
@@ -10,7 +10,7 @@ const SECTIONS = [
   { id: "6-reverse-engineering-an-incumbent-enterprise-app", label: "6. Reverse-engineering an enterprise app" },
 ];
 
-const INTRO_BLOCKS: Block[] = [
+const INTRO_BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "What this actually costs you",
@@ -96,7 +96,7 @@ const INTRO_BLOCKS: Block[] = [
   },
 ];
 
-const SCENARIO_1_TAIL_BLOCKS: Block[] = [
+const SCENARIO_1_TAIL_BLOCKS: Construct[] = [
   {
     type: "doc-section",
     body: [

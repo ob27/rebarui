@@ -1,5 +1,5 @@
 import { Alert, Box, Carousel, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const FINAL_SHOTS = [
@@ -11,7 +11,7 @@ const FINAL_SHOTS = [
   { key: "rebar-ui-complex-final", label: "rebar-ui · Complex (round 13)" },
 ] as const;
 
-const INTRO_BLOCKS: Block[] = [
+const INTRO_BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Does iteration change the winner?",
@@ -41,7 +41,7 @@ const INTRO_BLOCKS: Block[] = [
   },
 ];
 
-const CHART_BLOCKS: Block[] = [
+const CHART_BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Cumulative marginal cost per round (Claude, harness-subtracted)",

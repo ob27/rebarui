@@ -1,5 +1,5 @@
 import { Heading, Heatmap, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -49,7 +49,7 @@ const DATA = [
 const HEATMAP_VALUE_MIN = Math.min(...DATA.map((d) => d.value));
 const HEATMAP_VALUE_MAX = Math.max(...DATA.map((d) => d.value));
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

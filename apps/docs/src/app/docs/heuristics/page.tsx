@@ -1,5 +1,5 @@
 import { Stack } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const SECTIONS = [
@@ -64,7 +64,7 @@ const NAV_OVERFLOW_ITEMS = [
 // hand-authored: entry 5's live demo (a Spin inside a Card) is now a generic `spin-card` block, and
 // entry 6's live demo (a real, hand-resizable NavBar) is now `nav-bar`'s `resizable: true` — both
 // added specifically to close these last two gaps, not one-off inline JSX.
-const HEURISTIC_BLOCKS: Block[] = [
+const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Design heuristics, applied by the DSL Packer",
@@ -72,7 +72,7 @@ const HEURISTIC_BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "Every entry below is a *heuristic* — a general, judgment-requiring design principle, not a mechanical constraint. That's a deliberate distinction from a *Framework Rule* (a fixed, binary constraint on how Rebar itself is built or used — see [robot.md](/docs/robot-md)): a heuristic takes interpretation to apply to a new situation, where a Framework Rule has exactly one correct answer every time. These aren't just written guidance, though — they're what the *RebarUI DSL Packer* (`@rebar-ui/placement`'s `BlockRenderer`) actually does when it lays a screen out from a plain `Block[]` document: given a list of named blocks and their content, it packs them onto the screen the way these heuristics say to, every time, without the author making a single layout decision. Each one below shows the real JSON fed in and the real component tree it produces — not a mockup of what it would do. For the complete list of blocks the Packer understands, independent of any one heuristic, see the [tier catalogs](/docs/tiers). This page groups heuristics by where they show up in the Packer's own output rather than by source — the numbered, sourced list in `ref/HEURISTICS.md` is the canonical one if the two ever seem to disagree on ordering.",
+        text: "Every entry below is a *heuristic* — a general, judgment-requiring design principle, not a mechanical constraint. That's a deliberate distinction from a *Framework Rule* (a fixed, binary constraint on how Rebar itself is built or used — see [robot.md](/docs/robot-md)): a heuristic takes interpretation to apply to a new situation, where a Framework Rule has exactly one correct answer every time. These aren't just written guidance, though — they're what the *RebarUI DSL Packer* (`@rebar-ui/placement`'s `BlockRenderer`) actually does when it lays a screen out from a plain `Construct[]` document: given a list of named blocks and their content, it packs them onto the screen the way these heuristics say to, every time, without the author making a single layout decision. Each one below shows the real JSON fed in and the real component tree it produces — not a mockup of what it would do. For the complete list of blocks the Packer understands, independent of any one heuristic, see the [tier catalogs](/docs/tiers). This page groups heuristics by where they show up in the Packer's own output rather than by source — the numbered, sourced list in `ref/HEURISTICS.md` is the canonical one if the two ever seem to disagree on ordering.",
       },
     ],
   },

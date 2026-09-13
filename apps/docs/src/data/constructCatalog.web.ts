@@ -1,11 +1,11 @@
-import type { CatalogComponent } from "./componentCatalog.types";
+import type { CatalogConstruct } from "./constructCatalog.types";
 
 // Sourced from a cross-reference of 180+ published UI libraries/design systems against
-// rebar-ui's current component set (see ref/research/component-inventories/). Not yet built —
+// rebar-ui's current construct set (see ref/research/component-inventories/). Not yet built —
 // these are catalogued gaps, not a roadmap commitment. Descriptions are deliberately short;
 // "sources" names a few representative libraries, not every one that has it.
 //
-// Every entry originally catalogued here has shipped as a real `packages/core` component:
+// Every entry originally catalogued here has shipped as a real `packages/core` construct:
 // TimePicker, Calendar, Drawer/Sheet, Transfer, SplitButton, Command Palette, ScrollArea,
 // Resizable Panels, DatePicker, Image, Lightbox, FileUpload, and RichTextEditor — see
 // /opinions/time-picker, /opinions/calendar, /opinions/drawer, /opinions/transfer,
@@ -14,7 +14,7 @@ import type { CatalogComponent } from "./componentCatalog.types";
 // /opinions/lightbox, /opinions/file-upload, and /opinions/rich-text-editor.
 //
 // A second research pass, once the first catalog fully closed: specifically cross-referenced
-// against Ant Design's own current component set (v6), since AntD is this project's own stated
+// against Ant Design's own current construct set (v6), since AntD is this project's own stated
 // migration target (see ref/PLAN.md / robot.md's "Migration" section) — closing a gap here also
 // closes a migration-coverage gap, not just a generic "libraries have this" one. That pass's
 // seven entries — BackTop, Avatar.Group, Popconfirm, Affix, Tour, TreeSelect, and Mentions — have
@@ -33,7 +33,7 @@ import type { CatalogComponent } from "./componentCatalog.types";
 // /opinions/speed-dial, and /synthetics/masonry.
 //
 // A fourth research pass, anchored on shadcn/ui (built on Radix primitives) — a third distinct
-// library after AntD and MUI, chosen because its component set skews toward interaction
+// library after AntD and MUI, chosen because its construct set skews toward interaction
 // primitives (menus, toggles, disclosure) rather than more chart/data-display variants, which is
 // where the previous two passes' gaps mostly weren't. Checked first that each candidate wasn't
 // already served: `Badge`'s `count`/`dot` props already cover the "small overlay indicator on a
@@ -43,4 +43,4 @@ import type { CatalogComponent } from "./componentCatalog.types";
 // rather than a near-duplicate. That pass's four entries — ContextMenu, Toggle (+ToggleGroup),
 // Menubar, and Collapsible — have also all shipped now, see /opinions/context-menu,
 // /imitations/toggle, /imitations/toggle-group, /opinions/menubar, and /opinions/collapsible.
-export const WEB_CATALOG: CatalogComponent[] = [];
+export const WEB_CATALOG: CatalogConstruct[] = [];

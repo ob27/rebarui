@@ -1,5 +1,5 @@
 import { Alert, Box, Carousel, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const TIER_SHOTS = [
@@ -17,7 +17,7 @@ const TIER_SHOTS = [
   { key: "qwen-rebar-ui-complex", label: "Qwen · rebar-ui · Complex" },
 ] as const;
 
-const INTRO_BLOCKS: Block[] = [
+const INTRO_BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Simple, Composite, Complex tiers",
@@ -31,7 +31,7 @@ const INTRO_BLOCKS: Block[] = [
   },
 ];
 
-const RESULT_BLOCKS: Block[] = [
+const RESULT_BLOCKS: Construct[] = [
   { type: "doc-section", heading: "Claude (marginal tokens, n=5)", body: [] },
   {
     type: "scatter-chart",

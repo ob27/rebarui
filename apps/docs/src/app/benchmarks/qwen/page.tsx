@@ -1,8 +1,8 @@
 import { Alert, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
-const INTRO_BLOCKS: Block[] = [
+const INTRO_BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Qwen3.7 (n=15 per condition)",
@@ -16,7 +16,7 @@ const INTRO_BLOCKS: Block[] = [
   },
 ];
 
-const RESULT_BLOCKS: Block[] = [
+const RESULT_BLOCKS: Construct[] = [
   { type: "doc-section", heading: "Text prompt", body: [] },
   {
     type: "scatter-chart",

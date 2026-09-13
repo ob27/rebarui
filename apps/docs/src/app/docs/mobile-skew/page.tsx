@@ -1,7 +1,7 @@
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Mobile skew: every site gets a mobile print, for free",
@@ -27,7 +27,7 @@ const BLOCKS: Block[] = [
       },
       {
         kind: "text",
-        text: "The Packer already is that single place. It already owns every layout decision for a page built through it — see [Design Heuristics](/docs/heuristics) for anatomical order and the magnetic heuristic — precisely so the model never has to make one. A second render path inside the same renderer, given the same `Block[]` document, is a natural extension of a decision this system already centralizes, not a new architectural seam.",
+        text: "The Packer already is that single place. It already owns every layout decision for a page built through it — see [Design Heuristics](/docs/heuristics) for anatomical order and the magnetic heuristic — precisely so the model never has to make one. A second render path inside the same renderer, given the same `Construct[]` document, is a natural extension of a decision this system already centralizes, not a new architectural seam.",
       },
     ],
   },
@@ -52,7 +52,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "The original ask behind this page was \"every web component *and every web diagram*\" — diagrams (flowcharts, sequence diagrams, org charts) are a separate, not-yet-built archetype family for the Packer. Whenever diagram archetypes are actually built, they inherit this same two-print mechanism for free, for the same reason components do: they'd already be `Block[]`-described and rendered by the same renderer, not bespoke SVG each diagram type invents its own responsive behavior for.",
+        text: "The original ask behind this page was \"every web component *and every web diagram*\" — diagrams (flowcharts, sequence diagrams, org charts) are a separate, not-yet-built archetype family for the Packer. Whenever diagram archetypes are actually built, they inherit this same two-print mechanism for free, for the same reason components do: they'd already be `Construct[]`-described and rendered by the same renderer, not bespoke SVG each diagram type invents its own responsive behavior for.",
       },
     ],
   },

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Heading, Stack, Text, WaybackSlider } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { LivePreview } from "@/components/LivePreview";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -13,7 +13,7 @@ const DATES = [
   new Date(2026, 8, 1),
 ];
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

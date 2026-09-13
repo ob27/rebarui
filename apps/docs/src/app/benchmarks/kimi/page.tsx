@@ -1,8 +1,8 @@
 import { Alert, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
-const TOP_BLOCKS: Block[] = [
+const TOP_BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "A third, genuinely different model: Kimi-K3",

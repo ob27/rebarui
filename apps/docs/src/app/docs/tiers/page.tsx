@@ -1,7 +1,7 @@
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Tiers",
@@ -51,7 +51,7 @@ const BLOCKS: Block[] = [
     body: [
       {
         kind: "text",
-        text: "For a block, \"Opinion\" isn't a judgment call — it's a compiler-checked fact. A block *is* an Opinion iff its schema type declares a `source` field or an `on<Verb>` handler (`packages/placement/src/opinions.ts`'s `OpinionBlockType`, computed directly off `Block`'s own shape, not a hand-maintained list). That's exactly the set of blocks that support the live-data-binding mechanism (`source`/`onX`, resolved by `BlockRenderer`'s `data`/`handlers` props): `ai-chat`, `table`, `goal-tracker`, `card-kanban`, `sticky-kanban`, `wizard`, `scatter-chart`, `line-chart`, `stacked-bar-chart` — nine blocks that already embedded real interactive state directly in `BlockRenderer.tsx` despite looking like static schema data, before that mechanism existed to make it explicit.",
+        text: "For a block, \"Opinion\" isn't a judgment call — it's a compiler-checked fact. A block *is* an Opinion iff its schema type declares a `source` field or an `on<Verb>` handler (`packages/placement/src/opinions.ts`'s `OpinionConstructType`, computed directly off `Block`'s own shape, not a hand-maintained list). That's exactly the set of blocks that support the live-data-binding mechanism (`source`/`onX`, resolved by `BlockRenderer`'s `data`/`handlers` props): `ai-chat`, `table`, `goal-tracker`, `card-kanban`, `sticky-kanban`, `wizard`, `scatter-chart`, `line-chart`, `stacked-bar-chart` — nine blocks that already embedded real interactive state directly in `BlockRenderer.tsx` despite looking like static schema data, before that mechanism existed to make it explicit.",
       },
     ],
   },

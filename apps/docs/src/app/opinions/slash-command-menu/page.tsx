@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Heading, Input, SlashCommandMenu, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -13,7 +13,7 @@ const COMMANDS = [
   { key: "video", label: "Video", description: "Embed a video", category: "Media", onSelect: () => {} },
 ];
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

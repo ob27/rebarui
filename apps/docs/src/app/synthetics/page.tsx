@@ -1,9 +1,10 @@
-import { Heading, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import { Heading, Image, Stack, Text } from "rebar-ui";
+import type { Construct } from "@rebar-ui/placement";
 import { HAS_FULL_PAGE } from "@/data/hasFullPage";
 import { shippedCategory } from "@/data/shippedCategory";
 import { tierComponentNames } from "@/data/tierSections";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { getBlocksByTier } from "@/data/catalogueBlocks";
 
 const CATEGORY_LABEL = { web: "Web", mobile: "Mobile", diagram: "Diagram" } as const;
 const CATEGORY_TONE = { web: "info", mobile: "success", diagram: "warning" } as const;
@@ -11,7 +12,7 @@ const CATEGORY_TONE = { web: "info", mobile: "success", diagram: "warning" } as 
 export default function SyntheticsPage() {
   const names = tierComponentNames("synthetic");
 
-  const grid: Block = {
+  const grid: Construct = {
     type: "card-grid",
     items: names.map((name) => {
       const href = HAS_FULL_PAGE[name];
@@ -22,6 +23,7 @@ export default function SyntheticsPage() {
 
   return (
     <Stack gap="lg">
+      <Image src="/catalogue-heros/synthetics.jpeg" alt="Synthetics hero image" style={{ width: "100%", borderRadius: "8px" }} />
       <Heading level={1}>Synthetics</Heading>
       <Text color="secondary">
         Static compositions/groupings of primitives with a unified purpose, but still no real
@@ -41,7 +43,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "header",
             measured: true,
             description: "A title bar row — a heading with an optional trailing icon button (e.g. a close ×).",
@@ -54,7 +56,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "banner",
             measured: true,
             description: "An inline alert strip — icon, one line of text, and an optional trailing action button.",
@@ -69,7 +71,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "checklist",
             measured: true,
             description: "A heading followed by a vertical stack of bordered, checkable rows.",
@@ -82,7 +84,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "callout",
             measured: true,
             description: "A toned box with a bold title line and an optional secondary subtitle line below it.",
@@ -95,7 +97,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "spin-card",
             measured: false,
             description: "A small, centered card showing a real loading overlay (Spin) over a few lines of content — for demonstrating a loading state, not a real data-bound card. Generic rather than one-off: tip, content lines, and card size are all caller-supplied, not hardcoded to any one demo.",
@@ -108,7 +110,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "error-block",
             measured: false,
             description: "A whole-page failure/empty state — status picks a sensible default icon/title/description (default, disconnected, empty, busy), all overridable; action renders a real retry button the same small-secondary way banner/header/callout render theirs. This project's first genuinely Mobile-only block (see ref/BLOCKS.md) — every other antd-mobile-derived pattern shipped so far landed as a packages/core component only, never promoted into a block. fullPage is on by default here, since a dedicated block for this is specifically for the whole-page case; set it false for an inline, one-card failure state.",
@@ -121,10 +123,10 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "footer",
             measured: false,
-            description: "Page-bottom chrome: a 'no more results' label (a real Divider with text), a plain content line, a row of links, and a row of chips — every section independently optional. Mirrors how site-header already wraps NavBar for the top of a page; this project's second Mobile block (see ref/BLOCKS.md). No onLinkClick/onChipClick in the schema — a click handler isn't serializable Block[] data.",
+            description: "Page-bottom chrome: a 'no more results' label (a real Divider with text), a plain content line, a row of links, and a row of chips — every section independently optional. Mirrors how site-header already wraps NavBar for the top of a page; this project's second Mobile block (see ref/BLOCKS.md). No onLinkClick/onChipClick in the schema — a click handler isn't serializable Construct[] data.",
             shape: `{ type: "footer", label?: string, content?: string, links?: { text: string, href: string }[], chips?: { text: string, type?: "plain"|"link" }[] }`,
             blocks: [
               {
@@ -142,7 +144,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "feature-grid",
             measured: true,
             description: "A wrapping row of small title+body pairs — no links, no images, just short feature copy.",
@@ -164,7 +166,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "pillar-grid",
             measured: true,
             description: "A row of cards, each with a title, body copy, and a CTA link — the homepage's three-pillars grid.",
@@ -186,7 +188,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "hero",
             measured: false,
             description: "A centered page-top hero: optional badge, title, subtitle, action buttons, and an optional code snippet. Badge and subtitle support a tiny inline markup (backtick-code, [label](href) links).",
@@ -207,7 +209,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "section-header",
             measured: false,
             description: "A centered kicker/title/subtitle block — used between homepage sections.",
@@ -220,7 +222,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "card-grid",
             measured: false,
             description: 'A wrapping grid of cards — title, optional body copy, optional status tags, optional link — for an index/directory of many similar named things (see the tier pages, all built through this block). Distinct from feature-grid (no link, no tags, meant for a handful of short callouts) and pillar-grid (a fixed small set with a mandatory CTA): card-grid is for an open-ended, possibly large list where each item may or may not have a description, a link, or a status yet.',
@@ -242,7 +244,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "persona-card",
             measured: false,
             description: 'A row of identity cards — avatar + name + optional meta line. Catalogued as "Persona / User Card" and flagged at catalogue time as "arguably an Avatar+Text composition, not a new primitive" — exactly the case for a block: no new component needed, just a fixed layout of two that already ship.',
@@ -263,7 +265,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "data-list",
             measured: false,
             description: "A vertical stack of title+badge rows — a lighter-weight alternative to table for a simple list of named items.",
@@ -284,7 +286,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "filter-bar",
             measured: false,
             description: "A search input plus an optional filter select and a trailing primary action button, all in one row. Presentational only — nothing downstream is wired to it (see 'opinions' for blocks that actually bind to live data).",
@@ -299,7 +301,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "form",
             measured: false,
             description: "A card containing labeled fields (text/email/date/textarea/select/checkbox, each optionally required) and an optional submit button. Presentational only — no validation, no submit handler wired (see the real Form/FormItem components, or ai-chat/table under 'opinions' for blocks that actually bind to live data). Omit submitLabel when nested inside a modal, which supplies its own action buttons.",
@@ -319,7 +321,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "doc-section",
             measured: false,
             description: "A heading (level 1, 2, or 3) plus prose/code/list content — the block type every /docs/* page is built from, including each page's own title (level 1) and intro paragraph, not just its subsections. Prose text supports the same tiny inline markup as hero.",
@@ -344,7 +346,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "props-table",
             measured: false,
             description: "A component's full prop reference — Prop/Type/Required/Default columns — rendered from already-generated `PropRow[]` data (see apps/docs/scripts/generate-props.mjs), not read from a file by the Packer itself: this package has no dependency on any one consuming app's build output. Used to build every component reference page's own props table.",
@@ -367,11 +369,11 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "heuristic",
             measured: false,
-            description: "One entry of a heuristics/design-principles page: a heading, a bolded one-line rule, doc-section-style rationale prose (same tiny inline markup), and an optional code sample and/or a real nested live Block[] example. Carries its own stable id rather than slugifying one from title, since existing cross-references may already point at a specific hand-picked id. Used to build /docs/heuristics.",
-            shape: `{ type: "heuristic", id: string, title: string, rule: string, rationale: ProseNode[], code?: string, exampleBlocks?: Block[] }`,
+            description: "One entry of a heuristics/design-principles page: a heading, a bolded one-line rule, doc-section-style rationale prose (same tiny inline markup), and an optional code sample and/or a real nested live Construct[] example. Carries its own stable id rather than slugifying one from title, since existing cross-references may already point at a specific hand-picked id. Used to build /docs/heuristics.",
+            shape: `{ type: "heuristic", id: string, title: string, rule: string, rationale: ProseNode[], code?: string, exampleBlocks?: Construct[] }`,
             blocks: [
               {
                 type: "heuristic",
@@ -391,7 +393,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "iframe",
             measured: false,
             description: "A real <iframe> — a required, not optional, title (an embed with no accessible name is a real, common accessibility gap most iframe usage in the wild gets wrong). No default height, since that depends entirely on context — set one explicitly, or nest it in a comparison block (see 'orders'), which measures and applies one automatically.",
@@ -404,7 +406,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "stats-table",
             measured: false,
             description: "A small, static, presentational summary table — headers plus a plain grid of string/number cells, no sorting/selection/pagination. Distinct from table (an Opinion-tier block, since it pairs the real Table component with real search/filters/add-row over live data): this exists for the exact headers-plus-rows-of-cells shape a benchmark results table needs. Renders through the same real Table component underneath, just without the extra props that would invite features this kind of static presentational table doesn't need.",
@@ -426,7 +428,7 @@ export default function SyntheticsPage() {
       <NextBlockRenderer
         blocks={[
           {
-            type: "block-entry",
+            type: "construct-entry",
             id: "gallery",
             measured: false,
             description: "A labeled, single-aspect-ratio image carousel — screenshots named ${prefix}-01.png through ${prefix}-NN.png inside dir (a public/ path), per Design Heuristics' carousel rule (one aspect ratio only, no exceptions). count defaults to 15 to match this project's own standard benchmark sample size.",

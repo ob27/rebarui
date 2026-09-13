@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button, Dialog, DiagramMinimap, Heading, NodeLinkGraph, Stack, Text } from "rebar-ui";
 import type { NodeLinkGraphEdge, NodeLinkGraphNode } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { LivePreview } from "@/components/LivePreview";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -59,7 +59,7 @@ function buildLargeOrg(): { nodes: NodeLinkGraphNode[]; edges: NodeLinkGraphEdge
 
 const { nodes: LARGE_ORG_NODES, edges: LARGE_ORG_EDGES } = buildLargeOrg();
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

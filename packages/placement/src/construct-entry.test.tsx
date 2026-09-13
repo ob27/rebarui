@@ -3,11 +3,11 @@ import { render, screen } from "@testing-library/react";
 import { BlockRenderer } from "./BlockRenderer";
 import type { Block } from "./schema";
 
-describe("block-entry block type", () => {
+describe("construct-entry block type", () => {
   it("renders a block entry with all fields", () => {
     const blocks: Block[] = [
       {
-        type: "block-entry",
+        type: "construct-entry",
         id: "Button",
         measured: true,
         description: "A clickable button component",
@@ -52,7 +52,7 @@ describe("block-entry block type", () => {
   it("renders unmeasured tag correctly", () => {
     const blocks: Block[] = [
       {
-        type: "block-entry",
+        type: "construct-entry",
         id: "Input",
         measured: false,
         description: "A text input component",
@@ -71,7 +71,7 @@ describe("block-entry block type", () => {
   it("renders without optional code and blocks", () => {
     const blocks: Block[] = [
       {
-        type: "block-entry",
+        type: "construct-entry",
         id: "Card",
         measured: true,
         description: "A card container",

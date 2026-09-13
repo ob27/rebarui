@@ -1,5 +1,5 @@
 import { Box, Heading, NavIndex, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -19,7 +19,7 @@ const ITEMS = [
   { label: "Sankey Diagram", href: "#", category: "diagram", status: "Planned" },
 ];
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

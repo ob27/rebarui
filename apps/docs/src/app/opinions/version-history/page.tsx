@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Heading, Stack, Text, VersionHistory } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -11,7 +11,7 @@ const VERSIONS = [
   { id: "v1", label: "First draft", timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), preview: "Initial outline and opening paragraph." },
 ];
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

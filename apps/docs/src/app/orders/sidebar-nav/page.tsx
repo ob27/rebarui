@@ -21,7 +21,7 @@ import {
   Text,
 } from "rebar-ui";
 import type { SidebarNavEntry, SidebarNavItem } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -61,7 +61,7 @@ const GRID_ITEMS: SidebarNavItem[] = [
   { label: "Settings", href: "#settings", icon: <SettingsIcon /> },
 ];
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

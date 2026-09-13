@@ -5,7 +5,7 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { Box, Button, Heading, Stack, Table, Tag, Text } from "rebar-ui";
 import type { TableColumn, TableSort } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -44,7 +44,7 @@ const RICH_COLUMNS: TableColumn<Row>[] = [
   { key: "members", header: "Members", sortable: true, align: "right" },
 ];
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

@@ -2,7 +2,7 @@
 
 import { Avatar, Heading, IndexBar, Stack, Text } from "rebar-ui";
 import type { IndexBarGroup } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { LivePreview } from "@/components/LivePreview";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -43,7 +43,7 @@ const GROUPS: IndexBarGroup<Contact>[] = Array.from(
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([key, items]) => ({ key, items }));
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

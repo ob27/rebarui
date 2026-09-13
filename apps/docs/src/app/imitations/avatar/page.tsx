@@ -1,12 +1,12 @@
 import { Avatar, Box, Card, Heading, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { LivePreview } from "@/components/LivePreview";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const PORTRAIT_COUNT = 30;
 
-const CODE_AND_PROPS_BLOCKS: Block[] = [
+const CODE_AND_PROPS_BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",
@@ -20,7 +20,7 @@ const CODE_AND_PROPS_BLOCKS: Block[] = [
   { type: "props-table", heading: "Props", rows: componentProps["Avatar"] ?? [] },
 ];
 
-const CLOSING_BLOCKS: Block[] = [
+const CLOSING_BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Accessibility",

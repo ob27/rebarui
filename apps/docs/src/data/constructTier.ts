@@ -1,7 +1,7 @@
 /**
- * Tier per shipped component (see ref/TIERS.md). Every name in `component-props.json` — the same
+ * Tier per shipped construct (see ref/TIERS.md). Every name in `component-props.json` — the same
  * source `/components` itself uses — must appear in exactly one of these four lists;
- * `componentTier()` throws otherwise, since guessing wrong between imitation/synthetic/opinion is
+ * `constructTier()` throws otherwise, since guessing wrong between imitation/synthetic/opinion is
  * a real methodology error, not a cosmetic gap (unlike `shippedCategory.ts`'s safe "web" default).
  *
  * The delegated-state exception (see ref/TIERS.md): several Opinion-tier entries below show zero
@@ -9,7 +9,7 @@
  * Radix primitive (`Select`, `Accordion`, `Tabs`, `Dialog`, `Popover`, `Dropdown`, `Tooltip`,
  * `HoverCard`, `ContextMenu`, `Collapsible`, `Menubar`), a shared chart hook
  * (`useChartMarkSelection`/`useSeriesFilter` — every hover/click/persistent-selection or
- * series-toggle chart below), or another Opinion-tier component (`NodeLinkGraph`'s pan/zoom/drag,
+ * series-toggle chart below), or another Opinion-tier construct (`NodeLinkGraph`'s pan/zoom/drag,
  * under `Flowchart`/`MindMap`/`OrgChart`/`PertChart`; `Table`/`Editable`/`Accordion`, under
  * `DataGrid`; `Drawer`, under `BottomSheet`/`ActionSheet`/`Popconfirm`/`Lightbox`/`VersionHistory`;
  * react-hook-form, under `Form`). Tier was decided by reading each one's actual source, not by
@@ -190,6 +190,7 @@ const OPINION: readonly string[] = [
 ];
 
 const ORDER: readonly string[] = [
+  "AppShell",
   "Breadcrumb",
   "Footer",
   "MobileTabBar",
@@ -200,15 +201,21 @@ const ORDER: readonly string[] = [
   "SidebarNav",
 ];
 
+const GENESIS: readonly string[] = [
+  // Starter projects - currently empty, will be populated as projects are added
+];
+
 const IMITATION_SET = new Set(IMITATION);
 const SYNTHETIC_SET = new Set(SYNTHETIC);
 const OPINION_SET = new Set(OPINION);
 const ORDER_SET = new Set(ORDER);
+const GENESIS_SET = new Set(GENESIS);
 
-export function componentTier(name: string): "imitation" | "synthetic" | "opinion" | "order" {
+export function constructTier(name: string): "imitation" | "synthetic" | "opinion" | "order" | "genesis" {
   if (IMITATION_SET.has(name)) return "imitation";
   if (SYNTHETIC_SET.has(name)) return "synthetic";
   if (OPINION_SET.has(name)) return "opinion";
   if (ORDER_SET.has(name)) return "order";
-  throw new Error(`Unclassified component tier: ${name}`);
+  if (GENESIS_SET.has(name)) return "genesis";
+  throw new Error(`Unclassified construct tier: ${name}`);
 }

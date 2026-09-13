@@ -1,7 +1,7 @@
 "use client";
 
 import { Ellipsis, Heading, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { LivePreview } from "@/components/LivePreview";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -9,7 +9,7 @@ import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 const LONG_TEXT =
   "Rebar UI is a headless-first, intentionally low-fidelity component library, built to be re-skinned into a real design system later without rewriting component structure or breaking tests.";
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

@@ -1,10 +1,10 @@
 "use client";
 
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { REBAR_MARK_PATH, REBAR_MARK_VIEWBOX } from "@/data/rebarMark";
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "site-header",
     // iconPath (not iconSrc) — a real inline <svg fill="currentColor">, so the mark inherits the
@@ -17,6 +17,7 @@ const BLOCKS: Block[] = [
       { href: "/synthetics", label: "Synthetics" },
       { href: "/opinions", label: "Opinions" },
       { href: "/orders", label: "Orders" },
+      { href: "/archetypes", label: "Archetypes" },
       { href: "/benchmarks", label: "Benchmarks" },
       { href: "/about", label: "About" },
     ],

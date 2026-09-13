@@ -44,6 +44,7 @@ export const COMPLEXITY: Record<string, Complexity> = {
   timeline: "simple",
   rate: "medium",
   navbar: "medium",
+  "app-shell": "medium",
   "hover-card": "medium",
   "nav-index": "medium",
   "section-nav": "medium",

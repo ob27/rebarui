@@ -1,7 +1,7 @@
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Auditing Packer coverage",
@@ -23,7 +23,7 @@ const BLOCKS: Block[] = [
       },
       {
         kind: "text",
-        text: "A `[data-rebar-component]` element sitting inside a `[data-rebar-placement-block]` subtree was printed by the Packer. One that isn't was hand-authored — even if it's a real, correct, well-built piece of JSX using real Rebar components, it didn't come from a `Block[]` document.",
+        text: "A `[data-rebar-component]` element sitting inside a `[data-rebar-placement-block]` subtree was printed by the Packer. One that isn't was hand-authored — even if it's a real, correct, well-built piece of JSX using real Rebar components, it didn't come from a `Construct[]` document.",
       },
     ],
   },

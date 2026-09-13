@@ -1,5 +1,5 @@
-import { Heading, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import { Heading, Image, Stack, Text } from "rebar-ui";
+import type { Construct } from "@rebar-ui/placement";
 import { HAS_FULL_PAGE } from "@/data/hasFullPage";
 import { shippedCategory } from "@/data/shippedCategory";
 import { tierComponentNames } from "@/data/tierSections";
@@ -11,7 +11,7 @@ const CATEGORY_TONE = { web: "info", mobile: "success", diagram: "warning" } as 
 export default function ImitationsPage() {
   const names = tierComponentNames("imitation");
 
-  const grid: Block = {
+  const grid: Construct = {
     type: "card-grid",
     items: names.map((name) => {
       const href = HAS_FULL_PAGE[name];
@@ -22,6 +22,7 @@ export default function ImitationsPage() {
 
   return (
     <Stack gap="lg">
+      <Image src="/catalogue-heros/immitations.jpeg" alt="Imitations hero image" style={{ width: "100%", borderRadius: "8px" }} />
       <Heading level={1}>Imitations</Heading>
       <Text color="secondary">
         Static, standalone primitives — no composition of other named components, no real state

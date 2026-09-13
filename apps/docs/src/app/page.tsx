@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { Box, Button, Card, CodeBlock, Heading, Stack, Text } from "rebar-ui";
-import type { Block, FeatureGridItem, PillarGridItem } from "@rebar-ui/placement";
+import type { Construct, FeatureGridItem, PillarGridItem } from "@rebar-ui/placement";
 import { ComparisonDemo } from "@/components/ComparisonDemo";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -9,15 +9,15 @@ import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 // hand-authored Rebar components — the hero, both section headers, the feature row, the
 // three-pillars grid, the migration comparison (a `comparison` block, both sides real: the Rebar
 // side rendered live, the antd side a real separate build embedded via an `iframe` block), and the
-// "get started" section below are all `BlockRenderer` output from plain Block[] documents, the same
+// "get started" section below are all `BlockRenderer` output from plain Construct[] documents, the same
 // mechanism /benchmarks measures and /docs/heuristics explains. Proof-by-existence, per
 // ref/MARKETING_SITE.md: this site really is built the way it says Rebar is meant to be used, not
 // just described that way. `Section` (page-chrome padding/background) is the one thing the Packer
 // itself is built from and stays hand-authored; `ComparisonDemo` isn't hand-drawn content either —
 // it's a thin client wrapper that keeps the comparison's iframe src in sync with the ambient theme
-// toggle, then hands the resulting `Block[]` straight to the Packer like everything else here.
+// toggle, then hands the resulting `Construct[]` straight to the Packer like everything else here.
 
-const HERO_BLOCKS: Block[] = [
+const HERO_BLOCKS: Construct[] = [
   {
     type: "hero",
     badge: "🚧 0.06 Open Beta — see [the repo](https://github.com/ob27/rebarui)",
@@ -47,7 +47,7 @@ const MICRO_FEATURES: FeatureGridItem[] = [
   },
 ];
 
-const THEME_SECTION_HEADER: Block[] = [
+const THEME_SECTION_HEADER: Construct[] = [
   {
     type: "section-header",
     kicker: "The migration path",
@@ -57,7 +57,7 @@ const THEME_SECTION_HEADER: Block[] = [
   },
 ];
 
-const COMPOSITE_DEMO_BLOCKS: Block[] = [
+const COMPOSITE_DEMO_BLOCKS: Construct[] = [
   {
     type: "filter-bar",
     searchPlaceholder: "Search projects…",
@@ -81,7 +81,7 @@ const COMPOSITE_DEMO_BLOCKS: Block[] = [
   // that's a real difference between "a live demo embedded in a bigger page" and "the whole spec."
 ];
 
-const PILLARS_HEADER: Block[] = [
+const PILLARS_HEADER: Construct[] = [
   {
     type: "section-header",
     kicker: "Three pillars",
@@ -158,7 +158,7 @@ export default function Home() {
           />
           <Text size="xs" color="secondary" style={{ textAlign: "center" }}>
             Both sides are genuinely live implementations, not a real one next to a screenshot: the
-            left renders in this page directly from a ~15-line <code>Block[]</code> document; the
+            left renders in this page directly from a ~15-line <code>Construct[]</code> document; the
             right is a real, separate Vite+antd build (see{" "}
             <code>apps/docs/scripts/build-antd-demo.sh</code>) embedded live in an iframe. Both
             intentionally show the base list view rather than the &quot;New Project&quot; modal

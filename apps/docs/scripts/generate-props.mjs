@@ -62,6 +62,7 @@ const COMPONENT_FILES = [
   "Rate.tsx",
   "NavBar.tsx",
   "SidebarNav.tsx",
+  "AppShell.tsx",
   "HoverCard.tsx",
   "NavIndex.tsx",
   "SectionNav.tsx",

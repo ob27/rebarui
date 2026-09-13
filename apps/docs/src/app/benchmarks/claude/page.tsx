@@ -1,12 +1,12 @@
 import { Box, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 // The two scatter plots on this page are bespoke hand-drawn SVGs with hardcoded historical pixel
 // coordinates — deliberately left alone, not converted to the shared `scatter-chart` block/
 // component, per PACKER_COVERAGE.md's own documented note on this page.
 
-const INTRO_BLOCKS: Block[] = [
+const INTRO_BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Claude Sonnet 5 (n=15 per condition)",
@@ -21,7 +21,7 @@ const INTRO_BLOCKS: Block[] = [
   { type: "doc-section", heading: "Text prompt", body: [] },
 ];
 
-const TEXT_RESULT_BLOCKS: Block[] = [
+const TEXT_RESULT_BLOCKS: Construct[] = [
   {
     type: "stats-table",
     headers: ["Condition", "Mean", "Median", "Min", "Max", "Std. dev."],
@@ -52,7 +52,7 @@ const TEXT_RESULT_BLOCKS: Block[] = [
   },
 ];
 
-const IMAGE_RESULT_BLOCKS: Block[] = [
+const IMAGE_RESULT_BLOCKS: Construct[] = [
   {
     type: "stats-table",
     headers: ["Condition", "Mean", "Median", "Min", "Max", "Std. dev."],

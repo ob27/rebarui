@@ -1,7 +1,7 @@
 /**
  * Single source of truth for which shipped `rebar-ui` components have a real reference page, and
  * where it lives — under whichever tier route (`/imitations`, `/synthetics`, `/opinions`,
- * `/orders`) that component's own tier resolves to (see `componentTier.ts`). Shared by every tier
+ * `/orders`) that component's own tier resolves to (see `constructTier.ts`). Shared by every tier
  * page's own card-grid and its `DocsShell` sidebar (`tierSections.ts`) so the two can never
  * silently disagree about which components are documented, the same "no undocumented component
  * silently omitted, always a real 'No reference page' status instead" discipline this file
@@ -25,6 +25,7 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   HoverCard: "/opinions/hover-card",
   NavBar: "/orders/nav-bar",
   SidebarNav: "/orders/sidebar-nav",
+  AppShell: "/orders/appshell",
   NavIndex: "/orders/nav-index",
   SectionNav: "/orders/section-nav",
   Popover: "/opinions/popover",

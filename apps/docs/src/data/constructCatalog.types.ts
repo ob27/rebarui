@@ -1,6 +1,6 @@
 export type CatalogCategory = "web" | "mobile" | "diagram";
 
-export interface CatalogComponent {
+export interface CatalogConstruct {
   slug: string;
   name: string;
   category: CatalogCategory;

@@ -1,5 +1,5 @@
 import { GeoChart, Heading, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -30,7 +30,7 @@ const LAYOUT = [
 const VALUE_MIN = Math.min(...REGIONS.map((r) => r.value));
 const VALUE_MAX = Math.max(...REGIONS.map((r) => r.value));
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Heading, Stack, Text, TreeSelect } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -18,7 +18,7 @@ const DATA = [
   { value: "design", label: "Design" },
 ];
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

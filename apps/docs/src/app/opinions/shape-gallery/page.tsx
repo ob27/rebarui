@@ -1,7 +1,7 @@
 "use client";
 
 import { Heading, ShapeGallery, Stack, Text } from "rebar-ui";
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -12,7 +12,7 @@ const ITEMS = [
   { id: "arrow", label: "Arrow", category: "Flowchart", preview: <svg viewBox="0 0 24 24" width={24} height={24}><path d="M3 12h16m-6-6l6 6l-6 6" fill="none" stroke="currentColor" strokeWidth="2" /></svg> },
 ];
 
-const BLOCKS: Block[] = [
+const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Code",

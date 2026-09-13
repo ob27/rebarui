@@ -1,8 +1,8 @@
-import type { CatalogCategory } from "./componentCatalog.types";
+import type { CatalogCategory } from "./constructCatalog.types";
 
 // Every shipped component used to be hardcoded to category "web" in components/layout.tsx, back
-// when Mobile/Diagram were still catalogued-but-unbuilt gaps (see the componentCatalog.mobile.ts/
-// componentCatalog.diagrams.ts header comments for the exact original lists this was sourced
+// when Mobile/Diagram were still catalogued-but-unbuilt gaps (see the constructCatalog.mobile.ts/
+// constructCatalog.diagrams.ts header comments for the exact original lists this was sourced
 // from). Once those gaps shipped as real components, that hardcode silently went stale — every
 // shipped component still read as "web" regardless of what it actually is, which is why the
 // sidebar's Web/Mobile/Diagram category filter appeared to have lost Mobile and Diagram entirely

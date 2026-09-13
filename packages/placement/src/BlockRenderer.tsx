@@ -46,7 +46,7 @@ import {
 import type { AiChatInputIntent, ChatMessage, TableColumn, WizardValue } from "rebar-ui";
 import type {
   Action,
-  Block,
+  Construct,
   FormField,
   GoalTrackerFocusAreaData,
   ProseNode,
@@ -166,7 +166,7 @@ export type BlockRendererData = Record<string, unknown>;
 export type BlockRendererHandlers = Record<string, (...args: never[]) => void>;
 
 export interface BlockRendererProps {
-  blocks: Block[];
+  blocks: Construct[];
   /**
    * How an `Action`/pillar-grid `href` becomes a link. Defaults to a plain `<a>` — pass your
    * framework's link component (e.g. Next.js `Link`) to get client-side navigation instead of a
@@ -328,7 +328,7 @@ function FormBlockView({
   path,
   handlers,
 }: {
-  block: Extract<Block, { type: "form" }>;
+  block: Extract<Construct, { type: "form" }>;
   path: string;
   handlers: BlockRendererHandlers;
 }) {
@@ -359,7 +359,7 @@ function FormBlockView({
 // Patches any top-level `iframe` block in `blocks` with a measured `height`, unless the document
 // already set one explicitly (an explicit height always wins). An iframe has no natural content
 // height, unlike everything else this schema renders — see schema.ts's doc comment on `iframe`.
-function withMeasuredHeight(blocks: Block[], height: number | undefined): Block[] {
+function withMeasuredHeight(blocks: Construct[], height: number | undefined): Construct[] {
   if (height === undefined) return blocks;
   return blocks.map((block) => (block.type === "iframe" ? { ...block, height: block.height ?? height } : block));
 }
@@ -376,7 +376,7 @@ function ComparisonBlockView({
   data,
   handlers,
 }: {
-  block: Extract<Block, { type: "comparison" }>;
+  block: Extract<Construct, { type: "comparison" }>;
   index: number;
   path: string;
   renderLink: NonNullable<BlockRendererProps["renderLink"]>;
@@ -445,7 +445,7 @@ function KanbanBoardBlockView({
   data,
   handlers,
 }: {
-  block: Extract<Block, { type: "card-kanban" | "sticky-kanban" }>;
+  block: Extract<Construct, { type: "card-kanban" | "sticky-kanban" }>;
   index: number;
   path: string;
   renderLink: NonNullable<BlockRendererProps["renderLink"]>;
@@ -557,7 +557,7 @@ function GoalTrackerBlockView({
   data,
   handlers,
 }: {
-  block: Extract<Block, { type: "goal-tracker" }>;
+  block: Extract<Construct, { type: "goal-tracker" }>;
   index: number;
   path: string;
   data: BlockRendererData;
@@ -779,7 +779,7 @@ function AiChatBlockView({
   data,
   handlers,
 }: {
-  block: Extract<Block, { type: "ai-chat" }>;
+  block: Extract<Construct, { type: "ai-chat" }>;
   index: number;
   path: string;
   data: BlockRendererData;
@@ -890,7 +890,7 @@ function ScatterChartBlockView({
   path,
   data,
 }: {
-  block: Extract<Block, { type: "scatter-chart" }>;
+  block: Extract<Construct, { type: "scatter-chart" }>;
   index: number;
   path: string;
   data: BlockRendererData;
@@ -917,7 +917,7 @@ function LineChartBlockView({
   path,
   data,
 }: {
-  block: Extract<Block, { type: "line-chart" }>;
+  block: Extract<Construct, { type: "line-chart" }>;
   index: number;
   path: string;
   data: BlockRendererData;
@@ -947,7 +947,7 @@ function StackedBarChartBlockView({
   path,
   data,
 }: {
-  block: Extract<Block, { type: "stacked-bar-chart" }>;
+  block: Extract<Construct, { type: "stacked-bar-chart" }>;
   index: number;
   path: string;
   data: BlockRendererData;
@@ -976,7 +976,7 @@ function StatsTableBlockView({
   index,
   path,
 }: {
-  block: Extract<Block, { type: "stats-table" }>;
+  block: Extract<Construct, { type: "stats-table" }>;
   index: number;
   path: string;
 }) {
@@ -1003,7 +1003,7 @@ function GalleryBlockView({
   index,
   path,
 }: {
-  block: Extract<Block, { type: "gallery" }>;
+  block: Extract<Construct, { type: "gallery" }>;
   index: number;
   path: string;
 }) {
@@ -1075,7 +1075,7 @@ function DataTableBlockView({
   data,
   handlers,
 }: {
-  block: Extract<Block, { type: "table" }>;
+  block: Extract<Construct, { type: "table" }>;
   index: number;
   path: string;
   data: BlockRendererData;
@@ -1249,7 +1249,7 @@ function DataTableBlockView({
 }
 
 function renderBlock(
-  block: Block,
+  block: Construct,
   index: number,
   renderLink: NonNullable<BlockRendererProps["renderLink"]>,
   parentPath = "blocks",
@@ -2122,10 +2122,10 @@ function renderBlock(
     case "gallery":
       return <GalleryBlockView key={index} block={block} index={index} path={path} />;
 
-    case "block-entry":
+    case "construct-entry":
       return (
         <Box
-          data-rebar-placement-block="block-entry"
+          data-rebar-placement-block="construct-entry"
           data-rebar-block-path={path}
           style={{
             border: "1px solid var(--rebar-color-border, #e0e0e0)",
@@ -2190,7 +2190,7 @@ export function BlockRenderer({ blocks, renderLink = defaultRenderLink, data = {
   // Derived once for any `page-index` block among `blocks` — see that case's comment above and
   // this package's schema.ts doc comment for why a page-index block takes no `sections` prop.
   const pageSections = blocks
-    .filter((block): block is Extract<Block, { type: "doc-section" }> => block.type === "doc-section" && !!block.heading)
+    .filter((block): block is Extract<Construct, { type: "doc-section" }> => block.type === "doc-section" && !!block.heading)
     .map((block) => ({ id: slugify(block.heading!), label: block.heading! }));
 
   // `page-index` renders a real `position: sticky` element, and sticky positioning only works when

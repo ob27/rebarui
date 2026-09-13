@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card, Heading, Stack, Tag, Text } from "rebar-ui";
-import { CATALOG_BY_SLUG, CATALOG_COMPONENTS } from "@/data/componentCatalog";
+import { CATALOG_BY_SLUG, CATALOG_CONSTRUCTS } from "@/data/constructCatalog";
 
 const CATEGORY_LABEL: Record<string, string> = {
   web: "Web",
@@ -12,7 +12,7 @@ const CATEGORY_LABEL: Record<string, string> = {
 // A static export (`output: "export"`, see next.config.ts) needs at least one generated param for
 // a dynamic route, even when the catalog this page reads from is empty — which it genuinely is
 // right now: every component ever catalogued as a planned gap has since shipped as a real
-// `packages/core` component (see componentCatalog.web.ts/.mobile.ts/.diagrams.ts's own comments).
+// `packages/core` component (see constructCatalog.web.ts/.mobile.ts/.diagrams.ts's own comments).
 // Rather than delete this route (the catalog is a living tracker, expected to gain new entries
 // again whenever the next real gap is found), a single placeholder slug keeps the route — and the
 // exact same code path a future real entry will use — alive, rendering a plain "nothing planned
@@ -20,10 +20,10 @@ const CATEGORY_LABEL: Record<string, string> = {
 const EMPTY_CATALOG_PLACEHOLDER_SLUG = "_none";
 
 export function generateStaticParams() {
-  if (CATALOG_COMPONENTS.length === 0) {
+  if (CATALOG_CONSTRUCTS.length === 0) {
     return [{ slug: EMPTY_CATALOG_PLACEHOLDER_SLUG }];
   }
-  return CATALOG_COMPONENTS.map((c) => ({ slug: c.slug }));
+  return CATALOG_CONSTRUCTS.map((c) => ({ slug: c.slug }));
 }
 
 export default async function PlannedComponentPage({
@@ -33,7 +33,7 @@ export default async function PlannedComponentPage({
 }) {
   const { slug } = await params;
 
-  if (slug === EMPTY_CATALOG_PLACEHOLDER_SLUG && CATALOG_COMPONENTS.length === 0) {
+  if (slug === EMPTY_CATALOG_PLACEHOLDER_SLUG && CATALOG_CONSTRUCTS.length === 0) {
     return (
       <Stack gap="lg">
         <Heading level={1}>Nothing planned right now</Heading>

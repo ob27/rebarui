@@ -3,13 +3,13 @@
  * that tier, so a reader browsing e.g. `/opinions/table` sees only its 86 Opinion-tier siblings —
  * not all 173 components regardless of tier, which is what the old, now-removed `/components`
  * page's shared sidebar did. Blocks link to their own anchor on the tier's own index page (they
- * have no separate detail page — see `BlockEntry`), tagged with a "block" pseudo-category so the
+ * have no separate detail page — see `ConstructEntry`), tagged with a "block" pseudo-category so the
  * existing category filter can isolate them from real components.
  */
-import type { Block } from "@rebar-ui/placement";
+import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { HAS_FULL_PAGE } from "./hasFullPage";
-import { componentTier } from "./componentTier";
+import { constructTier } from "./constructTier";
 import { BLOCK_TIER } from "./blockTier";
 import { shippedCategory } from "./shippedCategory";
 import type { Tier } from "./tier.types";
@@ -20,6 +20,7 @@ export const TIER_ROUTE: Record<Tier, string> = {
   synthetic: "/synthetics",
   opinion: "/opinions",
   order: "/orders",
+  genesis: "/geneses",
 };
 
 export const TIER_LABEL: Record<Tier, string> = {
@@ -27,16 +28,17 @@ export const TIER_LABEL: Record<Tier, string> = {
   synthetic: "Synthetics",
   opinion: "Opinions",
   order: "Orders",
+  genesis: "Geneses",
 };
 
 export function tierComponentNames(tier: Tier): string[] {
   return Object.keys(componentProps)
-    .filter((name) => componentTier(name) === tier)
+    .filter((name) => constructTier(name) === tier)
     .sort();
 }
 
-export function tierBlockTypes(tier: Tier): Block["type"][] {
-  return (Object.keys(BLOCK_TIER) as Block["type"][]).filter((type) => BLOCK_TIER[type] === tier).sort();
+export function tierBlockTypes(tier: Tier): Construct["type"][] {
+  return (Object.keys(BLOCK_TIER) as Construct["type"][]).filter((type) => BLOCK_TIER[type] === tier).sort();
 }
 
 export function tierDocsShellSections(tier: Tier): DocsShellSection[] {
