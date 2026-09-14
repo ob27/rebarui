@@ -311,7 +311,7 @@ export const CATALOGUE_BLOCKS: ConstructCatalogueEntry[] = [
     id: "heuristic",
     tier: "synthetic",
     measured: false,
-    description: "One entry of a heuristics/design-principles page: a heading, a bolded one-line rule, doc-section-style rationale prose (same tiny inline markup), and an optional code sample and/or a real nested live Construct[] example. Carries its own stable id rather than slugifying one from title, since existing cross-references may already point at a specific hand-picked id. Used to build /docs/heuristics.",
+    description: "One entry of a heuristics/design-principles page: a heading, a bolded one-line rule, doc-section-style rationale prose (same tiny inline markup), and an optional code sample and/or a real nested live Construct[] example. Carries its own stable id rather than slugifying one from title, since existing cross-references may already point at a specific hand-picked id. Used to build /about/agent.",
     shape: `{ type: "heuristic", id: string, title: string, rule: string, rationale: ProseNode[], code?: string, exampleBlocks?: Construct[] }`,
     blocks: [
       {
@@ -320,7 +320,7 @@ export const CATALOGUE_BLOCKS: ConstructCatalogueEntry[] = [
         title: "Example heuristic",
         rule: "State the rule in one bolded sentence.",
         rationale: [
-          { kind: "text", text: "Then explain *why*, with `inline code` and a [link](/docs/heuristics) where useful." },
+          { kind: "text", text: "Then explain *why*, with `inline code` and a [link](/about/agent) where useful." },
         ],
         exampleBlocks: [{ type: "checklist", heading: "Applied here", items: ["The rule", "The rationale", "A live example"] }],
       },
@@ -610,7 +610,7 @@ export const CATALOGUE_BLOCKS: ConstructCatalogueEntry[] = [
     id: "page-index",
     tier: "order",
     measured: false,
-    description: 'An in-page content index — tracks which heading is currently in view and highlights it (the "beacon"), scrolling itself to keep that highlight visible as you scroll the page. Fades into a scroll "mist" at whichever edge still has more headings below the fold, stays a bounded, fixed-height rail regardless of how many headings exist, and gains its own search box once the list passes 12 headings. By default takes no sections prop: the Packer derives them itself by scanning the document\'s own doc-section blocks for a heading. A narrow, sticky side-rail, not center-column content — see it working for real, at full scale, on /docs/heuristics.',
+    description: 'An in-page content index — tracks which heading is currently in view and highlights it (the "beacon"), scrolling itself to keep that highlight visible as you scroll the page. Fades into a scroll "mist" at whichever edge still has more headings below the fold, stays a bounded, fixed-height rail regardless of how many headings exist, and gains its own search box once the list passes 12 headings. By default takes no sections prop: the Packer derives them itself by scanning the document\'s own doc-section blocks for a heading. A narrow, sticky side-rail, not center-column content — see it working for real, at full scale, on /about/agent.',
     shape: `{ type: "page-index", searchPlaceholder?: string, sections?: { id: string, label: string }[] }`,
   },
   {

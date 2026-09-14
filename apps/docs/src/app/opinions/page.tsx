@@ -16,7 +16,7 @@ export default function OpinionsPage() {
         <code>packages/placement/src/opinions.ts</code>), not a judgment call — these are the only
         nine blocks that support the live <code>data</code>/<code>handlers</code> props on{" "}
         <code>BlockRenderer</code>. See{" "}
-        <a href="/docs/tiers" className="rebar-link">
+        <a href="/about/agent" className="rebar-link">
           the four tiers
         </a>{" "}
         for how this relates to Imitations, Synthetics, and Orders.

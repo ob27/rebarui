@@ -52,7 +52,7 @@ export default function BenchmarksPage() {
   return (
     <Stack gap="lg">
       <Image
-        src="/benchmark.jpeg"
+        src="/catalogue-heros/benchmark.jpeg"
         alt="Benchmarks hero image"
         style={{ width: "100%", borderRadius: "8px" }}
       />

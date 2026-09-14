@@ -63,7 +63,7 @@
  * `heuristic` covers one entry of a heuristics/design-principles page: a heading, a bolded one-line
  * rule, `doc-section`-style prose for the rationale (same tiny inline markup), and an optional code
  * sample and/or a real nested `Block[]` demo. Added to finish converting this project's own
- * `/docs/heuristics` off hand-authored JSX. Distinct from `doc-section` specifically because a
+ * `/about/agent` off hand-authored JSX. Distinct from `doc-section` specifically because a
  * heuristic's `rule` needs its own fixed bold styling separate from the rationale that follows it,
  * and because it carries its own stable `id` rather than slugifying one from `title` (this
  * project's real heuristic ids are hand-picked and already referenced elsewhere, e.g. by a
@@ -76,7 +76,7 @@
  *
  * `spin-card` is a small, centered card demonstrating a loading state — a real `Spin` overlaying a
  * few lines of content, sized and labeled by the caller rather than hardcoded, even though its
- * first real use (a "fetching" demo on `/docs/heuristics`) only ever needed one specific size/tip.
+ * first real use (a "fetching" demo on `/about/agent`) only ever needed one specific size/tip.
  *
  * `site-header` is a real site nav bar — logo (optionally linked, optionally with an icon image),
  * a `NavBar` capped at half the header's own width (ref/HEURISTICS.md "Nav overflow" — the logo and
@@ -641,7 +641,7 @@ export type Construct =
       type: "spin-card";
       /** A small, centered card showing a real `Spin` loading overlay over a few lines of content —
        * for demonstrating a loading state, not a real data-bound card. Defaults sized/labeled to
-       * match this block's original real-world use (a "fetching" demo on /docs/heuristics). */
+       * match this block's original real-world use (a "fetching" demo on /about/agent). */
       tip?: string;
       items: string[];
       width?: number;

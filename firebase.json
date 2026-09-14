@@ -841,7 +841,7 @@
       },
       {
         "source": "/components",
-        "destination": "/docs/tiers",
+        "destination": "/about/agent",
         "type": 301
       },
       {
@@ -851,12 +851,12 @@
       },
       {
         "source": "/blocks",
-        "destination": "/docs/tiers",
+        "destination": "/about/agent",
         "type": 301
       },
       {
         "source": "/tiers",
-        "destination": "/docs/tiers",
+        "destination": "/about/agent",
         "type": 301
       }
     ]

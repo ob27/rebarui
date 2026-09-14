@@ -10,7 +10,7 @@ export default function ImitationsPage() {
         machine beyond mirroring one caller-controlled value for the controlled/uncontrolled
         convention. A block is always at least a fixed composition of components, so this tier is
         components-only. See{" "}
-        <a href="/docs/tiers" className="rebar-link">
+        <a href="/about/agent" className="rebar-link">
           the four tiers
         </a>{" "}
         for how this relates to Synthetics, Opinions, and Orders.

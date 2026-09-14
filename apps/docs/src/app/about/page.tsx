@@ -1,6 +1,7 @@
 import { Box, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import Link from "next/link";
 
 const BLOCKS: Construct[] = [
   {
@@ -86,6 +87,13 @@ export default function AboutPage() {
             The technical docs are at <code>/docs</code> — this page is about why Rebar exists at
             all.
           </Text>
+        </Stack>
+        <Stack gap="sm">
+          <Heading level={2}>Explore</Heading>
+          <Stack gap="xs">
+            <Link href="/about/agent">Agent Context</Link>
+            <Link href="/about/benchmarks">Benchmarks</Link>
+          </Stack>
         </Stack>
         <NextBlockRenderer blocks={BLOCKS} />
       </Stack>

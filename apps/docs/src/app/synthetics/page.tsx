@@ -9,7 +9,7 @@ export default function SyntheticsPage() {
         Static compositions/groupings of primitives with a unified purpose, but still no real
         dynamism — a fixed layout, not a state machine. Most placement-layer blocks land here:
         plain content shapes with nothing bound to live data or a handler. See{" "}
-        <a href="/docs/tiers" className="rebar-link">
+        <a href="/about/agent" className="rebar-link">
           the four tiers
         </a>{" "}
         for how this relates to Imitations, Opinions, and Orders.

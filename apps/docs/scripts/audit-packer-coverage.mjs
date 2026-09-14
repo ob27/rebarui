@@ -13,7 +13,7 @@ const ROUTES = [
   "/", "/about",
   "/benchmarks", "/benchmarks/scenarios", "/benchmarks/receipts", "/benchmarks/claude",
   "/benchmarks/qwen", "/benchmarks/kimi", "/benchmarks/tiers", "/benchmarks/iteration",
-  "/imitations", "/synthetics", "/opinions", "/orders", "/docs/tiers",
+  "/imitations", "/synthetics", "/opinions", "/orders", "/about/agent",
   "/synthetics/aspect-ratio", "/imitations/avatar", "/imitations/badge",
   "/orders/breadcrumb", "/imitations/button", "/synthetics/card", "/imitations/carousel",
   "/opinions/cascader", "/opinions/color-picker", "/opinions/combobox",
@@ -55,7 +55,7 @@ const ROUTES = [
   "/opinions/slash-command-menu", "/opinions/voice-composer", "/opinions/shape-gallery",
   "/opinions/file-manager", "/opinions/layers-panel",
   "/docs", "/docs/contributing", "/docs/design-philosophy", "/docs/devtools",
-  "/docs/getting-started", "/docs/heuristics", "/docs/mobile-skew",
+  "/docs/getting-started", "/about/agent", "/docs/mobile-skew",
   "/docs/migration", "/docs/packer-coverage", "/docs/agents-md", "/docs/theming", "/docs/token-estimate",
   "/status",
 ];

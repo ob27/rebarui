@@ -92,7 +92,7 @@ then dry-run it against real code before calling it done.
 ### Design heuristics
 
 Component defaults (spacing, sizing, when to show an icon, etc.) follow the rules in
-`ref/HEURISTICS.md` — also viewable live with real examples at `/docs/heuristics` on the site. If
+`ref/HEURISTICS.md` — also viewable live with real examples at `/about/agent` on the site. If
 a change would contradict one of them, that's worth flagging in your issue/PR, not silently
 deviating.
 

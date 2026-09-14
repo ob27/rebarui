@@ -10,7 +10,7 @@ import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 // three-pillars grid, the migration comparison (a `comparison` block, both sides real: the Rebar
 // side rendered live, the antd side a real separate build embedded via an `iframe` block), and the
 // "get started" section below are all `BlockRenderer` output from plain Construct[] documents, the same
-// mechanism /benchmarks measures and /docs/heuristics explains. Proof-by-existence, per
+// mechanism /benchmarks measures and /about/agent explains. Proof-by-existence, per
 // ref/MARKETING_SITE.md: this site really is built the way it says Rebar is meant to be used, not
 // just described that way. `Section` (page-chrome padding/background) is the one thing the Packer
 // itself is built from and stays hand-authored; `ComparisonDemo` isn't hand-drawn content either —
@@ -25,8 +25,8 @@ const HERO_BLOCKS: Construct[] = [
     subtitle:
       "Headless-first, intentionally low-fidelity React components, built to be built with by an LLM through a small placement layer — not hand-authored. Measured cheaper, faster, and more consistent than hand-authored Ant Design on a single build — and once a design goes through 15+ rounds of revision, still cheaper overall even after fully migrating to a real design system for production.",
     actions: [
-      { label: "Agent Context", href: "/about/agents", variant: "primary" },
-      { label: "Design Heuristics", href: "/about/agents" },
+      { label: "Agent Context", href: "/about/agent", variant: "primary" },
+      { label: "Design Heuristics", href: "/about/agent" },
     ],
     codeSnippet: "npm install rebar-ui",
   },
@@ -75,7 +75,7 @@ const COMPOSITE_DEMO_BLOCKS: Construct[] = [
     ],
   },
   // The full Composite-tier spec also has a "New Project" modal — deliberately left out of this
-  // live demo. The `modal` block always renders forced-open (see /docs/heuristics#control for
+  // live demo. The `modal` block always renders forced-open (see /about/agent#control for
   // why), which is correct for a benchmark scaffold that's the whole page, but would cover this
   // entire homepage as a fixed overlay here. The antd screenshot on the right still shows it —
   // that's a real difference between "a live demo embedded in a bigger page" and "the whole spec."
@@ -95,13 +95,13 @@ const PILLARS: PillarGridItem[] = [
   {
     title: "Design Heuristics",
     body: "Spacing, type scale, color, and interaction defaults baked in — cited to Nielsen, Shneiderman, Material, Carbon, and USWDS, not invented. See each rule applied live by the DSL Packer.",
-    href: "/about/agents",
+    href: "/about/agent",
     cta: "Read the heuristics",
   },
   {
     title: "Four Tiers",
     body: "166 components and 39 blocks, classified by where they sit between a raw static primitive and a piece of page-level structural law — Imitations, Synthetics, Opinions, Orders. Working toward full Ant Design v6 parity, with a real codemod, not just a prompt.",
-    href: "/docs/tiers",
+    href: "/about/agent",
     cta: "Browse the tiers",
   },
   {
@@ -196,7 +196,7 @@ import { Button } from "rebar-ui";
               <Link href="/docs/getting-started">
                 <Button variant="primary">Read the docs</Button>
               </Link>
-              <Link href="/docs/tiers">
+              <Link href="/about/agent">
                 <Button variant="secondary">Browse the tiers</Button>
               </Link>
             </Stack>

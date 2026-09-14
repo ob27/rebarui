@@ -3,15 +3,8 @@ import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const BLOCKS: Construct[] = [
   {
-    type: "doc-section",
-    heading: "Archetypes",
-    level: 1,
-    body: [
-      {
-        kind: "text",
-        text: "Tracing UI constructs to their physical ancestry.",
-      },
-    ],
+    type: "hero",
+    imageSrc: "/catalogue-heros/archetypes.jpeg",
   },
   {
     type: "doc-section",

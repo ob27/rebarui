@@ -56,7 +56,7 @@ content, plus whatever DevTools costs it."
 | `/docs/contributing` | 72 | 57 | 15 | 79% | Title/intro now printed (`level: 1`), rest via `doc-section`/`props-table`. |
 | `/docs/devtools` | 48 | 30 | 18 | 63% | Title/intro printed; a hand-authored `Alert` bionic-reading demo at the end is the one real, deliberate exception left. Its two printed code samples now render via `CodeBlock` (see below), each adding one printed Copy button. |
 | `/docs/getting-started` | 40 | 25 | 15 | 63% | Title now printed; no intro paragraph on this page (just a title). Its three printed code samples now render via `CodeBlock`. |
-| `/docs/heuristics` | 292 | 275 | 17 | 94% | Fully migrated — all 46 entries print via `heuristic`, title/intro via `doc-section` (`level: 1`, with three `<strong>` term-introductions rendered as `*emphasis*` instead — a `doc-section` deliberately has no bold syntax), and the last two hand-authored inserts from the first pass now print too: entry 5's demo via `spin-card`, entry 6's via `nav-bar`'s `resizable` flag. What's left is exactly the DevTools floor plus `nav-index` (this page's own left-sidebar) — **100% of this page's actual heuristics content** is printed. |
+| `/about/agent` | 292 | 275 | 17 | 94% | Fully migrated — all 46 entries print via `heuristic`, title/intro via `doc-section` (`level: 1`, with three `<strong>` term-introductions rendered as `*emphasis*` instead — a `doc-section` deliberately has no bold syntax), and the last two hand-authored inserts from the first pass now print too: entry 5's demo via `spin-card`, entry 6's via `nav-bar`'s `resizable` flag. What's left is exactly the DevTools floor plus `nav-index` (this page's own left-sidebar) — **100% of this page's actual heuristics content** is printed. |
 | `/docs/migration` | 40 | 21 | 19 | 53% | Title/intro printed; one hand-authored bold paragraph ("v1's officially supported migration target...") stays as-is — a genuine `<strong>` claim, not a term-introduction, so it wasn't safely approximable as italic the way heuristics' were. |
 | `/docs/mobile-skew` | 49 | 34 | 15 | 69% | New page, fully printed via `doc-section` (title, one `list`). Describes a planned mechanism, not a shipped one — the page says so explicitly. |
 | `/docs/packer-coverage` | 50 | 35 | 15 | 70% | Title/intro now printed (`level: 1`). |
@@ -105,7 +105,7 @@ design, not backlog.
   as a clean top-level `<header>` landmark, not nested inside extra wrapper markup. The one thing
   that stays a genuine, permanent exception is the `DevTools` panel itself — a live dev tool, not
   static content.
-- **Each page's own right-hand content index** — `/docs/heuristics`, `/blocks`, and `/benchmarks`
+- **Each page's own right-hand content index** — `/about/agent`, `/blocks`, and `/benchmarks`
   now all print their nav rail through the `page-index` constructruct instead of a hand-authored
   `<SectionNav sections={...} />` call. `page-index`'s case in `ConstructRenderer.tsx` was always a
   verbatim pass-through to the real `SectionNav` component (forwards `sections`/`searchPlaceholder`,
@@ -135,15 +135,15 @@ design, not backlog.
   identical to hand-authoring it there. Confirmed via Playwright before and after, on all three
   pages: broken state had `top` moving from `89px` toward a large negative number tracking scroll
   distance 1:1; fixed state holds `top` at a steady `32px` (its real resting sticky offset) through
-  a 1200px scroll, on `/docs/heuristics`, `/blocks`, and `/benchmarks` alike.
-- **Resolved, no longer an exception: `/docs/heuristics`' two former hand-authored inserts.**
+  a 1200px scroll, on `/about/agent`, `/blocks`, and `/benchmarks` alike.
+- **Resolved, no longer an exception: `/about/agent`'s two former hand-authored inserts.**
   Heuristic #5's live demo (a `Spin` inside a `Card`) and heuristic #6's live demo (a real
   hand-resizable `NavBar`) both used to sit between printed `heuristic` constructs rather than inside
   one — neither was because the content was inherently unprintable, just that no construct existed for
   either shape yet. Closed by adding a new, generic `spin-card` construct (not one-off: tip, content
   lines, and card size are all caller-supplied) and a `resizable` flag on `nav-bar` (a bordered,
   real-CSS-`resize`-able demo wrapper, off by default since a real site header should never
-  actually be user-resizable). Both are now printed on `/docs/heuristics`, and `/blocks`' own
+  actually be user-resizable). Both are now printed on `/about/agent`, and `/blocks`' own
   `nav-bar` entry was updated to use `resizable` too, replacing what used to be a fixed, misleadingly
   captioned "shrink this box" demo that wasn't actually interactive.
 - **Charts, `stats-table`, and `gallery` — the three archetypes `/benchmarks` needed, and the page
@@ -209,7 +209,7 @@ named images rather than a numbered sequence, so they don't fit `gallery`'s shap
 documented exception, unchanged); and the `BenchmarksShell`'s own cross-page `NavIndex` plus the
 DevTools floor, present on every route regardless of content.
 
-**Resolved previously: `/docs/heuristics` (was 19%) — see the table above and the `heuristic` construct
+**Resolved previously: `/about/agent` (was 19%) — see the table above and the `heuristic` construct
 in `@rebar-ui/placement`'s schema.ts. Also resolved: the site header itself, on every route — see
 `site-header` in the same file, and the "Legitimate exceptions" section below (the old floor bullet
 has been rewritten to reflect this).**

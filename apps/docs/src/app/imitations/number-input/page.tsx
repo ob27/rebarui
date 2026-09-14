@@ -17,7 +17,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Both the typed value and the stepper buttons clamp to `min`/`max` — the increment/decrement button at a boundary disables itself rather than silently doing nothing (see [Design Heuristics](/docs/heuristics) heuristic #26, input constraints are visible).",
+        text: "Both the typed value and the stepper buttons clamp to `min`/`max` — the increment/decrement button at a boundary disables itself rather than silently doing nothing (see [Design Heuristics](/about/agent) heuristic #26, input constraints are visible).",
       },
     ],
   },

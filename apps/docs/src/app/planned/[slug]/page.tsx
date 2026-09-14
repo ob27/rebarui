@@ -47,14 +47,14 @@ export default async function PlannedComponentPage({
               published UI libraries and design systems against rebar-ui's current set — but not
               yet built. Right now that list is empty: every component this project ever
               catalogued this way has since shipped as a real component. Check{" "}
-              <Link href="/docs/tiers" className="rebar-link">
+              <Link href="/about/agent" className="rebar-link">
                 the four tiers
               </Link>{" "}
               for what's actually available.
             </Text>
           </Stack>
         </Card>
-        <Link href="/docs/tiers" className="rebar-link">
+        <Link href="/about/agent" className="rebar-link">
           ← Back to the four tiers
         </Link>
       </Stack>
@@ -103,7 +103,7 @@ export default async function PlannedComponentPage({
         <Text color="secondary">{entry.sources.join(", ")}</Text>
       </Stack>
 
-      <Link href="/docs/tiers" className="rebar-link">
+      <Link href="/about/agent" className="rebar-link">
         ← Back to the four tiers
       </Link>
     </Stack>

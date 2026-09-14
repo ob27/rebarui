@@ -13,7 +13,7 @@ export default function OrdersPage() {
         complexity ladder; it isn&apos;t — it&apos;s a different axis (macro governance vs.
         behavioral complexity), which is why it covers only 8 of the 39 blocks rather than the
         whole placement layer. See{" "}
-        <a href="/docs/tiers" className="rebar-link">
+        <a href="/about/agent" className="rebar-link">
           the four tiers
         </a>{" "}
         for the full nuance.
