@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { BlockRenderer } from "./BlockRenderer";
-import type { Block } from "./schema";
+import type { Construct } from "./schema";
 
 describe("construct-entry block type", () => {
   it("renders a block entry with all fields", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "construct-entry",
         id: "Button",
@@ -20,9 +20,10 @@ describe("construct-entry block type", () => {
 );`,
         blocks: [
           {
-            type: "banner",
+            type: "callout",
+            tone: "info",
             title: "Demo",
-            body: "This is a demo",
+            subtitle: "This is a demo",
           },
         ],
       },
@@ -45,12 +46,12 @@ describe("construct-entry block type", () => {
     // Check implementation label
     expect(screen.getByText("Implementation")).toBeInTheDocument();
 
-    // Check demo label
-    expect(screen.getByText("Demo")).toBeInTheDocument();
+    // Check demo label (callout title)
+    expect(screen.getAllByText("Demo").length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders unmeasured tag correctly", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "construct-entry",
         id: "Input",
@@ -69,7 +70,7 @@ describe("construct-entry block type", () => {
   });
 
   it("renders without optional code and blocks", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "construct-entry",
         id: "Card",

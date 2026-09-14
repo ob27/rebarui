@@ -2,18 +2,18 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BlockRenderer } from "../BlockRenderer";
-import type { Block } from "../schema";
+import type { Construct } from "../schema";
 
 describe("BlockRenderer", () => {
   it("renders a header block with title and close action", () => {
-    const blocks: Block[] = [{ type: "header", title: "Preview", action: { icon: "close" } }];
+    const blocks: Construct[] = [{ type: "header", title: "Preview", action: { icon: "close" } }];
     render(<BlockRenderer blocks={blocks} />);
     expect(screen.getByText("Preview")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
   });
 
   it("renders a nav-bar block as real links, in order", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "nav-bar",
         ariaLabel: "Main",
@@ -30,7 +30,7 @@ describe("BlockRenderer", () => {
   });
 
   it("wraps a nav-bar block in a real, hand-resizable demo box when resizable is set, distinct from the real NavBar nested inside it", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "nav-bar", ariaLabel: "Main", resizable: true, items: [{ label: "Docs", href: "/docs" }] },
     ];
     const { container } = render(<BlockRenderer blocks={blocks} />);
@@ -44,7 +44,7 @@ describe("BlockRenderer", () => {
   });
 
   it("tags the real NavBar itself as the block root, with no resizable wrapper, when resizable is unset", () => {
-    const blocks: Block[] = [{ type: "nav-bar", ariaLabel: "Main", items: [{ label: "Docs", href: "/docs" }] }];
+    const blocks: Construct[] = [{ type: "nav-bar", ariaLabel: "Main", items: [{ label: "Docs", href: "/docs" }] }];
     const { container } = render(<BlockRenderer blocks={blocks} />);
     const root = container.querySelector('[data-rebar-placement-block="nav-bar"]') as HTMLElement;
     expect(root).toHaveAttribute("data-rebar-component", "navbar");
@@ -52,7 +52,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a nav-index block with search chrome hidden under the threshold", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "nav-index",
         ariaLabel: "Docs",
@@ -69,7 +69,7 @@ describe("BlockRenderer", () => {
   });
 
   it("derives a page-index block's sections from sibling doc-section headings, and assigns matching anchor ids", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "page-index" },
       { type: "doc-section", heading: "Getting Started", body: [{ kind: "text", text: "Intro" }] },
       { type: "doc-section", heading: "Advanced Usage!", body: [{ kind: "text", text: "More" }] },
@@ -90,7 +90,7 @@ describe("BlockRenderer", () => {
   });
 
   it("uses a page-index block's own explicit sections instead of deriving them, for a page with no doc-section content", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "page-index",
         sections: [
@@ -105,7 +105,7 @@ describe("BlockRenderer", () => {
   });
 
   it("prefers a page-index block's explicit sections over sibling doc-section headings when both are present", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "page-index", sections: [{ id: "custom", label: "Custom Section" }] },
       { type: "doc-section", heading: "Ignored Heading", body: [{ kind: "text", text: "x" }] },
     ];
@@ -115,7 +115,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a lone page-index block without the normal wrapping Box/Stack, so its real position:sticky element gets a containing block from whatever the caller places it in, not a collapsed single-child wrapper", () => {
-    const blocks: Block[] = [{ type: "page-index", sections: [{ id: "a", label: "A" }] }];
+    const blocks: Construct[] = [{ type: "page-index", sections: [{ id: "a", label: "A" }] }];
     const { container } = render(<BlockRenderer blocks={blocks} />);
     expect(container.querySelector("[data-rebar-placement-root]")).toBeNull();
     expect(container.firstElementChild).toHaveAttribute("data-rebar-placement-block", "page-index");
@@ -123,7 +123,7 @@ describe("BlockRenderer", () => {
   });
 
   it("still wraps normally when page-index shares the document with other blocks", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "page-index", sections: [{ id: "a", label: "A" }] },
       { type: "doc-section", heading: "A", body: [{ kind: "text", text: "x" }] },
     ];
@@ -132,14 +132,14 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a lone site-header block without the normal wrapping Box/Stack, so it's a clean top-level <header> landmark", () => {
-    const blocks: Block[] = [{ type: "site-header", logo: { label: "Acme" }, items: [] }];
+    const blocks: Construct[] = [{ type: "site-header", logo: { label: "Acme" }, items: [] }];
     const { container } = render(<BlockRenderer blocks={blocks} />);
     expect(container.querySelector("[data-rebar-placement-root]")).toBeNull();
     expect(container.firstElementChild?.tagName).toBe("HEADER");
   });
 
   it("renders a card-grid block with optional body, tags, and link per item", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "card-grid",
         items: [
@@ -161,7 +161,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a persona-card block", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "persona-card", items: [{ name: "Priya Shah", meta: "Engineering lead" }] },
     ];
     render(<BlockRenderer blocks={blocks} />);
@@ -170,7 +170,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a data-list block's extended item shape (avatar, meta, action)", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "data-list",
         items: [
@@ -193,7 +193,7 @@ describe("BlockRenderer", () => {
 
   it("renders a wizard block via the real Wizard component, gating Next on a required field", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "wizard",
         steps: [
@@ -212,7 +212,7 @@ describe("BlockRenderer", () => {
   it("calls a wizard block's resolved onSubmit handler with the collected step values", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "wizard",
         steps: [{ label: "Team", fields: [{ kind: "text", label: "Team name" }] }],
@@ -227,7 +227,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a card-kanban block with its title, columns, and cards", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "card-kanban",
         title: "Sprint board",
@@ -247,7 +247,7 @@ describe("BlockRenderer", () => {
 
   it("shows a card-kanban block's shared-with avatars and copies a share link on click", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "card-kanban",
         title: "Sprint board",
@@ -269,7 +269,7 @@ describe("BlockRenderer", () => {
 
   it("filters a card-kanban block's visible cards via its search box", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "card-kanban",
         title: "Sprint board",
@@ -306,7 +306,7 @@ describe("BlockRenderer", () => {
 
   it("renders a sticky-kanban block with the same chrome as card-kanban but capped-at-3, click-to-edit stickies", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "sticky-kanban",
         title: "Retro board",
@@ -324,7 +324,7 @@ describe("BlockRenderer", () => {
   });
 
   it("a card-kanban block's live source board takes priority over its literal columns/cards", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "card-kanban",
         title: "Sprint board",
@@ -348,7 +348,7 @@ describe("BlockRenderer", () => {
       columns: [{ id: "todo", title: "To do", sections: [{ id: "todo-main", cardIds: [] }] }],
       cards: {},
     };
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "card-kanban", title: "Sprint board", source: "board", onChange: "handleBoardChange" },
     ];
     render(<BlockRenderer blocks={blocks} data={{ board }} handlers={{ handleBoardChange: onChange }} />);
@@ -358,7 +358,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a banner block with an action label", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "banner", tone: "info", icon: "info", text: "Nothing saved", action: { label: "Reset" } },
     ];
     render(<BlockRenderer blocks={blocks} />);
@@ -367,7 +367,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a checklist block with one card per item, in order", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "checklist", heading: "Checklist", items: ["First item", "Second item"] },
     ];
     render(<BlockRenderer blocks={blocks} />);
@@ -379,7 +379,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a goal-tracker block's aspiration/focus-area/goal hierarchy", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "goal-tracker",
         aspiration: "Become the top board network",
@@ -406,7 +406,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders the shared Empty component for a goal-tracker block with no focus areas", () => {
-    const blocks: Block[] = [{ type: "goal-tracker", aspiration: "Aspiration", focusAreas: [] }];
+    const blocks: Construct[] = [{ type: "goal-tracker", aspiration: "Aspiration", focusAreas: [] }];
     const { container } = render(<BlockRenderer blocks={blocks} />);
     expect(screen.getByText("No focus areas yet")).toBeInTheDocument();
     expect(container.querySelector("[data-rebar-component='empty']")).toBeInTheDocument();
@@ -414,7 +414,7 @@ describe("BlockRenderer", () => {
 
   it("toggling a goal-tracker goal flips its completed state locally", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "goal-tracker",
         aspiration: "Aspiration",
@@ -430,7 +430,7 @@ describe("BlockRenderer", () => {
 
   it("adding a focus area/goal on a goal-tracker block inserts an empty, editable entry", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [{ type: "goal-tracker", aspiration: "Aspiration", focusAreas: [] }];
+    const blocks: Construct[] = [{ type: "goal-tracker", aspiration: "Aspiration", focusAreas: [] }];
     render(<BlockRenderer blocks={blocks} />);
 
     await user.click(screen.getByRole("button", { name: "+ Add focus area" }));
@@ -443,7 +443,7 @@ describe("BlockRenderer", () => {
 
   it("deleting a goal-tracker goal requires Popconfirm confirmation", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "goal-tracker",
         aspiration: "Aspiration",
@@ -459,7 +459,7 @@ describe("BlockRenderer", () => {
   });
 
   it("tags a goal-tracker block and its focus-area/goal items with block paths", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "goal-tracker",
         aspiration: "Aspiration",
@@ -478,7 +478,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a goal-tracker block's live source state instead of its literal aspiration/focusAreas", () => {
-    const blocks: Block[] = [{ type: "goal-tracker", source: "goalState" }];
+    const blocks: Construct[] = [{ type: "goal-tracker", source: "goalState" }];
     const goalState = { aspiration: "Live aspiration", focusAreas: [] as never[] };
     render(<BlockRenderer blocks={blocks} data={{ goalState }} />);
     expect(screen.getByText("Live aspiration")).toBeInTheDocument();
@@ -491,7 +491,7 @@ describe("BlockRenderer", () => {
       aspiration: "Aspiration",
       focusAreas: [{ id: "fa1", text: "Focus", goals: [{ id: "g1", text: "Goal", completed: false }] }],
     };
-    const blocks: Block[] = [{ type: "goal-tracker", source: "goalState", onChange: "handleGoalChange" }];
+    const blocks: Construct[] = [{ type: "goal-tracker", source: "goalState", onChange: "handleGoalChange" }];
     render(<BlockRenderer blocks={blocks} data={{ goalState }} handlers={{ handleGoalChange: onChange }} />);
 
     await user.click(screen.getByRole("checkbox"));
@@ -504,7 +504,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders an ai-chat block's transcript and title", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "ai-chat",
         title: "Support chat",
@@ -522,7 +522,7 @@ describe("BlockRenderer", () => {
 
   it("an ai-chat block appends a sent message to the transcript locally, without fabricating a reply", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "ai-chat", messages: [{ id: "1", role: "assistant", content: "Ask me anything." }] },
     ];
     render(<BlockRenderer blocks={blocks} />);
@@ -562,7 +562,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders an ai-chat block's live source messages instead of its literal messages array", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "ai-chat", messages: [{ id: "literal", role: "assistant", content: "Ignored" }], source: "chatMessages" },
     ];
     const chatMessages = [{ id: "live", role: "assistant" as const, content: "Live reply" }];
@@ -574,7 +574,7 @@ describe("BlockRenderer", () => {
   it("an ai-chat block calls its resolved onSend handler instead of appending locally, when source is set", async () => {
     const user = userEvent.setup();
     const onSend = vi.fn();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "ai-chat", source: "chatMessages", onSend: "sendChatMessage" },
     ];
     render(
@@ -595,7 +595,7 @@ describe("BlockRenderer", () => {
   it("an ai-chat block falls back to local-append behavior when source is unset, even with onSend set", async () => {
     const user = userEvent.setup();
     const onSend = vi.fn();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "ai-chat", messages: [{ id: "1", role: "assistant", content: "Ask me anything." }] },
     ];
     render(<BlockRenderer blocks={blocks} handlers={{ sendChatMessage: onSend }} />);
@@ -606,7 +606,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a callout block with title and subtitle", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "callout", tone: "warning", icon: "clock", title: "In progress", subtitle: "Some items incomplete" },
     ];
     render(<BlockRenderer blocks={blocks} />);
@@ -615,7 +615,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a feature-grid block with one entry per item", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "feature-grid",
         items: [
@@ -631,7 +631,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a pillar-grid block, linking each card's CTA via renderLink", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "pillar-grid",
         items: [{ title: "Components", body: "The reference", href: "/components", cta: "Browse" }],
@@ -649,7 +649,7 @@ describe("BlockRenderer", () => {
   });
 
   it("keeps DOM order equal to document order regardless of block type mix", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "header", title: "Preview" },
       { type: "banner", tone: "info", text: "First" },
       { type: "checklist", items: ["A", "B"] },
@@ -668,7 +668,7 @@ describe("BlockRenderer", () => {
   });
 
   it("falls back to a plain anchor when no renderLink is supplied", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "pillar-grid",
         items: [{ title: "Docs", body: "Read them", href: "/docs", cta: "Go" }],
@@ -679,7 +679,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a form block with each field kind and a submit button", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "form",
         heading: "Account Settings",
@@ -703,7 +703,7 @@ describe("BlockRenderer", () => {
   });
 
   it("omits the submit button when a form has no submitLabel (e.g. nested inside a modal)", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "form", fields: [{ kind: "text", label: "Project name" }] },
     ];
     render(<BlockRenderer blocks={blocks} />);
@@ -713,7 +713,7 @@ describe("BlockRenderer", () => {
 
   it("a form's fields are real controlled inputs, tracked in local state as the user types", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "form",
         fields: [
@@ -737,7 +737,7 @@ describe("BlockRenderer", () => {
   it("a form with onSubmit calls the resolved handler with every field's current value, keyed by label", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "form",
         fields: [
@@ -757,7 +757,7 @@ describe("BlockRenderer", () => {
 
   it("a form with no onSubmit set is a no-op on submit, same as before", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "form", fields: [{ kind: "text", label: "Name" }], submitLabel: "Create" },
     ];
     render(<BlockRenderer blocks={blocks} />);
@@ -768,7 +768,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a table block with columns, rows, and a per-row action", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "table",
         columns: ["Team", "Lead"],
@@ -786,7 +786,7 @@ describe("BlockRenderer", () => {
 
   it("renders a table block via the real Table component, sortable by default", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "table",
         columns: ["Team"],
@@ -804,7 +804,7 @@ describe("BlockRenderer", () => {
 
   it("filters a table block's rows via its own search box", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "table",
         columns: ["Team", "Lead"],
@@ -823,7 +823,7 @@ describe("BlockRenderer", () => {
 
   it("filters a table block's rows via a named exact-match filter, collapsing extras into a More filters popover", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "table",
         columns: ["Team", "Status"],
@@ -854,7 +854,7 @@ describe("BlockRenderer", () => {
 
   it("adds a row to a table block via its own add-row form, without persisting past the local view", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "table",
         columns: ["Team", "Lead"],
@@ -883,7 +883,7 @@ describe("BlockRenderer", () => {
       return {} as Blob;
     });
 
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "table",
         columns: ["Team", "Lead"],
@@ -907,7 +907,7 @@ describe("BlockRenderer", () => {
       value: { writeText: vi.fn().mockResolvedValue(undefined) },
       configurable: true,
     });
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "table",
         columns: ["Team", "Lead"],
@@ -922,7 +922,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a table block's live source rows instead of its literal rows", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "table", columns: ["Team"], rows: [{ cells: ["Ignored"] }], source: "teamRows" },
     ];
     render(<BlockRenderer blocks={blocks} data={{ teamRows: [{ cells: ["Live team"] }] }} />);
@@ -933,7 +933,7 @@ describe("BlockRenderer", () => {
   it("fires a table block's resolved onRowAction handler with the row's index and data on action-button click", async () => {
     const user = userEvent.setup();
     const onRowAction = vi.fn();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "table",
         columns: ["Team"],
@@ -952,7 +952,7 @@ describe("BlockRenderer", () => {
   it("calls a table block's resolved onAddRow handler instead of mutating local rows, when source is set", async () => {
     const user = userEvent.setup();
     const onAddRow = vi.fn();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "table",
         columns: ["Team"],
@@ -978,7 +978,7 @@ describe("BlockRenderer", () => {
   });
 
   it("forwards a table block's loading prop straight through to the real Table component's skeleton rows", () => {
-    const blocks: Block[] = [{ type: "table", columns: ["Team"], rows: [{ cells: ["Engineering"] }], loading: true }];
+    const blocks: Construct[] = [{ type: "table", columns: ["Team"], rows: [{ cells: ["Engineering"] }], loading: true }];
     const { container } = render(<BlockRenderer blocks={blocks} />);
     // Loading renders Skeleton placeholder rows instead of the real data — the literal row's text
     // is absent while loading.
@@ -987,7 +987,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a data-list block with a badge per item", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "data-list",
         items: [
@@ -1002,7 +1002,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a filter-bar block with search, a select, and an action button", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "filter-bar",
         searchPlaceholder: "Search projects…",
@@ -1016,7 +1016,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a tabs block, showing the first tab's blocks by default", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "tabs",
         tabs: [
@@ -1032,7 +1032,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a modal block as an open dialog with its own blocks and footer actions", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "modal",
         title: "New Project",
@@ -1049,7 +1049,7 @@ describe("BlockRenderer", () => {
   });
 
   it("tags every top-level block with a schema-shaped data-rebar-block-path", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "header", title: "Preview" },
       { type: "checklist", items: ["A", "B"] },
     ];
@@ -1059,7 +1059,7 @@ describe("BlockRenderer", () => {
   });
 
   it("tags individual checklist items with an item-level path and label", () => {
-    const blocks: Block[] = [{ type: "checklist", items: ["First item", "Second item"] }];
+    const blocks: Construct[] = [{ type: "checklist", items: ["First item", "Second item"] }];
     render(<BlockRenderer blocks={blocks} />);
     const first = document.querySelector('[data-rebar-block-path="blocks[0].items[0]"]');
     const second = document.querySelector('[data-rebar-block-path="blocks[0].items[1]"]');
@@ -1068,7 +1068,7 @@ describe("BlockRenderer", () => {
   });
 
   it("nests the path through tabs and modal, matching the real schema shape", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "tabs",
         tabs: [
@@ -1093,7 +1093,7 @@ describe("BlockRenderer", () => {
   });
 
   it("tags a form field with its path and label", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "form", fields: [{ kind: "text", label: "Project name" }] },
     ];
     render(<BlockRenderer blocks={blocks} />);
@@ -1102,7 +1102,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a hero block with badge, title, subtitle, actions, and a code snippet", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "hero",
         badge: "v0.1",
@@ -1126,7 +1126,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a section-header block with kicker, title, and subtitle", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "section-header", kicker: "Theme customization", title: "Sketch today, anything tomorrow", subtitle: "No code changes, just a theme swap." },
     ];
     render(<BlockRenderer blocks={blocks} />);
@@ -1136,19 +1136,19 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a doc-section block's heading at level 1, for a page's own title", () => {
-    const blocks: Block[] = [{ type: "doc-section", heading: "Page Title", level: 1, body: [{ kind: "text", text: "Intro." }] }];
+    const blocks: Construct[] = [{ type: "doc-section", heading: "Page Title", level: 1, body: [{ kind: "text", text: "Intro." }] }];
     render(<BlockRenderer blocks={blocks} />);
     expect(screen.getByRole("heading", { level: 1, name: "Page Title" })).toBeInTheDocument();
   });
 
   it("defaults a doc-section block's heading to level 2 when level is omitted", () => {
-    const blocks: Block[] = [{ type: "doc-section", heading: "Section", body: [{ kind: "text", text: "Text." }] }];
+    const blocks: Construct[] = [{ type: "doc-section", heading: "Section", body: [{ kind: "text", text: "Text." }] }];
     render(<BlockRenderer blocks={blocks} />);
     expect(screen.getByRole("heading", { level: 2, name: "Section" })).toBeInTheDocument();
   });
 
   it("renders a doc-section block's prose, code, and list nodes in order", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "doc-section",
         heading: "1. Install",
@@ -1181,7 +1181,7 @@ describe("BlockRenderer", () => {
   });
 
   it("parses inline backtick-code and markdown-style links in doc-section prose", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "doc-section",
         body: [{ kind: "text", text: "See the [component reference](/components) for details." }],
@@ -1195,7 +1195,7 @@ describe("BlockRenderer", () => {
   });
 
   it("parses inline *emphasis* markup in doc-section prose, in both text and list items", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "doc-section",
         body: [
@@ -1215,7 +1215,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a props-table block with prop rows", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "props-table",
         rows: [
@@ -1233,7 +1233,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a fallback message for a props-table block with no rows", () => {
-    const blocks: Block[] = [{ type: "props-table", rows: [] }];
+    const blocks: Construct[] = [{ type: "props-table", rows: [] }];
     render(<BlockRenderer blocks={blocks} />);
     expect(
       screen.getByText("No component-specific props (only standard HTML/ARIA attributes, forwarded as-is)."),
@@ -1241,7 +1241,7 @@ describe("BlockRenderer", () => {
   });
 
   it("tags a props-table block with its schema-shaped path", () => {
-    const blocks: Block[] = [{ type: "props-table", rows: [{ name: "x", type: "string", required: false, defaultValue: null, description: null }] }];
+    const blocks: Construct[] = [{ type: "props-table", rows: [{ name: "x", type: "string", required: false, defaultValue: null, description: null }] }];
     const { container } = render(<BlockRenderer blocks={blocks} />);
     expect(container.querySelector('[data-rebar-placement-block="props-table"]')).toHaveAttribute(
       "data-rebar-block-path",
@@ -1250,7 +1250,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders an iframe block with its src, title, and a default height when none is set", () => {
-    const blocks: Block[] = [{ type: "iframe", src: "https://example.com", title: "Migrated build" }];
+    const blocks: Construct[] = [{ type: "iframe", src: "https://example.com", title: "Migrated build" }];
     render(<BlockRenderer blocks={blocks} />);
     const iframe = screen.getByTitle("Migrated build");
     expect(iframe.tagName).toBe("IFRAME");
@@ -1259,13 +1259,13 @@ describe("BlockRenderer", () => {
   });
 
   it("respects an iframe block's own explicit height", () => {
-    const blocks: Block[] = [{ type: "iframe", src: "https://example.com", title: "Migrated build", height: 480 }];
+    const blocks: Construct[] = [{ type: "iframe", src: "https://example.com", title: "Migrated build", height: 480 }];
     render(<BlockRenderer blocks={blocks} />);
     expect(screen.getByTitle("Migrated build")).toHaveStyle({ height: "480px" });
   });
 
   it("renders a comparison block's two labeled panels with their own nested blocks, in DOM order", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "comparison",
         leftLabel: "Rebar",
@@ -1287,7 +1287,7 @@ describe("BlockRenderer", () => {
   });
 
   it("tags a comparison block and its nested left/right blocks with schema-shaped paths", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "comparison",
         leftLabel: "Rebar",
@@ -1312,7 +1312,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a side-panel block's main content and panel content, panel open by default", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "side-panel",
         main: [{ type: "checklist", heading: "Checklist", items: ["One", "Two"] }],
@@ -1327,7 +1327,7 @@ describe("BlockRenderer", () => {
 
   it("a side-panel block's panel collapses to a rail and reopens, without touching main content", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "side-panel",
         main: [{ type: "checklist", heading: "Checklist", items: ["One"] }],
@@ -1341,7 +1341,7 @@ describe("BlockRenderer", () => {
   });
 
   it("respects panel.defaultOpen: false, starting collapsed", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "side-panel",
         main: [{ type: "checklist", heading: "Checklist", items: ["One"] }],
@@ -1354,7 +1354,7 @@ describe("BlockRenderer", () => {
   });
 
   it("tags a side-panel block and its nested main/panel blocks with schema-shaped paths", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "side-panel",
         main: [{ type: "checklist", heading: "Checklist", items: ["One"] }],
@@ -1377,7 +1377,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a heuristic block's title, rule, rationale, code sample, and anchor id", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "heuristic",
         id: "recognition",
@@ -1403,7 +1403,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a heuristic block's optional live exampleBlocks recursively, and omits the demo box when absent", () => {
-    const withExample: Block[] = [
+    const withExample: Construct[] = [
       {
         type: "heuristic",
         id: "consistency",
@@ -1419,7 +1419,7 @@ describe("BlockRenderer", () => {
       "blocks[0].exampleBlocks[0]",
     );
 
-    const withoutExample: Block[] = [
+    const withoutExample: Construct[] = [
       {
         type: "heuristic",
         id: "no-example",
@@ -1433,7 +1433,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a spin-card block's items inside a real Spin/Card, with its own tip and sizing", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "spin-card", tip: "Fetching", items: ["Project A", "Project B", "Project C"], width: 220, minHeight: 120 },
     ];
     const { container } = render(<BlockRenderer blocks={blocks} />);
@@ -1449,13 +1449,13 @@ describe("BlockRenderer", () => {
   });
 
   it("defaults a spin-card block's tip when omitted", () => {
-    const blocks: Block[] = [{ type: "spin-card", items: ["Row"] }];
+    const blocks: Construct[] = [{ type: "spin-card", items: ["Row"] }];
     render(<BlockRenderer blocks={blocks} />);
     expect(screen.getByText("Loading")).toBeInTheDocument();
   });
 
   it("renders an error-block block with its status's default copy, full-page by default, and a real retry action", () => {
-    const blocks: Block[] = [{ type: "error-block", status: "disconnected", action: { label: "Retry" } }];
+    const blocks: Construct[] = [{ type: "error-block", status: "disconnected", action: { label: "Retry" } }];
     const { container } = render(<BlockRenderer blocks={blocks} />);
     expect(screen.getByText("No connection")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
@@ -1467,7 +1467,7 @@ describe("BlockRenderer", () => {
   });
 
   it("an error-block block's title/description override the status default, and fullPage: false opts out of the wide layout", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "error-block", title: "Board failed to load", description: "Try refreshing the page.", fullPage: false },
     ];
     const { container } = render(<BlockRenderer blocks={blocks} />);
@@ -1477,7 +1477,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a footer block's label, content, links, and chips", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "footer",
         label: "No more results",
@@ -1499,7 +1499,7 @@ describe("BlockRenderer", () => {
   });
 
   it("a footer block with no sections set renders nothing but the wrapper", () => {
-    const blocks: Block[] = [{ type: "footer" }];
+    const blocks: Construct[] = [{ type: "footer" }];
     const { container } = render(<BlockRenderer blocks={blocks} />);
     const footer = container.querySelector('[data-rebar-placement-block="footer"]');
     expect(footer).toBeInTheDocument();
@@ -1507,7 +1507,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a site-header block's logo, nav-bar, and no trailing content when trailing is omitted", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "site-header",
         logo: { label: "Acme", href: "/" },
@@ -1525,7 +1525,7 @@ describe("BlockRenderer", () => {
   });
 
   it("logo.iconPath renders a real inline <svg fill=\"currentColor\"> instead of an <img>, and takes priority over iconSrc", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "site-header",
         logo: { label: "Acme", iconSrc: "/ignored.svg", iconPath: "M0 0h24v24H0z", iconViewBox: "0 0 24 24" },
@@ -1542,7 +1542,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a site-header block's text trailing content", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "site-header",
         logo: { label: "Acme" },
@@ -1555,7 +1555,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a site-header block's login trailing content as a real link when href is set", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "site-header",
         logo: { label: "Acme" },
@@ -1568,7 +1568,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a site-header block's avatar trailing content", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "site-header",
         logo: { label: "Acme" },
@@ -1581,13 +1581,13 @@ describe("BlockRenderer", () => {
   });
 
   it("omits the theme toggle when themeToggle is unset", () => {
-    const blocks: Block[] = [{ type: "site-header", logo: { label: "Acme" }, items: [] }];
+    const blocks: Construct[] = [{ type: "site-header", logo: { label: "Acme" }, items: [] }];
     render(<BlockRenderer blocks={blocks} />);
     expect(screen.queryByRole("button", { name: "Theme" })).not.toBeInTheDocument();
   });
 
   it("shows the real ThemeToggle component alongside its own trailing content when themeToggle is set", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "site-header",
         logo: { label: "Acme" },
@@ -1604,7 +1604,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a scatter-chart block with its series and title", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "scatter-chart",
         title: "Token cost",
@@ -1626,7 +1626,7 @@ describe("BlockRenderer", () => {
 
   it("filters a scatter-chart block's series via its own filter footer, and omits the footer for a single series", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "scatter-chart",
         series: [
@@ -1647,7 +1647,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a line-chart block with a crossover marker", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "line-chart",
         title: "Cumulative cost",
@@ -1670,7 +1670,7 @@ describe("BlockRenderer", () => {
 
   it("filters a line-chart block's series via its own filter footer", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "line-chart",
         xLabels: ["R0", "R1"],
@@ -1690,7 +1690,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a stacked-bar-chart block with its bars and total labels", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "stacked-bar-chart",
         title: "Cost composition",
@@ -1714,7 +1714,7 @@ describe("BlockRenderer", () => {
 
   it("filters a stacked-bar-chart block's segment labels across every bar at once", async () => {
     const user = userEvent.setup();
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "stacked-bar-chart",
         bars: [
@@ -1734,7 +1734,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a scatter-chart block's live source series instead of its literal series", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "scatter-chart", title: "Chart", series: [{ label: "Ignored", values: [1] }], source: "points" },
     ];
     render(<BlockRenderer blocks={blocks} data={{ points: [{ label: "Live series", values: [1, 2] }] }} />);
@@ -1743,7 +1743,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a line-chart block's live source series instead of its literal series", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "line-chart",
         title: "Chart",
@@ -1758,7 +1758,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a stacked-bar-chart block's live source bars instead of its literal bars", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "stacked-bar-chart",
         bars: [{ label: "Ignored", segments: [{ label: "Ignored segment", value: 1 }] }],
@@ -1776,7 +1776,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a stats-table block's headers and rows through the real Table component", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       {
         type: "stats-table",
         headers: ["Condition", "Mean", "Std. dev."],
@@ -1797,7 +1797,7 @@ describe("BlockRenderer", () => {
   });
 
   it("renders a gallery block as a labeled Carousel of numbered screenshots", () => {
-    const blocks: Block[] = [
+    const blocks: Construct[] = [
       { type: "gallery", label: "antd", dir: "/shots", prefix: "antd-text", count: 3 },
     ];
     const { container } = render(<BlockRenderer blocks={blocks} />);
@@ -1810,7 +1810,7 @@ describe("BlockRenderer", () => {
   });
 
   it("defaults a gallery block's count to 15", () => {
-    const blocks: Block[] = [{ type: "gallery", label: "rebar-ui", dir: "/shots", prefix: "rebar-text" }];
+    const blocks: Construct[] = [{ type: "gallery", label: "rebar-ui", dir: "/shots", prefix: "rebar-text" }];
     const { container } = render(<BlockRenderer blocks={blocks} />);
     expect(container.querySelectorAll("img")).toHaveLength(15);
   });
