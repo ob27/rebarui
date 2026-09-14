@@ -1,30 +1,27 @@
-import { NextBlockRenderer } from "@/components/NextBlockRenderer";
-import type { Construct } from "@rebar-ui/placement";
+import { Heading, Image, Stack, Text } from "rebar-ui";
 
-const blocks: Construct[] = [
-  {
-    type: "hero",
-    title: "Geneses",
-    subtitle: "Starter projects grounded in the rebar-ui framework",
-    imageSrc: "/catalogue-heros/genses.jpeg",
-  },
-  {
-    type: "doc-section",
-    heading: "What are Geneses?",
-    body: [
-      { kind: "text", text: "Geneses are complete, production-ready starter projects that demonstrate the full rebar-ui framework in action. Each genesis is a well-architected application that showcases best practices, common patterns, and the power of the construct-based approach." },
-      { kind: "text", text: "Unlike individual constructs (components and blocks), geneses are full applications you can clone, customize, and build upon. They serve as both learning resources and starting points for your own projects." },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Available Geneses",
-    body: [
-      { kind: "text", text: "Geneses will be added as the framework matures. Each genesis will include complete source code, documentation, and deployment instructions." },
-    ],
-  },
-];
-
-export default function Page() {
-  return <NextBlockRenderer blocks={blocks} />;
+export default function GenesesPage() {
+  return (
+    <Stack gap="lg">
+      <Image src="/catalogue-heros/genses.jpeg" alt="Geneses hero image" style={{ width: "100%", borderRadius: "8px" }} />
+      <Heading level={1}>Geneses</Heading>
+      <Text color="secondary">
+        Seed projects grounded in the Rebar UI framework — complete, production-ready applications
+        that demonstrate the full construct-based approach in action. Each genesis is a well-architected
+        starting point you can clone, customize, and build upon.
+      </Text>
+      <Text color="secondary">
+        Geneses serve as both learning resources and foundations for your own projects. They show how
+        to compose constructs into real applications, how to structure a project around the Packer,
+        and how to extend the framework with project-specific constructs when the shipped catalog
+        doesn&apos;t quite fit.
+      </Text>
+      <Heading level={2}>Coming soon</Heading>
+      <Text color="secondary">
+        The first genesis projects are being prepared. Check back soon for seed applications spanning
+        dashboards, admin panels, content sites, and more — each built entirely from constructs, each
+        ready to fork and make your own.
+      </Text>
+    </Stack>
+  );
 }

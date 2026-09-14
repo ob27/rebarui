@@ -58,6 +58,7 @@ export const BLOCK_TIER = {
   "stats-table": "synthetic",
   gallery: "synthetic",
   "construct-entry": "synthetic",
+  "mega-menu": "synthetic",
 } satisfies Record<Construct["type"], ConstructTier>;
 
 export function constructTier(type: Construct["type"]): ConstructTier {

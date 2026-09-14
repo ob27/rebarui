@@ -2181,6 +2181,78 @@ function renderBlock(
         </Box>
       );
 
+    case "mega-menu": {
+      const columnCount = block.columns.length;
+      return (
+        <Box
+          data-rebar-placement-block="mega-menu"
+          data-rebar-block-path={path}
+          style={{
+            display: "grid",
+            gridTemplateColumns: `repeat(${columnCount}, 1fr)`,
+            gap: "var(--rebar-space-xl, 32px)",
+            padding: "var(--rebar-space-xl, 32px)",
+            minWidth: columnCount * 200,
+          }}
+        >
+          {block.columns.map((col, ci) => (
+            <Stack key={ci} gap="sm">
+              <Text
+                as="span"
+                size="xs"
+                color="secondary"
+                style={{
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  fontWeight: "var(--rebar-font-weight-semibold, 600)",
+                }}
+              >
+                {col.heading}
+              </Text>
+              <Stack gap="xs">
+                {col.items.map((item, ii) => {
+                  const Icon = item.icon ? ICONS[item.icon] : null;
+                  const content = (
+                    <Stack gap="xs">
+                      <Stack direction="row" gap="xs" align="center">
+                        {Icon ? <Icon /> : null}
+                        <Text as="span" size="sm" style={{ fontWeight: "var(--rebar-font-weight-medium, 500)" }}>
+                          {item.label}
+                          {item.external ? " ↗" : null}
+                        </Text>
+                      </Stack>
+                      {item.description ? (
+                        <Text size="xs" color="secondary">
+                          {item.description}
+                        </Text>
+                      ) : null}
+                    </Stack>
+                  );
+                  return (
+                    <span key={ii} style={{ display: "block" }}>
+                      {renderLink({ href: item.href, children: content })}
+                    </span>
+                  );
+                })}
+              </Stack>
+            </Stack>
+          ))}
+          {block.footer ? (
+            <Box
+              style={{
+                gridColumn: `1 / -1`,
+                borderTop: "1px solid var(--rebar-color-border, #e0e0e0)",
+                paddingTop: "var(--rebar-space-md, 16px)",
+                marginTop: "var(--rebar-space-sm, 8px)",
+              }}
+            >
+              {renderLink({ href: block.footer.href, children: <Text size="sm">{block.footer.label} →</Text> })}
+            </Box>
+          ) : null}
+        </Box>
+      );
+    }
+
     default:
       return null;
   }

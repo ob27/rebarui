@@ -332,6 +332,14 @@ export type ProseNode =
 export interface NavBarItem {
   label: string;
   href: string;
+  /** When set, this item renders as a dropdown trigger instead of a plain link. */
+  megaMenu?: {
+    columns: {
+      heading: string;
+      items: { label: string; description?: string; href: string; icon?: IconName; external?: boolean }[];
+    }[];
+    footer?: { label: string; href: string };
+  };
 }
 
 export interface NavIndexItem {
@@ -746,4 +754,21 @@ export type Construct =
       shape: string;
       code?: string;
       blocks?: Construct[];
+    }
+  | {
+      /** A multi-column navigation mega-menu panel — used as a dropdown from a NavBar item.
+       * Each column has a heading and a list of items (label + optional description + href).
+       * An optional footer link renders at the bottom of the panel. */
+      type: "mega-menu";
+      columns: {
+        heading: string;
+        items: {
+          label: string;
+          description?: string;
+          href: string;
+          icon?: IconName;
+          external?: boolean;
+        }[];
+      }[];
+      footer?: { label: string; href: string };
     };

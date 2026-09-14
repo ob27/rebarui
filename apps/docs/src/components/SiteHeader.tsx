@@ -7,30 +7,63 @@ import { REBAR_MARK_PATH, REBAR_MARK_VIEWBOX } from "@/data/rebarMark";
 const BLOCKS: Construct[] = [
   {
     type: "site-header",
-    // iconPath (not iconSrc) — a real inline <svg fill="currentColor">, so the mark inherits the
-    // ambient text color and reacts live to the light/dark toggle above; iconSrc (an <img>-loaded
-    // external file) fundamentally can't, since it has no visibility into this page's own DOM/CSS.
     logo: { label: "Rebar UI", href: "/", iconPath: REBAR_MARK_PATH, iconViewBox: REBAR_MARK_VIEWBOX },
     items: [
-      { href: "/imitations", label: "Imitations" },
-      { href: "/synthetics", label: "Synthetics" },
-      { href: "/opinions", label: "Opinions" },
+      {
+        href: "/imitations",
+        label: "Framework",
+        megaMenu: {
+          columns: [
+            {
+              heading: "Imitations",
+              items: [
+                { label: "Button", description: "Real <button> element", href: "/imitations/button" },
+                { label: "Input", description: "Text input field", href: "/imitations/input" },
+                { label: "Checkbox", description: "Toggle control", href: "/imitations/checkbox" },
+                { label: "Badge", description: "Status indicator", href: "/imitations/badge" },
+                { label: "Skeleton", description: "Loading placeholder", href: "/imitations/skeleton" },
+              ],
+            },
+            {
+              heading: "Synthetics",
+              items: [
+                { label: "Hero", description: "Page-top banner", href: "/synthetics/hero" },
+                { label: "Card Grid", description: "Wrapping card layout", href: "/synthetics/card-grid" },
+                { label: "Checklist", description: "Static item list", href: "/synthetics/checklist" },
+                { label: "Callout", description: "Bordered notice card", href: "/synthetics/callout" },
+                { label: "Feature Grid", description: "Title+body pairs", href: "/synthetics/feature-grid" },
+              ],
+            },
+            {
+              heading: "Opinions",
+              items: [
+                { label: "Table", description: "Sortable data table", href: "/opinions/table" },
+                { label: "Dialog", description: "Modal dialog", href: "/opinions/dialog" },
+                { label: "Accordion", description: "Collapsible sections", href: "/opinions/accordion" },
+                { label: "Combobox", description: "Type-to-filter select", href: "/opinions/combobox" },
+                { label: "Calendar", description: "Date picker", href: "/opinions/calendar" },
+              ],
+            },
+            {
+              heading: "Archetypes",
+              items: [
+                { label: "The Button", description: "Lever to digital", href: "/archetypes/the-button" },
+              ],
+            },
+          ],
+          footer: { label: "Browse all constructs", href: "/imitations" },
+        },
+      },
       { href: "/orders", label: "Orders" },
-      { href: "/archetypes", label: "Archetypes" },
+      { href: "/geneses", label: "Geneses" },
       { href: "/about", label: "About" },
     ],
     ariaLabel: "Main",
-    // Deliberately a literal string, not derived from packages/core/package.json's real semver
-    // ("0.10.0") — the desired display wording ("0.10.0") doesn't match that format.
     trailing: { kind: "text", text: "0.10.0" },
     themeToggle: true,
   },
 ];
 
-// The header's "Theme" popover and DevTools' own panel (🔧, bottom-right) both write the same
-// data-rebar-theme/data-theme attributes, and each only reads the current value once, on its own
-// mount — a real, known gap: changing the theme via one doesn't refresh the other's displayed
-// selection until it remounts. Not resolved here; flagging it rather than hiding it.
 export function SiteHeader() {
   return <NextBlockRenderer blocks={BLOCKS} />;
 }
