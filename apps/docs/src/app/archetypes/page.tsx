@@ -1,13 +1,8 @@
 import type { Construct } from "@rebar-ui/placement";
+import { Image } from "rebar-ui";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const BLOCKS: Construct[] = [
-  {
-    type: "hero",
-    title: "Archetypes",
-    subtitle: "Every digital UI construct has a physical ancestor",
-    imageSrc: "/catalogue-heros/archetypes.jpeg",
-  },
   {
     type: "doc-section",
     heading: "What are Archetypes?",
@@ -35,5 +30,10 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function ArchetypesPage() {
-  return <NextBlockRenderer blocks={BLOCKS} />;
+  return (
+    <>
+      <Image src="/catalogue-heros/archetypes.jpeg" alt="Archetypes hero image" style={{ width: "100%", borderRadius: "8px" }} />
+      <NextBlockRenderer blocks={BLOCKS} />
+    </>
+  );
 }
