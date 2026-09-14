@@ -283,7 +283,7 @@ export const CATALOGUE_BLOCKS: ConstructCatalogueEntry[] = [
         type: "doc-section",
         heading: "Example",
         body: [
-          { kind: "text", text: "A paragraph with `inline code` and a [link](/docs)." },
+          { kind: "text", text: "A paragraph with `inline code` and a [link](/about)." },
           { kind: "list", items: ["First point", "Second point"] },
         ],
       },

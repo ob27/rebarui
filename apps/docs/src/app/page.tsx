@@ -165,7 +165,7 @@ export default function Home() {
             from the full spec, so the comparison is of the same thing on both sides — see the
             modal itself, live and properly closable, on the{" "}
             <a href="/opinions/dialog" className="rebar-link">Dialog reference page</a>. Same underlying spec as the{" "}
-            <a href="/benchmarks/tiers" className="rebar-link">Composite tier</a> benchmark.
+            <a href="/about/benchmarks/tiers" className="rebar-link">Composite tier</a> benchmark.
           </Text>
         </Stack>
       </Section>
@@ -193,7 +193,7 @@ import { Button } from "rebar-ui";
 </html>`}
             />
             <Stack direction="row" gap="md">
-              <Link href="/docs/getting-started">
+              <Link href="/about">
                 <Button variant="primary">Read the docs</Button>
               </Link>
               <Link href="/about/agent">

@@ -18,7 +18,7 @@ const INTRO_BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Six realistic ways people actually build things, each priced with real, current API rates (Claude Sonnet 5: $2/$10 per million input/output tokens; Qwen3.7: $2.50-7.50/MTok depending on tier; Kimi-K3: $3/$15 per MTok — all current list prices as of this writing). The token counts behind every dollar figure are the same real, measured data in [the receipts](/benchmarks/receipts) — nothing here is invented for effect. Where we scale a measured result up to a more realistic project size, we say so plainly.",
+        text: "Six realistic ways people actually build things, each priced with real, current API rates (Claude Sonnet 5: $2/$10 per million input/output tokens; Qwen3.7: $2.50-7.50/MTok depending on tier; Kimi-K3: $3/$15 per MTok — all current list prices as of this writing). The token counts behind every dollar figure are the same real, measured data in [the receipts](/about/benchmarks/receipts) — nothing here is invented for effect. Where we scale a measured result up to a more realistic project size, we say so plainly.",
       },
     ],
   },
@@ -102,7 +102,7 @@ const SCENARIO_1_TAIL_BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "*What this doesn't include:* project management overhead, code review, and QA time are folded into the day estimates above, not added separately — a real team with more process overhead would widen this gap further, not close it. Per-screen token costs are the same real, measured Composite-tier numbers used throughout this page (see [the tiers section](/benchmarks/tiers)), scaled to 7 screens × 6 rounds — a stated scaling, not a new measurement. Swap in your own day rate, revision count, or screen count; the model is simple enough to redo by hand.",
+        text: "*What this doesn't include:* project management overhead, code review, and QA time are folded into the day estimates above, not added separately — a real team with more process overhead would widen this gap further, not close it. Per-screen token costs are the same real, measured Composite-tier numbers used throughout this page (see [the tiers section](/about/benchmarks/tiers)), scaled to 7 screens × 6 rounds — a stated scaling, not a new measurement. Swap in your own day rate, revision count, or screen count; the model is simple enough to redo by hand.",
       },
     ],
   },

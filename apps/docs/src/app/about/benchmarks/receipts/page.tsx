@@ -10,7 +10,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Everything on [the scenarios page](/benchmarks/scenarios) is built from the real, repeated measurements below — same target UI, built against `antd` directly and against `rebar-ui` (always through its small procedural placement layer, never hand-authored), across two prompt styles (a written spec, a reference screenshot) and three models, n=15 per condition unless stated otherwise. If you just want the bottom line, the scenarios page already has it — this page and everything after it is for anyone who wants to verify it.",
+        text: "Everything on [the scenarios page](/about/benchmarks/scenarios) is built from the real, repeated measurements below — same target UI, built against `antd` directly and against `rebar-ui` (always through its small procedural placement layer, never hand-authored), across two prompt styles (a written spec, a reference screenshot) and three models, n=15 per condition unless stated otherwise. If you just want the bottom line, the scenarios page already has it — this page and everything after it is for anyone who wants to verify it.",
       },
     ],
   },

@@ -4,6 +4,8 @@ import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 const BLOCKS: Construct[] = [
   {
     type: "hero",
+    title: "Archetypes",
+    subtitle: "Every digital UI construct has a physical ancestor",
     imageSrc: "/catalogue-heros/archetypes.jpeg",
   },
   {

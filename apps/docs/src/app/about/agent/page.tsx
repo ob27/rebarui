@@ -9,37 +9,34 @@ const placementBlocks: Construct[] = [
     subtitle: "The full design-heuristics checklist and framework rules for building with Rebar UI — everything an AI agent needs to understand the Four-Tier Typology, the distinction between Framework Rules (fixed, mechanical constraints) and Heuristics (judgment-requiring design principles), and the 40-item checklist that governs component and construct design. Paste it into an agent's system prompt or project context before asking it to extend this framework or build new components — it's the compressed operating context that keeps every contribution aligned with the project's design philosophy."
   },
   {
-    type: "prose",
-    content: [
+    type: "doc-section",
+    body: [
       {
-        kind: "heading",
-        level: 2,
-        text: "Rebar UI — Agent Context (v0.9.0)"
+        kind: "text",
+        text: "**Rebar UI — Agent Context (v0.9.0)**"
       },
       {
-        kind: "paragraph",
+        kind: "text",
         text: "Compressed operating context for an AI agent working with **Rebar UI**. Two audiences: an agent **extending the framework** (new components in `packages/core`, new constructs in `@rebar-ui/placement`) and an agent **using the framework** (building a page from existing constructs). Read the section for your task; the rules and checklist apply to both."
       },
       {
-        kind: "paragraph",
+        kind: "text",
         text: "Canonical, sourced versions live in the real repo — this file trades depth for density. If anything here conflicts with the repo, the repo wins: `ref/HEURISTICS.md` (heuristics, fully sourced), `ref/ARCHITECTURE.md` (package layout, API conventions), `packages/core/README.md` (component composition recipes), `MIGRATION_PROMPT.md` (moving a codebase off Rebar)."
       },
       {
-        kind: "heading",
-        level: 3,
-        text: "What this is"
+        kind: "text",
+        text: "***What this is***"
       },
       {
-        kind: "paragraph",
+        kind: "text",
         text: "Rebar UI is a **headless-first, intentionally low-fidelity** (\"Balsamiq-as-code\") React component library, plus **the Packer** (`@rebar-ui/placement`) — a deterministic renderer that turns a plain `Construct[]` document into a real component tree, with zero layout decisions left to whoever authored the document. The pitch: build the logic/accessibility/content structure correctly once, headless, then apply real visual polish exactly once, at migration — never mid-build. Measured on `/benchmarks`: this two-step path costs fewer tokens, less wall-clock time, and produces far more visually consistent output than hand-authoring JSX against a conventional component library, even one the model already knows cold (AntD)."
       },
       {
-        kind: "heading",
-        level: 3,
-        text: "The Four-Tier Typology"
+        kind: "text",
+        text: "***The Four-Tier Typology***"
       },
       {
-        kind: "paragraph",
+        kind: "text",
         text: "Rebar organizes all UI patterns into a four-tier hierarchy, from lowest-level primitives to highest-level compositions:"
       },
       {
@@ -53,30 +50,28 @@ const placementBlocks: Construct[] = [
         ]
       },
       {
-        kind: "paragraph",
+        kind: "text",
         text: "Each tier builds on the one below it. A construct at tier N is always built from constructs at tier N-Alternatively. Never skip tiers."
       },
       {
-        kind: "heading",
-        level: 3,
-        text: "Framework Rules vs. Heuristics"
+        kind: "text",
+        text: "***Framework Rules vs. Heuristics***"
       },
       {
-        kind: "paragraph",
+        kind: "text",
         text: "Two different kinds of guidance follow, and they don't get the same kind of compliance check:"
       },
       {
-        kind: "paragraph",
+        kind: "text",
         text: "- **A Framework Rule is a fixed, mechanical constraint on how Rebar itself is built or used** — binary, no situational judgment, and violating one breaks a guarantee the framework depends on (testability, theming, migratability, the headless-until-migration contract). There's exactly one correct answer, every time.\n- **A Heuristic is a general, judgment-requiring design principle** a component or construct's *behavior* should satisfy — sourced from usability research or from a real bug this project caught in its own build. Applying one to a new situation takes interpretation: recognizing that it applies, then deciding the concrete UI — not a single mechanical check."
       },
       {
-        kind: "paragraph",
+        kind: "text",
         text: "Framework Rules below; the Heuristics checklist follows the rest of this file."
       },
       {
-        kind: "heading",
-        level: 3,
-        text: "Framework Rules"
+        kind: "text",
+        text: "***Framework Rules***"
       },
       {
         kind: "list",

@@ -25,7 +25,7 @@ const INTRO_BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Three complexity tiers beyond the single fixed component in [the receipts](/benchmarks/receipts) — text-prompt only, run against both Claude and Qwen. These specs needed six blocks not yet exercised above (`form`, `table`, `data-list`, `filter-bar`, `tabs`, `modal`), and Claude's numbers here are \"marginal\" — total tokens minus the ~20,644-token shared harness overhead every Claude Code session pays, so they're comparable in kind to Qwen's raw completion totals.",
+        text: "Three complexity tiers beyond the single fixed component in [the receipts](/about/benchmarks/receipts) — text-prompt only, run against both Claude and Qwen. These specs needed six blocks not yet exercised above (`form`, `table`, `data-list`, `filter-bar`, `tabs`, `modal`), and Claude's numbers here are \"marginal\" — total tokens minus the ~20,644-token shared harness overhead every Claude Code session pays, so they're comparable in kind to Qwen's raw completion totals.",
       },
     ],
   },
