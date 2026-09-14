@@ -20,13 +20,13 @@ import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 const HERO_BLOCKS: Construct[] = [
   {
     type: "hero",
-    badge: "🚧 0.08 Open Beta — see [the repo](https://github.com/ob27/rebarui)",
+    badge: "🚧 0.10.0 — see [the repo](https://github.com/ob27/rebarui)",
     title: "Rebar UI",
     subtitle:
       "Headless-first, intentionally low-fidelity React components, built to be built with by an LLM through a small placement layer — not hand-authored. Measured cheaper, faster, and more consistent than hand-authored Ant Design on a single build — and once a design goes through 15+ rounds of revision, still cheaper overall even after fully migrating to a real design system for production.",
     actions: [
-      { label: "Agent Context", href: "/agents", variant: "primary" },
-      { label: "Design Heuristics", href: "/agents" },
+      { label: "Agent Context", href: "/about/agents", variant: "primary" },
+      { label: "Design Heuristics", href: "/about/agents" },
     ],
     codeSnippet: "npm install rebar-ui",
   },
@@ -95,7 +95,7 @@ const PILLARS: PillarGridItem[] = [
   {
     title: "Design Heuristics",
     body: "Spacing, type scale, color, and interaction defaults baked in — cited to Nielsen, Shneiderman, Material, Carbon, and USWDS, not invented. See each rule applied live by the DSL Packer.",
-    href: "/agents",
+    href: "/about/agents",
     cta: "Read the heuristics",
   },
   {
@@ -107,7 +107,7 @@ const PILLARS: PillarGridItem[] = [
   {
     title: "Benchmarks",
     body: "The actual argument for building this way, measured: cheaper, faster, and far more visually consistent than hand-authored AntD on a single build — and cheaper overall even after migrating away for real theming, once a design goes through 15+ rounds of revision.",
-    href: "/benchmarks",
+    href: "/about/benchmarks",
     cta: "See the numbers",
   },
 ];

@@ -12,19 +12,17 @@ const BLOCKS: Construct[] = [
     // external file) fundamentally can't, since it has no visibility into this page's own DOM/CSS.
     logo: { label: "Rebar UI", href: "/", iconPath: REBAR_MARK_PATH, iconViewBox: REBAR_MARK_VIEWBOX },
     items: [
-      { href: "/agents", label: "Agents" },
       { href: "/imitations", label: "Imitations" },
       { href: "/synthetics", label: "Synthetics" },
       { href: "/opinions", label: "Opinions" },
       { href: "/orders", label: "Orders" },
       { href: "/archetypes", label: "Archetypes" },
-      { href: "/benchmarks", label: "Benchmarks" },
       { href: "/about", label: "About" },
     ],
     ariaLabel: "Main",
     // Deliberately a literal string, not derived from packages/core/package.json's real semver
-    // ("0.8.0") — the desired display wording ("0.08 Open Beta") doesn't match that format.
-    trailing: { kind: "text", text: "0.08 Open Beta" },
+    // ("0.10.0") — the desired display wording ("0.10.0") doesn't match that format.
+    trailing: { kind: "text", text: "0.10.0" },
     themeToggle: true,
   },
 ];

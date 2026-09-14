@@ -154,7 +154,7 @@ export const CATALOGUE_BLOCKS: ConstructCatalogueEntry[] = [
         items: [
           { title: "Imitations", body: "Static, standalone primitives.", href: "/imitations", cta: "Browse" },
           { title: "Opinions", body: "Real state, real interactivity.", href: "/opinions", cta: "Browse" },
-          { title: "Benchmarks", body: "Measured token, speed, and consistency data.", href: "/benchmarks", cta: "Browse" },
+          { title: "Benchmarks", body: "Measured token, speed, and consistency data.", href: "/about/benchmarks", cta: "Browse" },
         ],
       },
     ],
