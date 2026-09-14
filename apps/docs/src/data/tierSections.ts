@@ -56,20 +56,30 @@ const SUB_COMPONENT_EXCLUSIONS = new Set([
   "TabPanel",        // documented on /opinions/tabs with Tabs
 ]);
 
+/** Convert a PascalCase component name to kebab-case for matching against block types. */
+function toKebab(name: string): string {
+  return name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+}
+
 export function tierDocsShellSections(tier: Tier): DocsShellSection[] {
   const route = TIER_ROUTE[tier];
-  const componentSections: DocsShellSection[] = tierComponentNames(tier)
-    .filter((name) => !SUB_COMPONENT_EXCLUSIONS.has(name))
+  const componentNames = tierComponentNames(tier).filter((name) => !SUB_COMPONENT_EXCLUSIONS.has(name));
+  // Block types that share a name with an existing component (e.g. "table" block ↔ Table component)
+  // are already represented in the component sections — skip them to avoid duplicate sidebar entries.
+  const componentKebabs = new Set(componentNames.map(toKebab));
+  const componentSections: DocsShellSection[] = componentNames
     .map((name) => {
       const href = HAS_FULL_PAGE[name];
       const category = shippedCategory(name);
       return href ? { href, label: name, category } : { href: route, label: name, category, status: "No reference page" };
     });
-  const blockSections: DocsShellSection[] = tierBlockTypes(tier).map((type) => ({
-    href: `${route}/${type}`,
-    label: type,
-    category: "block",
-  }));
+  const blockSections: DocsShellSection[] = tierBlockTypes(tier)
+    .filter((type) => !componentKebabs.has(type))
+    .map((type) => ({
+      href: `${route}/${type}`,
+      label: type,
+      category: "block",
+    }));
   return [{ href: route, label: "All in this tier" }, ...componentSections, ...blockSections];
 }
 
