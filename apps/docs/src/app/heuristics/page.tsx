@@ -2,7 +2,7 @@ import { Heading, Image, Stack, Text } from "rebar-ui";
 
 export default function HeuristicsPage() {
   return (
-    <Stack gap="lg" style={{ maxWidth: 800 }}>
+    <Stack gap="lg" style={{ maxWidth: 800, margin: "0 auto", padding: "var(--rebar-space-xl)" }}>
       <Image src="/catalogue-heros/heuristics.jpeg" alt="Heuristics hero" style={{ width: "100%", borderRadius: "8px" }} />
 
       <Heading level={1}>Design Heuristics</Heading>
