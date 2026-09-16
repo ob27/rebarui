@@ -9,6 +9,7 @@ const BLOCKS: Construct[] = [
     type: "site-header",
     logo: { label: "Rebar UI", href: "/", iconPath: REBAR_MARK_PATH, iconViewBox: REBAR_MARK_VIEWBOX },
     items: [
+      { href: "/about/agent", label: "For Agents" },
       {
         href: "/imitations",
         label: "For Humans",
@@ -33,7 +34,7 @@ const BLOCKS: Construct[] = [
             {
               heading: "Philosophy",
               items: [
-                { label: "Heuristics", href: "/about/agent" },
+                { label: "Heuristics", href: "/heuristics" },
                 { label: "Roadmap", href: "/planned/_none" },
                 { label: "Rules", href: "/about/agent" },
                 { label: "Benchmarks", href: "/about/benchmarks" },
@@ -44,7 +45,6 @@ const BLOCKS: Construct[] = [
           footer: { label: "Go to the GitHub Repo", href: "https://github.com/ob27/rebarui" },
         },
       },
-      { href: "/about/agent", label: "For Agents" },
     ],
     ariaLabel: "Main",
     trailing: { kind: "text", text: "0.10.0" },

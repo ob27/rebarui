@@ -27,6 +27,7 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   SidebarNav: "/orders/sidebar-nav",
   AppShell: "/orders/appshell",
   NavIndex: "/orders/nav-index",
+  MegaMenu: "/orders/mega-menu",
   SectionNav: "/orders/section-nav",
   Popover: "/opinions/popover",
   Rate: "/imitations/rate",
