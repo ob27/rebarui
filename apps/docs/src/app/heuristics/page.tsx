@@ -60,7 +60,7 @@ export default function HeuristicsPage() {
           ["Help users recognize, diagnose, and recover from errors", 'error messages are specific and actionable ("Email is required," not "Error 400").'],
           ["Proximity, similarity, closure (Gestalt)", "enforce these structurally via a consistent spacing scale and composition rules, not left to per-screen judgment."],
         ].map(([title, desc], i) => (
-          <Stack key={i} gap="xxs">
+          <Stack key={i} gap="xs">
             <Text>
               <strong>{i + 1}. {title}</strong> — {desc}
             </Text>
@@ -87,7 +87,7 @@ export default function HeuristicsPage() {
           ["Accessible by default", "accessibility is not a feature to add later; it's the baseline. If it's not accessible, it's broken. Keyboard navigation, screen reader support, sufficient color contrast, focus management, and operable controls are not 'nice to haves' — they're the minimum viable interface."],
           ["Prevent errors before they happen", "the best error message is the one the user never sees. Design to prevent mistakes, not just recover from them. Required fields should be marked before the user tries to submit. Destructive actions should require confirmation. Invalid input should be caught on blur, not on submit."],
         ].map(([title, desc], i) => (
-          <Stack key={i} gap="xxs">
+          <Stack key={i} gap="xs">
             <Text>
               <strong>{i + 11}. {title}</strong> — {desc}
             </Text>

@@ -11,6 +11,7 @@ import componentProps from "@/generated/component-props.json";
 import { HAS_FULL_PAGE } from "./hasFullPage";
 import { constructTier } from "./constructTier";
 import { BLOCK_TIER } from "./blockTier";
+import { blockCategory } from "./blockCategory";
 import { shippedCategory } from "./shippedCategory";
 import type { Tier } from "./tier.types";
 import type { DocsShellSection } from "@/components/DocsShell";
@@ -78,6 +79,7 @@ export function tierDocsShellSections(tier: Tier): DocsShellSection[] {
     .map((type) => ({
       href: `${route}/${type}`,
       label: type,
+      category: blockCategory(type),
     }));
   return [{ href: route, label: `All ${TIER_LABEL[tier]}` }, ...componentSections, ...blockSections];
 }

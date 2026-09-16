@@ -9,7 +9,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "A full-width banner with a message, optional icon, and optional dismiss button. Used for announcements, warnings, or status messages.",
+        text: "An inline alert strip — icon, one line of text, and an optional trailing action button.",
       },
     ],
   },
@@ -19,7 +19,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "code",
-        code: "{ type: \"banner\", message: string, icon?: string, dismissible?: boolean, tone?: \"info\" | \"warning\" | \"error\" | \"success\" }",
+        code: `{ type: "banner", tone: "info"|"warning"|"success"|"error", icon?: IconName, text: string, action?: Action }`,
       },
     ],
   },
@@ -33,6 +33,13 @@ const BLOCKS: Construct[] = [
       },
     ],
   },
+  {
+    type: "banner",
+    tone: "info",
+    icon: "info",
+    text: "Nothing entered here is saved.",
+    action: { label: "Reset", icon: "refresh" },
+  },
 ];
 
 export default function BannerPage() {
@@ -40,7 +47,7 @@ export default function BannerPage() {
     <Stack gap="lg">
       <Heading level={1}>Banner</Heading>
       <Text color="secondary">
-        A full-width banner with a message, optional icon, and optional dismiss button. Used for announcements, warnings, or status messages.
+        An inline alert strip — icon, one line of text, and an optional trailing action button.
       </Text>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
