@@ -80,7 +80,7 @@ export function tierDocsShellSections(tier: Tier): DocsShellSection[] {
       label: type,
       category: "block",
     }));
-  return [{ href: route, label: "All in this tier" }, ...componentSections, ...blockSections];
+  return [{ href: route, label: `All ${TIER_LABEL[tier]}` }, ...componentSections, ...blockSections];
 }
 
 export const TIER_CATEGORY_LABELS = { web: "Web", mobile: "Mobile", diagram: "Diagram", block: "Block" };
