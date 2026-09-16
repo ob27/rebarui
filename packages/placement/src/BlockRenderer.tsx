@@ -173,7 +173,7 @@ export interface BlockRendererProps {
    * full page load. Kept out of this package's own dependencies on purpose: the placement layer
    * shouldn't need to know which framework it's running inside.
    */
-  renderLink?: (props: { href: string; children: ReactNode; className?: string }) => ReactNode;
+  renderLink?: (props: { href: string; children: ReactNode; className?: string; onClick?: () => void }) => ReactNode;
   /** Live data sources for Opinion-tier blocks (see schema.ts's `source` fields and
    * `./opinions`) — supplied by the real, hand-authored app code that owns the live state. Omit
    * entirely for a purely static document; every block renders its own literal data exactly as

@@ -16,8 +16,8 @@ export function NextBlockRenderer({ blocks }: { blocks: Construct[] }) {
   return (
     <BlockRenderer
       blocks={blocks}
-      renderLink={({ href, children, className }) => (
-        <Link href={href} className={className ?? "rebar-link"}>
+      renderLink={({ href, children, className, onClick }) => (
+        <Link href={href} className={className ?? "rebar-link"} onClick={onClick}>
           {children}
         </Link>
       )}
