@@ -4,7 +4,7 @@ import path from "path";
 
 export default async function HeuristicsPage() {
   const heuristicsMd = await fs.readFile(
-    path.join(process.cwd(), "HEURISTICS.md"),
+    path.join(process.cwd(), "public/heuristics.md"),
     "utf-8"
   );
 
