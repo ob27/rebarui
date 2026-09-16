@@ -95,6 +95,68 @@ export default function HeuristicsPage() {
         ))}
       </Stack>
 
+      <Heading level={3}>Visual and interaction heuristics</Heading>
+
+      <Stack gap="sm">
+        {[
+          ["IA as pyramid", "don't split related content across pages where a filter/search could reduce page count."],
+          ["Visual hierarchy in every container", "title, content, actions zones with differentiated visual weight."],
+          ["Icons require labels or tooltips", "icons alone force guesswork."],
+          ["Menus manage their own complexity", "8+ items auto-insert separators or collapse into submenus."],
+          ["Settings are categorized, searchable, and resettable", ""],
+          ["Charts ship with context", "title, axis labels/legend, units; hover surfaces exact values; selecting persists the tag."],
+          ["Progressive disclosure: ≤7-9 visible options", "essentials first, advanced on demand."],
+          ["Menus don't obscure their content", "solid, muted backgrounds, not dithered or saturated."],
+          ["Touch targets ≥ 44×44px", "Apple HIG minimum for interactive elements."],
+          ["All states designed, not just happy path", "loading (skeleton, not spinner), error, empty, disabled."],
+          ["Animation is purposeful and 200-500ms", "interruptible, serves feedback/continuity/focus."],
+          ["Controls map naturally to their effects", "button labels are action verbs ('Save', 'Delete')."],
+          ["Follow platform conventions", "iOS tab bar bottom, Android top; macOS menus in menu bar, etc."],
+          ["Whitespace is active", "separates, groups, creates hierarchy; not wasted space."],
+          ["Button hierarchy is clear", "primary/secondary/tertiary distinct; one primary per container."],
+          ["Input constraints are visible", "character limits, required fields, format requirements shown before/during input."],
+          ["Multiple input methods", "Select for browsing, Combobox for type-to-filter; DatePicker for entry, Calendar for picking."],
+          ["Information scent in navigation", "labels indicate what's ahead, not vague or clever names."],
+          ["Cards are self-contained, independently actionable units", ""],
+          ["Respect user intelligence", "no condescension, no dark patterns."],
+        ].map(([title, desc], i) => (
+          <Stack key={i} gap="xs">
+            <Text>
+              <strong>{i + 20}. {title}</strong>{desc ? ` — ${desc}` : ""}
+            </Text>
+          </Stack>
+        ))}
+      </Stack>
+
+      <Heading level={3}>Extended heuristics</Heading>
+
+      <Stack gap="sm">
+        {[
+          ["Boot/init sequences show branded, phased progress", "never a blank wait."],
+          ["Storage/item-count context is always visible", "not hidden behind a query."],
+          ["File/data browsers offer both icon-grid and sortable table views", "of the same data."],
+          ["Keyboard shortcuts are discoverable and consistent", "Ctrl/Cmd+S always saves."],
+          ["Drag-and-drop has a clear drop target and non-destructive cancel path", ""],
+          ["Undo/redo for every state-changing action", ""],
+          ["Multi-selection is explicit and visible", "checkbox, highlight, counter; 'select all' available."],
+          ["Drag-and-drop is never the only way", "every drag has a non-drag equivalent."],
+          ["Tooltips don't obscure the element they describe", ""],
+          ["Error messages are specific, actionable, adjacent to their field", ""],
+          ["Lifecycle status is a pill (Tag), never inline parenthetical text", ""],
+          ["Filter UI matches independent dimensions", "search for one category, add filter controls per additional dimension; control type scales to cardinality (toggle → closed-menu multi-select → searchable multi-select)."],
+          ["Scrollable lists fade into a 'mist' at edges with more content", "reaching the true end is signaled by the mist's absence."],
+          ["A tracking beacon below the fold stays visible, or returns after manual override", "yields to deliberate scroll, resumes after idle."],
+          ["A control's footprint stays bounded", "however much data it holds — pinned size with contained scrolling, not growing indefinitely."],
+          ["A beacon out of view gets a directional hint that reacts to motion", "the scroll that restores it eases, doesn't snap."],
+        ].map(([title, desc], i) => (
+          <Stack key={i} gap="xs">
+            <Text>
+              <strong>{i + 31}. {title}</strong>{desc ? ` — ${desc}` : ""}
+            </Text>
+          </Stack>
+        ))}
+      </Stack>
+
       <Heading level={2}>Token defaults</Heading>
 
       <Heading level={3}>Spacing — 8pt grid</Heading>
