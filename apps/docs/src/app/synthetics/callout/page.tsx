@@ -6,42 +6,32 @@ const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Overview",
-    body: [
-      {
-        kind: "text",
-        text: "A highlighted callout box with a title and body text. Used for important notes, tips, or warnings that stand out from regular content.",
-      },
-    ],
+    body: [{ kind: "text", text: "A toned box with a bold title line and an optional secondary subtitle line below it." }],
   },
   {
     type: "doc-section",
     heading: "Shape",
-    body: [
-      {
-        kind: "code",
-        code: "{ type: \"callout\", title: string, body: string, tone?: \"info\" | \"warning\" | \"error\" | \"success\" }",
-      },
-    ],
+    body: [{ kind: "code", code: `{ type: "callout", tone: "info"|"warning"|"success"|"error", icon?: IconName, title: string, subtitle?: string }` }],
   },
   {
     type: "doc-section",
     heading: "Example",
-    body: [
-      {
-        kind: "text",
-        text: "A live example of the callout block:",
-      },
-    ],
+    body: [{ kind: "text", text: "A live example of the callout block:" }],
   },
+  {
+      type: "callout",
+      tone: "warning",
+      icon: "clock",
+      title: "In progress",
+      subtitle: "Some items incomplete.",
+    },
 ];
 
 export default function CalloutPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Callout</Heading>
-      <Text color="secondary">
-        A highlighted callout box with a title and body text. Used for important notes, tips, or warnings that stand out from regular content.
-      </Text>
+      <Text color="secondary">{"A toned box with a bold title line and an optional secondary subtitle line below it."}</Text>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );
