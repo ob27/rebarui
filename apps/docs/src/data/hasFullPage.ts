@@ -55,6 +55,7 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   Editable: "/opinions/editable",
   ColorPicker: "/opinions/color-picker",
   Combobox: "/opinions/combobox",
+  CommentThread: "/opinions/comment-thread",
   MultiSelect: "/opinions/multi-select",
   Cascader: "/opinions/cascader",
   Pagination: "/imitations/pagination",

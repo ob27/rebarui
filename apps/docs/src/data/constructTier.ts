@@ -140,6 +140,7 @@ export const CONSTRUCT_TIER = {
     Collapsible: "opinion",
     ColorPicker: "opinion",
     Combobox: "opinion",
+    CommentThread: "opinion",
     CommandPalette: "opinion",
     ConstructSearch: "opinion", // real query/open/activeIndex + keyboard nav + filtered dropdown — same shape as CommandPalette. See file header.
     ContextMenu: "opinion",

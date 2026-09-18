@@ -36,6 +36,7 @@ const COMPONENT_FILES = [
   "SignaturePad.tsx",
   "ImageCropper.tsx",
   "VideoPlayer.tsx",
+  "CommentThread.tsx",
   "Stack.tsx",
   "Text.tsx",
   "Heading.tsx",
