@@ -34,6 +34,7 @@ const COMPONENT_FILES = [
   "TagInput.tsx",
   "PhoneInput.tsx",
   "SignaturePad.tsx",
+  "ImageCropper.tsx",
   "Stack.tsx",
   "Text.tsx",
   "Heading.tsx",

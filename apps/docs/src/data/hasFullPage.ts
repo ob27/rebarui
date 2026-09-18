@@ -99,6 +99,7 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   Barcode: "/imitations/barcode",
   DatePicker: "/opinions/date-picker",
   Image: "/opinions/image",
+  ImageCropper: "/opinions/image-cropper",
   Lightbox: "/opinions/lightbox",
   FileUpload: "/opinions/file-upload",
   BubbleChart: "/opinions/bubble-chart",

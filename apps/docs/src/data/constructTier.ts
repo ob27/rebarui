@@ -163,6 +163,7 @@ export const CONSTRUCT_TIER = {
     Histogram: "opinion",
     HoverCard: "opinion",
     Image: "opinion",
+    ImageCropper: "opinion",
     IndexBar: "opinion",
     IndexChart: "opinion",
     Kanban: "opinion",
