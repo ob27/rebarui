@@ -9,7 +9,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "An entry in a construct index/directory — a title, optional description, and a link to the construct's full page. Used to build index pages.",
+        text: "A component catalog entry — heading, measured/unmeasured tag, description, shape code block, optional implementation code block, and optional live demo blocks. Encapsulates the card-per-construct pattern used across the tier pages (/opinions, /synthetics, /orders) so the chrome around each entry's demo is Packer-printed, not hand-authored JSX.",
       },
     ],
   },
@@ -19,7 +19,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "code",
-        code: "{ type: \"construct-entry\", title: string, description?: string, href: string }",
+        code: "{ type: \"construct-entry\", id: string, measured: boolean, description: string, shape: string, code?: string, blocks?: Construct[] }",
       },
     ],
   },
@@ -33,6 +33,15 @@ const BLOCKS: Construct[] = [
       },
     ],
   },
+  {
+    type: "construct-entry",
+    id: "Callout",
+    measured: true,
+    description: "A small, static banner pairing a tone, a title, and an optional subtitle. No interaction, no internal state.",
+    shape: "{ type: \"callout\", tone: Tone, icon?: IconName, title: string, subtitle?: string }",
+    code: '{ type: "callout", tone: "success", title: "Shipped" }',
+    blocks: [{ type: "callout", tone: "success", title: "Shipped", subtitle: "This construct-entry card is itself a live construct-entry block." }],
+  },
 ];
 
 export default function ConstructEntryPage() {
@@ -40,7 +49,8 @@ export default function ConstructEntryPage() {
     <Stack gap="lg">
       <Heading level={1}>Construct Entry</Heading>
       <Text color="secondary">
-        An entry in a construct index/directory — a title, optional description, and a link to the construct's full page. Used to build index pages.
+        A component catalog entry — heading, measured/unmeasured tag, description, shape code
+        block, optional implementation code block, and optional live demo blocks.
       </Text>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

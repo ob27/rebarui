@@ -29,10 +29,11 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "A live example of the gallery block:",
+        text: "A live example of the gallery block, reusing real screenshots from this project's own benchmark suite:",
       },
     ],
   },
+  { type: "gallery", label: "antd", dir: "/benchmark-screenshots", prefix: "antd-text" },
 ];
 
 export default function GalleryPage() {

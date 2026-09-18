@@ -1,8 +1,10 @@
 import { Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const BLOCKS: Construct[] = [
+  { type: "props-table", heading: "Props", rows: componentProps["StackedBarChart"] ?? [] },
   {
     type: "doc-section",
     heading: "Overview",

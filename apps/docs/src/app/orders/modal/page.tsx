@@ -29,9 +29,23 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "A live example of the modal block:",
+        text: "A live example of the modal block — always rendered open, since this is a static-render context, not a real overlay with its own open/close lifecycle:",
       },
     ],
+  },
+  {
+    type: "modal",
+    title: "Delete this record?",
+    blocks: [
+      {
+        type: "callout",
+        tone: "warning",
+        title: "This can't be undone",
+        subtitle: "Any linked references will also be removed.",
+      },
+    ],
+    confirmLabel: "Delete",
+    cancelLabel: "Cancel",
   },
 ];
 

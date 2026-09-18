@@ -178,15 +178,32 @@ export default function AppShellPage() {
             style={{
               height: 420,
               border: "1px solid var(--rebar-color-border)",
-              overflow: "hidden",
+              overflowX: "auto",
+              overflowY: "hidden",
             }}
           >
+            {/* A real app gives AppShell the full viewport width — this reference page can't, since
+                it's embedded in the docs site's own prose column. Rather than let a wide combination
+                (e.g. sidebar + rightPanel) squeeze the content area down to an unreadable sliver, the
+                shell gets a floor width and the box scrolls horizontally below that, same as it would
+                on a real narrow viewport. */}
             <AppShell
               variant={variant}
               height="420px"
+              style={{ minWidth: 720 }}
               sidebar={
                 variant === "sidebar" || variant === "tablet" || variant === "top-nav-sidebar" || variant === "three-pane"
-                  ? { items: SIDEBAR_ITEMS, header: <Heading level={3}>My App</Heading> }
+                  ? {
+                      items: SIDEBAR_ITEMS,
+                      header: ({ collapsed }: { collapsed: boolean }) =>
+                        collapsed ? (
+                          <Heading level={3} style={{ textAlign: "center" }}>
+                            R
+                          </Heading>
+                        ) : (
+                          <Heading level={3}>My App</Heading>
+                        ),
+                    }
                   : undefined
               }
               railSidebar={variant === "three-pane" ? { items: RAIL_ITEMS } : undefined}
