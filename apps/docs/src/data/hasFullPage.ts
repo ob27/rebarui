@@ -65,6 +65,8 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   LineChart: "/opinions/line-chart",
   StackedBarChart: "/opinions/stacked-bar-chart",
   Table: "/opinions/table",
+  TagInput: "/opinions/tag-input",
+  PhoneInput: "/opinions/phone-input",
   QRCode: "/imitations/qr-code",
   Watermark: "/imitations/watermark",
   BarChart: "/synthetics/bar-chart",

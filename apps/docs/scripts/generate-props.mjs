@@ -31,6 +31,8 @@ const COMPONENT_FILES = [
   "Countdown.tsx",
   "DiffViewer.tsx",
   "Row.tsx",
+  "TagInput.tsx",
+  "PhoneInput.tsx",
   "Stack.tsx",
   "Text.tsx",
   "Heading.tsx",
