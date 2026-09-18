@@ -12,12 +12,12 @@ const BLOCKS: Construct[] = [
     items: [
       { href: "/about/agent", label: "For Agents" },
       {
-        href: "/imitations",
-        label: "For Humans",
+        href: "/orders",
+        label: "Construct Library",
         megaMenu: {
           columns: [
             {
-              heading: "Framework",
+              heading: "",
               items: [
                 { label: "Orders", description: "Pick your Plenum", href: "/orders" },
                 { label: "Archetypes", description: "Construct studies", href: "/archetypes" },
@@ -32,8 +32,17 @@ const BLOCKS: Construct[] = [
                 { label: "Geneses", description: "Rebar alive", href: "/geneses" },
               ],
             },
+          ],
+          footer: { label: "Go to the GitHub Repo", href: "https://github.com/ob27/rebarui" },
+        },
+      },
+      {
+        href: "/heuristics",
+        label: "Philosophy",
+        megaMenu: {
+          columns: [
             {
-              heading: "Philosophy",
+              heading: "",
               items: [
                 { label: "Heuristics", href: "/heuristics" },
                 { label: "Roadmap", href: "/planned/_none" },
@@ -43,7 +52,6 @@ const BLOCKS: Construct[] = [
               ],
             },
           ],
-          footer: { label: "Go to the GitHub Repo", href: "https://github.com/ob27/rebarui" },
         },
       },
     ],
