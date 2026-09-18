@@ -21,6 +21,16 @@ const BLOCKS: Construct[] = [
   { type: "props-table", heading: "Props", rows: componentProps["Steps"] ?? [] },
   {
     type: "doc-section",
+    heading: "Free navigation with onItemClick",
+    body: [
+      {
+        kind: "text",
+        text: 'Off by default — a plain `Steps` is purely presentational, deriving status from `current` alone. Pass `onItemClick` to let someone jump directly to any step instead of only moving one at a time via your own Back/Next controls — useful for a long or non-linear checklist where the steps aren\'t a strictly ordered wizard. The current step also gets a real focus ring (the same "traveling beam" `.rebar-active-border` treatment `Kanban`\'s own active drop targets use, not a new animation) so "you are here" reads clearly even when nothing else marks it.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Accessibility",
     body: [
       {
@@ -87,6 +97,27 @@ function HorizontalDemo() {
   );
 }
 
+const CHECKLIST_ITEMS = [
+  { title: "Company info" },
+  { title: "Tax details" },
+  { title: "Bank account" },
+  { title: "Review" },
+];
+
+function OnItemClickDemo() {
+  const [current, setCurrent] = useState(0);
+
+  return (
+    <Stack gap="sm">
+      <Steps current={current} items={CHECKLIST_ITEMS} onItemClick={setCurrent} />
+      <Text size="sm" color="secondary">
+        current = {current} — click any step directly, in any order (not just Back/Next). The
+        current step also carries a real focus-ring highlight.
+      </Text>
+    </Stack>
+  );
+}
+
 export default function StepsPage() {
   return (
     <Stack gap="lg">
@@ -123,6 +154,15 @@ export default function StepsPage() {
               { title: "Shipped" },
             ]}
           />
+        </LivePreview>
+      </Stack>
+
+      <Stack gap="sm">
+        <Text size="sm" color="secondary">
+          <code>onItemClick</code> — free navigation to any step, not just one at a time.
+        </Text>
+        <LivePreview>
+          <OnItemClickDemo />
         </LivePreview>
       </Stack>
 

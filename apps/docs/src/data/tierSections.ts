@@ -62,6 +62,19 @@ function toKebab(name: string): string {
   return name.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
 }
 
+/** A block's own `type` is kebab-case ("ai-chat"), unlike every component name beside it in this
+ * same sidebar (PascalCase, "Avatar") — sorting and displaying the raw string produced exactly the
+ * bug this function exists to fix: every block silently collapsed to the bottom of its own
+ * alphabetical run (kebab-case sorts after most capitals) in a visibly different label format from
+ * its neighbors. Title-Case the label for display; the href/sort key below still use the real
+ * kebab-case type. */
+function blockDisplayLabel(type: string): string {
+  return type
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 export function tierDocsShellSections(tier: Tier): DocsShellSection[] {
   const route = TIER_ROUTE[tier];
   const componentNames = tierComponentNames(tier).filter((name) => !SUB_COMPONENT_EXCLUSIONS.has(name));
@@ -78,10 +91,16 @@ export function tierDocsShellSections(tier: Tier): DocsShellSection[] {
     .filter((type) => !componentKebabs.has(type))
     .map((type) => ({
       href: `${route}/${type}`,
-      label: type,
+      label: blockDisplayLabel(type),
       category: blockCategory(type),
     }));
-  return [{ href: route, label: `All ${TIER_LABEL[tier]}` }, ...componentSections, ...blockSections];
+  // Merged and re-sorted by display label (case-insensitive) — components and blocks previously
+  // arrived pre-sorted as two *separate* alphabetical runs and were just concatenated, so every
+  // block silently landed after every component instead of interleaving alphabetically with them.
+  const sortedEntries = [...componentSections, ...blockSections].sort((a, b) =>
+    a.label.localeCompare(b.label, undefined, { sensitivity: "base" }),
+  );
+  return [{ href: route, label: `All ${TIER_LABEL[tier]}` }, ...sortedEntries];
 }
 
 export const TIER_CATEGORY_LABELS = { web: "Web", mobile: "Mobile", diagram: "Diagram" };

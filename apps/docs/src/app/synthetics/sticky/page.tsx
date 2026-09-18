@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Box, Heading, Stack, Sticky, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
@@ -37,6 +40,16 @@ const BLOCKS: Construct[] = [
   },
   {
     type: "doc-section",
+    heading: "Closable, colored tags",
+    body: [
+      {
+        kind: "text",
+        text: '`tags` accepts a plain string (read-only, today\'s default) or a `{ label, tone }` object for a colored `Tag`. Pass `onTagClose` and every tag gets a real "×" — the demo below removes a tag from the note\'s own array on close, the same closable-tag convention `Card` already has.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Extracted from Kanban",
     body: [
       {
@@ -68,6 +81,11 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function StickyPage() {
+  const [tags, setTags] = useState([
+    { label: "team", tone: "info" as const },
+    { label: "urgent", tone: "error" as const },
+  ]);
+
   return (
     <Stack gap="lg">
       <Heading level={1}>Sticky</Heading>
@@ -94,6 +112,26 @@ export default function StickyPage() {
         </Sticky>
         <Sticky title="Custom color" seed="custom1" color="#c8e6c9" />
       </Box>
+
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          Closable, toned tags — click a tag&apos;s <code>×</code> to remove it.
+        </Text>
+        <Box
+          style={{
+            border: "1px solid var(--rebar-color-border, #e0e0e0)",
+            borderRadius: 4,
+            padding: "var(--rebar-space-lg)",
+          }}
+        >
+          <Sticky
+            title="Closable tags demo"
+            seed="closable-demo"
+            tags={tags}
+            onTagClose={(closed) => setTags((prev) => prev.filter((t) => t.label !== closed))}
+          />
+        </Box>
+      </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

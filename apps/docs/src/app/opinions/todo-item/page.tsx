@@ -11,6 +11,7 @@ interface Task {
   id: string;
   label: string;
   completed: boolean;
+  disabled?: boolean;
 }
 
 const BLOCKS: Construct[] = [
@@ -32,6 +33,16 @@ const BLOCKS: Construct[] = [
       {
         kind: "text",
         text: 'This is one checkable row — a real ≥44×44 `<button role="checkbox">` toggle plus a label slot — not a list container. `label` accepts any `ReactNode`, so an inline-editable name (an `Editable`, as in the second example below) composes directly, the same way `Card`\'s slot props accept arbitrary content rather than a fixed string. The `goal-tracker` [block](/opinions#goal-tracker) is what actually assembles many of these into the full Aspiration → Focus Area → Goal hierarchy `GoalTracker` used to be as a standalone component — see that block for a hierarchical to-do/OKR tracker; reach for `TodoItem` directly when you only need one checkable row inside your own layout.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Disabled: not applicable, not just unchecked",
+    body: [
+      {
+        kind: "text",
+        text: 'The optional `disabled` prop renders a greyed-out, struck-through toggle that ignores clicks entirely — for an item that isn\'t tickable right now (e.g. blocked by something else in the same list), which reads differently from simply "not done yet." Additive: every existing usage (plain `completed`, no `disabled`) is unaffected. See the last row in the demo above.',
       },
     ],
   },
@@ -72,6 +83,7 @@ export default function TodoItemPage() {
     { id: "t1", label: "Write the proposal", completed: true },
     { id: "t2", label: "Ship the release", completed: false },
     { id: "t3", label: "Send the recap", completed: false },
+    { id: "t4", label: "Blocked on legal review", completed: false, disabled: true },
   ]);
 
   const toggle = (id: string, completed: boolean) => {
@@ -105,6 +117,7 @@ export default function TodoItemPage() {
                 />
               }
               completed={task.completed}
+              disabled={task.disabled}
               onToggle={(completed) => toggle(task.id, completed)}
               toggleLabel={`Mark "${task.label}" as ${task.completed ? "incomplete" : "complete"}`}
             />

@@ -40,6 +40,16 @@ const BLOCKS: Construct[] = [
   },
   {
     type: "doc-section",
+    heading: "Images: paste, drag-drop, or the toolbar — try it in the editor above",
+    body: [
+      {
+        kind: "text",
+        text: "An image inserts as an embedded base64 data URL directly inside the saved HTML — no upload endpoint needed, so it works the moment you drop `RichTextEditor` in with nothing else wired up. Three ways in: paste an image from the clipboard, drag one onto the editor, or use the toolbar's image button to pick a file. `maxImageBytes` (default a few MB) caps how large a single embedded image can be, since a data URL grows the saved HTML by roughly 4/3 the image's own size — an oversized file is rejected with a plain alert rather than silently bloating `value`.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "No bionic reading here — checked, not skipped",
     body: [
       {

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Heading, Input, Kanban, Stack, Text } from "rebar-ui";
-import type { KanbanCard, KanbanColumn, KanbanState } from "rebar-ui";
+import { Box, Editable, Heading, Input, Kanban, Stack, Tag, Text } from "rebar-ui";
+import type { KanbanCard, KanbanCardRenderContext, KanbanColumn, KanbanState } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -86,11 +86,51 @@ const BLOCKS: Construct[] = [
   },
   {
     type: "doc-section",
+    heading: "Real touch support, not mouse-only",
+    body: [
+      {
+        kind: "text",
+        text: "Every board above is draggable on a touchscreen too — cards and columns both — parallel to the native HTML5 drag-and-drop path, not a replacement for it. `onCardLongPress` is the real touch equivalent of `onDoubleClick` (a touch device never fires a real double-click at all): pass it alongside `renderCard` to open whatever your own custom card face should open on a long-press, the same way the built-in `Card`/`Sticky` rendering already does for its own edit dialog.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Hiding a column without losing its cards",
+    body: [
+      {
+        kind: "text",
+        text: 'Every column header above has an eye icon — click it to collapse that column into a tray showing just its card count, without touching the underlying `columns`/`cards` state at all (purely a local, uncontrolled UI toggle). Type a search term that matches a card inside a collapsed column and it still surfaces as a faded "ghost" card in the tray, so collapsing a column never makes a search look like it silently missed something.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Full ownership of the card face and column title",
+    body: [
+      {
+        kind: "text",
+        text: '`renderCard` replaces the built-in `Card`/`Sticky` rendering (and its click/double-click behavior) entirely — the caller owns the card\'s whole face and whatever click/double-click/long-press should do, while `Kanban` still owns layout, drag-and-drop, limits, sort, and search filtering underneath it. `renderColumnTitle` does the same for just the title text inside a column header, e.g. for click-to-rename. The demo below renders each card with inline, always-editable tag chips and a clickable column title — try editing a tag or a column name directly, then drag a card between columns to confirm layout/DnD still work exactly as before.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "stickyDefaultLimit: false means genuinely unlimited",
+    body: [
+      {
+        kind: "text",
+        text: 'Sticky mode\'s default 3-per-column cap only applies to a column with no explicit `limit` of its own. Pass `stickyDefaultLimit={false}` when your own app lets users configure every column\'s real limit (including a genuinely unlimited one, i.e. `limit: undefined`) and sticky mode should respect that exactly like the default variant does — not silently substitute 3 for a column that was deliberately left uncapped.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Known gap: mouse/touch only",
     body: [
       {
         kind: "text",
-        text: "Drag-and-drop uses the native HTML5 Drag and Drop API — no new dependency, but no keyboard-operable equivalent yet either. A documented, honest gap rather than a silently missing one.",
+        text: "Drag-and-drop uses the native HTML5 Drag and Drop API (plus a parallel touch implementation, see above) — no keyboard-operable equivalent yet. A documented, honest gap rather than a silently missing one.",
       },
     ],
   },
@@ -115,6 +155,101 @@ const BLOCKS: Construct[] = [
     ],
   },
 ];
+
+const RENDER_CARD_COLUMNS: KanbanColumn[] = [
+  { id: "backlog", title: "Backlog", sections: [{ id: "backlog-main", cardIds: ["idea1", "idea2"] }] },
+  { id: "active", title: "Active", sections: [{ id: "active-main", cardIds: ["work1"] }] },
+];
+
+function CustomCard({
+  card,
+  ctx,
+  onTagsChange,
+}: {
+  card: KanbanCard;
+  ctx: KanbanCardRenderContext;
+  onTagsChange: (tags: string[]) => void;
+}) {
+  return (
+    <Box
+      draggable={ctx.dragHandlers.draggable}
+      onDragStart={ctx.dragHandlers.onDragStart}
+      onDragEnd={ctx.dragHandlers.onDragEnd}
+      onDragOver={ctx.dragHandlers.onDragOver}
+      onDrop={ctx.dragHandlers.onDrop}
+      {...ctx.touchHandlers}
+      style={{
+        border: "1px solid var(--rebar-color-border, #e0e0e0)",
+        borderRadius: 4,
+        padding: "var(--rebar-space-sm)",
+        background: "var(--rebar-color-bg-primary, #fff)",
+        cursor: "grab",
+      }}
+    >
+      <Stack gap="xs">
+        <Text as="span" style={{ fontWeight: 600 }}>
+          {card.title}
+        </Text>
+        <Stack direction="row" gap="xs" style={{ flexWrap: "wrap" }}>
+          {(card.tags ?? []).map((tag) => (
+            <Tag key={tag} closable onClose={() => onTagsChange((card.tags ?? []).filter((t) => t !== tag))}>
+              {tag}
+            </Tag>
+          ))}
+        </Stack>
+      </Stack>
+    </Box>
+  );
+}
+
+function RenderCardDemo() {
+  const [board, setBoard] = useState<KanbanState>({
+    columns: RENDER_CARD_COLUMNS,
+    cards: {
+      idea1: { id: "idea1", title: "Dark mode", tags: ["ui"] },
+      idea2: { id: "idea2", title: "Bulk export", tags: ["backend"] },
+      work1: { id: "work1", title: "Fix flaky test", tags: ["ci", "urgent"] },
+    },
+  });
+
+  const setCardTags = (cardId: string, tags: string[]) => {
+    setBoard((prev) => ({ ...prev, cards: { ...prev.cards, [cardId]: { ...prev.cards[cardId]!, tags } } }));
+  };
+
+  const renameColumn = (columnId: string, title: string) => {
+    setBoard((prev) => ({
+      ...prev,
+      columns: prev.columns.map((c) => (c.id === columnId ? { ...c, title } : c)),
+    }));
+  };
+
+  return (
+    <Box
+      style={{
+        border: "1px solid var(--rebar-color-border, #e0e0e0)",
+        borderRadius: 4,
+        padding: "var(--rebar-space-lg)",
+        overflowX: "auto",
+      }}
+    >
+      <Kanban
+        columns={board.columns}
+        cards={board.cards}
+        onChange={setBoard}
+        renderCard={(card, ctx) => (
+          <CustomCard card={card} ctx={ctx} onTagsChange={(tags) => setCardTags(card.id, tags)} />
+        )}
+        renderColumnTitle={(column) => (
+          <Editable
+            value={column.title}
+            onChange={(title) => renameColumn(column.id, title)}
+            aria-label="Column title"
+          />
+        )}
+      />
+    </Box>
+  );
+}
 
 export default function KanbanPage() {
   const [board, setBoard] = useState<KanbanState>({ columns: INITIAL_COLUMNS, cards: INITIAL_CARDS });
@@ -169,6 +304,15 @@ export default function KanbanPage() {
             onChange={setStickyBoard}
           />
         </Box>
+      </Stack>
+
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          <code>renderCard</code> + <code>renderColumnTitle</code> — a fully custom card face with
+          removable tag chips, and a click-to-rename column title. Drag still works; so does the
+          collapse eye icon on each column.
+        </Text>
+        <RenderCardDemo />
       </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />
