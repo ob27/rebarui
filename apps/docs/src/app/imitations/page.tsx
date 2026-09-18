@@ -58,7 +58,11 @@ export default function ImitationsPage() {
       body: [
         {
           kind: "text",
-          text: "For anything bigger than a small fix, open an issue first describing what you're planning — this project's architecture (the placement layer, token-only theming, \"defer to migration rather than fine-tune styling\") is deliberate, and `ref/PLAN.md`/`ref/ASSESSMENT.md` already record a lot of \"we tried this, here's why not.\" Once you're building:",
+          text: "For anything bigger than a small fix, open an issue first describing what you're planning — this project's architecture (the placement layer, token-only theming, \"defer to migration rather than fine-tune styling\") is deliberate, and `ref/PLAN.md`/`ref/ASSESSMENT.md` already record a lot of \"we tried this, here's why not.\" No write access to this repo is required to start: fork it, build the construct there against the checklist below, then open an issue linking your fork or branch asking for it to be adopted into the main project — a real, normal path in, not a formality.",
+        },
+        {
+          kind: "text",
+          text: "Once you're building:",
         },
         {
           kind: "list",

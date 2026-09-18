@@ -52,7 +52,11 @@ export default function OrdersPage() {
       body: [
         {
           kind: "text",
-          text: "Open an issue first — always, for this tier — describing the page-structural role you're filling and why an existing Order doesn't already cover it. Once you're building a component:",
+          text: "Open an issue first — always, for this tier — describing the page-structural role you're filling and why an existing Order doesn't already cover it. No write access to this repo is required to start: fork it, build the construct there, then open an issue linking your fork or branch asking for it to be adopted into the main project.",
+        },
+        {
+          kind: "text",
+          text: "Once you're building a component:",
         },
         {
           kind: "list",

@@ -53,7 +53,11 @@ export default function SyntheticsPage() {
       body: [
         {
           kind: "text",
-          text: "Open an issue first for anything bigger than a small fix — the placement layer's shape is deliberate, and a quick check avoids building something that's already been tried and rejected (see `ref/PLAN.md`/`ref/ASSESSMENT.md`). Once you're building a component:",
+          text: "Open an issue first for anything bigger than a small fix — the placement layer's shape is deliberate, and a quick check avoids building something that's already been tried and rejected (see `ref/PLAN.md`/`ref/ASSESSMENT.md`). No write access to this repo is required to start: fork it, build the construct there, then open an issue linking your fork or branch asking for it to be adopted into the main project.",
+        },
+        {
+          kind: "text",
+          text: "Once you're building a component:",
         },
         {
           kind: "list",

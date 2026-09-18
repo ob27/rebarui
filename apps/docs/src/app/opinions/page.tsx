@@ -57,7 +57,11 @@ export default function OpinionsPage() {
       body: [
         {
           kind: "text",
-          text: "Open an issue first for anything this size — a new Opinion is rarely a small fix. Once you're building a component:",
+          text: "Open an issue first for anything this size — a new Opinion is rarely a small fix. No write access to this repo is required to start: fork it, build the construct there, then open an issue linking your fork or branch asking for it to be adopted into the main project.",
+        },
+        {
+          kind: "text",
+          text: "Once you're building a component:",
         },
         {
           kind: "list",

@@ -26,7 +26,7 @@ const DEMO_BLOCKS: Construct[] = [
         heading: "Philosophy",
         items: [
           { label: "Heuristics", href: "/heuristics" },
-          { label: "Roadmap", href: "/planned/_none" },
+          { label: "Roadmap", href: "/roadmap" },
           { label: "Rules", href: "/about/agent" },
           { label: "Benchmarks", href: "/about/benchmarks" },
           { label: "About", href: "/about" },

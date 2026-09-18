@@ -48,7 +48,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "A genesis isn't ported back the way a component or a block is — there's no single file to add to `packages/core` or `packages/placement`. If building one surfaces a construct that's genuinely reusable beyond that one project (not tied to its specific domain), that construct is what gets contributed back, through the normal Imitation/Synthetic/Opinion/Order pipeline described on this catalog's other tier pages — the genesis itself stays a separate, linked seed project, not a folder inside this repo.",
+        text: "A genesis isn't ported back the way a component or a block is — there's no single file to add to `packages/core` or `packages/placement`. If building one surfaces a construct that's genuinely reusable beyond that one project (not tied to its specific domain), that construct is what gets contributed back, through the normal Imitation/Synthetic/Opinion/Order pipeline described on this catalog's other tier pages — the genesis itself stays a separate, linked seed project, not a folder inside this repo. The same fork-first path applies either way: no write access to this repo is required to start — fork it, build there, then open an issue linking your fork or branch asking for the reusable piece to be adopted into the main project.",
       },
     ],
   },
