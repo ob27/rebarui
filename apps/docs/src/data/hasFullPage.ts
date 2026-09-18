@@ -168,6 +168,7 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   VoiceComposer: "/opinions/voice-composer",
   AiChatInput: "/imitations/ai-chat-input",
   ShapeGallery: "/opinions/shape-gallery",
+  SignaturePad: "/opinions/signature-pad",
   FileManager: "/opinions/file-manager",
   LayersPanel: "/opinions/layers-panel",
   Box: "/imitations/box",

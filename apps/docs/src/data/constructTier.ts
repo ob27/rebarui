@@ -190,6 +190,7 @@ export const CONSTRUCT_TIER = {
     ScatterChart: "opinion",
     Select: "opinion",
     ShapeGallery: "opinion",
+    SignaturePad: "opinion",
     SlashCommandMenu: "opinion",
     SpeedDial: "opinion",
     SplitButton: "opinion",
