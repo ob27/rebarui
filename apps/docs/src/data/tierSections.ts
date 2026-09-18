@@ -56,6 +56,7 @@ const SUB_COMPONENT_EXCLUSIONS = new Set([
   "TabList",         // documented on /opinions/tabs with Tabs
   "Tab",             // documented on /opinions/tabs with Tabs
   "TabPanel",        // documented on /opinions/tabs with Tabs
+  "Col",             // documented on /orders/row with Row
 ]);
 
 /** Convert a PascalCase component name to kebab-case for matching against block types. */

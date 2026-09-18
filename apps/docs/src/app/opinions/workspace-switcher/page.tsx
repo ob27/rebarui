@@ -27,11 +27,11 @@ const BLOCKS: Construct[] = [
   { type: "props-table", heading: "Props", rows: componentProps["WorkspaceSwitcher"] ?? [] },
   {
     type: "doc-section",
-    heading: "Page-level governance, not a form control",
+    heading: "A settings widget, not page-arrangement governance",
     body: [
       {
         kind: "text",
-        text: "The Slack/Notion/Linear header pattern — which org/workspace/tenant context the whole app is currently in, the same macro/page-level role `NavBar`/`SidebarNav` already play for navigation, just for tenant context instead of pages. Built on the real `Dropdown` (Radix underneath, correct focus/keyboard handling for free), not a hand-rolled popover.",
+        text: "The Slack/Notion/Linear header pattern — which org/workspace/tenant context the whole app is currently in. Opinion-tier, not Order: despite sitting in the same header-utility slot `NavBar`/`SidebarNav` occupy, its real open/closed dropdown + selection state (delegated to `Dropdown`/Radix) is the same shape as `ThemeToggle` — also a small header control toggling a value, also Opinion. Built on the real `Dropdown` (correct focus/keyboard handling for free), not a hand-rolled popover.",
       },
     ],
   },
