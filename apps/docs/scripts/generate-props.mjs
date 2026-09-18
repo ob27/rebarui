@@ -23,6 +23,8 @@ const parser = withCustomConfig(tsconfigPath, {
 
 const COMPONENT_FILES = [
   "Box.tsx",
+  "Container.tsx",
+  "Grid.tsx",
   "Stack.tsx",
   "Text.tsx",
   "Heading.tsx",

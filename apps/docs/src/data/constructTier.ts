@@ -215,7 +215,9 @@ export const CONSTRUCT_TIER = {
 
     AppShell: "order",
     Breadcrumb: "order",
+    Container: "order",
     Footer: "order",
+    Grid: "order",
     MobileTabBar: "order",
     NavBar: "order",
     NavIndex: "order",

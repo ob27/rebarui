@@ -10,6 +10,7 @@ import {
   Heading,
   HomeIcon,
   LineChartIcon,
+  SegmentedControl,
   SettingsIcon,
   Stack,
   TaskIcon,
@@ -33,6 +34,36 @@ const SIDEBAR_ITEMS: SidebarNavProps["items"] = [
   { type: "divider" },
   { label: "Settings", href: "#settings", icon: <SettingsIcon /> },
 ];
+
+const RAIL_ITEMS: SidebarNavProps["items"] = [
+  { label: "Home", href: "#home", icon: <HomeIcon />, active: true },
+  { label: "Chat", href: "#chat", icon: <ChatIcon /> },
+  { label: "Files", href: "#files", icon: <FolderIcon /> },
+  { label: "Settings", href: "#settings", icon: <SettingsIcon /> },
+];
+
+const TOP_NAV_ITEMS = [
+  { label: "Home", href: "#home" },
+  { label: "Docs", href: "#docs" },
+  { label: "About", href: "#about" },
+];
+
+const TAB_BAR_ITEMS = [
+  { label: "Home", href: "#home", icon: <HomeIcon /> },
+  { label: "Chat", href: "#chat", icon: <ChatIcon /> },
+  { label: "Settings", href: "#settings", icon: <SettingsIcon /> },
+];
+
+const VARIANTS = [
+  { value: "sidebar", label: "Sidebar" },
+  { value: "top-nav", label: "Top nav" },
+  { value: "top-nav-sidebar", label: "Top nav + sidebar" },
+  { value: "three-pane", label: "Three pane" },
+  { value: "mobile", label: "Mobile" },
+  { value: "tablet", label: "Tablet" },
+] as const;
+
+type Variant = (typeof VARIANTS)[number]["value"];
 
 const BLOCKS: Construct[] = [
   {
@@ -62,39 +93,21 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "The expected architecture for a full-viewport application: `AppShell` provides the structural frame (sidebar or top-nav + content area), and `BlockRenderer` prints declarative content within that frame. This separation keeps layout concerns (the shell) distinct from content concerns (the blocks), and makes it impossible to hand-roll or hand-draw the shell — you select an order-tier component first, then compose content inside it.",
+        text: "The expected architecture for a full-viewport application: `AppShell` provides the structural frame, and `BlockRenderer` prints declarative content within that frame. This separation keeps layout concerns (the shell) distinct from content concerns (the blocks), and makes it impossible to hand-roll or hand-draw the shell — you select an Order-tier component first, then compose content inside it.",
       },
-      {
-        kind: "code",
-        code: `// app/page.tsx
-import { AppShell, Heading, Text } from "rebar-ui";
-import { BlockRenderer } from "@rebar-ui/placement";
-import type { Construct } from "@rebar-ui/placement";
-
-const DASHBOARD_BLOCKS: Construct[] = [
+    ],
+  },
   {
     type: "doc-section",
-    heading: "Welcome",
-    body: [{ kind: "text", text: "This is your dashboard." }],
-  },
-  // ... more blocks
-];
-
-export default function DashboardPage() {
-  return (
-    <AppShell
-      sidebar={{
-        items: [
-          { label: "Dashboard", href: "/", icon: <DashboardIcon />, active: true },
-          { label: "Settings", href: "/settings", icon: <SettingsIcon /> },
-        ],
-        header: <Heading level={3}>My App</Heading>,
-      }}
-    >
-      <BlockRenderer document={DASHBOARD_BLOCKS} />
-    </AppShell>
-  );
-}`,
+    heading: "Seven variants, not two",
+    body: [
+      {
+        kind: "text",
+        text: '`variant="sidebar"` (default, dashboard pattern) and `variant="top-nav"` (docs/marketing pattern) are the two original shapes. Five more now cover the real layouts those two alone can\'t represent: `"top-nav-sidebar"` combines both (a global top bar plus a section sidebar — the GitHub/Linear complex-dashboard shape), `"three-pane"` adds a forced-collapsed icon-only `railSidebar` alongside a normal `sidebar` (Slack/Discord/VS Code), `"mobile"` composes an optional top bar with a real `MobileTabBar` pinned to the bottom, and `"tablet"` is the same shape as `"sidebar"` with the icon-only collapsed rail defaulted on (Material Design\'s "navigation rail") instead of a fully-expanded list.',
+      },
+      {
+        kind: "text",
+        text: '`rightPanel` (a real `SidePanel` — non-modal, sits beside content rather than over it, the Slack "thread" pattern) is deliberately not an eighth variant: it composes *with* any of the seven above rather than replacing one, since a right-docked detail panel is commonly used alongside whatever the primary navigation shape already is. Try it in the live preview below.',
       },
     ],
   },
@@ -104,42 +117,7 @@ export default function DashboardPage() {
     body: [
       {
         kind: "text",
-        text: "`AppShell` solves the CSS height-inheritance problem — the common bug where a sidebar doesn't extend to the bottom of the viewport because `height: 100%` on a child only works when the parent has an explicit `height` (not just `minHeight`). `AppShell` uses `height: 100vh` on the outer container, ensuring all children with `height: 100%` resolve correctly. You don't have to reason about CSS height constraints yourself.",
-      },
-      {
-        kind: "text",
-        text: "`BlockRenderer` prints declarative content from a `Construct[]` document — the same document can be rendered by different block renderers (web, mobile, diagram), and the content is data, not JSX. This makes it easy to swap content without touching layout, or to generate content programmatically.",
-      },
-      {
-        kind: "text",
-        text: "Together, they enforce the Fast & Simple principle: select an order first (`AppShell`), then use the block renderer to print content within that order. Don't hand-roll or hand-draw the shell — that's what order-tier components are for.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Variants",
-    body: [
-      {
-        kind: "text",
-        text: "`AppShell` has three variants: `sidebar` (dashboard pattern, sidebar on left + content on right), `top-nav` (documentation/marketing pattern, nav on top + content below), and `bare` (no nav, just a full-viewport container). Pick one layout variant, not both — `sidebar` and `topNav` are mutually exclusive props.",
-      },
-      {
-        kind: "code",
-        code: `// Sidebar variant (dashboard)
-<AppShell sidebar={{ items: [...] }}>
-  <BlockRenderer document={blocks} />
-</AppShell>
-
-// Top-nav variant (docs/marketing)
-<AppShell variant="top-nav" topNav={{ items: [...] }}>
-  <BlockRenderer document={blocks} />
-</AppShell>
-
-// Bare variant (no nav, just full-viewport container)
-<AppShell variant="bare">
-  <BlockRenderer document={blocks} />
-</AppShell>`,
+        text: "`AppShell` solves the CSS height-inheritance problem — the common bug where a sidebar doesn't extend to the bottom of the viewport because `height: 100%` on a child only works when the parent has an explicit `height` (not just `minHeight`). `AppShell` uses `height: 100vh` on the outer container by default, ensuring all children with `height: 100%` resolve correctly, however many nav elements that variant composes.",
       },
     ],
   },
@@ -149,73 +127,82 @@ export default function DashboardPage() {
     body: [
       {
         kind: "text",
-        text: "Don't use `AppShell` for embedded widgets that don't own the full viewport — use a plain `<Stack>` or `<Box>` instead. Don't use it for pages that scroll naturally — `AppShell` is for full-viewport applications where the sidebar/top-nav must extend to the viewport edge. If you're embedding a widget inside another page, you probably want a plain `<Stack>` with `height: \"auto\"` instead.",
+        text: "Don't use `AppShell` for embedded widgets that don't own the full viewport — use a plain `<Stack>` or `<Box>` instead. Don't use it for pages that scroll naturally — `AppShell` is for full-viewport applications where the nav must extend to the viewport edge.",
       },
     ],
   },
 ];
 
 export default function AppShellPage() {
-  const [variant, setVariant] = useState<"sidebar" | "top-nav">("sidebar");
+  const [variant, setVariant] = useState<Variant>("sidebar");
+  const [showRightPanel, setShowRightPanel] = useState(false);
+
+  const content = (
+    <Box style={{ padding: "var(--rebar-space-lg)" }}>
+      <Heading level={2}>Content area</Heading>
+      <Text>
+        This is where your page content goes — the content area fills whatever space the
+        variant&apos;s nav elements don&apos;t claim, and scrolls independently if it overflows.
+      </Text>
+    </Box>
+  );
 
   return (
     <Stack gap="lg">
       <Heading level={1}>AppShell</Heading>
       <Text>
-        A full-viewport application shell that handles CSS height inheritance correctly — the common
-        layout bug where a sidebar doesn't extend to the bottom because its <code>height: 100%</code>{" "}
-        doesn't resolve without an explicit parent height is impossible here, because this component
-        uses <code>height: 100vh</code> (not <code>minHeight</code>) on the outer container.
+        A full-viewport application shell that handles CSS height inheritance correctly, composing
+        the real nav components for you across seven layout variants.
       </Text>
 
       <Box style={{ border: "1px solid var(--rebar-color-border)", padding: "var(--rebar-space-md)" }}>
         <Stack gap="md">
           <Heading level={3}>Live preview</Heading>
-          <Stack direction="row" gap="sm">
-            <button onClick={() => setVariant("sidebar")} disabled={variant === "sidebar"}>
-              Sidebar variant
-            </button>
-            <button onClick={() => setVariant("top-nav")} disabled={variant === "top-nav"}>
-              Top-nav variant
-            </button>
+          <Stack direction="row" gap="md" style={{ alignItems: "center", flexWrap: "wrap" }}>
+            <SegmentedControl
+              options={VARIANTS.map(({ value, label }) => ({ value, label }))}
+              value={variant}
+              onValueChange={(v) => setVariant(v as Variant)}
+            />
+            <label style={{ display: "flex", alignItems: "center", gap: "var(--rebar-space-xs)", fontSize: 14 }}>
+              <input
+                type="checkbox"
+                checked={showRightPanel}
+                onChange={(e) => setShowRightPanel(e.target.checked)}
+                disabled={variant === "mobile"}
+              />
+              rightPanel
+            </label>
           </Stack>
           <Box
             style={{
-              height: 400,
+              height: 420,
               border: "1px solid var(--rebar-color-border)",
               overflow: "hidden",
             }}
           >
             <AppShell
               variant={variant}
-              height="400px"
+              height="420px"
               sidebar={
-                variant === "sidebar"
-                  ? {
-                      items: SIDEBAR_ITEMS,
-                      header: <Heading level={3}>My App</Heading>,
-                    }
+                variant === "sidebar" || variant === "tablet" || variant === "top-nav-sidebar" || variant === "three-pane"
+                  ? { items: SIDEBAR_ITEMS, header: <Heading level={3}>My App</Heading> }
                   : undefined
               }
+              railSidebar={variant === "three-pane" ? { items: RAIL_ITEMS } : undefined}
               topNav={
-                variant === "top-nav"
-                  ? {
-                      items: [
-                        { label: "Home", href: "#home" },
-                        { label: "Docs", href: "#docs" },
-                        { label: "About", href: "#about" },
-                      ],
-                    }
+                variant === "top-nav" || variant === "top-nav-sidebar" || variant === "mobile"
+                  ? { items: TOP_NAV_ITEMS }
+                  : undefined
+              }
+              tabBar={variant === "mobile" ? { items: TAB_BAR_ITEMS } : undefined}
+              rightPanel={
+                showRightPanel && variant !== "mobile"
+                  ? { title: "Details", children: <Text size="sm">A real, non-modal SidePanel.</Text> }
                   : undefined
               }
             >
-              <Box style={{ padding: "var(--rebar-space-lg)" }}>
-                <Heading level={2}>Content area</Heading>
-                <Text>
-                  This is where your page content goes. The content area fills the remaining space
-                  after the sidebar/top-nav, and scrolls independently if the content overflows.
-                </Text>
-              </Box>
+              {content}
             </AppShell>
           </Box>
         </Stack>

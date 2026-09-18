@@ -1,4 +1,4 @@
-import { Heading, Stack, Text, Timeline } from "rebar-ui";
+import { Container, Heading, Stack, Text, Timeline } from "rebar-ui";
 import type { TimelineItem } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -56,16 +56,18 @@ const BLOCKS: Construct[] = [
 
 export default function RoadmapPage() {
   return (
-    <Stack gap="lg" style={{ maxWidth: 800, margin: "0 auto", padding: "var(--rebar-space-xl)" }}>
-      <Heading level={1}>Roadmap</Heading>
-      <Text color="secondary">
-        Where Rebar UI has been, and where it&apos;s headed — from the first npm publish through
-        the current Open Beta and beyond.
-      </Text>
+    <Container>
+      <Stack gap="lg">
+        <Heading level={1}>Roadmap</Heading>
+        <Text color="secondary">
+          Where Rebar UI has been, and where it&apos;s headed — from the first npm publish through
+          the current Open Beta and beyond.
+        </Text>
 
-      <Timeline items={MILESTONES} />
+        <Timeline items={MILESTONES} />
 
-      <NextBlockRenderer blocks={BLOCKS} />
-    </Stack>
+        <NextBlockRenderer blocks={BLOCKS} />
+      </Stack>
+    </Container>
   );
 }

@@ -1,4 +1,4 @@
-import { Box, Heading, Image, Stack, Text } from "rebar-ui";
+import { Container, Heading, Image, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import Link from "next/link";
@@ -79,7 +79,7 @@ const BLOCKS: Construct[] = [
 
 export default function AboutPage() {
   return (
-    <Box as="main" style={{ maxWidth: 800, margin: "0 auto", padding: "var(--rebar-space-xl)" }}>
+    <Container as="main">
       <Stack gap="lg">
         <Image src="/catalogue-heros/about.jpeg" alt="About hero" style={{ width: "100%", borderRadius: "8px" }} />
         <Stack gap="xs">
@@ -98,6 +98,6 @@ export default function AboutPage() {
         </Stack>
         <NextBlockRenderer blocks={BLOCKS} />
       </Stack>
-    </Box>
+    </Container>
   );
 }

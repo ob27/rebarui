@@ -1,4 +1,4 @@
-import { Image, Stack } from "rebar-ui";
+import { Container, Image, Stack } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -727,14 +727,16 @@ const HEURISTIC_BLOCKS: Construct[] = [
 
 export default function HeuristicsPage() {
   return (
-    <Stack gap="lg" style={{ maxWidth: 800, margin: "0 auto", padding: "var(--rebar-space-xl)" }}>
-      <Image src="/catalogue-heros/heuristics.jpeg" alt="Heuristics hero" style={{ width: "100%", borderRadius: "8px" }} />
-      <Stack direction="row" gap="xl" style={{ alignItems: "flex-start" }}>
-        <Stack gap="lg" style={{ flex: 1, minWidth: 0 }}>
-          <NextBlockRenderer blocks={HEURISTIC_BLOCKS} />
+    <Container>
+      <Stack gap="lg">
+        <Image src="/catalogue-heros/heuristics.jpeg" alt="Heuristics hero" style={{ width: "100%", borderRadius: "8px" }} />
+        <Stack direction="row" gap="xl" style={{ alignItems: "flex-start" }}>
+          <Stack gap="lg" style={{ flex: 1, minWidth: 0 }}>
+            <NextBlockRenderer blocks={HEURISTIC_BLOCKS} />
+          </Stack>
+          <NextBlockRenderer blocks={[{ type: "page-index", sections: SECTIONS }]} />
         </Stack>
-        <NextBlockRenderer blocks={[{ type: "page-index", sections: SECTIONS }]} />
       </Stack>
-    </Stack>
+    </Container>
   );
 }
