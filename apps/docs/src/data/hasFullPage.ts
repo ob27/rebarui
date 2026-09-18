@@ -151,6 +151,7 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   Menubar: "/opinions/menubar",
   GitGraph: "/synthetics/git-graph",
   VersionHistory: "/opinions/version-history",
+  VideoPlayer: "/opinions/video-player",
   IndexBar: "/opinions/index-bar",
   GraphExplorer: "/opinions/graph-explorer",
   ErrorBlock: "/synthetics/error-block",

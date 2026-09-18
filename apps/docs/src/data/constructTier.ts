@@ -216,6 +216,7 @@ export const CONSTRUCT_TIER = {
     UMAPPlot: "opinion",
     UploadQueue: "opinion",
     VersionHistory: "opinion",
+    VideoPlayer: "opinion",
     VoiceComposer: "opinion",
     WaveformAudioPlayer: "opinion",
     Wizard: "opinion",
