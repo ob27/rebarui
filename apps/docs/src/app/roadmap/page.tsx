@@ -56,7 +56,7 @@ const BLOCKS: Construct[] = [
 
 export default function RoadmapPage() {
   return (
-    <Stack gap="lg">
+    <Stack gap="lg" style={{ maxWidth: 800, margin: "0 auto", padding: "var(--rebar-space-xl)" }}>
       <Heading level={1}>Roadmap</Heading>
       <Text color="secondary">
         Where Rebar UI has been, and where it&apos;s headed — from the first npm publish through
