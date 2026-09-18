@@ -224,6 +224,8 @@ export const CONSTRUCT_TIER = {
     SectionNav: "order",
     SidePanel: "order",
     SidebarNav: "order",
+    SkipLink: "order",
+    WorkspaceSwitcher: "order",
 
     // Geneses — starter projects, currently empty, will be populated as projects are added.
   } satisfies Record<string, Tier>,

@@ -26,6 +26,8 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   FormItem: "/opinions/form",
   Grid: "/orders/grid",
   HoverCard: "/opinions/hover-card",
+  SkipLink: "/orders/skip-link",
+  WorkspaceSwitcher: "/orders/workspace-switcher",
   NavBar: "/orders/nav-bar",
   SidebarNav: "/orders/sidebar-nav",
   AppShell: "/orders/appshell",

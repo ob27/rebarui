@@ -25,6 +25,8 @@ const COMPONENT_FILES = [
   "Box.tsx",
   "Container.tsx",
   "Grid.tsx",
+  "SkipLink.tsx",
+  "WorkspaceSwitcher.tsx",
   "Stack.tsx",
   "Text.tsx",
   "Heading.tsx",
