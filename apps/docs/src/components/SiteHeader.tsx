@@ -3,6 +3,7 @@
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { REBAR_MARK_PATH, REBAR_MARK_VIEWBOX } from "@/data/rebarMark";
+import { CONSTRUCT_SEARCH_INDEX } from "@/data/constructSearchIndex";
 
 const BLOCKS: Construct[] = [
   {
@@ -49,9 +50,10 @@ const BLOCKS: Construct[] = [
     ariaLabel: "Main",
     trailing: { kind: "text", text: "0.10.0" },
     themeToggle: true,
+    constructSearch: { source: "constructSearchIndex", placeholder: "Search constructs..." },
   },
 ];
 
 export function SiteHeader() {
-  return <NextBlockRenderer blocks={BLOCKS} />;
+  return <NextBlockRenderer blocks={BLOCKS} data={{ constructSearchIndex: CONSTRUCT_SEARCH_INDEX }} />;
 }

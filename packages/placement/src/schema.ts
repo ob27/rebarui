@@ -410,6 +410,21 @@ export type Construct =
        * escape hatch onto the same real theme switch a developer gets in DevTools, not a new one.
        * Off by default. */
       themeToggle?: boolean;
+      /** An inline, progressive type-ahead search box in the header's middle, over every named
+       * construct across every tier (see `packages/core`'s `ConstructSearch`) — omit entirely for
+       * a header with no search box. `source` is a key into `BlockRenderer`'s `data` prop
+       * resolving to a `ConstructSearchResult[]`, not literal inline data: unlike `trailing`'s
+       * variants (a caller-authored string/login/avatar, genuinely part of this block's own JSON),
+       * the full cross-tier construct index is generated data no one hand-authors per page — the
+       * same "a real value supplied outside the serializable block data, referenced from inside it
+       * only by name" pattern `renderLink` and every Opinion-tier `source` field already use (see
+       * ref/PLACEMENT_LIVE_DATA.md). Left unresolved (key unset, or missing from `data`), no search
+       * box renders — there's nothing to search over. Deliberately its own field rather than a new
+       * `trailing.kind`, since `trailing` is reserved for literal per-instance content. */
+      constructSearch?: {
+        source: string;
+        placeholder?: string;
+      };
     }
   | {
       type: "nav-index";

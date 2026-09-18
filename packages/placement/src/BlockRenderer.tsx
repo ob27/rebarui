@@ -11,6 +11,7 @@ import {
   ChatThread,
   Checkbox,
   CodeBlock,
+  ConstructSearch,
   Dialog,
   Editable,
   Empty,
@@ -43,7 +44,7 @@ import {
   TodoItem,
   Wizard,
 } from "rebar-ui";
-import type { AiChatInputIntent, ChatMessage, TableColumn, WizardValue } from "rebar-ui";
+import type { AiChatInputIntent, ChatMessage, ConstructSearchResult, TableColumn, WizardValue } from "rebar-ui";
 import type {
   Action,
   Construct,
@@ -75,6 +76,14 @@ import { ICONS } from "./icons";
 // everything else passes through as plain text. Good enough for the prose this project's own docs
 // actually need; anything more ambitious belongs in a real markdown renderer, not this schema.
 const INLINE_MARKUP = /`([^`]+)`|\[([^\]]+)\]\(([^)]+)\)|\*([^*]+)\*/g;
+
+/** Resolves a mega-menu item's `icon` name against this package's own `ICONS` registry — the
+ * concrete answer to `NavBar`'s `renderIcon` prop, since `packages/core` itself owns no icon set
+ * (see NavBar.tsx's `renderIcon` doc comment). */
+function resolveMegaMenuIcon(icon: string): ReactNode {
+  const Icon = ICONS[icon as keyof typeof ICONS];
+  return Icon ? <Icon /> : null;
+}
 
 /** `Avatar`'s `fallback` prop is meant to be short initials, not a full name — Radix always
  * renders it as real visible text (until/unless an image loads), so passing the full name here
@@ -1300,7 +1309,7 @@ function renderBlock(
               maxWidth: "100%",
             }}
           >
-            <NavBar items={block.items} aria-label={block.ariaLabel ?? "Main"} renderLink={renderLink} />
+            <NavBar items={block.items} aria-label={block.ariaLabel ?? "Main"} renderLink={renderLink} renderIcon={resolveMegaMenuIcon} />
           </Box>
         );
       }
@@ -1310,6 +1319,7 @@ function renderBlock(
           items={block.items}
           aria-label={block.ariaLabel ?? "Main"}
           renderLink={renderLink}
+          renderIcon={resolveMegaMenuIcon}
           data-rebar-placement-block="nav-bar"
           data-rebar-block-path={path}
         />
@@ -1379,6 +1389,13 @@ function renderBlock(
           </span>
         );
       }
+      // `constructSearch.source` isn't literal block data (see schema.ts's field comment) —
+      // resolved the same way every Opinion-tier `source` field is, but with `undefined` (not a
+      // fallback array) when unresolved, so an unconfigured/not-yet-supplied index renders no
+      // search box at all rather than an empty, useless one.
+      const searchResults = block.constructSearch
+        ? resolveSource<ConstructSearchResult[] | undefined>(data, block.constructSearch.source, undefined)
+        : undefined;
       return (
         <Box
           key={index}
@@ -1397,8 +1414,17 @@ function renderBlock(
               {block.logo.href ? renderLink({ href: block.logo.href, children: logoContent }) : logoContent}
             </span>
             <div style={{ flex: "0 1 50%", minWidth: 0 }}>
-              <NavBar items={block.items} aria-label={block.ariaLabel ?? "Main"} renderLink={renderLink} />
+              <NavBar items={block.items} aria-label={block.ariaLabel ?? "Main"} renderLink={renderLink} renderIcon={resolveMegaMenuIcon} />
             </div>
+            {searchResults ? (
+              <div style={{ flex: "1 1 auto", minWidth: 0, maxWidth: 320 }}>
+                <ConstructSearch
+                  results={searchResults}
+                  renderLink={renderLink}
+                  placeholder={block.constructSearch?.placeholder}
+                />
+              </div>
+            ) : null}
             {trailingContent || block.themeToggle ? (
               <Stack direction="row" align="center" gap="sm" style={{ marginLeft: "auto", flexShrink: 0 }}>
                 {block.themeToggle ? <ThemeToggle /> : null}

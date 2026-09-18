@@ -13,6 +13,7 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   Badge: "/imitations/badge",
   Breadcrumb: "/orders/breadcrumb",
   Button: "/imitations/button",
+  ConstructSearch: "/opinions/construct-search",
   Card: "/synthetics/card",
   Carousel: "/imitations/carousel",
   CodeBlock: "/synthetics/code-block",

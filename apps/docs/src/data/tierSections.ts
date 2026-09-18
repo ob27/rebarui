@@ -9,8 +9,7 @@
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { HAS_FULL_PAGE } from "./hasFullPage";
-import { constructTier } from "./constructTier";
-import { BLOCK_TIER } from "./blockTier";
+import { CONSTRUCT_TIER, tierOf } from "./constructTier";
 import { blockCategory } from "./blockCategory";
 import { shippedCategory } from "./shippedCategory";
 import type { Tier } from "./tier.types";
@@ -34,12 +33,14 @@ export const TIER_LABEL: Record<Tier, string> = {
 
 export function tierComponentNames(tier: Tier): string[] {
   return Object.keys(componentProps)
-    .filter((name) => constructTier(name) === tier)
+    .filter((name) => tierOf(name) === tier)
     .sort();
 }
 
 export function tierBlockTypes(tier: Tier): Construct["type"][] {
-  return (Object.keys(BLOCK_TIER) as Construct["type"][]).filter((type) => BLOCK_TIER[type] === tier).sort();
+  return (Object.keys(CONSTRUCT_TIER.block) as Construct["type"][])
+    .filter((type) => CONSTRUCT_TIER.block[type] === tier)
+    .sort();
 }
 
 /**

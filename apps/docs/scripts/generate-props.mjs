@@ -115,6 +115,7 @@ const COMPONENT_FILES = [
   "ResizablePanels.tsx",
   "Transfer.tsx",
   "CommandPalette.tsx",
+  "ConstructSearch.tsx",
   "Barcode.tsx",
   "DatePicker.tsx",
   "Image.tsx",

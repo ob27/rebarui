@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BlockRenderer, type Construct } from "@rebar-ui/placement";
+import { BlockRenderer, type BlockRendererData, type Construct } from "@rebar-ui/placement";
 
 /**
  * `BlockRenderer`'s `renderLink` is a function prop, and functions can't cross the Server-to-
@@ -12,10 +12,11 @@ import { BlockRenderer, type Construct } from "@rebar-ui/placement";
  * Preserves the caller-supplied `className` (e.g. `rebar-navbar-link` from NavBar) so nav links
  * keep their own styling instead of being painted as body-text hyperlinks.
  */
-export function NextBlockRenderer({ blocks }: { blocks: Construct[] }) {
+export function NextBlockRenderer({ blocks, data }: { blocks: Construct[]; data?: BlockRendererData }) {
   return (
     <BlockRenderer
       blocks={blocks}
+      data={data}
       renderLink={({ href, children, className, onClick }) => (
         <Link href={href} className={className ?? "rebar-link"} onClick={onClick}>
           {children}
