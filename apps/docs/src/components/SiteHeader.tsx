@@ -38,7 +38,7 @@ const BLOCKS: Construct[] = [
       },
       {
         href: "/heuristics",
-        label: "Philosophy",
+        label: "Framework",
         megaMenu: {
           columns: [
             {
