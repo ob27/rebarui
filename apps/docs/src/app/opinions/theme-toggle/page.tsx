@@ -23,8 +23,18 @@ const BLOCKS: Construct[] = [
   },
   {
     type: "doc-section",
+    heading: "Mutations: showing fewer controls, not a second component",
+    body: [
+      {
+        kind: "text",
+        text: '`sections` (`"style"` | `"mode"` | `"bionic"`, default all three) picks which controls this one component exposes — not three separate components. Naming exactly one drops the popover entirely and renders that control directly: `sections={["mode"]}` is a classic, icon-in-thumb light/dark switch (a plain moon while light, a sun once dark — no separate "dark mode toggle" component needed, this *is* one). `sections={["style"]}` or `["bionic"]` alone render as one inline control the same way. Naming two keeps the popover — there\'s still more than one thing to hide behind a trigger — but only shows the named pair.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [{ kind: "text", text: 'None on the toggle itself — it reads/writes `data-rebar-theme`/`data-theme`/`data-rebar-bionic` on the document root, the same attributes `RebarDevTools` uses.' }],
+    body: [{ kind: "text", text: '`data-rebar-variant="mode-only"|"style-only"|"bionic-only"` on the root when `sections` names exactly one control. It also reads/writes `data-rebar-theme`/`data-theme`/`data-rebar-bionic` on the document root, the same attributes `RebarDevTools` uses.' }],
   },
   {
     type: "doc-section",
@@ -47,6 +57,41 @@ export default function ThemeTogglePage() {
       <LivePreview>
         <ThemeToggle />
       </LivePreview>
+
+      <Stack gap="sm">
+        <Heading level={3}>Example: sections=&quot;mode&quot; only — a classic light/dark switch</Heading>
+        <Text size="sm" color="secondary">
+          No popover, no trigger button — just the switch itself, with a moon/sun icon in the
+          thumb and a label that follows the current state.
+        </Text>
+        <LivePreview>
+          <ThemeToggle sections={["mode"]} />
+        </LivePreview>
+      </Stack>
+
+      <Stack gap="sm">
+        <Heading level={3}>Example: sections=&quot;style&quot; only</Heading>
+        <LivePreview>
+          <ThemeToggle sections={["style"]} />
+        </LivePreview>
+      </Stack>
+
+      <Stack gap="sm">
+        <Heading level={3}>Example: sections=&quot;bionic&quot; only</Heading>
+        <LivePreview>
+          <ThemeToggle sections={["bionic"]} />
+        </LivePreview>
+      </Stack>
+
+      <Stack gap="sm">
+        <Heading level={3}>Example: style + bionic, mode excluded</Heading>
+        <Text size="sm" color="secondary">
+          Two sections still keeps the popover, just with only the named controls inside.
+        </Text>
+        <LivePreview>
+          <ThemeToggle label="Appearance" sections={["style", "bionic"]} />
+        </LivePreview>
+      </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
