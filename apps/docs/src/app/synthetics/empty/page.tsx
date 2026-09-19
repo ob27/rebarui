@@ -11,7 +11,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "code",
-        code: '<Empty />\n<Empty illustration="bowl-and-spoon" description="No projects yet">\n  <Button variant="primary">Create project</Button>\n</Empty>\n<Empty icon="vector" description="No results" />',
+        code: '<Empty />\n<Empty illustration="bowl-and-spoon" description="No projects yet">\n  <Button variant="primary">Create project</Button>\n</Empty>\n<Empty icon="vector" description="No results" />\n<Empty icon="container" description="No files" />',
       },
     ],
   },
@@ -42,7 +42,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Not codemod-covered — AntD's `Empty` ships several built-in illustration presets (`Empty.PRESENTED_IMAGE_SIMPLE` etc.), while this component has two hand-drawn illustrations (a ghost, the default, and the original bowl-and-spoon, picked via `illustration`) plus a plain vector fallback, picked via `icon`, not a larger preset set. `description` and an action child map directly.",
+        text: "Not codemod-covered — AntD's `Empty` ships several built-in illustration presets (`Empty.PRESENTED_IMAGE_SIMPLE` etc.), while this component has two hand-drawn illustrations (a ghost, the default, and the original bowl-and-spoon, picked via `illustration`) plus two plain vector fallbacks (`icon=\"vector\"`'s circle-and-X, `icon=\"container\"`'s document/archive box — the latter closest to AntD's own simple-image preset), not a larger preset set. `description` and an action child map directly.",
       },
     ],
   },
@@ -58,7 +58,10 @@ export default function EmptyPage() {
         same placeholder art set as <code>Avatar</code>/<code>AspectRatio</code>), by default
         swapped automatically for a plain vector circle-and-X in dark mode — since the illustration
         is a raster image, it can&apos;t recolor itself for a dark background. Set{" "}
-        <code>icon</code> to keep one or the other in both themes instead.
+        <code>icon</code> to keep one or the other in both themes instead — or pick{" "}
+        <code>icon=&quot;container&quot;</code> for a document/archive-box glyph, a real{" "}
+        <code>currentColor</code> SVG like <code>vector</code> that never needs a raster/vector
+        swap.
       </Text>
 
       <LivePreview>
@@ -70,6 +73,7 @@ export default function EmptyPage() {
           <Stack direction="row" gap="lg">
             <Empty icon="illustration" description="Illustration, forced" />
             <Empty icon="vector" description="Vector, forced" />
+            <Empty icon="container" description="Container, forced" />
           </Stack>
         </Stack>
       </LivePreview>
