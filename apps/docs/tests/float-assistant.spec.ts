@@ -105,8 +105,12 @@ test.describe("FloatAssistant", () => {
     const assistantButton = page.locator('[data-rebar-part="trigger"]');
     await assistantButton.click();
 
-    // Click minimize button - use force:true to bypass pointer event interception
-    const minimizeBtn = page.locator('[aria-label="Minimize assistant"]');
+    // Wait for panel to appear
+    const panel = page.locator('[data-rebar-part="panel"]');
+    await expect(panel).toBeVisible();
+
+    // Click minimize button inside panel header
+    const minimizeBtn = panel.locator('[aria-label="Minimize assistant"]');
     await expect(minimizeBtn).toBeVisible();
     await minimizeBtn.click({ force: true });
 
