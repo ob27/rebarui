@@ -1,13 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Box, Heading, Input, Stack, Text } from "rebar-ui";
+import { useEffect, useMemo, useState } from "react";
+import { Heading, InfiniteScrollGrid, Input, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { ICON_MANIFEST, ICON_SOURCE_INFO } from "@/data/iconManifest";
-import type { IconSource } from "@/data/iconManifest";
+import type { IconManifestEntry, IconSource } from "@/data/iconManifest";
 
 const SOURCES: IconSource[] = ["RemixIcon", "Ant Design"];
+const PAGE_SIZE = 48;
 
 const BLOCKS: Construct[] = [
   {
@@ -39,21 +40,69 @@ const BLOCKS: Construct[] = [
   },
 ];
 
-// At 1,835 icons, rendering everything by default is the exact "flat list of 30+" heuristic #17
-// warns against — a search box alone doesn't fix that if the *unfiltered* view still dumps the
-// whole set. Cap each source's default view; searching (2+ characters) reveals the true full
-// match count instead of the capped preview.
-const PREVIEW_LIMIT = 48;
+// The full set (1,835) is real, browsable content, not something to hide behind a search box —
+// but rendering it all at once on mount is still the wrong default. `InfiniteScrollGrid` (already
+// shipped, Orders-tier) is exactly this shape: the caller owns the real data, the component just
+// reveals more as the sentinel scrolls into view. Query changes reset each source back to one page.
+function IconSourceSection({ source, entries, query }: { source: IconSource; entries: IconManifestEntry[]; query: string }) {
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [query, source]);
+
+  if (entries.length === 0) return null;
+  const info = ICON_SOURCE_INFO[source];
+  const visible = entries.slice(0, visibleCount);
+
+  return (
+    <Stack gap="sm">
+      <Stack direction="row" align="center" gap="sm" style={{ justifyContent: "space-between" }}>
+        <Heading level={2}>
+          {source} <Text as="span" size="sm" color="secondary">({entries.length.toLocaleString()})</Text>
+        </Heading>
+        <Text size="sm" color="secondary">
+          <a href={info.url} className="rebar-link" target="_blank" rel="noreferrer">
+            {info.license}
+          </a>
+        </Text>
+      </Stack>
+      <InfiniteScrollGrid
+        items={visible}
+        keyExtractor={(entry) => entry.name}
+        hasMore={visibleCount < entries.length}
+        isLoading={false}
+        onLoadMore={() => setVisibleCount((v) => Math.min(v + PAGE_SIZE, entries.length))}
+        columns={6}
+        renderItem={({ name, Icon }) => (
+          <Stack
+            gap="xs"
+            align="center"
+            style={{
+              border: "1px solid var(--rebar-color-border, #e0e0e0)",
+              borderRadius: "var(--rebar-radius, 4px)",
+              padding: "var(--rebar-space-sm)",
+              textAlign: "center",
+            }}
+          >
+            <Icon size={24} />
+            <Text size="xs" color="secondary" style={{ wordBreak: "break-all" }}>
+              {name}
+            </Text>
+          </Stack>
+        )}
+      />
+    </Stack>
+  );
+}
 
 export default function IconPage() {
   const [query, setQuery] = useState("");
   const trimmedQuery = query.trim();
-  const searching = trimmedQuery.length >= 2;
   const filtered = useMemo(() => {
     const q = trimmedQuery.toLowerCase();
-    if (!searching) return ICON_MANIFEST;
+    if (!q) return ICON_MANIFEST;
     return ICON_MANIFEST.filter((entry) => entry.name.toLowerCase().includes(q));
-  }, [trimmedQuery, searching]);
+  }, [trimmedQuery]);
 
   return (
     <Stack gap="lg" style={{ maxWidth: 800 }}>
@@ -62,66 +111,27 @@ export default function IconPage() {
         Rebar&apos;s own merged icon set — {ICON_MANIFEST.length.toLocaleString()} icons, real
         licensed path data vendored in as plain React components (no icon-font or npm icon-package
         runtime dependency). Two sources are fully merged in: every RemixIcon icon, and every Ant
-        Design Outlined icon that isn&apos;t a duplicate of one RemixIcon already has.
+        Design Outlined icon that isn&apos;t a duplicate of one RemixIcon already has. Scroll each
+        section to reveal more — nothing here is hidden behind search, it just doesn&apos;t all
+        render at once.
       </Text>
 
       <Input
         type="search"
-        placeholder="Search icons… (2+ characters)"
+        placeholder="Search icons…"
         aria-label="Search icons"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
 
-      {SOURCES.map((source) => {
-        const matches = filtered.filter((entry) => entry.source === source);
-        if (matches.length === 0) return null;
-        const entries = searching ? matches : matches.slice(0, PREVIEW_LIMIT);
-        const info = ICON_SOURCE_INFO[source];
-        return (
-          <Stack key={source} gap="sm">
-            <Stack direction="row" align="center" gap="sm" style={{ justifyContent: "space-between" }}>
-              <Heading level={2}>{source}</Heading>
-              <Text size="sm" color="secondary">
-                <a href={info.url} className="rebar-link" target="_blank" rel="noreferrer">
-                  {info.license}
-                </a>
-              </Text>
-            </Stack>
-            {!searching && matches.length > PREVIEW_LIMIT ? (
-              <Text size="sm" color="secondary">
-                Showing {PREVIEW_LIMIT} of {matches.length.toLocaleString()} — search to find a specific one.
-              </Text>
-            ) : null}
-            <Box
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(112px, 1fr))",
-                gap: "var(--rebar-space-sm)",
-              }}
-            >
-              {entries.map(({ name, Icon }) => (
-                <Stack
-                  key={name}
-                  gap="xs"
-                  align="center"
-                  style={{
-                    border: "1px solid var(--rebar-color-border, #e0e0e0)",
-                    borderRadius: "var(--rebar-radius, 4px)",
-                    padding: "var(--rebar-space-sm)",
-                    textAlign: "center",
-                  }}
-                >
-                  <Icon size={24} />
-                  <Text size="xs" color="secondary" style={{ wordBreak: "break-all" }}>
-                    {name}
-                  </Text>
-                </Stack>
-              ))}
-            </Box>
-          </Stack>
-        );
-      })}
+      {SOURCES.map((source) => (
+        <IconSourceSection
+          key={source}
+          source={source}
+          query={trimmedQuery}
+          entries={filtered.filter((entry) => entry.source === source)}
+        />
+      ))}
 
       {filtered.length === 0 ? (
         <Text color="secondary">No icons match &quot;{query}&quot;.</Text>
