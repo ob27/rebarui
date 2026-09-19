@@ -15,6 +15,7 @@ describe("opinions", () => {
         "scatter-chart",
         "line-chart",
         "stacked-bar-chart",
+        "float-assistant",
       ].sort(),
     );
   });

@@ -15,6 +15,17 @@ export default tseslint.config(
   { ignores: ["**/dist/**", "**/node_modules/**", "**/.turbo/**", "apps/**", "bench/**", "ref/**"] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  // A plain Node codegen script (e.g. packages/core/scripts/generate-icons.mjs) isn't a browser/
+  // React file, but the base `js.configs.recommended` above still applies `no-undef` to it with no
+  // environment configured — `console`/`process` read as undefined globals otherwise. Scoped to
+  // `scripts/` specifically rather than every `.mjs` in the repo, since a script here is a real,
+  // intentionally-run Node process, not incidental JS.
+  {
+    files: ["**/scripts/**/*.mjs"],
+    languageOptions: {
+      globals: { console: "readonly", process: "readonly" },
+    },
+  },
   {
     files: ["**/*.{ts,tsx}"],
     plugins: {

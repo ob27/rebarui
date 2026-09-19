@@ -16,6 +16,7 @@ import {
   Editable,
   Empty,
   ErrorBlock,
+  FloatAssistant,
   Footer,
   Heading,
   Iframe,
@@ -2355,8 +2356,9 @@ function renderBlock(
     }
 
     case "float-assistant": {
-      // Dynamic import to avoid bundling the heavy assistant component for pages that don't use it
-      const FloatAssistant = require("rebar-ui").FloatAssistant;
+      // `rebar-ui` is already a static import for this whole file (Box/Text/etc. above) — a
+      // `require()` here didn't achieve any real code-splitting, it just used the wrong import
+      // style for an ESM file and tripped the lint rule against it.
       return (
         <FloatAssistant
           name={block.name}

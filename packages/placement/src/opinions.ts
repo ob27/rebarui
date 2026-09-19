@@ -28,6 +28,7 @@ export const OPINION_CONSTRUCT_TYPES = [
   "scatter-chart",
   "line-chart",
   "stacked-bar-chart",
+  "float-assistant",
 ] as const satisfies readonly OpinionConstructType[];
 
 // Compile-time exhaustiveness check: if `OpinionConstructType` ever includes a type string missing

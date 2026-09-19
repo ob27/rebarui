@@ -284,6 +284,7 @@ export const CONSTRUCT_TIER = {
     gallery: "synthetic",
     "construct-entry": "synthetic",
     "mega-menu": "order",
+    "float-assistant": "opinion",
   } satisfies Record<Construct["type"], ConstructTier>,
 };
 
