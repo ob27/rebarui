@@ -23,11 +23,21 @@ const BLOCKS: Construct[] = [
   },
   {
     type: "doc-section",
-    heading: "Three real mutations: micro, medium, large",
+    heading: "Real mutations: size, mode, and the eyedropper",
     body: [
       {
         kind: "text",
-        text: '`size` (`"sm"`/`"md"`/`"lg"`) covers the visual scale; `mode="recent"` is the actual functional "micro" variant — instead of the full `presets` grid, it shows only the 3 most-recently-picked colors (seeded from the first few `presets` before anything\'s actually been picked), a real reduction in scope, not just a smaller version of the same grid. The native color input is still offered in both modes for anything not in the shown set.',
+        text: '`size` (`"sm"`/`"md"`/`"lg"`) covers the visual scale; `mode="recent"` is the actual functional "micro" variant — instead of the full `presets` grid, it shows only the 3 most-recently-picked colors (seeded from the first few `presets` before anything\'s actually been picked), a real reduction in scope, not just a smaller version of the same grid. The native color input is still offered in both modes for anything not in the shown set. `allowEyedropper` adds a fourth, orthogonal capability — see below.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Picking a color from anywhere on screen: allowEyedropper",
+    body: [
+      {
+        kind: "text",
+        text: '`allowEyedropper` adds a button that opens the real browser `EyeDropper` API — the user can sample any pixel on the *entire screen*, not just this page\'s own DOM, the same tool a real design app\'s color picker offers. Feature-detected at mount, not assumed: only Chromium-based browsers support it as of this writing, so the button simply doesn\'t render in a browser that can\'t back it (Firefox, Safari) — no broken button, no error.',
       },
     ],
   },
@@ -84,6 +94,17 @@ export default function ColorPickerPage() {
         </Text>
         <LivePreview>
           <ColorPicker mode="recent" size="sm" defaultValue="#0066cc" aria-label="Recent colors" />
+        </LivePreview>
+      </Stack>
+
+      <Stack gap="xs">
+        <Text size="sm" color="secondary">
+          <code>allowEyedropper</code> — click the swatch, then the eyedropper icon in the
+          popover, to sample any color on your screen (Chromium browsers only; the button is
+          absent elsewhere).
+        </Text>
+        <LivePreview>
+          <ColorPicker allowEyedropper defaultValue="#0066cc" aria-label="Pick from screen" />
         </LivePreview>
       </Stack>
 
