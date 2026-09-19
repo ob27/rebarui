@@ -186,6 +186,7 @@ const COMPONENT_FILES = [
   "VersionHistory.tsx",
   "IndexBar.tsx",
   "GraphExplorer.tsx",
+  "FloatAssistant.tsx",
   "ErrorBlock.tsx",
   "NoticeBar.tsx",
   "ProgressCircle.tsx",

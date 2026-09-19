@@ -159,6 +159,7 @@ export const CONSTRUCT_TIER = {
     FloatingSelectionToolbar: "opinion",
     Flowchart: "opinion",
     Form: "opinion",
+    FloatAssistant: "opinion",
     GraphExplorer: "opinion",
     Heatmap: "opinion",
     Histogram: "opinion",

@@ -2354,6 +2354,20 @@ function renderBlock(
       );
     }
 
+    case "float-assistant": {
+      // Dynamic import to avoid bundling the heavy assistant component for pages that don't use it
+      const FloatAssistant = require("rebar-ui").FloatAssistant;
+      return (
+        <FloatAssistant
+          name={block.name}
+          greeting={block.greeting}
+          position={block.position}
+          accentColor={block.accentColor}
+          voiceEnabled={block.voiceEnabled}
+        />
+      );
+    }
+
     default:
       return null;
   }

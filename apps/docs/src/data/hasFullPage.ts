@@ -155,6 +155,7 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   VideoPlayer: "/opinions/video-player",
   IndexBar: "/opinions/index-bar",
   GraphExplorer: "/opinions/graph-explorer",
+  FloatAssistant: "/opinions/float-assistant",
   ErrorBlock: "/synthetics/error-block",
   NoticeBar: "/synthetics/notice-bar",
   ProgressCircle: "/imitations/progress-circle",

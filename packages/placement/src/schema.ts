@@ -802,4 +802,22 @@ export type Construct =
         }[];
       }[];
       footer?: { label: string; href: string };
+    }
+  | {
+      /** A floating AI assistant button that expands into a chat/voice interface.
+       * Features dynamic orb animations, voice and text input modes, and transparent
+       * AI interaction design. Opinion-tier: supports live data binding via `source`
+       * for connecting to an OpenRAG API endpoint. */
+      type: "float-assistant";
+      name?: string;
+      greeting?: string;
+      position?: "bottom-right" | "bottom-left" | "top-right" | "top-left";
+      accentColor?: string;
+      voiceEnabled?: boolean;
+      /** Live binding: a key into `BlockRenderer`'s `data` prop for the API endpoint. */
+      source?: string;
+      /** Live binding: a key into `handlers` for message send callback. */
+      onSendMessage?: string;
+      /** Live binding: a key into `handlers` for voice record toggle. */
+      onVoiceRecord?: string;
     };
