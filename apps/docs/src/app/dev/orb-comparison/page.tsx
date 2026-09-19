@@ -14,6 +14,9 @@ export default function OrbComparisonPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [snapshot, setSnapshot] = useState<string | null>(null);
   const [showGrid, setShowGrid] = useState(true);
+  const [referenceFile, setReferenceFile] = useState<File | null>(null);
+  const [referenceUrl, setReferenceUrl] = useState<string>("");
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -215,6 +218,34 @@ export default function OrbComparisonPage() {
     }
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file && (file.type.startsWith("video/") || file.type.startsWith("image/"))) {
+      setReferenceFile(file);
+      setReferenceUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setReferenceFile(file);
+      setReferenceUrl(URL.createObjectURL(file));
+    }
+  };
+
   return (
     <div style={{ padding: "2rem", maxWidth: "1400px", margin: "0 auto" }}>
       <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Orb Design Comparison</h1>
@@ -227,8 +258,11 @@ export default function OrbComparisonPage() {
         <div>
           <h2 style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>Reference</h2>
           <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
             style={{
-              border: "2px solid #e0e0e0",
+              border: `2px dashed ${isDragging ? "#0066cc" : "#e0e0e0"}`,
               borderRadius: "12px",
               overflow: "hidden",
               background: "#000",
@@ -236,12 +270,76 @@ export default function OrbComparisonPage() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              position: "relative",
+              transition: "border-color 0.2s",
             }}
           >
-            <p style={{ color: "#666", textAlign: "center", padding: "2rem" }}>
-              Paste reference video/image URL here or drag file onto this area
-            </p>
+            {referenceUrl ? (
+              referenceFile?.type.startsWith("video/") ? (
+                <video
+                  src={referenceUrl}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                />
+              ) : (
+                <img
+                  src={referenceUrl}
+                  alt="Reference"
+                  style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                />
+              )
+            ) : (
+              <div style={{ textAlign: "center", padding: "2rem" }}>
+                <p style={{ color: "#666", marginBottom: "1rem" }}>
+                  Drag & drop video/image here
+                </p>
+                <label
+                  style={{
+                    display: "inline-block",
+                    padding: "0.5rem 1rem",
+                    background: "#333",
+                    color: "white",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontSize: "0.875rem",
+                  }}
+                >
+                  Or click to browse
+                  <input
+                    type="file"
+                    accept="video/*,image/*"
+                    onChange={handleFileInput}
+                    style={{ display: "none" }}
+                  />
+                </label>
+              </div>
+            )}
+            {isDragging && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "rgba(0, 102, 204, 0.1)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#0066cc",
+                  fontSize: "1.25rem",
+                  fontWeight: "bold",
+                }}
+              >
+                Drop to load reference
+              </div>
+            )}
           </div>
+          {referenceFile && (
+            <p style={{ marginTop: "0.5rem", fontSize: "0.875rem", color: "#666" }}>
+              Loaded: {referenceFile.name}
+            </p>
+          )}
         </div>
 
         {/* Implementation side */}
