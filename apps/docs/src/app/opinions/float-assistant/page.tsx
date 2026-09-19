@@ -5,9 +5,10 @@ import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const DEMO_VOICES: FloatAssistantVoiceOption[] = [
-  { id: "alquin", label: "Alquin", browserVoiceName: "Google UK English Male" },
-  { id: "nova", label: "Nova", browserVoiceName: "Google US English" },
-  { id: "onyx", label: "Onyx", browserVoiceName: "Google UK English Female" },
+  { id: "alquin", label: "Alquin", cloudVoiceId: "qwen-voice-alquin" },
+  { id: "nova", label: "Nova", cloudVoiceId: "qwen-voice-nova" },
+  { id: "onyx", label: "Onyx", cloudVoiceId: "qwen-voice-onyx" },
+  { id: "browser-default", label: "Browser Default", browserVoiceName: "Google US English" },
 ];
 
 const BLOCKS: Construct[] = [
