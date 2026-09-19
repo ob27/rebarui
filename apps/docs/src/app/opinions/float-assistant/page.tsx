@@ -1,4 +1,4 @@
-import { Heading, Stack, Text } from "rebar-ui";
+import { Heading, Stack, Text, FloatAssistant } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -29,11 +29,8 @@ const BLOCKS: Construct[] = [
   voiceEnabled?: boolean,
   draggable?: boolean,
   minimizable?: boolean,
-  qwenTtsApiKey?: string,
-  qwenSttApiKey?: string,
-  qwenLlmApiKey?: string,
-  openKnowledgeApiKey?: string,
-  knowledgeBaseId?: string,
+  apiEndpoint?: string,
+  apiAuthToken?: string,
 }`,
       },
     ],
@@ -45,21 +42,34 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "The FloatAssistant accepts API keys for multiple services:",
-      },
-      {
-        kind: "list",
-        items: [
-          "**qwenLlmApiKey** — Qwen text LLM API key for text-based conversations",
-          "**qwenTtsApiKey** — Qwen text-to-speech API key for voice output",
-          "**qwenSttApiKey** — Qwen speech-to-text API key for voice input",
-          "**openKnowledgeApiKey** — OpenKnowledge (Rebar Super) service API key",
-          "**knowledgeBaseId** — ID of the knowledge base to query in OpenKnowledge",
-        ],
+        text: "The FloatAssistant uses a **server-side proxy pattern** for security. The app developer implements an API endpoint that holds API keys securely server-side. The construct never sees real API keys.",
       },
       {
         kind: "text",
-        text: "API keys are hashed client-side before transmission for security. The OpenKnowledge service (Rebar Super) provides a unified interface for querying multiple knowledge bases.",
+        text: "**Endpoint contract:**",
+      },
+      {
+        kind: "code",
+        code: `POST /api/assistant/chat
+Content-Type: application/json
+Authorization: Bearer <session-token>
+
+{
+  "message": "What is the weather?",
+  "history": [
+    { "role": "user", "content": "Hello" },
+    { "role": "assistant", "content": "Hi there!" }
+  ]
+}
+
+Response:
+{
+  "reply": "I don't have access to weather data, but..."
+}`,
+      },
+      {
+        kind: "text",
+        text: "The server endpoint then calls Qwen LLM, OpenKnowledge, or any other service with the real API keys stored in environment variables.",
       },
     ],
   },
@@ -73,7 +83,7 @@ const BLOCKS: Construct[] = [
       },
       {
         kind: "text",
-        text: "**Minimize to dot** — Click the minimize button (or double-click the assistant) to collapse it to a 15×15px dot in the bottom-right corner. Click the dot to expand again.",
+        text: "**Minimize to dot** — Click the minimize button to collapse to a 15×15px dot in the bottom-right corner. Click the dot to expand again.",
       },
       {
         kind: "text",
@@ -113,9 +123,19 @@ export default function FloatAssistantPage() {
       <Heading level={1}>FloatAssistant</Heading>
       <Text color="secondary">
         A floating AI assistant with drag-to-move physics, minimize-to-dot, voice and text modes,
-        and API integration for Qwen LLM, Qwen TTS/STT, and OpenKnowledge (Rebar Super). The
-        assistant is 100% transparent about being an AI — it never pretends to be human.
+        and server-side API proxy integration. The assistant is 100% transparent about being an AI
+        — it never pretends to be human.
       </Text>
+
+      {/* Live demo — the assistant appears in the bottom-right corner */}
+      <FloatAssistant
+        name="Rebar Demo"
+        greeting="Hi! I'm a demo assistant. Try dragging me around, or minimize me to a dot!"
+        position="bottom-right"
+        voiceEnabled={true}
+        draggable={true}
+        minimizable={true}
+      />
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
