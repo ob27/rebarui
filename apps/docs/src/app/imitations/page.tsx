@@ -10,6 +10,7 @@ export default function ImitationsPage() {
     {
       type: "doc-section",
       heading: "Philosophy",
+      narration: { src: "/narration/imitations-philosophy.mp3" },
       body: [
         {
           kind: "text",
@@ -24,6 +25,7 @@ export default function ImitationsPage() {
     {
       type: "doc-section",
       heading: "When to reach for this tier",
+      narration: { src: "/narration/imitations-when-to-reach.mp3" },
       body: [
         {
           kind: "text",

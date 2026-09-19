@@ -27,6 +27,16 @@ const BLOCKS: Construct[] = [
   },
   {
     type: "doc-section",
+    heading: "Vertical padding is opt-in, not automatic",
+    body: [
+      {
+        kind: "text",
+        text: '`padding` (the default `--rebar-space-xl`) is horizontal only, on purpose — Container\'s own job is centering and width-constraint, not deciding a page\'s full spacing. A bare, no-sidebar page with nothing else providing vertical breathing room from the header/footer (exactly `/about`, `/heuristics`, and `/roadmap` above) sets `verticalPadding` explicitly for that. Leave it unset when Container nests inside something that already pads vertically (a `SidebarNav`-based `DocsShell`, an `AppShell`) — setting it there would double the gap.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Named presets, or a literal value",
     body: [
       {
@@ -65,6 +75,29 @@ export default function ContainerPage() {
         Centers and width-constrains page content. Every preset below is the same component,
         just a different <code>maxWidth</code>.
       </Text>
+
+      <Stack gap="sm">
+        <Text size="sm" color="secondary">
+          <code>verticalPadding</code> — unset (left) vs. set to <code>--rebar-space-xl</code>{" "}
+          (right). Both boxes below share the same outer background so the gap is visible.
+        </Text>
+        <Stack direction="row" gap="md">
+          <Box style={{ background: "var(--rebar-color-bg-secondary, #f5f5f5)", flex: 1 }}>
+            <Container maxWidth="full" padding="var(--rebar-space-sm)">
+              <Box style={{ background: "var(--rebar-color-bg-primary, #fff)", border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-sm)", textAlign: "center" }}>
+                <Text size="sm" color="secondary">no verticalPadding</Text>
+              </Box>
+            </Container>
+          </Box>
+          <Box style={{ background: "var(--rebar-color-bg-secondary, #f5f5f5)", flex: 1 }}>
+            <Container maxWidth="full" padding="var(--rebar-space-sm)" verticalPadding="var(--rebar-space-xl)">
+              <Box style={{ background: "var(--rebar-color-bg-primary, #fff)", border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-sm)", textAlign: "center" }}>
+                <Text size="sm" color="secondary">verticalPadding=&quot;--rebar-space-xl&quot;</Text>
+              </Box>
+            </Container>
+          </Box>
+        </Stack>
+      </Stack>
 
       <Stack gap="md">
         {(["sm", "md", "lg", "xl"] as const).map((size) => (

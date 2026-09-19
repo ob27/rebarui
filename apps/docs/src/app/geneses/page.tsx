@@ -6,6 +6,7 @@ const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Philosophy",
+    narration: { src: "/narration/geneses-philosophy.mp3" },
     body: [
       {
         kind: "text",
@@ -20,6 +21,7 @@ const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "When to reach for this tier",
+    narration: { src: "/narration/geneses-when-to-reach.mp3" },
     body: [
       {
         kind: "text",

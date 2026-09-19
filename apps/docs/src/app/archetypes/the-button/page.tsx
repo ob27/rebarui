@@ -1,4 +1,4 @@
-import { Image, Stack } from "rebar-ui";
+import { Image, Stack, WaveformAudioPlayer } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -132,6 +132,10 @@ export default function TheButtonPage() {
   return (
     <Stack gap="lg">
       <Image src="/catalogue-heros/button.webp" alt="Button hero image" style={{ width: "100%", borderRadius: "8px" }} />
+      {/* Each archetype essay is meant to be read start to finish as one piece — a whole-page
+          player, not the small per-section narration icon the tier catalogue pages use for their
+          Philosophy/When-to-reach subsections. See CLAUDE.md's narration-regeneration rule. */}
+      <WaveformAudioPlayer src="/narration/archetypes-the-button.mp3" aria-label="Listen to this essay" />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

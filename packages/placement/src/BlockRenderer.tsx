@@ -102,6 +102,75 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+/** The small play/pause icon a `doc-section`'s `narration` field renders next to its heading —
+ * plays a real, pre-generated audio file (no in-browser synthesis) via a plain `<audio>` element.
+ * Deliberately scoped to this one section, not a transport for a whole page — see the
+ * `narration` field's own doc comment in schema.ts for when to reach for a page-level player
+ * instead. */
+function NarrationButton({ src, label }: { src: string; label: string }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying] = useState(false);
+
+  const toggle = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing) {
+      audio.pause();
+    } else {
+      audio.play().catch(() => {
+        // Autoplay-policy or decode failures land here — nothing to recover from beyond not
+        // flipping to a "playing" state that doesn't match reality.
+      });
+    }
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        className="rebar-narration-button"
+        data-rebar-part="narration"
+        data-rebar-playing={playing || undefined}
+        aria-label={playing ? `Pause narration of ${label}` : `Play narration of ${label}`}
+        onClick={toggle}
+      >
+        {playing ? (
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+            <rect x="6" y="5" width="4" height="14" fill="currentColor" />
+            <rect x="14" y="5" width="4" height="14" fill="currentColor" />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+            <path d="M4 9v6h4l5 5V4L8 9H4Z" fill="currentColor" />
+            <path
+              d="M16.5 8.5a5 5 0 0 1 0 7"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+            <path
+              d="M18.5 6a8 8 0 0 1 0 12"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        )}
+      </button>
+      <audio
+        ref={audioRef}
+        src={src}
+        preload="none"
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onEnded={() => setPlaying(false)}
+      />
+    </>
+  );
+}
+
 const propsTableCellStyle: CSSProperties = {
   padding: "var(--rebar-space-sm, 8px)",
   borderBottom: "1px solid var(--rebar-color-border, #e0e0e0)",
@@ -1938,9 +2007,12 @@ function renderBlock(
       return (
         <Stack key={index} gap="sm" data-rebar-placement-block="doc-section" data-rebar-block-path={path}>
           {block.heading ? (
-            <Heading level={block.level ?? 2} id={slugify(block.heading)}>
-              {block.heading}
-            </Heading>
+            <Stack direction="row" align="center" gap="xs">
+              <Heading level={block.level ?? 2} id={slugify(block.heading)} style={{ margin: 0 }}>
+                {block.heading}
+              </Heading>
+              {block.narration ? <NarrationButton src={block.narration.src} label={block.heading} /> : null}
+            </Stack>
           ) : null}
           {block.body.map((node, nodeIndex) => renderProseNode(node, nodeIndex, renderLink))}
         </Stack>

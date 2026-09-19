@@ -55,7 +55,15 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: '`stamp={{ label, timestamp }}` bakes a small audit line into the bottom-right corner of the image itself, on every capture — the visible "signed by / at" trail real e-signature tools attach. `label` is entirely the caller\'s own responsibility to compute: nothing in this component can read a real device identifier — browser JS has not been able to read a device\'s MAC address in any browser for a long time, for the obvious privacy reason. Pass whatever identifier your own app already has instead (a session id, a server-issued device hash, a signer\'s account id) — the demo below uses a fake one for illustration.',
+        text: '`stamp` bakes a small audit line into the bottom-right corner of the image itself, on every capture — the visible "signed by / at" trail real e-signature tools attach. `label` is freeform text the caller supplies directly (a signer name, a document id). `deviceId` is still entirely the caller\'s own responsibility to obtain: nothing in this component can read a real device identifier — browser JS has not been able to read a device\'s MAC address in any browser for a long time, for the obvious privacy reason.',
+      },
+      {
+        kind: "text",
+        text: "What SignaturePad *does* own is the keying: pass `deviceId` alongside a secret `deviceKey` and it computes a real `HMAC-SHA256(deviceKey, deviceId)` itself, via the browser's own Web Crypto — not a toy hash, and not something the caller has to get right by hand. `deviceId` alone (no `deviceKey`) is ignored outright, on purpose: stamping an unkeyed identifier in the open is exactly the mistake this exists to prevent, since this field is baked directly into a document image every signer can see — a small keyspace like a MAC address is brute-forceable, and anyone comparing stamps across documents can correlate an unkeyed one without needing to reverse it at all.",
+      },
+      {
+        kind: "text",
+        text: "The real tradeoff, stated plainly: this computation runs in the browser, so `deviceKey` is present in the page's own JS at signing time — secret from a casual viewer of the finished, published document (the actual goal), but not cryptographically secret from someone with devtools access to a live signing session. If your threat model needs the key to never reach the browser at all, compute the keyed hash on your own backend instead and pass the result as `label` — this component has never done its own networking and won't start now, so that path stays available alongside this one.",
       },
     ],
   },
@@ -104,15 +112,17 @@ export default function SignaturePadPage() {
         <Text size="sm" color="secondary">
           Draw with your pointer, type a name in the field above the canvas (rendered in a
           cursive font), or click Upload to pick an existing signature image — all three land in
-          the same canvas, and every capture bakes a device-hash-like label plus a timestamp into
-          the bottom-right corner.
+          the same canvas. Every capture bakes a real `HMAC-SHA256(deviceKey, deviceId)` (computed
+          by SignaturePad itself, not pre-hashed by this demo) plus a timestamp into the
+          bottom-right corner — the fake `deviceId`/`deviceKey` below stand in for values a real
+          app would already have.
         </Text>
         <LivePreview>
           <Stack gap="sm">
             <SignaturePad
               allowTypedName
               allowUpload
-              stamp={{ label: "device:4f2a9c1e", timestamp: true }}
+              stamp={{ deviceId: "demo-browser-session-id", deviceKey: "demo-only-shared-secret-do-not-reuse", timestamp: true }}
               onValueChange={setESignature}
               aria-label="e-signature"
             />

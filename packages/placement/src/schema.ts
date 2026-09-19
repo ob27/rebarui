@@ -609,7 +609,19 @@ export type Construct =
     }
   | { type: "hero"; badge?: string; title: string; subtitle: string; actions?: Action[]; codeSnippet?: string; imageSrc?: string }
   | { type: "section-header"; kicker?: string; title: string; subtitle?: string }
-  | { type: "doc-section"; heading?: string; level?: 1 | 2 | 3; body: ProseNode[] }
+  | {
+      type: "doc-section";
+      heading?: string;
+      level?: 1 | 2 | 3;
+      body: ProseNode[];
+      /** Renders a small play icon next to `heading`, playing `src` (a real, pre-generated audio
+       * file — no synthesis happens in the browser) on click. Deliberately scoped to *this
+       * section's own content*, not a whole-page player — for a page meant to be read start to
+       * finish as one piece (an essay-shaped page), reach for a page-level player composed
+       * around `BlockRenderer`'s output instead, not this per-section affordance. No icon renders
+       * without `heading` (nothing to anchor it next to) or without `src` (nothing to play). */
+      narration?: { src: string };
+    }
   | { type: "props-table"; heading?: string; rows: PropRow[] }
   | {
       type: "iframe";

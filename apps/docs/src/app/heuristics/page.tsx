@@ -727,7 +727,7 @@ const HEURISTIC_BLOCKS: Construct[] = [
 
 export default function HeuristicsPage() {
   return (
-    <Container>
+    <Container verticalPadding="var(--rebar-space-xl)">
       <Stack gap="lg">
         <Image src="/catalogue-heros/heuristics.jpeg" alt="Heuristics hero" style={{ width: "100%", borderRadius: "8px" }} />
         <Stack direction="row" gap="xl" style={{ alignItems: "flex-start" }}>

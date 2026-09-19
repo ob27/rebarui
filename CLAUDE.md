@@ -55,6 +55,38 @@ of how far along each page actually is (via `pnpm --filter docs run audit:packer
 `data-rebar-placement-block` "maker's mark" every `BlockRenderer`-rendered block already carries)
 — check it, don't assume.
 
+## Narration audio — regenerate it when you edit the content it reads aloud
+
+A small set of pages carry pre-generated narration audio (the Alcuin voice, via Alibaba Cloud
+Model Studio's `qwen3-tts`): the `doc-section` `narration` field (a small play icon next to a
+section heading — see `packages/placement/src/schema.ts`'s own doc comment on that field) on the
+**Philosophy** and **When to reach for this tier** sections of the five tier pages
+(`/imitations`, `/synthetics`, `/opinions`, `/orders`, `/geneses`), and a whole-page
+`WaveformAudioPlayer` on each archetype essay page (`/archetypes/<slug>`) narrating the full
+essay start to finish.
+
+**The rule**: if you edit the text of any of those specific sections/pages, regenerate its
+narration in the same change — don't ship narration that's read a stale version of the copy it's
+supposed to be reading. `apps/docs/scripts/generate-narration.mjs`'s own `NARRATION_SOURCES`
+constant is the single source of truth for what gets narrated; update the entry there to match the
+new copy, then run:
+
+```
+DASHSCOPE_API_KEY=sk-... node apps/docs/scripts/generate-narration.mjs
+```
+
+It hashes each entry's text and skips anything unchanged (each real run costs money — never
+regenerate the whole set speculatively), writing `apps/docs/public/narration/<id>.mp3` plus a
+manifest tracking what's been generated. Requires `ffmpeg` on PATH (used to transcode/concatenate
+the synthesized audio chunks) and a real Alibaba Cloud Model Studio API key — ask the repo owner
+for one rather than guessing at credentials. If a *new* page/section should get narration (not just
+edited text on an existing one), add it to `NARRATION_SOURCES` and to the relevant
+`doc-section`'s `narration` field (or the new archetype page's `WaveformAudioPlayer`) in the same
+change, not as a follow-up.
+
+This is a manual, per-change rule (not a CI job) — there's no automatic trigger watching for these
+edits, so catching this is on whoever (human or agent) makes the edit.
+
 ## Exploratory Analysis Workflow
 
 **Before doing any manual analysis, ask yourself:**

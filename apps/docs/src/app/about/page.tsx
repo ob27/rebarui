@@ -79,7 +79,7 @@ const BLOCKS: Construct[] = [
 
 export default function AboutPage() {
   return (
-    <Container as="main">
+    <Container as="main" verticalPadding="var(--rebar-space-xl)">
       <Stack gap="lg">
         <Image src="/catalogue-heros/about.jpeg" alt="About hero" style={{ width: "100%", borderRadius: "8px" }} />
         <Stack gap="xs">
