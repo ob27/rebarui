@@ -16,7 +16,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Every icon shares the same tiny prop shape (`IconProps`): an optional `size` (number or CSS length, default `\"1em\"` — scales with the surrounding text by default, same as any other inline glyph) plus the rest of `SVGProps<SVGSVGElement>` passed straight through (`className`, `style`, `color`, an `onClick`, whatever a real usage needs). None of the RemixIcon/Ant-Design source rows above have their own individual props table for this reason — one shared shape, not 31 near-identical tables.",
+        text: "Every icon shares the same tiny prop shape (`IconProps`): an optional `size` (number or CSS length, default `\"1em\"` — scales with the surrounding text by default, same as any other inline glyph) plus the rest of `SVGProps<SVGSVGElement>` passed straight through (`className`, `style`, `color`, an `onClick`, whatever a real usage needs). None of the icons above have their own individual props table for this reason — one shared shape, not 1,835 near-identical tables.",
       },
     ],
   },
@@ -26,7 +26,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: 'Two sources are merged in today — RemixIcon and Ant Design — chosen per-icon, not per-project: reach for whichever source already has the exact glyph needed, RemixIcon first (this project\'s original set), Ant Design when a real, commonly-needed shape has no RemixIcon equivalent already merged in. Adding one: paste the real path data and viewBox from the source library — never hand-trace or approximate a shape that already exists as a real, licensed path (`Empty`\'s "container" icon did exactly that before `InboxOutlined` existed here, and was swapped out once it did) — call `createIcon(path, "Name", viewBox)` in `packages/core/src/components/icons.tsx`, export it from `index.ts`, and add a row to `apps/docs/src/data/iconManifest.ts`. See `icons.tsx`\'s own doc comment for the full naming convention (RemixIcon keeps this project\'s `XIcon` suffix; Ant Design keeps its own exact name, so `EnterOutlined` here is the same name as [antd\'s own EnterOutlined](https://ant-design.antgroup.com/components/icon)).',
+        text: 'Two sources are fully merged in — every RemixIcon "-line" icon (1,519, beyond the 29 hand-picked before the bulk merge) and every Ant Design Outlined icon with no RemixIcon equivalent (285, after dropping 157 that duplicated one) — 1,835 icons in total, real path data, none hand-traced. `packages/core/scripts/generate-icons.mjs` is the generator; re-run it via `pnpm --filter rebar-ui run generate:icons` after bumping either upstream package\'s version, then rebuild/test/typecheck before committing the regenerated output. A one-off addition outside the bulk sets (a third source, or a single icon neither library has) still goes directly in `packages/core/src/components/icons.tsx` via `createIcon(path, "Name", viewBox)` — `ICON_REGISTRY` (also in `icons.tsx`) picks it up automatically, no separate list to update. See `icons.tsx`\'s own doc comment for the full naming/dedup convention (RemixIcon keeps this project\'s `XIcon` suffix; Ant Design keeps its own exact name, so `EnterOutlined` here is the same name as [antd\'s own EnterOutlined](https://ant-design.antgroup.com/components/icon); where both libraries have the same real-world icon, RemixIcon wins).',
       },
     ],
   },
@@ -39,37 +39,44 @@ const BLOCKS: Construct[] = [
   },
 ];
 
+// At 1,835 icons, rendering everything by default is the exact "flat list of 30+" heuristic #17
+// warns against — a search box alone doesn't fix that if the *unfiltered* view still dumps the
+// whole set. Cap each source's default view; searching (2+ characters) reveals the true full
+// match count instead of the capped preview.
+const PREVIEW_LIMIT = 48;
+
 export default function IconPage() {
   const [query, setQuery] = useState("");
+  const trimmedQuery = query.trim();
+  const searching = trimmedQuery.length >= 2;
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return ICON_MANIFEST;
+    const q = trimmedQuery.toLowerCase();
+    if (!searching) return ICON_MANIFEST;
     return ICON_MANIFEST.filter((entry) => entry.name.toLowerCase().includes(q));
-  }, [query]);
+  }, [trimmedQuery, searching]);
 
   return (
     <Stack gap="lg" style={{ maxWidth: 800 }}>
       <Heading level={1}>Icon</Heading>
       <Text color="secondary">
-        Rebar&apos;s own merged icon set — real, licensed path data vendored in as plain React
-        components (no icon-font or npm icon-package dependency), so this catalogue can keep
-        growing as icons get pulled in from more than one upstream source. Two sources are merged
-        today: RemixIcon (this project&apos;s original set) and Ant Design, reached for
-        specifically when a real, commonly-needed glyph — like <code>EnterOutlined</code> or{" "}
-        <code>InboxOutlined</code> — has no RemixIcon equivalent already merged in.
+        Rebar&apos;s own merged icon set — {ICON_MANIFEST.length.toLocaleString()} icons, real
+        licensed path data vendored in as plain React components (no icon-font or npm icon-package
+        runtime dependency). Two sources are fully merged in: every RemixIcon icon, and every Ant
+        Design Outlined icon that isn&apos;t a duplicate of one RemixIcon already has.
       </Text>
 
       <Input
         type="search"
-        placeholder="Search icons…"
+        placeholder="Search icons… (2+ characters)"
         aria-label="Search icons"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
 
       {SOURCES.map((source) => {
-        const entries = filtered.filter((entry) => entry.source === source);
-        if (entries.length === 0) return null;
+        const matches = filtered.filter((entry) => entry.source === source);
+        if (matches.length === 0) return null;
+        const entries = searching ? matches : matches.slice(0, PREVIEW_LIMIT);
         const info = ICON_SOURCE_INFO[source];
         return (
           <Stack key={source} gap="sm">
@@ -81,6 +88,11 @@ export default function IconPage() {
                 </a>
               </Text>
             </Stack>
+            {!searching && matches.length > PREVIEW_LIMIT ? (
+              <Text size="sm" color="secondary">
+                Showing {PREVIEW_LIMIT} of {matches.length.toLocaleString()} — search to find a specific one.
+              </Text>
+            ) : null}
             <Box
               style={{
                 display: "grid",
