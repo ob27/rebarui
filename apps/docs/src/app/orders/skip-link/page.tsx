@@ -74,6 +74,11 @@ export default function SkipLinkPage() {
           borderRadius: 4,
           padding: "var(--rebar-space-lg)",
           outline: "none",
+          // Real usage anchors SkipLink to the top of the whole page, where "off-screen" means
+          // scrolled above the viewport — genuinely invisible. Anchored to this mid-page box
+          // instead, "off-screen" only means clipped by the box's own bounds; without this, the
+          // hidden link would render on top of whatever content precedes the box instead.
+          overflow: "hidden",
         }}
       >
         <SkipLink targetId="skip-link-demo-target" />

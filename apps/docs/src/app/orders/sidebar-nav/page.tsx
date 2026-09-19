@@ -5,6 +5,8 @@ import {
   Box,
   CalendarIcon,
   ChatIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   CreditCardIcon,
   DashboardIcon,
   ErrorWarningIcon,
@@ -149,7 +151,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: '`collapseTogglePlacement="edge"` anchors a small circular toggle to the sidebar\'s own right border, vertically centered, instead of the default full-width inline row at the bottom of the list — the floating-chevron pattern some dashboard sidebars use.',
+        text: '`collapseTogglePlacement="edge"` anchors a small circular toggle to the sidebar\'s own right border, vertically centered, instead of the default full-width inline row at the bottom of the list — the floating-chevron pattern some dashboard sidebars use. `"edge-hover"` is the same button in the same spot, transparent until the sidebar is hovered or the button itself gets keyboard focus — the VS Code/Notion reveal-on-hover pattern. Two more placements below are composed, not props: a controlled `collapsed` state with a real toggle button placed in the `header` slot, and a native CSS `resize: horizontal` handle for continuously resizing the sidebar\'s own width rather than a binary collapsed/expanded toggle at all.',
       },
     ],
   },
@@ -177,6 +179,7 @@ const BLOCKS: Construct[] = [
 
 export default function SidebarNavPage() {
   const [collapsed, setCollapsed] = useState(false);
+  const [headerToggleCollapsed, setHeaderToggleCollapsed] = useState(false);
 
   return (
     <Stack gap="lg">
@@ -261,22 +264,123 @@ export default function SidebarNavPage() {
         </Stack>
       </Stack>
 
-      <Stack gap="xs">
+      <Stack gap="md">
         <Text size="sm" color="secondary">
-          <code>collapseTogglePlacement=&quot;edge&quot;</code> — a small circular toggle on the sidebar&apos;s
-          own border.
+          Four ways to expose the collapse control — the first two are the built-in{" "}
+          <code>collapseTogglePlacement</code> values; the last two are composed on top of{" "}
+          <code>SidebarNav</code>, not props it accepts itself.
         </Text>
-        <Box
-          style={{
-            border: "1px solid var(--rebar-color-border, #e0e0e0)",
-            borderRadius: 4,
-            height: 300,
-            overflow: "visible",
-            paddingRight: 20,
-          }}
-        >
-          <SidebarNav items={ITEMS.slice(0, 3)} collapseTogglePlacement="edge" />
-        </Box>
+        <Stack direction="row" gap="lg" style={{ flexWrap: "wrap" }}>
+          <Stack gap="xs">
+            <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
+              collapseTogglePlacement=&quot;edge&quot;
+            </Text>
+            <Text size="xs" color="secondary" style={{ maxWidth: 200 }}>
+              A small circular toggle on the sidebar&apos;s own border, always visible.
+            </Text>
+            <Box
+              style={{
+                border: "1px solid var(--rebar-color-border, #e0e0e0)",
+                borderRadius: 4,
+                height: 300,
+                overflow: "visible",
+                paddingRight: 20,
+              }}
+            >
+              <SidebarNav items={ITEMS.slice(0, 3)} collapseTogglePlacement="edge" />
+            </Box>
+          </Stack>
+
+          <Stack gap="xs">
+            <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
+              collapseTogglePlacement=&quot;edge-hover&quot;
+            </Text>
+            <Text size="xs" color="secondary" style={{ maxWidth: 200 }}>
+              Same button, transparent until the sidebar is hovered or the button gets keyboard
+              focus. Hover the box to see it.
+            </Text>
+            <Box
+              style={{
+                border: "1px solid var(--rebar-color-border, #e0e0e0)",
+                borderRadius: 4,
+                height: 300,
+                overflow: "visible",
+                paddingRight: 20,
+              }}
+            >
+              <SidebarNav items={ITEMS.slice(0, 3)} collapseTogglePlacement="edge-hover" />
+            </Box>
+          </Stack>
+
+          <Stack gap="xs">
+            <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
+              Composed: integrated into the header
+            </Text>
+            <Text size="xs" color="secondary" style={{ maxWidth: 200 }}>
+              Not a prop — control <code>collapsed</code> yourself and put a real toggle button in
+              the <code>header</code> slot instead of the built-in one.
+            </Text>
+            <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, height: 300, overflow: "hidden" }}>
+              <SidebarNav
+                items={ITEMS.slice(0, 3)}
+                collapsed={headerToggleCollapsed}
+                hideCollapseToggle
+                header={({ collapsed: c }) => (
+                  <Stack direction="row" align="center" justify={c ? "center" : "between"}>
+                    {c ? null : (
+                      <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
+                        My App
+                      </Text>
+                    )}
+                    <button
+                      type="button"
+                      aria-label={c ? "Expand sidebar" : "Collapse sidebar"}
+                      onClick={() => setHeaderToggleCollapsed((v) => !v)}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: 24,
+                        height: 24,
+                        padding: 0,
+                        border: "1px solid var(--rebar-color-border)",
+                        borderRadius: "var(--rebar-radius, 4px)",
+                        background: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {c ? <ChevronRightIcon aria-hidden="true" /> : <ChevronLeftIcon aria-hidden="true" />}
+                    </button>
+                  </Stack>
+                )}
+              />
+            </Box>
+          </Stack>
+
+          <Stack gap="xs">
+            <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
+              Composed: drag to resize
+            </Text>
+            <Text size="xs" color="secondary" style={{ maxWidth: 200 }}>
+              Also not a prop — a native CSS <code>resize: horizontal</code> wrapper. Drag the
+              bottom-right corner.
+            </Text>
+            <Box
+              style={{
+                height: 300,
+                width: 220,
+                minWidth: 64,
+                maxWidth: 320,
+                border: "1px solid var(--rebar-color-border, #e0e0e0)",
+                borderRadius: 4,
+                resize: "horizontal",
+                overflow: "auto",
+              }}
+            >
+              <SidebarNav items={ITEMS.slice(0, 3)} hideCollapseToggle style={{ width: "100%", height: "100%" }} />
+            </Box>
+          </Stack>
+        </Stack>
       </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />

@@ -302,7 +302,17 @@ export default function AppShellPage() {
                 anchored to the sidebar&apos;s own right border, transparent until the sidebar is
                 hovered (or the button itself gets keyboard focus). Hover the box to see it.
               </Text>
-              <Box style={{ height: 320, border: "1px solid var(--rebar-color-border)", overflow: "hidden" }}>
+              {/* The edge-hover toggle deliberately pokes half outside SidebarNav's own right
+                  border (see .rebar-sidebar-nav-collapse-toggle-edge) — this demo box needs its
+                  own right padding to give it room, or overflow:hidden truncates it. */}
+              <Box
+                style={{
+                  height: 320,
+                  border: "1px solid var(--rebar-color-border)",
+                  paddingRight: "var(--rebar-space-md)",
+                  overflow: "hidden",
+                }}
+              >
                 <SidebarNav
                   items={TOGGLE_DEMO_ITEMS}
                   collapseTogglePlacement="edge-hover"
