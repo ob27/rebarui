@@ -67,7 +67,7 @@
  * heuristic's `rule` needs its own fixed bold styling separate from the rationale that follows it,
  * and because it carries its own stable `id` rather than slugifying one from `title` (this
  * project's real heuristic ids are hand-picked and already referenced elsewhere, e.g. by a
- * `page-index` block's own explicit `sections` list). Two of its 46 entries first needed small
+ * `page-index` block's own explicit `sections` list). Two of its 47 entries first needed small
  * schema additions elsewhere before they could print too: `nav-bar`'s `resizable` flag (a bordered,
  * real-CSS-`resize`-able demo wrapper, for interactively showing its overflow-collapse behavior —
  * off by default, since a real site header should never actually be user-resizable) and the new
@@ -659,7 +659,7 @@ export type Construct =
       id: string;
       title: string;
       /** The one-line bolded rule statement — deliberately a plain string, not `ProseNode[]`: every
-       * real rule across this project's own 46 heuristics is one short sentence with no inline
+       * real rule across this project's own 47 heuristics is one short sentence with no inline
        * code/links, and a dedicated field (rather than folding it into `rationale`) is what lets
        * `BlockRenderer` give it its own fixed bold styling, distinct from the rationale that follows. */
       rule: string;

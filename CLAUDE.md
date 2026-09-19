@@ -39,7 +39,7 @@ to compose a page, read `packages/core/agents.md` — the compressed, single-fil
 exactly these tasks: Framework Rules vs. Heuristics (a fixed, binary constraint vs. a
 judgment-requiring design principle — don't conflate the two), the controlled/uncontrolled
 component pattern, the block-authoring conventions, the full block/component catalogs, and the
-46-item heuristics checklist condensed to one line each. It's also published live at
+47-item heuristics checklist condensed to one line each. It's also published live at
 `/docs/robot-md` and ships inside the real `rebar-ui` npm tarball (see that package's `package.json`
 `files` list) for a consumer's own agent. Keep it in sync with `ref/HEURISTICS.md`/
 `ref/ARCHITECTURE.md` when either changes — it's a compressed derivative of those, not an
@@ -62,7 +62,7 @@ Model Studio's `qwen3-tts`): the `doc-section` `narration` field (a small play i
 section heading — see `packages/placement/src/schema.ts`'s own doc comment on that field) on the
 **Philosophy** and **When to reach for this tier** sections of the five tier pages
 (`/imitations`, `/synthetics`, `/opinions`, `/orders`, `/geneses`); the same field on every
-`heuristic` block's own `title` (all 46 entries on `/heuristics`, plus that page's intro
+`heuristic` block's own `title` (all 47 entries on `/heuristics`, plus that page's intro
 `doc-section`) and on all three `doc-section`s on `/about/benchmarks`; the same two `doc-section`
 headings on `/archetypes` itself (`Where Interfaces Come From`, `Why the ancestry still matters`);
 and a whole-page `WaveformAudioPlayer` on each archetype essay page (`/archetypes/<slug>`)

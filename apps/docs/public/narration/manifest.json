@@ -295,8 +295,8 @@
     "chars": 1140
   },
   "heuristic-scroll-mist": {
-    "textHash": "b0836f1e279f94fc",
-    "generatedAt": "2026-09-19T02:40:13.192Z",
+    "textHash": "6fb5ef9516e47b08",
+    "generatedAt": "2026-09-19T05:54:39.040Z",
     "chars": 913
   },
   "heuristic-beacon-point": {
@@ -313,5 +313,10 @@
     "textHash": "b03d5cf72a4394cf",
     "generatedAt": "2026-09-19T02:41:30.239Z",
     "chars": 1622
+  },
+  "heuristic-explicit-save-affordance": {
+    "textHash": "4227beabbae21cac",
+    "generatedAt": "2026-09-19T05:55:01.693Z",
+    "chars": 1151
   }
 }

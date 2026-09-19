@@ -950,6 +950,20 @@ heuristic #58.
   inset space the initial fit/zoom-to-fit never fills past — a prop, not a hard-coded constant,
   so a genuine edge-to-edge use case can still opt out.
 
+- **Don't assume familiarity — a text field's own save gesture is shown, not assumed known** —
+  "people have used text boxes their whole life" is exactly the assumption that makes this fail:
+  a lifetime of typing into *other* apps' text boxes doesn't teach anyone this *specific* field's
+  commit mechanism, because different apps disagree with each other about it constantly (Enter?
+  blur? a separate button? all three, depending on the app?). Recognition over recall (heuristic
+  #6) is usually read as being about visible options versus hidden menus; this is the same
+  principle applied to a text field's own save behavior, which most apps get away with skipping
+  only because failing silently (nothing visibly breaks, the user just isn't sure whether their
+  edit "took") is a much quieter failure than a broken button. Component rule: `Editable`
+  (`packages/core`) renders a small, real `EnterOutlined` glyph inside the field by default the
+  moment editing starts (`showEnterHint`, on unless explicitly turned off) — not decoration, a
+  direct, literal answer to "how do I save this," rather than trusting a habit no two apps have
+  actually trained the same way.
+
 These defaults live in `packages/core` component implementations and `packages/theme-*`
 stylesheets — this document is the reference for what those values *should* be and why, kept in
 sync as the implementation evolves.

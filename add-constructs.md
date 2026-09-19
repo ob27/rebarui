@@ -9,7 +9,7 @@ Read this before touching any of the files below, and re-check it before you con
 done.
 
 **Read `ref/TIERS.md` and `ref/HEURISTICS.md` before this file if you haven't already** — this
-file assumes you already know the tier system and the 46-item heuristics checklist. It doesn't
+file assumes you already know the tier system and the 47-item heuristics checklist. It doesn't
 repeat them, only how to actually execute against them without missing a step.
 
 ## First: component, block, or both?

@@ -49,6 +49,7 @@ const SECTIONS = [
   { id: "beacon-point", label: "44. A beacon point stays visible" },
   { id: "bounded-footprint", label: "45. A control's footprint stays bounded" },
   { id: "beacon-pointer-easing", label: "46. Beacon pointer and eased scroll" },
+  { id: "explicit-save-affordance", label: "47. Explicit save affordance" },
 ];
 
 const NAV_OVERFLOW_ITEMS = [
@@ -59,7 +60,7 @@ const NAV_OVERFLOW_ITEMS = [
   { label: "About", href: "#" },
 ];
 
-// All 46 entries print via the `heuristic` block — see @rebar-ui/placement's schema.ts. Two of
+// All 47 entries print via the `heuristic` block — see @rebar-ui/placement's schema.ts. Two of
 // them needed a small schema addition elsewhere before they could print too, rather than staying
 // hand-authored: entry 5's live demo (a Spin inside a Card) is now a generic `spin-card` block, and
 // entry 6's live demo (a real, hand-resizable NavBar) is now `nav-bar`'s `resizable: true` — both
@@ -726,7 +727,7 @@ const HEURISTIC_BLOCKS: Construct[] = [
     rationale: [
       {
         kind: "text",
-        text: `Reaching the true end of a list is signaled precisely by the mist's *absence* at the bottom, not a separate "you've reached the end" label — a static CSS-only fade that never reacts to scroll position fails this. Component rule: \`SectionNav\` tracks its own scroll position and toggles the top/bottom mist independently; the same treatment is owed to any other fixed-height scrollable region this library ships (several don't have it yet — a real, open gap, not a solved case). This very page's own right-hand index, now 46 entries long, is the live example — scroll it to see the mist react.`,
+        text: `Reaching the true end of a list is signaled precisely by the mist's *absence* at the bottom, not a separate "you've reached the end" label — a static CSS-only fade that never reacts to scroll position fails this. Component rule: \`SectionNav\` tracks its own scroll position and toggles the top/bottom mist independently; the same treatment is owed to any other fixed-height scrollable region this library ships (several don't have it yet — a real, open gap, not a solved case). This very page's own right-hand index, now 47 entries long, is the live example — scroll it to see the mist react.`,
       },
     ],
   },
@@ -769,6 +770,20 @@ const HEURISTIC_BLOCKS: Construct[] = [
         text: `A beacon's *absence* alone is a weak signal, but a *static* hint at the edge it's past still blends into static chrome — what actually reads as "something is happening over there" is the hint reacting to motion itself: resting while nothing is scrolling, animating only while a scroll that could be moving the beacon is actually in progress. And the scroll that restores a beacon should ease smoothly toward its new position rather than snap in one frame — a snap reads as the list jumping to a new state, an eased scroll reads as the beacon being *followed*. Component rule: \`SectionNav\` renders a small dot-or-bar marker (sized by recent scroll speed) at whichever edge the beacon sits past, and calls \`scrollTo({ behavior: "smooth" })\` for every follow or recenter rather than assigning scroll position directly. Try it here: scroll this right-hand rail down by hand a little, then keep scrolling the main page — the beacon moves out of the rail's visible area while your manual scroll is still "in effect" (#44), and a marker appears at whichever edge it's past for as long as that lasts; stop scrolling the main page and wait, and once the idle pause elapses the rail eases back to the beacon and the marker disappears.`,
       },
     ],
+  },
+  {
+    type: "heuristic",
+    id: "explicit-save-affordance",
+    narration: { src: "/narration/heuristic-explicit-save-affordance.mp3" },
+    title: "47. Don't assume familiarity — a text field's own save gesture is shown, not assumed known",
+    rule: "A lifetime of typing into other apps' text boxes doesn't teach anyone this specific field's commit gesture — show it, don't assume it's already understood.",
+    rationale: [
+      {
+        kind: "text",
+        text: `"People have used text boxes their whole life" is exactly the assumption that fails here: different apps disagree with each other constantly about whether Enter, blur, or a separate button is what actually saves. Recognition over recall (heuristic #6) is usually read as being about visible options versus hidden menus; this is the same principle applied to a text field's own save behavior, which most apps get away with skipping only because failing silently — nothing visibly breaks, the user just isn't sure whether their edit "took" — is a much quieter failure than a broken button. Component rule: \`Editable\` (\`packages/core\`) renders a small, real \`EnterOutlined\` glyph inside the field the moment editing starts (\`showEnterHint\`, on unless explicitly turned off) — not decoration, a direct, literal answer to "how do I save this," rather than trusting a habit no two apps have actually trained the same way. See it live on [/opinions/editable](/opinions/editable).`,
+      },
+    ],
+    code: '<Editable defaultValue="Project Alpha" aria-label="Project name" />\n// or, once the pattern is already understood (a dense table of these, say):\n<Editable defaultValue="Project Alpha" aria-label="Project name" showEnterHint={false} />',
   },
 ];
 

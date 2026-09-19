@@ -19,7 +19,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Escape restores the value the field had *before this edit started*, not just whatever's currently typed — so an accidental Escape after several undone keystrokes never loses more than the current edit session.",
+        text: "Escape restores the value the field had *before this edit started*, not just whatever's currently typed — so an accidental Escape after several undone keystrokes never loses more than the current edit session. A small `EnterOutlined` glyph shows in the field's right side by default while editing — a real reminder of the save gesture itself, not decoration — since a click-away isn't as obvious a \"save\" signal as pressing a labeled key. Set `showEnterHint={false}` to drop it in a denser UI (a table full of these, say) where the repeated hint becomes noise once the pattern is already known.",
       },
     ],
   },
@@ -37,7 +37,7 @@ const BLOCKS: Construct[] = [
     type: "doc-section",
     heading: "data-rebar-* attributes",
     body: [
-      { kind: "text", text: '`data-rebar-component="editable"`; `data-rebar-part` is `"display"` (read mode) or `"input"` (edit mode).' },
+      { kind: "text", text: '`data-rebar-component="editable"`; `data-rebar-part` is `"display"` (read mode), `"input-wrapper"`/`"input"` (edit mode), or `"enter-hint"` (the Enter-to-save glyph, when shown).' },
     ],
   },
   {
@@ -61,6 +61,17 @@ export default function EditablePage() {
       <LivePreview>
         <Editable defaultValue="Project Alpha" aria-label="Project name" />
       </LivePreview>
+
+      <Stack gap="sm">
+        <Heading level={3}>Example: showEnterHint=false</Heading>
+        <Text size="sm" color="secondary">
+          Click to edit — no Enter-to-save glyph shown, for a denser UI where the pattern is
+          already understood.
+        </Text>
+        <LivePreview>
+          <Editable defaultValue="Project Beta" aria-label="Project name" showEnterHint={false} />
+        </LivePreview>
+      </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

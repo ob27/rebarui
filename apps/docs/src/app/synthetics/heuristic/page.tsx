@@ -6,7 +6,7 @@ const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Overview",
-    body: [{ kind: "text", text: "One entry of a heuristics/design-principles page: a heading, a bolded one-line rule, doc-section-style rationale prose (same tiny inline markup), and an optional code sample and/or a real nested live Block[] example. Carries its own stable id rather than slugifying one from title, since existing cross-references or a page-index block's own sections list may already point at a specific hand-picked id. Added to convert this project's own /docs/heuristics off hand-authored JSX — 43 of its 46 entries fit this shape exactly." }],
+    body: [{ kind: "text", text: "One entry of a heuristics/design-principles page: a heading, a bolded one-line rule, doc-section-style rationale prose (same tiny inline markup), and an optional code sample and/or a real nested live Block[] example. Carries its own stable id rather than slugifying one from title, since existing cross-references or a page-index block's own sections list may already point at a specific hand-picked id. Added to convert this project's own /docs/heuristics off hand-authored JSX — 44 of its 47 entries fit this shape exactly." }],
   },
   {
     type: "doc-section",
@@ -47,7 +47,7 @@ export default function HeuristicPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Heuristic</Heading>
-      <Text color="secondary">{"One entry of a heuristics/design-principles page: a heading, a bolded one-line rule, doc-section-style rationale prose (same tiny inline markup), and an optional code sample and/or a real nested live Block[] example. Carries its own stable id rather than slugifying one from title, since existing cross-references or a page-index block's own sections list may already point at a specific hand-picked id. Added to convert this project's own /docs/heuristics off hand-authored JSX — 43 of its 46 entries fit this shape exactly."}</Text>
+      <Text color="secondary">{"One entry of a heuristics/design-principles page: a heading, a bolded one-line rule, doc-section-style rationale prose (same tiny inline markup), and an optional code sample and/or a real nested live Block[] example. Carries its own stable id rather than slugifying one from title, since existing cross-references or a page-index block's own sections list may already point at a specific hand-picked id. Added to convert this project's own /docs/heuristics off hand-authored JSX — 44 of its 47 entries fit this shape exactly."}</Text>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

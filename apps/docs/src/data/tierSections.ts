@@ -77,6 +77,18 @@ function blockDisplayLabel(type: string): string {
     .join(" ");
 }
 
+/**
+ * Manual sidebar entries for real reference pages that don't come from the auto-generated
+ * `component-props.json` system — currently just Icon, a gallery of many small components (not
+ * one component with a meaningful individual props table; every `createIcon(...)`-built export
+ * shares one generic `IconProps` shape, and `react-docgen-typescript` parsing the whole file would
+ * otherwise flood `component-props.json` with a ~400-row SVG-attribute table per icon) that still
+ * deserves a normal place in its tier's sidebar and cross-tier search, like any other Imitation.
+ */
+const EXTRA_SECTIONS: Partial<Record<Tier, DocsShellSection[]>> = {
+  imitation: [{ href: "/imitations/icon", label: "Icon", category: "web" }],
+};
+
 export function tierDocsShellSections(tier: Tier): DocsShellSection[] {
   const route = TIER_ROUTE[tier];
   const componentNames = tierComponentNames(tier).filter((name) => !SUB_COMPONENT_EXCLUSIONS.has(name));
@@ -99,7 +111,7 @@ export function tierDocsShellSections(tier: Tier): DocsShellSection[] {
   // Merged and re-sorted by display label (case-insensitive) — components and blocks previously
   // arrived pre-sorted as two *separate* alphabetical runs and were just concatenated, so every
   // block silently landed after every component instead of interleaving alphabetically with them.
-  const sortedEntries = [...componentSections, ...blockSections].sort((a, b) =>
+  const sortedEntries = [...componentSections, ...blockSections, ...(EXTRA_SECTIONS[tier] ?? [])].sort((a, b) =>
     a.label.localeCompare(b.label, undefined, { sensitivity: "base" }),
   );
   return [{ href: route, label: `All ${TIER_LABEL[tier]}` }, ...sortedEntries];
