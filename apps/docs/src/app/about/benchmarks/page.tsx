@@ -7,6 +7,7 @@ const BLOCKS: Construct[] = [
     type: "doc-section",
     heading: "Does building with AI on rebar-ui actually save you money?",
     level: 1,
+    narration: { src: "/narration/benchmarks-does-it-save-money.mp3" },
     body: [
       {
         kind: "text",
@@ -17,6 +18,7 @@ const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "The short answer",
+    narration: { src: "/narration/benchmarks-short-answer.mp3" },
     body: [
       {
         kind: "text",
@@ -31,6 +33,7 @@ const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Conclusion",
+    narration: { src: "/narration/benchmarks-conclusion.mp3" },
     body: [
       {
         kind: "text",

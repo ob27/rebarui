@@ -671,6 +671,10 @@ export type Construct =
        * `comparison` already nest — distinct from `code` above (which is just displayed text): a
        * heuristic can have one, both, or neither. */
       exampleBlocks?: Construct[];
+      /** Same affordance as `doc-section`'s `narration` field — a small play icon next to `title`,
+       * playing a real pre-generated audio file. See that field's own doc comment for the scoping
+       * rationale; it applies identically here. */
+      narration?: { src: string };
     }
   | {
       type: "spin-card";

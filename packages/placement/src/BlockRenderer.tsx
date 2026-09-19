@@ -2128,7 +2128,10 @@ function renderBlock(
     case "heuristic":
       return (
         <Stack key={index} gap="sm" id={block.id} data-rebar-placement-block="heuristic" data-rebar-block-path={path}>
-          <Heading level={2}>{block.title}</Heading>
+          <Stack direction="row" align="center" gap="xs">
+            <Heading level={2} style={{ margin: 0 }}>{block.title}</Heading>
+            {block.narration ? <NarrationButton src={block.narration.src} label={block.title} /> : null}
+          </Stack>
           <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
             {renderInline(block.rule, renderLink)}
           </Text>

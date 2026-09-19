@@ -24,17 +24,15 @@ export function BenchmarksShell({ children }: { children: ReactNode }) {
   return (
     <Box as="main" style={{ maxWidth: 1040, margin: "0 auto", padding: "var(--rebar-space-xl)" }}>
       <Stack direction="row" gap="xl" style={{ alignItems: "flex-start", flexWrap: "wrap" }}>
-        <Box style={{ width: 200, flexShrink: 0 }}>
-          <NavIndex
-            items={BENCHMARK_SECTIONS}
-            searchPlaceholder="Search sections…"
-            renderLink={({ href, children: linkChildren, className }) => (
-              <Link href={href} className={className}>
-                {linkChildren}
-              </Link>
-            )}
-          />
-        </Box>
+        <NavIndex
+          items={BENCHMARK_SECTIONS}
+          searchPlaceholder="Search sections…"
+          renderLink={({ href, children: linkChildren, className }) => (
+            <Link href={href} className={className}>
+              {linkChildren}
+            </Link>
+          )}
+        />
         <Box style={{ flex: 1, minWidth: 0 }}>{children}</Box>
       </Stack>
     </Box>

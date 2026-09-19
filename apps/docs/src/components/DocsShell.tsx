@@ -39,19 +39,17 @@ export function DocsShell({
   return (
     <Box as="main" style={{ maxWidth: 960, margin: "0 auto", padding: "var(--rebar-space-xl)" }}>
       <Stack direction="row" gap="xl" style={{ alignItems: "flex-start", flexWrap: "wrap" }}>
-        <Box style={{ width: 200, flexShrink: 0 }}>
-          <NavIndex
-            items={items}
-            categoryLabels={categoryLabels}
-            unstatusedLabel={unstatusedLabel}
-            searchPlaceholder={searchPlaceholder}
-            renderLink={({ href, children: linkChildren, className }) => (
-              <Link href={href} className={className}>
-                {linkChildren}
-              </Link>
-            )}
-          />
-        </Box>
+        <NavIndex
+          items={items}
+          categoryLabels={categoryLabels}
+          unstatusedLabel={unstatusedLabel}
+          searchPlaceholder={searchPlaceholder}
+          renderLink={({ href, children: linkChildren, className }) => (
+            <Link href={href} className={className}>
+              {linkChildren}
+            </Link>
+          )}
+        />
         <Box style={{ flex: 1, minWidth: 0 }}>{children}</Box>
       </Stack>
     </Box>

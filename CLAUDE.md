@@ -61,9 +61,12 @@ A small set of pages carry pre-generated narration audio (the Alcuin voice, via 
 Model Studio's `qwen3-tts`): the `doc-section` `narration` field (a small play icon next to a
 section heading — see `packages/placement/src/schema.ts`'s own doc comment on that field) on the
 **Philosophy** and **When to reach for this tier** sections of the five tier pages
-(`/imitations`, `/synthetics`, `/opinions`, `/orders`, `/geneses`), and a whole-page
-`WaveformAudioPlayer` on each archetype essay page (`/archetypes/<slug>`) narrating the full
-essay start to finish.
+(`/imitations`, `/synthetics`, `/opinions`, `/orders`, `/geneses`); the same field on every
+`heuristic` block's own `title` (all 46 entries on `/heuristics`, plus that page's intro
+`doc-section`) and on all three `doc-section`s on `/about/benchmarks`; the same two `doc-section`
+headings on `/archetypes` itself (`Where Interfaces Come From`, `Why the ancestry still matters`);
+and a whole-page `WaveformAudioPlayer` on each archetype essay page (`/archetypes/<slug>`)
+narrating the full essay start to finish.
 
 **The rule**: if you edit the text of any of those specific sections/pages, regenerate its
 narration in the same change — don't ship narration that's read a stale version of the copy it's

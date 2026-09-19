@@ -56,6 +56,20 @@ const BLOCKS: Construct[] = [
   },
   {
     type: "doc-section",
+    heading: "A fully open library, meant to be rebranded — not just installed",
+    body: [
+      {
+        kind: "text",
+        text: "Rebar is MIT-licensed and the entire catalogue is available: every component, every block, the placement layer's Packer, the theme packages, and this docs site's own source. That's a deliberate design choice, not incidental openness — the whole point of shipping deliberately low-fidelity, token-only-styled components (see [Built for engineers, not designers](#built-for-engineers-not-designers) above) is that a team can fork the entire project, replace the visual layer with their own brand, and keep everything else — the tier structure, the component APIs, the Packer's schema — exactly as-is. A consumer isn't limited to installing `rebar-ui` as a dependency and working around its look; taking the whole repo and making it your own is a fully intended, first-class path in, the same as any other.",
+      },
+      {
+        kind: "text",
+        text: "Maintaining a fork inside the default catalogue structure is what keeps that path cheap over time. Concretely: keep the tier taxonomy (Imitation/Synthetic/Opinion/Order/Genesis) and the file layout it implies (`packages/core/src/components`, one file per component; `apps/docs/src/app/<tier>/<slug>` for its reference page) intact rather than reorganizing around your own conventions — the classification rules in `ref/TIERS.md`, the build/test/typecheck discipline in `add-constructs.md`, and any tooling built against that structure (the props-table generator, the packer-coverage audit, an agent's own `agents.md` context) all assume it, and keep working on a fork for free as long as the shape doesn't drift. Re-skin through the existing theme mechanism — swap `@rebar-ui/theme-clean`/`@rebar-ui/theme-sketch` for your own theme package that redefines the same `--rebar-*` custom properties — rather than hand-editing component internals or hardcoding colors into component files; that's what keeps a fork mergeable with upstream changes instead of diverging into an unmergeable rewrite. Add your own project-specific constructs the same way `add-constructs.md` describes for this repo itself: classify by the same tests, build a reference page the same way, and they'll sit naturally alongside the shipped catalogue rather than as a bolted-on second system.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Why this matters beyond one library",
     body: [
       {

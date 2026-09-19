@@ -102,6 +102,7 @@ export default function NavIndexPage() {
         <NavIndex
           items={ITEMS}
           categoryLabels={{ web: "Web", mobile: "Mobile", diagram: "Diagram" }}
+          style={{ position: "static", maxHeight: "none" }}
         />
       </Box>
 

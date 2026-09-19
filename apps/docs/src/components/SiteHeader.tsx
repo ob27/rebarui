@@ -46,7 +46,7 @@ const BLOCKS: Construct[] = [
               items: [
                 { label: "Heuristics", href: "/heuristics" },
                 { label: "Roadmap", href: "/roadmap" },
-                { label: "Rules", href: "/about/agent" },
+                { label: "Version Log", href: "/about/version-log" },
                 { label: "Benchmarks", href: "/about/benchmarks" },
                 { label: "About", href: "/about" },
               ],
@@ -56,7 +56,7 @@ const BLOCKS: Construct[] = [
       },
     ],
     ariaLabel: "Main",
-    trailing: { kind: "text", text: "0.10.0" },
+    trailing: { kind: "text", text: "0.11.0" },
     themeToggle: true,
     constructSearch: { source: "constructSearchIndex", placeholder: "Search constructs..." },
   },

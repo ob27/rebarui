@@ -20,9 +20,19 @@ const MILESTONES: TimelineItem[] = [
     children: "The Packer's blocks stop being purely static data — source and onX fields let a real backend-driven app wire its own state and handlers straight through, resolved by BlockRenderer's data/handlers props.",
   },
   {
-    label: "0.10 Open Beta — current",
+    label: "0.11 Open Beta — current",
     tone: "info",
-    children: "The catalog crosses 175 components and 40 blocks. Cross-tier ConstructSearch, the Construct Library nav, and the Geneses tier's scaffolding all ship as part of this line.",
+    children: (
+      <>
+        The catalog crosses 190 components and 40+ blocks. Cross-tier ConstructSearch, the
+        Construct Library nav, the Geneses tier&apos;s scaffolding, and per-section narration audio
+        all ship as part of this line. See the{" "}
+        <a href="/about/version-log" className="rebar-link">
+          Version Log
+        </a>{" "}
+        for the full release-by-release detail.
+      </>
+    ),
   },
   {
     label: "First Genesis seed projects",

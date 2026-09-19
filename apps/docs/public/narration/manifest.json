@@ -53,5 +53,265 @@
     "textHash": "9fe269582c6179cb",
     "generatedAt": "2026-09-19T01:31:10.997Z",
     "chars": 7956
+  },
+  "archetypes-where-interfaces-come-from": {
+    "textHash": "f13288cfe88d677d",
+    "generatedAt": "2026-09-19T02:25:41.498Z",
+    "chars": 536
+  },
+  "archetypes-why-ancestry-matters": {
+    "textHash": "09ed4db0bae31b28",
+    "generatedAt": "2026-09-19T02:26:05.500Z",
+    "chars": 1243
+  },
+  "benchmarks-does-it-save-money": {
+    "textHash": "059f53d56cba8af3",
+    "generatedAt": "2026-09-19T02:26:15.408Z",
+    "chars": 396
+  },
+  "benchmarks-short-answer": {
+    "textHash": "7c73cf370944b730",
+    "generatedAt": "2026-09-19T02:26:39.820Z",
+    "chars": 1265
+  },
+  "benchmarks-conclusion": {
+    "textHash": "2baf20540125558e",
+    "generatedAt": "2026-09-19T02:27:01.227Z",
+    "chars": 1076
+  },
+  "heuristics-intro": {
+    "textHash": "149f61d8ef04616b",
+    "generatedAt": "2026-09-19T02:27:24.196Z",
+    "chars": 1192
+  },
+  "heuristic-recognition": {
+    "textHash": "724aa9dc7a59f263",
+    "generatedAt": "2026-09-19T02:27:38.912Z",
+    "chars": 674
+  },
+  "heuristic-consistency": {
+    "textHash": "78ab4820c22fe6d6",
+    "generatedAt": "2026-09-19T02:27:49.282Z",
+    "chars": 397
+  },
+  "heuristic-proximity": {
+    "textHash": "d051f7c90f2e5515",
+    "generatedAt": "2026-09-19T02:28:05.143Z",
+    "chars": 618
+  },
+  "heuristic-control": {
+    "textHash": "eb5a9e8cacc8c31f",
+    "generatedAt": "2026-09-19T02:28:28.046Z",
+    "chars": 1103
+  },
+  "heuristic-layers": {
+    "textHash": "8de1383ef57041ad",
+    "generatedAt": "2026-09-19T02:28:47.011Z",
+    "chars": 896
+  },
+  "heuristic-nav-overflow": {
+    "textHash": "d6dd3ddab4804056",
+    "generatedAt": "2026-09-19T02:29:01.395Z",
+    "chars": 598
+  },
+  "heuristic-minimalist": {
+    "textHash": "13ed7e0d65446b27",
+    "generatedAt": "2026-09-19T02:29:10.067Z",
+    "chars": 315
+  },
+  "heuristic-space-dense": {
+    "textHash": "931b2ed324c90f7a",
+    "generatedAt": "2026-09-19T02:29:31.812Z",
+    "chars": 989
+  },
+  "heuristic-index": {
+    "textHash": "7a4ce1eb7c350c7f",
+    "generatedAt": "2026-09-19T02:29:48.492Z",
+    "chars": 745
+  },
+  "heuristic-status-visible": {
+    "textHash": "6ca954a9c51ac349",
+    "generatedAt": "2026-09-19T02:30:07.187Z",
+    "chars": 746
+  },
+  "heuristic-ia-pyramid": {
+    "textHash": "f69478b7ee7648ac",
+    "generatedAt": "2026-09-19T02:30:25.404Z",
+    "chars": 797
+  },
+  "heuristic-visual-hierarchy": {
+    "textHash": "ccc565de2d98e5bd",
+    "generatedAt": "2026-09-19T02:30:40.695Z",
+    "chars": 664
+  },
+  "heuristic-icon-labels": {
+    "textHash": "510a60cfe2674879",
+    "generatedAt": "2026-09-19T02:30:56.810Z",
+    "chars": 469
+  },
+  "heuristic-menu-complexity": {
+    "textHash": "2b3a7da903d9ab7a",
+    "generatedAt": "2026-09-19T02:31:19.809Z",
+    "chars": 721
+  },
+  "heuristic-settings-organization": {
+    "textHash": "2ed2e738d8339d47",
+    "generatedAt": "2026-09-19T02:31:37.920Z",
+    "chars": 698
+  },
+  "heuristic-chart-context": {
+    "textHash": "ba19bd1bd758bbca",
+    "generatedAt": "2026-09-19T02:31:58.650Z",
+    "chars": 617
+  },
+  "heuristic-progressive-disclosure": {
+    "textHash": "787030fb5a9c6d57",
+    "generatedAt": "2026-09-19T02:32:20.617Z",
+    "chars": 904
+  },
+  "heuristic-menu-content-separation": {
+    "textHash": "da0990fd83d1d697",
+    "generatedAt": "2026-09-19T02:32:41.415Z",
+    "chars": 776
+  },
+  "heuristic-touch-targets": {
+    "textHash": "4da7d2e7f9e2f556",
+    "generatedAt": "2026-09-19T02:32:59.551Z",
+    "chars": 630
+  },
+  "heuristic-all-states": {
+    "textHash": "130d0ba4a92bc23d",
+    "generatedAt": "2026-09-19T02:33:18.453Z",
+    "chars": 797
+  },
+  "heuristic-purposeful-animation": {
+    "textHash": "19cb68032a6689ff",
+    "generatedAt": "2026-09-19T02:33:37.874Z",
+    "chars": 766
+  },
+  "heuristic-natural-mappings": {
+    "textHash": "193548268148ed08",
+    "generatedAt": "2026-09-19T02:33:56.427Z",
+    "chars": 681
+  },
+  "heuristic-platform-conventions": {
+    "textHash": "c64c82d00deb478a",
+    "generatedAt": "2026-09-19T02:34:12.509Z",
+    "chars": 633
+  },
+  "heuristic-whitespace": {
+    "textHash": "dc6ddc5246fcaef7",
+    "generatedAt": "2026-09-19T02:34:29.921Z",
+    "chars": 651
+  },
+  "heuristic-button-hierarchy": {
+    "textHash": "d85f76e74c95a237",
+    "generatedAt": "2026-09-19T02:34:43.021Z",
+    "chars": 528
+  },
+  "heuristic-input-constraints": {
+    "textHash": "5f3f6c8f2f045d2f",
+    "generatedAt": "2026-09-19T02:34:58.576Z",
+    "chars": 568
+  },
+  "heuristic-multiple-input-methods": {
+    "textHash": "e885943560fc1925",
+    "generatedAt": "2026-09-19T02:35:23.849Z",
+    "chars": 992
+  },
+  "heuristic-information-scent": {
+    "textHash": "61879a25da1ac7c7",
+    "generatedAt": "2026-09-19T02:35:38.693Z",
+    "chars": 591
+  },
+  "heuristic-card-layouts": {
+    "textHash": "194a475f38500a9c",
+    "generatedAt": "2026-09-19T02:35:55.585Z",
+    "chars": 594
+  },
+  "heuristic-respect-intelligence": {
+    "textHash": "0c85adf243ac91dd",
+    "generatedAt": "2026-09-19T02:36:20.785Z",
+    "chars": 1061
+  },
+  "heuristic-boot-sequences": {
+    "textHash": "622fdcd15c182578",
+    "generatedAt": "2026-09-19T02:36:42.361Z",
+    "chars": 913
+  },
+  "heuristic-storage-context": {
+    "textHash": "3142312dfc53d1a9",
+    "generatedAt": "2026-09-19T02:36:56.660Z",
+    "chars": 560
+  },
+  "heuristic-grid-and-table-views": {
+    "textHash": "273ecad8c04e0910",
+    "generatedAt": "2026-09-19T02:37:10.887Z",
+    "chars": 537
+  },
+  "heuristic-undisambiguated-context": {
+    "textHash": "025b2e5e97c27e87",
+    "generatedAt": "2026-09-19T02:37:27.382Z",
+    "chars": 522
+  },
+  "heuristic-live-preview-commit": {
+    "textHash": "70abc06426995803",
+    "generatedAt": "2026-09-19T02:37:48.109Z",
+    "chars": 660
+  },
+  "heuristic-ellipsis-convention": {
+    "textHash": "5d3389b364b85370",
+    "generatedAt": "2026-09-19T02:38:07.456Z",
+    "chars": 515
+  },
+  "heuristic-token-inputs": {
+    "textHash": "7ba5df0b990ac6ad",
+    "generatedAt": "2026-09-19T02:38:25.079Z",
+    "chars": 535
+  },
+  "heuristic-drag-and-drop-fallback": {
+    "textHash": "e92785decdb60171",
+    "generatedAt": "2026-09-19T02:38:42.774Z",
+    "chars": 735
+  },
+  "heuristic-copyable-code": {
+    "textHash": "57fabee7d07b8257",
+    "generatedAt": "2026-09-19T02:38:58.456Z",
+    "chars": 617
+  },
+  "heuristic-internationalization": {
+    "textHash": "e462d791bc01c658",
+    "generatedAt": "2026-09-19T02:39:13.314Z",
+    "chars": 634
+  },
+  "heuristic-status-pill": {
+    "textHash": "f5f4c2280b79fe46",
+    "generatedAt": "2026-09-19T02:39:29.862Z",
+    "chars": 531
+  },
+  "heuristic-filter-dimensions": {
+    "textHash": "abf5587174da64cb",
+    "generatedAt": "2026-09-19T02:39:53.821Z",
+    "chars": 1140
+  },
+  "heuristic-scroll-mist": {
+    "textHash": "b0836f1e279f94fc",
+    "generatedAt": "2026-09-19T02:40:13.192Z",
+    "chars": 913
+  },
+  "heuristic-beacon-point": {
+    "textHash": "84f8a5afb124dbbf",
+    "generatedAt": "2026-09-19T02:40:34.301Z",
+    "chars": 1083
+  },
+  "heuristic-bounded-footprint": {
+    "textHash": "d43d6e758b4136e6",
+    "generatedAt": "2026-09-19T02:40:56.148Z",
+    "chars": 932
+  },
+  "heuristic-beacon-pointer-easing": {
+    "textHash": "b03d5cf72a4394cf",
+    "generatedAt": "2026-09-19T02:41:30.239Z",
+    "chars": 1622
   }
 }
