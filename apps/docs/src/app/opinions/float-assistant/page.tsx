@@ -1,7 +1,14 @@
 import { Heading, Stack, Text, FloatAssistant } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import type { FloatAssistantVoiceOption } from "rebar-ui";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+
+const DEMO_VOICES: FloatAssistantVoiceOption[] = [
+  { id: "alquin", label: "Alquin", browserVoiceName: "Google UK English Male" },
+  { id: "nova", label: "Nova", browserVoiceName: "Google US English" },
+  { id: "onyx", label: "Onyx", browserVoiceName: "Google UK English Female" },
+];
 
 const BLOCKS: Construct[] = [
   {
@@ -135,6 +142,8 @@ export default function FloatAssistantPage() {
         voiceEnabled={true}
         draggable={true}
         minimizable={true}
+        voices={DEMO_VOICES}
+        voiceId="alquin"
       />
 
       <NextBlockRenderer blocks={BLOCKS} />
