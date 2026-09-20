@@ -21,6 +21,12 @@ interface OrbParam {
 }
 
 const PARAMS: OrbParam[] = [
+  { key: "morphSpeed", label: "Shell/sphere oscillation speed", min: 0, max: 2, step: 0.02, default: 0.35, target: "uniform" },
+  { key: "shellOpenness", label: "Shell openness (max hollowing)", min: 0, max: 1, step: 0.02, default: 0.7, target: "uniform" },
+  { key: "wallThickness", label: "Shell wall thickness", min: 0.02, max: 0.4, step: 0.01, default: 0.12, target: "uniform" },
+  { key: "shellEvenness", label: "Shell evenness (0=bowl/hemisphere, 1=even hollow)", min: 0, max: 1, step: 0.02, default: 0.4, target: "uniform" },
+  { key: "evennessSpeed", label: "Evenness oscillation speed", min: 0, max: 2, step: 0.02, default: 0.22, target: "uniform" },
+  { key: "edgeSoftness", label: "Edge softness (ephemeral fade)", min: 0.02, max: 1, step: 0.02, default: 0.35, target: "uniform" },
   { key: "noiseScale", label: "Noise scale", min: 0.5, max: 4, step: 0.1, default: 2.0, target: "uniform" },
   { key: "timeScale", label: "Flame speed (time scale)", min: 0.05, max: 1, step: 0.01, default: 0.3, target: "uniform" },
   { key: "darkness", label: "Base darkness", min: 0.2, max: 1, step: 0.05, default: 0.6, target: "uniform" },
@@ -68,8 +74,9 @@ export default function OrbComparisonPage() {
 
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
+    const pixelRatio = Math.min(window.devicePixelRatio, 2);
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: false });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(pixelRatio);
     // The real bug behind "orb stuck in a corner": `setSize`'s default `updateStyle=true`
     // overwrites the canvas's own `style.width`/`style.height` with fixed pixel values, fighting
     // the JSX's `width: 100%; height: 100%`. Passing `false` leaves our own CSS sizing alone and
@@ -93,9 +100,21 @@ export default function OrbComparisonPage() {
     // Fullscreen quad with raymarching shader
     const geometry = new THREE.PlaneGeometry(2, 2);
     const material = new THREE.ShaderMaterial({
+      transparent: true,
       uniforms: {
         uTime: { value: 0 },
-        uResolution: { value: new THREE.Vector2(width, height) },
+        // Device pixels, not CSS pixels — must match what gl_FragCoord actually reports (the real
+        // framebuffer resolution), or the shader's "screen center" calculation is off by exactly
+        // the device pixel ratio on any HiDPI/Retina display, shifting where the sphere renders.
+        // On a DPR-1 display (most headless test browsers) this bug is invisible, which is why it
+        // slipped through an earlier round of testing.
+        uResolution: { value: new THREE.Vector2(width * pixelRatio, height * pixelRatio) },
+        uMorphSpeed: { value: initial.morphSpeed },
+        uShellOpenness: { value: initial.shellOpenness },
+        uWallThickness: { value: initial.wallThickness },
+        uShellEvenness: { value: initial.shellEvenness },
+        uEvennessSpeed: { value: initial.evennessSpeed },
+        uEdgeSoftness: { value: initial.edgeSoftness },
         uNoiseScale: { value: initial.noiseScale },
         uTimeScale: { value: initial.timeScale },
         uDarkness: { value: initial.darkness },
@@ -116,6 +135,12 @@ export default function OrbComparisonPage() {
       fragmentShader: `
         uniform float uTime;
         uniform vec2 uResolution;
+        uniform float uMorphSpeed;
+        uniform float uShellOpenness;
+        uniform float uWallThickness;
+        uniform float uShellEvenness;
+        uniform float uEvennessSpeed;
+        uniform float uEdgeSoftness;
         uniform float uNoiseScale;
         uniform float uTimeScale;
         uniform float uDarkness;
@@ -206,13 +231,59 @@ export default function OrbComparisonPage() {
           return a + b * cos(6.28318 * (c * t + d));
         }
 
-        // Ray-sphere intersection
-        float sphereIntersect(vec3 ro, vec3 rd, float radius) {
-          float b = dot(ro, rd);
-          float c = dot(ro, ro) - radius * radius;
-          float h = b * b - c;
-          if (h < 0.0) return -1.0;
-          return -b - sqrt(h);
+        // Signed-distance sphere, offset from the origin.
+        float sdSphere(vec3 p, vec3 center, float r) {
+          return length(p - center) - r;
+        }
+
+        // The morphing shape: a solid outer sphere with a second, larger sphere subtracted from
+        // it (classic SDF CSG: max(outer, -inner) keeps outer's surface everywhere the inner
+        // sphere doesn't reach, and carves a concave shell wherever it does). morphT drives how
+        // much hollowing exists at all (0 = pulled far away/zero radius, no effect — reads as a
+        // plain solid sphere; 1 = hollowed out down to a thin wall) — an analytic ray-sphere
+        // intersection can't express this, since the combined shape's silhouette isn't a circle
+        // once the shell opens up, so this needed a real raymarcher over the SDF instead of the
+        // single closed-form solve used before. evenness independently controls *where* that
+        // hollowing is centered: 0 fully decenters the cutting sphere, leaving a lopsided bowl/
+        // near-hemisphere; 1 keeps it concentric, leaving an even-thickness hollow shell all
+        // the way around. Both driven by their own independent oscillation in main() below, so
+        // the shape's openness and its lopsidedness drift in and out of phase with each other
+        // rather than always changing together.
+        float sceneSDF(vec3 p, float morphT, float evenness) {
+          float outer = sdSphere(p, vec3(0.0), 0.8);
+          float bite = morphT * uShellOpenness;
+          float biteRadius = mix(0.0, 0.8 - uWallThickness * 0.3, bite);
+          // Offset angled toward the camera (+Z), not purely sideways (+X) — the camera looks
+          // down -Z, so a purely sideways cut mostly misses the front-facing silhouette the
+          // camera can actually see, and the shape still reads as a plain full circle regardless
+          // of how large the cut gets. Angling it means the hollowing actually reaches the visible
+          // near surface, opening into the camera-facing crescent the reference shows.
+          float offsetAmount = (1.0 - evenness) * 1.1 * bite;
+          vec3 biteCenter = vec3(offsetAmount * 0.55, offsetAmount * 0.25, offsetAmount * 0.75);
+          float inner = sdSphere(p, biteCenter, biteRadius);
+          return max(outer, -inner);
+        }
+
+        vec3 calcNormal(vec3 p, float morphT, float evenness) {
+          vec2 e = vec2(0.001, 0.0);
+          return normalize(vec3(
+            sceneSDF(p + e.xyy, morphT, evenness) - sceneSDF(p - e.xyy, morphT, evenness),
+            sceneSDF(p + e.yxy, morphT, evenness) - sceneSDF(p - e.yxy, morphT, evenness),
+            sceneSDF(p + e.yyx, morphT, evenness) - sceneSDF(p - e.yyx, morphT, evenness)
+          ));
+        }
+
+        // Sphere tracing — steps along the ray by the SDF's own (conservative) distance estimate
+        // each iteration, same convention as the old sphereIntersect: returns -1.0 on a miss.
+        float raymarch(vec3 ro, vec3 rd, float morphT, float evenness) {
+          float t = 0.0;
+          for (int i = 0; i < 64; i++) {
+            float d = sceneSDF(ro + rd * t, morphT, evenness);
+            if (d < 0.0015) return t;
+            t += d;
+            if (t > 8.0) return -1.0;
+          }
+          return -1.0;
         }
 
         // Dithering
@@ -228,16 +299,23 @@ export default function OrbComparisonPage() {
           vec3 ro = vec3(0.0, 0.0, 2.5);
           vec3 rd = normalize(vec3(uv * 1.5, -1.0));
 
-          // Intersect with sphere of radius 0.8
-          float t = sphereIntersect(ro, rd, 0.8);
+          // Oscillate continuously between a full sphere (morphT=0) and a hollowed, thick-walled
+          // shell (morphT=1) and back — a smooth sine, not a linear ping-pong, so it eases through
+          // both extremes rather than moving at a constant rate and snapping direction. Evenness
+          // oscillates independently (its own speed, a phase offset so the two don't stay in
+          // lockstep) between a lopsided bowl/hemisphere and an even-walled hollow shell.
+          float morphT = 0.5 + 0.5 * sin(uTime * uMorphSpeed);
+          float evenness = uShellEvenness * (0.5 + 0.5 * sin(uTime * uEvennessSpeed + 1.7));
+
+          float t = raymarch(ro, rd, morphT, evenness);
 
           if (t < 0.0) {
-            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+            gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
             return;
           }
 
           vec3 pos = ro + t * rd;
-          vec3 normal = normalize(pos);
+          vec3 normal = calcNormal(pos, morphT, evenness);
 
           // Domain-warped noise for flame effect
           float noise = warpedFbm(pos * uNoiseScale, uTime * uTimeScale);
@@ -259,14 +337,22 @@ export default function OrbComparisonPage() {
 
           // Fresnel rim lighting
           vec3 viewDir = normalize(ro - pos);
-          float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), uFresnelPower);
+          float NdotV = max(dot(normal, viewDir), 0.0);
+          float fresnel = pow(1.0 - NdotV, uFresnelPower);
           color += vec3(0.4, 0.2, 0.6) * fresnel * uFresnelIntensity;
 
           // Dithering for grain effect
           float grain = dither(gl_FragCoord.xy, uTime) * (uGrainAmount * 2.0) - uGrainAmount;
           color += grain;
 
-          gl_FragColor = vec4(color, 1.0);
+          // Ephemeral/translucent edge, not a hard-cut opaque silhouette: at a grazing view angle
+          // (NdotV -> 0, i.e. the true silhouette) alpha fades toward 0 instead of staying at a
+          // flat 1.0 everywhere the ray happened to hit geometry. uEdgeSoftness is the smoothstep
+          // width — smaller values keep the fade tight to the very edge, larger values let the
+          // translucency bleed further into the visible face.
+          float alpha = smoothstep(0.0, uEdgeSoftness, NdotV);
+
+          gl_FragColor = vec4(color, alpha);
         }
       `,
     });
@@ -285,7 +371,7 @@ export default function OrbComparisonPage() {
       height = newRect.height;
       renderer.setSize(width, height, false);
       composer.setSize(width, height);
-      material.uniforms.uResolution.value.set(width, height);
+      material.uniforms.uResolution.value.set(width * pixelRatio, height * pixelRatio);
     };
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(canvas);
@@ -320,6 +406,12 @@ export default function OrbComparisonPage() {
     const material = materialRef.current;
     const bloomPass = bloomPassRef.current;
     if (!material || !bloomPass) return;
+    material.uniforms.uMorphSpeed.value = params.morphSpeed;
+    material.uniforms.uShellOpenness.value = params.shellOpenness;
+    material.uniforms.uWallThickness.value = params.wallThickness;
+    material.uniforms.uShellEvenness.value = params.shellEvenness;
+    material.uniforms.uEvennessSpeed.value = params.evennessSpeed;
+    material.uniforms.uEdgeSoftness.value = params.edgeSoftness;
     material.uniforms.uNoiseScale.value = params.noiseScale;
     material.uniforms.uTimeScale.value = params.timeScale;
     material.uniforms.uDarkness.value = params.darkness;
@@ -358,10 +450,15 @@ export default function OrbComparisonPage() {
   const bloomParams = PARAMS.filter((p) => p.target === "bloom");
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "1400px", margin: "0 auto" }}>
+    <div style={{ padding: "2rem", maxWidth: "1600px", margin: "0 auto" }}>
       <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Orb Design Comparison</h1>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+      {/* Reference/Current sit beside the Mutations panel (not above it) specifically so both the
+          live render and the sliders driving it are visible at once — the previous layout put the
+          panel below two large square previews, pushing it off-screen the moment either preview
+          was tall enough to fill the viewport. The panel is sticky + independently scrollable so
+          it stays in view regardless of overall page scroll position. */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 360px", gap: "1.5rem", alignItems: "start" }}>
         <div>
           <h2 style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>Reference</h2>
           <div
@@ -399,65 +496,76 @@ export default function OrbComparisonPage() {
             <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block" }} />
           </div>
         </div>
-      </div>
 
-      <Stack gap="md" style={{ marginTop: "2rem", maxWidth: 640 }}>
-        <Stack direction="row" align="center" gap="sm" style={{ justifyContent: "space-between" }}>
-          <h2 style={{ fontSize: "1.25rem" }}>Mutations</h2>
-          <Stack direction="row" gap="sm">
-            <Button variant="secondary" size="sm" onClick={() => setParams(defaultParams())}>
-              Reset to defaults
-            </Button>
-            <Button size="sm" onClick={handleCopy}>
-              {copied ? "Copied!" : "Copy values for agent"}
-            </Button>
+        <Stack
+          gap="md"
+          style={{
+            position: "sticky",
+            top: "2rem",
+            maxHeight: "calc(100vh - 4rem)",
+            overflowY: "auto",
+            border: "1px solid #e0e0e0",
+            borderRadius: "12px",
+            padding: "1rem",
+          }}
+        >
+          <Stack gap="sm">
+            <h2 style={{ fontSize: "1.25rem" }}>Mutations</h2>
+            <Stack direction="row" gap="sm">
+              <Button variant="secondary" size="sm" onClick={() => setParams(defaultParams())}>
+                Reset to defaults
+              </Button>
+              <Button size="sm" onClick={handleCopy}>
+                {copied ? "Copied!" : "Copy for agent"}
+              </Button>
+            </Stack>
           </Stack>
+
+          <Text size="sm" color="secondary">
+            Shader
+          </Text>
+          {uniformParams.map((p) => (
+            <Stack key={p.key} gap="xs">
+              <Stack direction="row" style={{ justifyContent: "space-between" }}>
+                <Text size="sm">{p.label}</Text>
+                <Text size="sm" color="secondary">
+                  {params[p.key]}
+                </Text>
+              </Stack>
+              <Slider
+                aria-label={p.label}
+                min={p.min}
+                max={p.max}
+                step={p.step}
+                value={params[p.key]}
+                onValueChange={(v) => setParam(p.key, v)}
+              />
+            </Stack>
+          ))}
+
+          <Text size="sm" color="secondary" style={{ marginTop: "0.5rem" }}>
+            Bloom
+          </Text>
+          {bloomParams.map((p) => (
+            <Stack key={p.key} gap="xs">
+              <Stack direction="row" style={{ justifyContent: "space-between" }}>
+                <Text size="sm">{p.label}</Text>
+                <Text size="sm" color="secondary">
+                  {params[p.key]}
+                </Text>
+              </Stack>
+              <Slider
+                aria-label={p.label}
+                min={p.min}
+                max={p.max}
+                step={p.step}
+                value={params[p.key]}
+                onValueChange={(v) => setParam(p.key, v)}
+              />
+            </Stack>
+          ))}
         </Stack>
-
-        <Text size="sm" color="secondary">
-          Shader
-        </Text>
-        {uniformParams.map((p) => (
-          <Stack key={p.key} gap="xs">
-            <Stack direction="row" style={{ justifyContent: "space-between" }}>
-              <Text size="sm">{p.label}</Text>
-              <Text size="sm" color="secondary">
-                {params[p.key]}
-              </Text>
-            </Stack>
-            <Slider
-              aria-label={p.label}
-              min={p.min}
-              max={p.max}
-              step={p.step}
-              value={params[p.key]}
-              onValueChange={(v) => setParam(p.key, v)}
-            />
-          </Stack>
-        ))}
-
-        <Text size="sm" color="secondary" style={{ marginTop: "0.5rem" }}>
-          Bloom
-        </Text>
-        {bloomParams.map((p) => (
-          <Stack key={p.key} gap="xs">
-            <Stack direction="row" style={{ justifyContent: "space-between" }}>
-              <Text size="sm">{p.label}</Text>
-              <Text size="sm" color="secondary">
-                {params[p.key]}
-              </Text>
-            </Stack>
-            <Slider
-              aria-label={p.label}
-              min={p.min}
-              max={p.max}
-              step={p.step}
-              value={params[p.key]}
-              onValueChange={(v) => setParam(p.key, v)}
-            />
-          </Stack>
-        ))}
-      </Stack>
+      </div>
     </div>
   );
 }
