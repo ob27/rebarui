@@ -6,7 +6,7 @@ import type { OrbInteractionState } from "rebar-ui";
 import { LivePreview } from "@/components/LivePreview";
 
 const PERSONA_BLURBS: Record<string, string> = {
-  spark: "Energetic, flame-like hot core.",
+  spark: "Original canvas metaballs — organic, hand-crafted.",
   strato: "Calm, atmospheric, wide soft halo.",
   chorus: "Composed metal blobs, held and unified.",
 };
@@ -36,36 +36,46 @@ export function PersonaShowcase() {
         </Button>
       </Stack>
       <Stack direction="row" gap="md" style={{ flexWrap: "wrap" }}>
-        {ORB_PERSONA_IDS.map((id) => (
-          <Stack key={id} gap="xs" style={{ alignItems: "center", width: 160 }}>
-            <LivePreview>
-              <div
-                style={{
-                  width: 96,
-                  height: 96,
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  position: "relative",
-                }}
-              >
-                {/* Orb sits behind the glass */}
+        {ORB_PERSONA_IDS.map((id) => {
+          // Spark uses the original canvas metaball design (no persona prop)
+          // Chorus is 1/3 larger than the others
+          const orbSize = id === "chorus" ? 160 : 120;
+          const usePersona = id !== "spark";
+
+          return (
+            <Stack key={id} gap="xs" style={{ alignItems: "center", width: 160 }}>
+              <LivePreview>
                 <div
                   style={{
-                    position: "absolute",
-                    inset: 4,
+                    width: 96,
+                    height: 96,
                     borderRadius: "50%",
-                    background: "#000",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    zIndex: 1,
-                    overflow: "hidden",
+                    position: "relative",
                   }}
                 >
-                  <AssistantOrb persona={id} state={state} size={88} />
-                </div>
+                  {/* Orb sits behind the glass */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 4,
+                      borderRadius: "50%",
+                      background: "#000",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      zIndex: 1,
+                      overflow: "hidden",
+                    }}
+                  >
+                    {usePersona ? (
+                      <AssistantOrb persona={id} state={state} size={orbSize} />
+                    ) : (
+                      <AssistantOrb isActive={state !== "idle"} size={orbSize} />
+                    )}
+                  </div>
 
                 {/* Glass lens container - convex effect */}
                 <div
@@ -124,7 +134,8 @@ export function PersonaShowcase() {
               {PERSONA_BLURBS[id]}
             </Text>
           </Stack>
-        ))}
+          );
+        })}
       </Stack>
     </Stack>
   );
