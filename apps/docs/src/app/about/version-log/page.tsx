@@ -9,8 +9,14 @@ import type { TimelineItem } from "rebar-ui";
 // against this file's own prior wording.
 const VERSIONS: TimelineItem[] = [
   {
-    label: "0.11.0 — current",
+    label: "0.12.0 — current",
     tone: "info",
+    children:
+      "FloatAssistant shipped as a new Opinion-tier construct: a floating AI assistant orb with drag-to-move physics (screen-edge bounce), minimize-to-dot, voice and text input modes, and server-side API proxy integration for secure LLM/RAG calls. Three orb personas — Spark (energetic flame-like core), Strato (calm atmospheric haze), and Chorus (metaball flow orb) — each with tuned Idle/Thinking/Listening/Speaking states interpolated via exponential smoothing. A design-comparison sandbox at /dev/orb-comparison pairs a reference video against the live WebGL orb for iterative shader tuning. The heuristics page gained all 46 items from ref/HEURISTICS.md in readable prose. The mega-menu construct landed for dense site navigation. GraphExplorer got boundary-clamped drag physics and an adaptive panel that flips sides based on orb position. The about/agent page now renders the full agent.md in a code block with a hero image. Nav links no longer paint as body-text hyperlinks. Tier sidebars label their root 'All Imitations' etc. instead of the generic 'All in this tier'. The 'block' pseudo-category was retired — block types now carry their real web/mobile/diagram category. Block pages regained their live examples from the old /blocks mega-page. The SiteFooter's dead /docs/* links were rewritten to their current homes.",
+  },
+  {
+    label: "0.11.0",
+    tone: "success",
     children:
       "Per-section narration audio (a real Alibaba Cloud Model Studio voice) on tier Philosophy sections, archetype essays, the Heuristics page, and Benchmarks — opt-in per doc-section, never a whole-page player unless the content is essay-shaped. SignaturePad gained real e-signature capture: typed cursive names, image upload, and a device stamp the component itself HMAC-signs client-side from a caller-supplied key, rather than a decodable hash. ColorPicker gained a real browser EyeDropper tool. A genuine sticky-sidebar bug — present on every catalogue page (Opinions, Synthetics, Imitations, Orders, Geneses, Archetypes, Benchmarks) since NavIndex shipped — is fixed: the left index now pins its search/filter/\"All X\" header while only the item list scrolls. ThemeToggle gained single-control mutations (a classic icon-in-thumb light/dark switch, style-only, bionic-only). This page.",
   },

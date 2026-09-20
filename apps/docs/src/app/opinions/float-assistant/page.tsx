@@ -155,6 +155,7 @@ export default function FloatAssistantPage() {
         minimizable={true}
         voices={DEMO_VOICES}
         voiceId="alquin"
+        persona="chorus"
       />
 
       <Stack gap="sm">

@@ -38,8 +38,8 @@ export function PersonaShowcase() {
       <Stack direction="row" gap="md" style={{ flexWrap: "wrap" }}>
         {ORB_PERSONA_IDS.map((id) => {
           // Spark uses the original canvas metaball design (no persona prop)
-          // Chorus is 1/3 larger than the others
-          const orbSize = id === "chorus" ? 160 : 120;
+          // Spark and Chorus are 1/3 larger than Strato
+          const orbSize = id === "strato" ? 120 : 160;
           const usePersona = id !== "spark";
 
           return (
