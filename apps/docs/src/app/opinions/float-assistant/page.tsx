@@ -3,6 +3,7 @@ import type { Construct } from "@rebar-ui/placement";
 import type { FloatAssistantVoiceOption } from "rebar-ui";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PersonaShowcase } from "./PersonaShowcase";
 
 const DEMO_VOICES: FloatAssistantVoiceOption[] = [
   { id: "alquin", label: "Alquin", cloudVoiceId: "qwen-voice-alquin" },
@@ -34,11 +35,16 @@ const BLOCKS: Construct[] = [
   greeting?: string,
   position?: "bottom-right" | "bottom-left" | "top-right" | "top-left",
   accentColor?: string,
+  persona?: "spark" | "strato" | "chorus",
   voiceEnabled?: boolean,
   draggable?: boolean,
   minimizable?: boolean,
   apiEndpoint?: string,
   apiAuthToken?: string,
+  // Opinion-tier live bindings — see "API Integration" below
+  source?: string,
+  onSendMessage?: string,
+  onVoiceRecord?: string,
 }`,
       },
     ],
@@ -101,6 +107,10 @@ Response:
         kind: "text",
         text: "**Transparent AI** — The footer disclaimer reminds users that AI can make mistakes. The assistant never pretends to be human.",
       },
+      {
+        kind: "text",
+        text: "**Orb personas** — set `persona` to one of Spark, Strato, or Chorus (see the Personas section above) for a WebGL-shader orb that reacts to the assistant's own interaction state, instead of the default lightweight 2D-canvas animation. Only the trigger button uses the orb; chat message avatars and the typing indicator use a static icon, since animating a full shader per message was distracting and wasteful compute for repeated small instances.",
+      },
     ],
   },
   {
@@ -146,6 +156,19 @@ export default function FloatAssistantPage() {
         voices={DEMO_VOICES}
         voiceId="alquin"
       />
+
+      <Stack gap="sm">
+        <Heading level={2}>Personas</Heading>
+        <Text color="secondary">
+          Set <code>persona</code> to swap the trigger button&rsquo;s orb for one of the tuned WebGL
+          shaders from <code>/dev/orb-comparison</code> — Spark and Strato are the raymarched
+          &ldquo;Solid Orb&rdquo; hollow shell, Chorus is the metaball-based &ldquo;Flow Orb&rdquo;.
+          Each persona defines an Idle and a Thinking state (Spark/Strato also define Listening/
+          Speaking); the trigger interpolates between them automatically as the assistant&rsquo;s own
+          interaction state changes. Toggle below to see it live.
+        </Text>
+        <PersonaShowcase />
+      </Stack>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

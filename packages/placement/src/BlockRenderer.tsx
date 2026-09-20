@@ -914,6 +914,45 @@ function AiChatBlockView({
   );
 }
 
+/** `float-assistant`'s live binding is simpler than `ai-chat`'s: the component already owns its
+ * own message-list state internally regardless of live/static, so there's no local-vs-live fork
+ * here — `source`/`onSendMessage`/`onVoiceRecord` just resolve straight through to the real props
+ * they're meant to drive. */
+function FloatAssistantBlockView({
+  block,
+  index,
+  path,
+  data,
+  handlers,
+}: {
+  block: Extract<Construct, { type: "float-assistant" }>;
+  index: number;
+  path: string;
+  data: BlockRendererData;
+  handlers: BlockRendererHandlers;
+}) {
+  const apiEndpoint = resolveSource<string | undefined>(data, block.source, undefined);
+  const onSendMessage = resolveHandler<(message: string) => void>(handlers, block.onSendMessage);
+  const onVoiceRecord = resolveHandler<(recording: boolean) => void>(handlers, block.onVoiceRecord);
+
+  return (
+    <FloatAssistant
+      key={index}
+      data-rebar-placement-block="float-assistant"
+      data-rebar-block-path={path}
+      name={block.name}
+      greeting={block.greeting}
+      position={block.position}
+      accentColor={block.accentColor}
+      persona={block.persona}
+      voiceEnabled={block.voiceEnabled}
+      apiEndpoint={apiEndpoint}
+      onSendMessage={onSendMessage}
+      onVoiceRecord={onVoiceRecord}
+    />
+  );
+}
+
 /**
  * A row of toggle buttons, one per series/segment label — the "footer and filter buttons to
  * control manipulation of the chart" a chart block needs to not just be its own canvas component
@@ -2355,20 +2394,8 @@ function renderBlock(
       );
     }
 
-    case "float-assistant": {
-      // `rebar-ui` is already a static import for this whole file (Box/Text/etc. above) — a
-      // `require()` here didn't achieve any real code-splitting, it just used the wrong import
-      // style for an ESM file and tripped the lint rule against it.
-      return (
-        <FloatAssistant
-          name={block.name}
-          greeting={block.greeting}
-          position={block.position}
-          accentColor={block.accentColor}
-          voiceEnabled={block.voiceEnabled}
-        />
-      );
-    }
+    case "float-assistant":
+      return <FloatAssistantBlockView key={index} block={block} index={index} path={path} data={data} handlers={handlers} />;
 
     default:
       return null;

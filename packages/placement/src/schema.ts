@@ -813,6 +813,11 @@ export type Construct =
       greeting?: string;
       position?: "bottom-right" | "bottom-left" | "top-right" | "top-left";
       accentColor?: string;
+      /** One of the tuned WebGL orb personas in `rebar-ui`'s `orb-personas/` (Spark, Strato,
+       * Chorus) for the trigger button's orb. Omit to keep the default lightweight 2D-canvas
+       * animation — this file intentionally has no imports, so this is a hand-kept literal union
+       * rather than importing `OrbPersonaId` from `rebar-ui`; keep it in sync if personas change. */
+      persona?: "spark" | "strato" | "chorus";
       voiceEnabled?: boolean;
       /** Live binding: a key into `BlockRenderer`'s `data` prop for the API endpoint. */
       source?: string;
