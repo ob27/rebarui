@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { Button, Slider, Stack, Text } from "rebar-ui";
 
 // Every tunable knob in the shader/bloom pipeline, in one place — the slider panel, the uniform
@@ -21,21 +22,26 @@ interface OrbParam {
 }
 
 const PARAMS: OrbParam[] = [
+  { key: "shellThickness", label: "Shell thickness", min: 0.02, max: 0.3, step: 0.01, default: 0.08, target: "uniform" },
+  { key: "openingSize", label: "Opening size (how much is cut away)", min: 0, max: 0.95, step: 0.01, default: 0.22, target: "uniform" },
+  { key: "rotationSpeed", label: "Tumble speed", min: 0, max: 1, step: 0.01, default: 0.6, target: "uniform" },
+  { key: "rimIntensity", label: "Rim glow intensity", min: 0, max: 3, step: 0.05, default: 0.9, target: "uniform" },
+  { key: "innerBrightness", label: "Inner cavity brightness", min: 0.5, max: 2.5, step: 0.05, default: 1.15, target: "uniform" },
   { key: "edgeSoftness", label: "Edge softness (ephemeral fade)", min: 0.02, max: 1, step: 0.02, default: 0.35, target: "uniform" },
   { key: "noiseScale", label: "Noise scale", min: 0.5, max: 4, step: 0.1, default: 2.0, target: "uniform" },
   { key: "timeScale", label: "Flame speed (time scale)", min: 0.05, max: 1, step: 0.01, default: 0.3, target: "uniform" },
   { key: "darkness", label: "Base darkness", min: 0.2, max: 1, step: 0.05, default: 0.6, target: "uniform" },
   { key: "hotLow", label: "Hot core low edge", min: 0, max: 1, step: 0.01, default: 0.55, target: "uniform" },
   { key: "hotHigh", label: "Hot core high edge", min: 0, max: 1, step: 0.01, default: 0.85, target: "uniform" },
-  { key: "hotIntensity", label: "Hot core intensity", min: 0, max: 3, step: 0.05, default: 1.2, target: "uniform" },
+  { key: "hotIntensity", label: "Hot core intensity", min: 0, max: 3, step: 0.05, default: 0.7, target: "uniform" },
   { key: "envelopeSpeed", label: "Flame envelope speed (grow/shrink rate)", min: 0.02, max: 1, step: 0.01, default: 0.12, target: "uniform" },
   { key: "envelopeAmount", label: "Flame envelope range (how much it pulses)", min: 0, max: 0.6, step: 0.02, default: 0.35, target: "uniform" },
   { key: "fresnelPower", label: "Fresnel power", min: 0.5, max: 5, step: 0.1, default: 2.0, target: "uniform" },
   { key: "fresnelIntensity", label: "Fresnel intensity", min: 0, max: 1.5, step: 0.05, default: 0.4, target: "uniform" },
   { key: "grainAmount", label: "Grain amount", min: 0, max: 0.1, step: 0.005, default: 0.03, target: "uniform" },
-  { key: "bloomStrength", label: "Bloom strength", min: 0, max: 3, step: 0.05, default: 0.8, target: "bloom" },
+  { key: "bloomStrength", label: "Bloom strength", min: 0, max: 3, step: 0.05, default: 0.5, target: "bloom" },
   { key: "bloomRadius", label: "Bloom radius", min: 0, max: 1, step: 0.02, default: 0.4, target: "bloom" },
-  { key: "bloomThreshold", label: "Bloom threshold", min: 0, max: 1, step: 0.02, default: 0.7, target: "bloom" },
+  { key: "bloomThreshold", label: "Bloom threshold", min: 0, max: 1, step: 0.02, default: 0.8, target: "bloom" },
 ];
 
 const defaultParams = (): Record<string, number> =>
@@ -89,6 +95,14 @@ export default function OrbComparisonPage() {
     const pixelRatio = Math.min(window.devicePixelRatio, 2);
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: false });
     renderer.setPixelRatio(pixelRatio);
+    // The hot-core, rim, and inner-cavity boosts all stack additively on the same pixel (e.g. a
+    // bright inner-wall pixel that's also on the rim during a hot-mask flare) and easily exceed
+    // 1.0 several times over. Without tone mapping that just hard-clips to flat white the moment
+    // any one term runs hot, so the whole disc reads as a single white blob with the bloom pass
+    // having nothing left to select against. ACES compresses the highlights instead of clipping
+    // them, so real color variation survives even in the bright regions.
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
     // The real bug behind "orb stuck in a corner": `setSize`'s default `updateStyle=true`
     // overwrites the canvas's own `style.width`/`style.height` with fixed pixel values, fighting
     // the JSX's `width: 100%; height: 100%`. Passing `false` leaves our own CSS sizing alone and
@@ -108,6 +122,11 @@ export default function OrbComparisonPage() {
     );
     composer.addPass(bloomPass);
     bloomPassRef.current = bloomPass;
+    // Tone mapping only takes effect on the pass that actually writes to the screen. UnrealBloomPass
+    // composites in linear space with `renderToScreen` off by default here, so without this final
+    // pass the renderer's ACES tone mapping never runs and highlights hard-clip to white instead of
+    // compressing.
+    composer.addPass(new OutputPass());
 
     // Fullscreen quad with the orb shader
     const geometry = new THREE.PlaneGeometry(2, 2);
@@ -121,6 +140,11 @@ export default function OrbComparisonPage() {
         // On a DPR-1 display (most headless test browsers) this bug is invisible, which is why it
         // slipped through an earlier round of testing.
         uResolution: { value: new THREE.Vector2(width * pixelRatio, height * pixelRatio) },
+        uShellThickness: { value: initial.shellThickness },
+        uOpeningSize: { value: initial.openingSize },
+        uRotationSpeed: { value: initial.rotationSpeed },
+        uRimIntensity: { value: initial.rimIntensity },
+        uInnerBrightness: { value: initial.innerBrightness },
         uEdgeSoftness: { value: initial.edgeSoftness },
         uEnvelopeSpeed: { value: initial.envelopeSpeed },
         uEnvelopeAmount: { value: initial.envelopeAmount },
@@ -144,6 +168,11 @@ export default function OrbComparisonPage() {
       fragmentShader: `
         uniform float uTime;
         uniform vec2 uResolution;
+        uniform float uShellThickness;
+        uniform float uOpeningSize;
+        uniform float uRotationSpeed;
+        uniform float uRimIntensity;
+        uniform float uInnerBrightness;
         uniform float uEdgeSoftness;
         uniform float uEnvelopeSpeed;
         uniform float uEnvelopeAmount;
@@ -237,19 +266,62 @@ export default function OrbComparisonPage() {
           return a + b * cos(6.28318 * (c * t + d));
         }
 
-        // Analytic ray-sphere intersection — the boundary itself never changes shape. What looked
-        // like a morphing/hollowing geometry in an earlier pass is more likely (per direct
-        // comparison against the reference) a *fixed* translucent sphere with a flame/plasma
-        // effect whose own extent grows and shrinks inside it — no geometric holes at all, just a
-        // volumetric-reading brightness envelope. That's simpler (back to one closed-form solve,
-        // no raymarcher) and matches the reference's fluid, edge-less quality better than any
-        // hard(ish) CSG cut could, however softened.
+        // Analytic ray-sphere intersection — used only as a cheap bounding test to skip the
+        // raymarch entirely on rays that miss the shell's outer bound, and to pick a sensible
+        // start distance for the ones that don't.
         float sphereIntersect(vec3 ro, vec3 rd, float radius) {
           float b = dot(ro, rd);
           float c = dot(ro, ro) - radius * radius;
           float h = b * b - c;
           if (h < 0.0) return -1.0;
           return -b - sqrt(h);
+        }
+
+        // Real reference frames (extracted directly from reference-orb.mp4, not guessed from a
+        // couple of screenshots) show at least four distinct silhouettes across the 15s loop: a
+        // near-full circle, a narrow edge-on lens, a circle with a Pac-Man-style wedge notch, and a
+        // circle with a bright seam/crack crossing its face. That's a single rigid shape tumbling
+        // in 3D, not a fixed sphere with only an internal effect — specifically a hollow spherical
+        // shell with a circular opening (a "bowl"), where the opening's rim always reads as a
+        // distinct bright edge because it's a real exposed cut face, not a shading trick.
+        #define SHELL_RADIUS 0.8
+
+        vec3 rotateAxis(vec3 p, vec3 axis, float angle) {
+          float s = sin(angle);
+          float c = cos(angle);
+          return p * c + cross(axis, p) * s + axis * dot(axis, p) * (1.0 - c);
+        }
+
+        // Two fixed, non-parallel axes at different speeds — a real tumble, not a spin around one
+        // axis (which would repeat its silhouette every rotation and never look like the reference).
+        vec3 tumble(vec3 p, float t) {
+          p = rotateAxis(p, normalize(vec3(0.4, 1.0, 0.2)), t * 0.7);
+          p = rotateAxis(p, normalize(vec3(1.0, 0.3, 0.5)), t * 0.45);
+          return p;
+        }
+
+        // The two CSG halves, kept separate (rather than pre-combined into one float) so the
+        // caller can tell which surface is active at a hit point: whichever of the two is larger
+        // is the one actually forming the boundary there (see isCutFace in main()).
+        vec2 sceneSDFParts(vec3 p, float t, float cutHeight, float thickness) {
+          vec3 pObj = tumble(p, t);
+          float shell = abs(length(pObj) - SHELL_RADIUS) - thickness;
+          float cut = pObj.z - cutHeight;
+          return vec2(shell, cut);
+        }
+
+        float sceneSDF(vec3 p, float t, float cutHeight, float thickness) {
+          vec2 parts = sceneSDFParts(p, t, cutHeight, thickness);
+          return max(parts.x, parts.y);
+        }
+
+        vec3 calcNormal(vec3 p, float t, float cutHeight, float thickness) {
+          vec2 e = vec2(0.001, 0.0);
+          return normalize(vec3(
+            sceneSDF(p + e.xyy, t, cutHeight, thickness) - sceneSDF(p - e.xyy, t, cutHeight, thickness),
+            sceneSDF(p + e.yxy, t, cutHeight, thickness) - sceneSDF(p - e.yxy, t, cutHeight, thickness),
+            sceneSDF(p + e.yyx, t, cutHeight, thickness) - sceneSDF(p - e.yyx, t, cutHeight, thickness)
+          ));
         }
 
         // Dithering
@@ -261,45 +333,79 @@ export default function OrbComparisonPage() {
           // Centered UV
           vec2 uv = (gl_FragCoord.xy - 0.5 * uResolution) / min(uResolution.x, uResolution.y);
 
-          // Camera ray - sphere centered at origin
           vec3 ro = vec3(0.0, 0.0, 2.5);
           vec3 rd = normalize(vec3(uv * 1.5, -1.0));
 
-          float t = sphereIntersect(ro, rd, 0.8);
+          float rotT = uTime * uRotationSpeed;
+          // openingSize 0 = closed sphere, 1 = fully removed; the cut plane's local-z offset runs
+          // from +radius (nothing cut) down through 0 (an exact half-shell "bowl") to -radius.
+          float cutHeight = SHELL_RADIUS * (1.0 - 2.0 * uOpeningSize);
 
-          if (t < 0.0) {
+          float outerBound = SHELL_RADIUS + uShellThickness + 0.05;
+          float tBound = sphereIntersect(ro, rd, outerBound);
+          if (tBound < 0.0) {
             gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
             return;
           }
 
-          vec3 pos = ro + t * rd;
-          vec3 normal = normalize(pos);
+          float dist = max(tBound - 0.05, 0.0);
+          float maxDist = tBound + outerBound * 2.2;
+          bool didHit = false;
+          vec3 pos = ro;
+          for (int i = 0; i < 64; i++) {
+            pos = ro + rd * dist;
+            float d = sceneSDF(pos, rotT, cutHeight, uShellThickness);
+            if (d < 0.001) { didHit = true; break; }
+            dist += d;
+            if (dist > maxDist) break;
+          }
+
+          if (!didHit) {
+            gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+            return;
+          }
+
+          vec3 normal = calcNormal(pos, rotT, cutHeight, uShellThickness);
           vec3 viewDirRaw = normalize(ro - pos);
 
-          // Domain-warped noise for flame effect
-          float noise = warpedFbm(pos * uNoiseScale, uTime * uTimeScale);
+          vec3 pObj = tumble(pos, rotT);
+          vec2 parts = sceneSDFParts(pos, rotT, cutHeight, uShellThickness);
+          bool isCutFace = parts.y > parts.x;
+          bool isInner = length(pObj) < SHELL_RADIUS;
 
-          // Map noise to color palette - bias toward dark
-          float colorT = noise * 0.4 + 0.3; // Shift to darker range
-          vec3 color = palette(colorT);
+          // Domain-warped noise for flame effect — sampled in object space so the texture reads as
+          // baked onto the tumbling shell rather than sliding across it independently.
+          float noise = warpedFbm(pObj * uNoiseScale, uTime * uTimeScale);
 
-          // Darken overall - most of sphere should be dark indigo
-          color *= uDarkness;
+          float colorT = noise * 0.4 + 0.3;
+          vec3 color = palette(colorT) * uDarkness;
 
-          // The "flame envelope" — a slow, large-scale, single-octave noise sampled far more
-          // coarsely than the detail noise above, evaluated once per pixel from the *fixed* sphere
-          // position (not warped) so it drifts as one coherent blob rather than flickering. Its
-          // value shifts the hot-mask threshold up and down over time: when the envelope is high,
-          // the threshold drops and the flame reads as filling most of the sphere; when it's low,
-          // the threshold rises and the flame recedes to a small, contained lobe. This is what
-          // should produce "sometimes looks like the whole sphere is lit, sometimes just one
-          // small region" without the sphere's own boundary ever moving.
-          float envelope = snoise(pos * 0.8 + vec3(0.0, 0.0, uTime * uEnvelopeSpeed));
+          // TEMP DEBUG
+          gl_FragColor = vec4(isCutFace ? 1.0 : 0.0, isInner ? 1.0 : 0.0, 0.0, 1.0);
+          return;
+
+          // The "flame envelope" — a slow, large-scale, single-octave noise that shifts the
+          // hot-mask threshold up and down over time, so the flame's apparent extent pulses
+          // without the shell's own boundary moving.
+          float envelope = snoise(pObj * 0.8 + vec3(0.0, 0.0, uTime * uEnvelopeSpeed));
           float hotLow = clamp(uHotLow - envelope * uEnvelopeAmount, 0.0, 1.0);
           float hotHigh = clamp(uHotHigh - envelope * uEnvelopeAmount, hotLow + 0.05, 1.0);
-
           float hotMask = smoothstep(hotLow, hotHigh, noise);
           color += vec3(1.0, 0.5, 0.9) * hotMask * uHotIntensity;
+
+          // The cavity wall seen through the opening reads brighter/pinker than the outer shell in
+          // every reference frame that shows it.
+          if (isInner) {
+            color *= uInnerBrightness;
+          }
+
+          // The opening's rim is a real exposed cut face (see sceneSDFParts), not a shading trick —
+          // boost it directly so bloom picks it up as the bright seam/wedge edge seen in every
+          // reference frame.
+          if (isCutFace) {
+            float rimNoise = 0.85 + 0.15 * noise;
+            color += vec3(1.0, 0.65, 0.92) * rimNoise * uRimIntensity;
+          }
 
           // Fresnel rim lighting
           float NdotV = max(dot(normal, viewDirRaw), 0.0);
@@ -312,9 +418,7 @@ export default function OrbComparisonPage() {
 
           // Ephemeral/translucent edge, not a hard-cut opaque silhouette: at a grazing view angle
           // (NdotV -> 0, i.e. the true silhouette) alpha fades toward 0 instead of staying at a
-          // flat 1.0 everywhere the ray happened to hit geometry. uEdgeSoftness is the smoothstep
-          // width — smaller values keep the fade tight to the very edge, larger values let the
-          // translucency bleed further into the visible face.
+          // flat 1.0 everywhere the ray happened to hit geometry.
           float alpha = smoothstep(0.0, uEdgeSoftness, NdotV);
 
           gl_FragColor = vec4(color, alpha);
@@ -371,6 +475,11 @@ export default function OrbComparisonPage() {
     const material = materialRef.current;
     const bloomPass = bloomPassRef.current;
     if (!material || !bloomPass) return;
+    material.uniforms.uShellThickness.value = params.shellThickness;
+    material.uniforms.uOpeningSize.value = params.openingSize;
+    material.uniforms.uRotationSpeed.value = params.rotationSpeed;
+    material.uniforms.uRimIntensity.value = params.rimIntensity;
+    material.uniforms.uInnerBrightness.value = params.innerBrightness;
     material.uniforms.uEdgeSoftness.value = params.edgeSoftness;
     material.uniforms.uEnvelopeSpeed.value = params.envelopeSpeed;
     material.uniforms.uEnvelopeAmount.value = params.envelopeAmount;
