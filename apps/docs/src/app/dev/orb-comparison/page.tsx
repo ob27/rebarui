@@ -24,13 +24,13 @@ interface OrbParam {
 const PARAMS: OrbParam[] = [
   { key: "shellThickness", label: "Shell thickness", min: 0.02, max: 0.3, step: 0.01, default: 0.08, target: "uniform" },
   { key: "openingSize", label: "Opening size (how much is cut away)", min: 0, max: 0.95, step: 0.01, default: 0.22, target: "uniform" },
-  { key: "rotationSpeed", label: "Tumble speed", min: 0, max: 1, step: 0.01, default: 0.6, target: "uniform" },
-  { key: "rimIntensity", label: "Rim glow intensity", min: 0, max: 3, step: 0.05, default: 0.9, target: "uniform" },
+  { key: "rotationSpeed", label: "Tumble speed", min: 0, max: 1, step: 0.01, default: 0.2, target: "uniform" },
+  { key: "rimIntensity", label: "Rim glow intensity", min: 0, max: 3, step: 0.05, default: 1.3, target: "uniform" },
   { key: "innerBrightness", label: "Inner cavity brightness", min: 0.5, max: 2.5, step: 0.05, default: 1.15, target: "uniform" },
   { key: "edgeSoftness", label: "Edge softness (ephemeral fade)", min: 0.02, max: 1, step: 0.02, default: 0.35, target: "uniform" },
   { key: "noiseScale", label: "Noise scale", min: 0.5, max: 4, step: 0.1, default: 2.0, target: "uniform" },
   { key: "timeScale", label: "Flame speed (time scale)", min: 0.05, max: 1, step: 0.01, default: 0.3, target: "uniform" },
-  { key: "darkness", label: "Base darkness", min: 0.2, max: 1, step: 0.05, default: 0.6, target: "uniform" },
+  { key: "darkness", label: "Base darkness", min: 0.2, max: 1, step: 0.05, default: 0.85, target: "uniform" },
   { key: "hotLow", label: "Hot core low edge", min: 0, max: 1, step: 0.01, default: 0.55, target: "uniform" },
   { key: "hotHigh", label: "Hot core high edge", min: 0, max: 1, step: 0.01, default: 0.85, target: "uniform" },
   { key: "hotIntensity", label: "Hot core intensity", min: 0, max: 3, step: 0.05, default: 0.7, target: "uniform" },
@@ -39,9 +39,9 @@ const PARAMS: OrbParam[] = [
   { key: "fresnelPower", label: "Fresnel power", min: 0.5, max: 5, step: 0.1, default: 2.0, target: "uniform" },
   { key: "fresnelIntensity", label: "Fresnel intensity", min: 0, max: 1.5, step: 0.05, default: 0.4, target: "uniform" },
   { key: "grainAmount", label: "Grain amount", min: 0, max: 0.1, step: 0.005, default: 0.03, target: "uniform" },
-  { key: "bloomStrength", label: "Bloom strength", min: 0, max: 3, step: 0.05, default: 0.5, target: "bloom" },
-  { key: "bloomRadius", label: "Bloom radius", min: 0, max: 1, step: 0.02, default: 0.4, target: "bloom" },
-  { key: "bloomThreshold", label: "Bloom threshold", min: 0, max: 1, step: 0.02, default: 0.8, target: "bloom" },
+  { key: "bloomStrength", label: "Bloom strength", min: 0, max: 3, step: 0.05, default: 0.7, target: "bloom" },
+  { key: "bloomRadius", label: "Bloom radius", min: 0, max: 1, step: 0.02, default: 0.45, target: "bloom" },
+  { key: "bloomThreshold", label: "Bloom threshold", min: 0, max: 1, step: 0.02, default: 0.65, target: "bloom" },
 ];
 
 const defaultParams = (): Record<string, number> =>
@@ -377,12 +377,11 @@ export default function OrbComparisonPage() {
           // baked onto the tumbling shell rather than sliding across it independently.
           float noise = warpedFbm(pObj * uNoiseScale, uTime * uTimeScale);
 
-          float colorT = noise * 0.4 + 0.3;
+          // This palette's cosine phases put t~0.3 solidly in blue/cyan territory — the
+          // indigo-through-magenta band the reference actually shows lives in the narrow
+          // wrap-around range roughly t in [-0.05, 0.2] instead.
+          float colorT = noise * 0.13 + 0.08;
           vec3 color = palette(colorT) * uDarkness;
-
-          // TEMP DEBUG
-          gl_FragColor = vec4(isCutFace ? 1.0 : 0.0, isInner ? 1.0 : 0.0, 0.0, 1.0);
-          return;
 
           // The "flame envelope" — a slow, large-scale, single-octave noise that shifts the
           // hot-mask threshold up and down over time, so the flame's apparent extent pulses
