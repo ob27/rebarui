@@ -21,11 +21,6 @@ interface OrbParam {
 }
 
 const PARAMS: OrbParam[] = [
-  { key: "morphSpeed", label: "Shell/sphere oscillation speed", min: 0, max: 2, step: 0.02, default: 0.35, target: "uniform" },
-  { key: "shellOpenness", label: "Shell openness (max hollowing)", min: 0, max: 1, step: 0.02, default: 0.7, target: "uniform" },
-  { key: "wallThickness", label: "Shell wall thickness", min: 0.02, max: 0.4, step: 0.01, default: 0.12, target: "uniform" },
-  { key: "shellEvenness", label: "Shell evenness (0=bowl/hemisphere, 1=even hollow)", min: 0, max: 1, step: 0.02, default: 0.4, target: "uniform" },
-  { key: "evennessSpeed", label: "Evenness oscillation speed", min: 0, max: 2, step: 0.02, default: 0.22, target: "uniform" },
   { key: "edgeSoftness", label: "Edge softness (ephemeral fade)", min: 0.02, max: 1, step: 0.02, default: 0.35, target: "uniform" },
   { key: "noiseScale", label: "Noise scale", min: 0.5, max: 4, step: 0.1, default: 2.0, target: "uniform" },
   { key: "timeScale", label: "Flame speed (time scale)", min: 0.05, max: 1, step: 0.01, default: 0.3, target: "uniform" },
@@ -33,6 +28,8 @@ const PARAMS: OrbParam[] = [
   { key: "hotLow", label: "Hot core low edge", min: 0, max: 1, step: 0.01, default: 0.55, target: "uniform" },
   { key: "hotHigh", label: "Hot core high edge", min: 0, max: 1, step: 0.01, default: 0.85, target: "uniform" },
   { key: "hotIntensity", label: "Hot core intensity", min: 0, max: 3, step: 0.05, default: 1.2, target: "uniform" },
+  { key: "envelopeSpeed", label: "Flame envelope speed (grow/shrink rate)", min: 0.02, max: 1, step: 0.01, default: 0.12, target: "uniform" },
+  { key: "envelopeAmount", label: "Flame envelope range (how much it pulses)", min: 0, max: 0.6, step: 0.02, default: 0.35, target: "uniform" },
   { key: "fresnelPower", label: "Fresnel power", min: 0.5, max: 5, step: 0.1, default: 2.0, target: "uniform" },
   { key: "fresnelIntensity", label: "Fresnel intensity", min: 0, max: 1.5, step: 0.05, default: 0.4, target: "uniform" },
   { key: "grainAmount", label: "Grain amount", min: 0, max: 0.1, step: 0.005, default: 0.03, target: "uniform" },
@@ -53,6 +50,21 @@ export default function OrbComparisonPage() {
   const [copied, setCopied] = useState(false);
 
   const setParam = (key: string, value: number) => setParams((prev) => ({ ...prev, [key]: value }));
+
+  // A random value per param, snapped to that param's own step so the slider thumb lands exactly
+  // where a real drag would — quick way to stumble onto an interesting combination rather than
+  // hand-tuning 15+ sliders one at a time from a cold start.
+  const randomizeParams = () => {
+    setParams(
+      Object.fromEntries(
+        PARAMS.map((p) => {
+          const steps = Math.round((p.max - p.min) / p.step);
+          const value = p.min + Math.floor(Math.random() * (steps + 1)) * p.step;
+          return [p.key, Math.round(value * 1000) / 1000];
+        }),
+      ),
+    );
+  };
 
   // One-time WebGL/scene setup — reads `params` only for the *initial* uniform values (this
   // effect's own closure is frozen at first mount); every value stays live afterward via the
@@ -97,7 +109,7 @@ export default function OrbComparisonPage() {
     composer.addPass(bloomPass);
     bloomPassRef.current = bloomPass;
 
-    // Fullscreen quad with raymarching shader
+    // Fullscreen quad with the orb shader
     const geometry = new THREE.PlaneGeometry(2, 2);
     const material = new THREE.ShaderMaterial({
       transparent: true,
@@ -109,12 +121,9 @@ export default function OrbComparisonPage() {
         // On a DPR-1 display (most headless test browsers) this bug is invisible, which is why it
         // slipped through an earlier round of testing.
         uResolution: { value: new THREE.Vector2(width * pixelRatio, height * pixelRatio) },
-        uMorphSpeed: { value: initial.morphSpeed },
-        uShellOpenness: { value: initial.shellOpenness },
-        uWallThickness: { value: initial.wallThickness },
-        uShellEvenness: { value: initial.shellEvenness },
-        uEvennessSpeed: { value: initial.evennessSpeed },
         uEdgeSoftness: { value: initial.edgeSoftness },
+        uEnvelopeSpeed: { value: initial.envelopeSpeed },
+        uEnvelopeAmount: { value: initial.envelopeAmount },
         uNoiseScale: { value: initial.noiseScale },
         uTimeScale: { value: initial.timeScale },
         uDarkness: { value: initial.darkness },
@@ -135,12 +144,9 @@ export default function OrbComparisonPage() {
       fragmentShader: `
         uniform float uTime;
         uniform vec2 uResolution;
-        uniform float uMorphSpeed;
-        uniform float uShellOpenness;
-        uniform float uWallThickness;
-        uniform float uShellEvenness;
-        uniform float uEvennessSpeed;
         uniform float uEdgeSoftness;
+        uniform float uEnvelopeSpeed;
+        uniform float uEnvelopeAmount;
         uniform float uNoiseScale;
         uniform float uTimeScale;
         uniform float uDarkness;
@@ -231,59 +237,19 @@ export default function OrbComparisonPage() {
           return a + b * cos(6.28318 * (c * t + d));
         }
 
-        // Signed-distance sphere, offset from the origin.
-        float sdSphere(vec3 p, vec3 center, float r) {
-          return length(p - center) - r;
-        }
-
-        // The morphing shape: a solid outer sphere with a second, larger sphere subtracted from
-        // it (classic SDF CSG: max(outer, -inner) keeps outer's surface everywhere the inner
-        // sphere doesn't reach, and carves a concave shell wherever it does). morphT drives how
-        // much hollowing exists at all (0 = pulled far away/zero radius, no effect — reads as a
-        // plain solid sphere; 1 = hollowed out down to a thin wall) — an analytic ray-sphere
-        // intersection can't express this, since the combined shape's silhouette isn't a circle
-        // once the shell opens up, so this needed a real raymarcher over the SDF instead of the
-        // single closed-form solve used before. evenness independently controls *where* that
-        // hollowing is centered: 0 fully decenters the cutting sphere, leaving a lopsided bowl/
-        // near-hemisphere; 1 keeps it concentric, leaving an even-thickness hollow shell all
-        // the way around. Both driven by their own independent oscillation in main() below, so
-        // the shape's openness and its lopsidedness drift in and out of phase with each other
-        // rather than always changing together.
-        float sceneSDF(vec3 p, float morphT, float evenness) {
-          float outer = sdSphere(p, vec3(0.0), 0.8);
-          float bite = morphT * uShellOpenness;
-          float biteRadius = mix(0.0, 0.8 - uWallThickness * 0.3, bite);
-          // Offset angled toward the camera (+Z), not purely sideways (+X) — the camera looks
-          // down -Z, so a purely sideways cut mostly misses the front-facing silhouette the
-          // camera can actually see, and the shape still reads as a plain full circle regardless
-          // of how large the cut gets. Angling it means the hollowing actually reaches the visible
-          // near surface, opening into the camera-facing crescent the reference shows.
-          float offsetAmount = (1.0 - evenness) * 1.1 * bite;
-          vec3 biteCenter = vec3(offsetAmount * 0.55, offsetAmount * 0.25, offsetAmount * 0.75);
-          float inner = sdSphere(p, biteCenter, biteRadius);
-          return max(outer, -inner);
-        }
-
-        vec3 calcNormal(vec3 p, float morphT, float evenness) {
-          vec2 e = vec2(0.001, 0.0);
-          return normalize(vec3(
-            sceneSDF(p + e.xyy, morphT, evenness) - sceneSDF(p - e.xyy, morphT, evenness),
-            sceneSDF(p + e.yxy, morphT, evenness) - sceneSDF(p - e.yxy, morphT, evenness),
-            sceneSDF(p + e.yyx, morphT, evenness) - sceneSDF(p - e.yyx, morphT, evenness)
-          ));
-        }
-
-        // Sphere tracing — steps along the ray by the SDF's own (conservative) distance estimate
-        // each iteration, same convention as the old sphereIntersect: returns -1.0 on a miss.
-        float raymarch(vec3 ro, vec3 rd, float morphT, float evenness) {
-          float t = 0.0;
-          for (int i = 0; i < 64; i++) {
-            float d = sceneSDF(ro + rd * t, morphT, evenness);
-            if (d < 0.0015) return t;
-            t += d;
-            if (t > 8.0) return -1.0;
-          }
-          return -1.0;
+        // Analytic ray-sphere intersection — the boundary itself never changes shape. What looked
+        // like a morphing/hollowing geometry in an earlier pass is more likely (per direct
+        // comparison against the reference) a *fixed* translucent sphere with a flame/plasma
+        // effect whose own extent grows and shrinks inside it — no geometric holes at all, just a
+        // volumetric-reading brightness envelope. That's simpler (back to one closed-form solve,
+        // no raymarcher) and matches the reference's fluid, edge-less quality better than any
+        // hard(ish) CSG cut could, however softened.
+        float sphereIntersect(vec3 ro, vec3 rd, float radius) {
+          float b = dot(ro, rd);
+          float c = dot(ro, ro) - radius * radius;
+          float h = b * b - c;
+          if (h < 0.0) return -1.0;
+          return -b - sqrt(h);
         }
 
         // Dithering
@@ -299,15 +265,7 @@ export default function OrbComparisonPage() {
           vec3 ro = vec3(0.0, 0.0, 2.5);
           vec3 rd = normalize(vec3(uv * 1.5, -1.0));
 
-          // Oscillate continuously between a full sphere (morphT=0) and a hollowed, thick-walled
-          // shell (morphT=1) and back — a smooth sine, not a linear ping-pong, so it eases through
-          // both extremes rather than moving at a constant rate and snapping direction. Evenness
-          // oscillates independently (its own speed, a phase offset so the two don't stay in
-          // lockstep) between a lopsided bowl/hemisphere and an even-walled hollow shell.
-          float morphT = 0.5 + 0.5 * sin(uTime * uMorphSpeed);
-          float evenness = uShellEvenness * (0.5 + 0.5 * sin(uTime * uEvennessSpeed + 1.7));
-
-          float t = raymarch(ro, rd, morphT, evenness);
+          float t = sphereIntersect(ro, rd, 0.8);
 
           if (t < 0.0) {
             gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
@@ -315,7 +273,8 @@ export default function OrbComparisonPage() {
           }
 
           vec3 pos = ro + t * rd;
-          vec3 normal = calcNormal(pos, morphT, evenness);
+          vec3 normal = normalize(pos);
+          vec3 viewDirRaw = normalize(ro - pos);
 
           // Domain-warped noise for flame effect
           float noise = warpedFbm(pos * uNoiseScale, uTime * uTimeScale);
@@ -327,17 +286,23 @@ export default function OrbComparisonPage() {
           // Darken overall - most of sphere should be dark indigo
           color *= uDarkness;
 
-          // Carve a small, sharp-edged hot region out of the noise field via smoothstep, rather
-          // than cubing the raw noise value — warpedFbm's practical range rarely gets close to
-          // its theoretical extremes, so pow(noise, 3.0) was ~0.01-0.03 almost everywhere and
-          // never read as a distinct "flame core." The two smoothstep edges are exactly the knobs
-          // that control how big/rare the hot region is.
-          float hotMask = smoothstep(uHotLow, uHotHigh, noise);
+          // The "flame envelope" — a slow, large-scale, single-octave noise sampled far more
+          // coarsely than the detail noise above, evaluated once per pixel from the *fixed* sphere
+          // position (not warped) so it drifts as one coherent blob rather than flickering. Its
+          // value shifts the hot-mask threshold up and down over time: when the envelope is high,
+          // the threshold drops and the flame reads as filling most of the sphere; when it's low,
+          // the threshold rises and the flame recedes to a small, contained lobe. This is what
+          // should produce "sometimes looks like the whole sphere is lit, sometimes just one
+          // small region" without the sphere's own boundary ever moving.
+          float envelope = snoise(pos * 0.8 + vec3(0.0, 0.0, uTime * uEnvelopeSpeed));
+          float hotLow = clamp(uHotLow - envelope * uEnvelopeAmount, 0.0, 1.0);
+          float hotHigh = clamp(uHotHigh - envelope * uEnvelopeAmount, hotLow + 0.05, 1.0);
+
+          float hotMask = smoothstep(hotLow, hotHigh, noise);
           color += vec3(1.0, 0.5, 0.9) * hotMask * uHotIntensity;
 
           // Fresnel rim lighting
-          vec3 viewDir = normalize(ro - pos);
-          float NdotV = max(dot(normal, viewDir), 0.0);
+          float NdotV = max(dot(normal, viewDirRaw), 0.0);
           float fresnel = pow(1.0 - NdotV, uFresnelPower);
           color += vec3(0.4, 0.2, 0.6) * fresnel * uFresnelIntensity;
 
@@ -406,12 +371,9 @@ export default function OrbComparisonPage() {
     const material = materialRef.current;
     const bloomPass = bloomPassRef.current;
     if (!material || !bloomPass) return;
-    material.uniforms.uMorphSpeed.value = params.morphSpeed;
-    material.uniforms.uShellOpenness.value = params.shellOpenness;
-    material.uniforms.uWallThickness.value = params.wallThickness;
-    material.uniforms.uShellEvenness.value = params.shellEvenness;
-    material.uniforms.uEvennessSpeed.value = params.evennessSpeed;
     material.uniforms.uEdgeSoftness.value = params.edgeSoftness;
+    material.uniforms.uEnvelopeSpeed.value = params.envelopeSpeed;
+    material.uniforms.uEnvelopeAmount.value = params.envelopeAmount;
     material.uniforms.uNoiseScale.value = params.noiseScale;
     material.uniforms.uTimeScale.value = params.timeScale;
     material.uniforms.uDarkness.value = params.darkness;
@@ -511,9 +473,12 @@ export default function OrbComparisonPage() {
         >
           <Stack gap="sm">
             <h2 style={{ fontSize: "1.25rem" }}>Mutations</h2>
-            <Stack direction="row" gap="sm">
+            <Stack direction="row" gap="sm" style={{ flexWrap: "wrap" }}>
               <Button variant="secondary" size="sm" onClick={() => setParams(defaultParams())}>
                 Reset to defaults
+              </Button>
+              <Button variant="secondary" size="sm" onClick={randomizeParams}>
+                Random mutation
               </Button>
               <Button size="sm" onClick={handleCopy}>
                 {copied ? "Copied!" : "Copy for agent"}
