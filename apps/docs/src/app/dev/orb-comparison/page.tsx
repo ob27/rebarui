@@ -34,10 +34,11 @@ interface OrbVariant {
   fragmentShader: string;
 }
 
-// Shared GLSL: noise, the tumble rotation, the cosine palette, and the analytic ray-sphere test —
-// every function both orb variants build on, kept in one place so the two variants' own shader
-// source stays focused on what actually differs between them (a hollow shell vs. a volumetric
-// sheet field).
+// Shared GLSL: noise, the tumble rotation, the cosine palette, the analytic ray-sphere test, the
+// smooth-min primitive, and a shared 4-tap normal calculation (calling each variant's own
+// sceneSDF) — every function both orb variants build on, kept in one place so the two variants'
+// own shader source stays focused on what actually differs between them (a hollow shell vs.
+// clipped, magnetically-contained metaballs).
 const GLSL_COMMON = `
   // Simplex noise from Ashima/webgl-noise
   vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -146,6 +147,31 @@ const GLSL_COMMON = `
   float dither(vec2 coord, float time) {
     return fract(sin(dot(coord, vec2(12.9898, 78.233)) + time) * 43758.5453);
   }
+
+  // Polynomial smooth-min — blends two SDFs into one rounded union instead of a hard min().
+  float smin(float a, float b, float k) {
+    float h = clamp(0.5 + 0.5 * (b - a) / max(k, 0.0001), 0.0, 1.0);
+    return mix(b, a, h) - k * h * (1.0 - h);
+  }
+
+  // Each variant defines its own sceneSDF(position, time) with this exact signature; this forward
+  // declaration lets the shared normal calculation below call it regardless of which variant's
+  // shader it ends up compiled into.
+  float sceneSDF(vec3 p, float time);
+
+  // The 4-tap "tetrahedron" technique — one fewer pair of opposing samples than the naive 6-tap
+  // central-difference normal, which matters here because every tap is a full raymarch distance
+  // evaluation run again for every visible pixel.
+  vec3 calcNormal(vec3 p, float time) {
+    const float h = 0.0005;
+    const vec2 k = vec2(1.0, -1.0);
+    return normalize(
+      k.xyy * sceneSDF(p + k.xyy * h, time) +
+      k.yyx * sceneSDF(p + k.yyx * h, time) +
+      k.yxy * sceneSDF(p + k.yxy * h, time) +
+      k.xxx * sceneSDF(p + k.xxx * h, time)
+    );
+  }
 `;
 
 // ---------------------------------------------------------------------------------------------
@@ -208,26 +234,22 @@ const SOLID_FRAGMENT_SHADER = `
 
   // The two CSG halves, kept separate (rather than pre-combined into one float) so the caller can
   // tell which surface is active at a hit point: whichever of the two is larger is the one
-  // actually forming the boundary there (see isCutFace in main()).
-  vec2 sceneSDFParts(vec3 p, float t, float cutHeight, float thickness) {
+  // actually forming the boundary there (see isCutFace in main()). Reads uShellThickness/
+  // uOpeningSize directly rather than taking them as parameters — they're the same every call
+  // within a frame, so there's no reason to thread them through every raymarch/normal-tap call.
+  vec2 sceneSDFParts(vec3 p, float t) {
     vec3 pObj = tumble(p, t);
-    float shell = abs(length(pObj) - SHELL_RADIUS) - thickness;
+    float shell = abs(length(pObj) - SHELL_RADIUS) - uShellThickness;
+    // openingSize 0 = closed sphere, 1 = fully removed; the cut plane's local-z offset runs from
+    // +radius (nothing cut) down through 0 (an exact half-shell "bowl") to -radius.
+    float cutHeight = SHELL_RADIUS * (1.0 - 2.0 * uOpeningSize);
     float cut = pObj.z - cutHeight;
     return vec2(shell, cut);
   }
 
-  float sceneSDF(vec3 p, float t, float cutHeight, float thickness) {
-    vec2 parts = sceneSDFParts(p, t, cutHeight, thickness);
+  float sceneSDF(vec3 p, float t) {
+    vec2 parts = sceneSDFParts(p, t);
     return max(parts.x, parts.y);
-  }
-
-  vec3 calcNormal(vec3 p, float t, float cutHeight, float thickness) {
-    vec2 e = vec2(0.001, 0.0);
-    return normalize(vec3(
-      sceneSDF(p + e.xyy, t, cutHeight, thickness) - sceneSDF(p - e.xyy, t, cutHeight, thickness),
-      sceneSDF(p + e.yxy, t, cutHeight, thickness) - sceneSDF(p - e.yxy, t, cutHeight, thickness),
-      sceneSDF(p + e.yyx, t, cutHeight, thickness) - sceneSDF(p - e.yyx, t, cutHeight, thickness)
-    ));
   }
 
   void main() {
@@ -237,9 +259,6 @@ const SOLID_FRAGMENT_SHADER = `
     vec3 rd = normalize(vec3(uv * 1.5, -1.0));
 
     float rotT = uTime * uRotationSpeed;
-    // openingSize 0 = closed sphere, 1 = fully removed; the cut plane's local-z offset runs from
-    // +radius (nothing cut) down through 0 (an exact half-shell "bowl") to -radius.
-    float cutHeight = SHELL_RADIUS * (1.0 - 2.0 * uOpeningSize);
 
     float outerBound = SHELL_RADIUS + uShellThickness + 0.05;
     float tBound = sphereIntersect(ro, rd, outerBound);
@@ -252,9 +271,9 @@ const SOLID_FRAGMENT_SHADER = `
     float maxDist = tBound + outerBound * 2.2;
     bool didHit = false;
     vec3 pos = ro;
-    for (int i = 0; i < 64; i++) {
+    for (int i = 0; i < 48; i++) {
       pos = ro + rd * dist;
-      float d = sceneSDF(pos, rotT, cutHeight, uShellThickness);
+      float d = sceneSDF(pos, rotT);
       if (d < 0.001) { didHit = true; break; }
       dist += d;
       if (dist > maxDist) break;
@@ -265,11 +284,11 @@ const SOLID_FRAGMENT_SHADER = `
       return;
     }
 
-    vec3 normal = calcNormal(pos, rotT, cutHeight, uShellThickness);
+    vec3 normal = calcNormal(pos, rotT);
     vec3 viewDirRaw = normalize(ro - pos);
 
     vec3 pObj = tumble(pos, rotT);
-    vec2 parts = sceneSDFParts(pos, rotT, cutHeight, uShellThickness);
+    vec2 parts = sceneSDFParts(pos, rotT);
     bool isCutFace = parts.y > parts.x;
     bool isInner = length(pObj) < SHELL_RADIUS;
 
@@ -307,52 +326,96 @@ const SOLID_FRAGMENT_SHADER = `
 `;
 
 // ---------------------------------------------------------------------------------------------
-// Flow Orb — the alternate reading of the reference: not a solid shell at all, but an invisible
-// tumbling sphere whose boundary is never drawn directly. Inside it, thin fractal "sheets" (iso-
-// bands of a domain-warped noise field) fold and whip around, weighted to concentrate near the
-// inner wall so they read as washing/splashing against a containment they never actually render.
-// The only hint of the boundary itself is a faint fresnel glow right at its silhouette.
+// Flow Orb — a second reading of the reference, replacing an earlier "flat sheets" hypothesis
+// (which was both wrong and, with a per-step domain-warped noise call, catastrophically slow):
+// amorphous metaball blobs whose union is intersected with an invisible bounding sphere. The
+// sphere both *clips* the blobs (nothing renders past its radius, giving a clean spherical
+// silhouette) and constrains their motion (each blob's distance from center bounces between the
+// center and the wall, like it's contained by a magnetic field rather than free-floating), so the
+// visible result reads as one solid, continuously-mutating sphere even though the surface itself
+// is made of merging/separating blobs, not a fixed shape. All geometry here is analytic distance
+// math — no noise inside the raymarch loop — specifically because that's what made the sheets
+// version unusably slow.
 // ---------------------------------------------------------------------------------------------
 
 const FLOW_PARAMS: OrbParam[] = [
-  { key: "rotationSpeed", label: "Tumble speed", min: 0, max: 1, step: 0.01, default: 0.22, target: "uniform" },
-  { key: "sheetFrequency", label: "Sheet frequency (layer count)", min: 1, max: 12, step: 0.25, default: 2.25, target: "uniform" },
-  { key: "sheetThinness", label: "Sheet thinness", min: 0.02, max: 0.5, step: 0.01, default: 0.35, target: "uniform" },
-  { key: "sheetWarp", label: "Sheet warp (fold amount)", min: 0, max: 3, step: 0.05, default: 0.6, target: "uniform" },
-  { key: "sheetIntensity", label: "Sheet brightness", min: 0, max: 3, step: 0.05, default: 2.0, target: "uniform" },
-  { key: "wallBias", label: "Wall bias (wash against inside vs. fill volume)", min: 0, max: 1, step: 0.02, default: 1, target: "uniform" },
-  { key: "noiseScale", label: "Noise scale", min: 0.5, max: 4, step: 0.1, default: 1.6, target: "uniform" },
-  { key: "timeScale", label: "Flow speed (time scale)", min: 0.05, max: 1, step: 0.01, default: 0.25, target: "uniform" },
-  { key: "voidDarkness", label: "Void ambient fill", min: 0, max: 0.3, step: 0.01, default: 0.05, target: "uniform" },
-  { key: "boundaryIntensity", label: "Invisible boundary hint", min: 0, max: 1, step: 0.02, default: 0.12, target: "uniform" },
-  { key: "fresnelPower", label: "Boundary fresnel power", min: 0.5, max: 6, step: 0.1, default: 3.0, target: "uniform" },
+  { key: "activeBalls", label: "Blob count", min: 2, max: 8, step: 1, default: 6, target: "uniform" },
+  { key: "ballRadius", label: "Blob size", min: 0.15, max: 0.6, step: 0.01, default: 0.4, target: "uniform" },
+  { key: "smoothing", label: "Merge smoothing", min: 0.02, max: 0.6, step: 0.01, default: 0.3, target: "uniform" },
+  { key: "orbitRadius", label: "Containment radius (bounce distance)", min: 0.1, max: 0.78, step: 0.01, default: 0.62, target: "uniform" },
+  { key: "orbitSpeed", label: "Bounce/orbit speed", min: 0.02, max: 1.5, step: 0.02, default: 0.35, target: "uniform" },
+  { key: "specularIntensity", label: "Metal specular intensity", min: 0, max: 3, step: 0.05, default: 1.6, target: "uniform" },
+  { key: "specularPower", label: "Metal specular tightness", min: 4, max: 128, step: 1, default: 40, target: "uniform" },
+  { key: "fresnelPower", label: "Fresnel power", min: 0.5, max: 6, step: 0.1, default: 2.5, target: "uniform" },
+  { key: "fresnelIntensity", label: "Fresnel intensity", min: 0, max: 2, step: 0.05, default: 0.6, target: "uniform" },
+  { key: "darkness", label: "Base darkness", min: 0.2, max: 1, step: 0.05, default: 0.8, target: "uniform" },
+  { key: "edgeSoftness", label: "Edge softness (ephemeral fade)", min: 0.02, max: 1, step: 0.02, default: 0.3, target: "uniform" },
   { key: "grainAmount", label: "Grain amount", min: 0, max: 0.1, step: 0.005, default: 0.02, target: "uniform" },
-  { key: "bloomStrength", label: "Bloom strength", min: 0, max: 3, step: 0.05, default: 0.45, target: "bloom" },
-  { key: "bloomRadius", label: "Bloom radius", min: 0, max: 1, step: 0.02, default: 0.35, target: "bloom" },
-  { key: "bloomThreshold", label: "Bloom threshold", min: 0, max: 1, step: 0.02, default: 0.8, target: "bloom" },
+  { key: "bloomStrength", label: "Bloom strength", min: 0, max: 3, step: 0.05, default: 0.6, target: "bloom" },
+  { key: "bloomRadius", label: "Bloom radius", min: 0, max: 1, step: 0.02, default: 0.4, target: "bloom" },
+  { key: "bloomThreshold", label: "Bloom threshold", min: 0, max: 1, step: 0.02, default: 0.7, target: "bloom" },
 ];
 
 const FLOW_FRAGMENT_SHADER = `
   uniform float uTime;
   uniform vec2 uResolution;
-  uniform float uRotationSpeed;
-  uniform float uSheetFrequency;
-  uniform float uSheetThinness;
-  uniform float uSheetWarp;
-  uniform float uSheetIntensity;
-  uniform float uWallBias;
-  uniform float uNoiseScale;
-  uniform float uTimeScale;
-  uniform float uVoidDarkness;
-  uniform float uBoundaryIntensity;
+  uniform float uActiveBalls;
+  uniform float uBallRadius;
+  uniform float uSmoothing;
+  uniform float uOrbitRadius;
+  uniform float uOrbitSpeed;
+  uniform float uSpecularIntensity;
+  uniform float uSpecularPower;
   uniform float uFresnelPower;
+  uniform float uFresnelIntensity;
+  uniform float uDarkness;
+  uniform float uEdgeSoftness;
   uniform float uGrainAmount;
   varying vec2 vUv;
 
   ${GLSL_COMMON}
 
-  #define BOUNDARY_RADIUS 0.8
-  #define FLOW_STEPS 56
+  #define CONTAINER_RADIUS 0.8
+  #define MAX_BALLS 8
+
+  // Each blob's distance from center bounces between ~30% and 100% of uOrbitRadius via abs(sin(...))
+  // (which reflects at 0 instead of going negative) rather than smoothly orbiting at a fixed
+  // radius — the literal "bouncing off a magnetic field" containment, not a free orbit.
+  vec3 metaballCenter(float i, float time) {
+    float speed = uOrbitSpeed * (0.7 + 0.23 * i);
+    float phase = i * 2.399963; // golden-angle-ish spread so blobs don't sync up
+    float radial = uOrbitRadius * (0.55 + 0.45 * abs(sin(time * speed * 0.6 + phase * 1.3)));
+    vec3 axis = normalize(vec3(0.4 + 0.3 * sin(i), 1.0, 0.3 + 0.2 * cos(i * 1.7)));
+    vec3 dir = normalize(vec3(
+      cos(time * speed + phase),
+      sin(time * speed * 0.8 + phase * 1.1),
+      sin(time * speed * 1.2 + phase * 0.7)
+    ));
+    dir = rotateAxis(dir, axis, time * speed * 0.3);
+    return dir * radial;
+  }
+
+  // Pure analytic distance math, no noise calls — this loop runs per raymarch step, and it was a
+  // per-step domain-warped-noise call here in the previous "sheets" version that made the whole
+  // page unusably slow.
+  float metaballUnion(vec3 p, float time) {
+    float d = 1.0e5;
+    for (int i = 0; i < MAX_BALLS; i++) {
+      if (i >= int(uActiveBalls + 0.5)) break;
+      vec3 c = metaballCenter(float(i), time);
+      float db = length(p - c) - uBallRadius;
+      d = smin(d, db, uSmoothing);
+    }
+    return d;
+  }
+
+  // CSG intersection with the container sphere — this is the "clip" that keeps the silhouette a
+  // clean sphere no matter how the blobs merge/separate inside it.
+  float sceneSDF(vec3 p, float time) {
+    float balls = metaballUnion(p, time);
+    float container = length(p) - CONTAINER_RADIUS;
+    return max(balls, container);
+  }
 
   void main() {
     vec2 uv = (gl_FragCoord.xy - 0.5 * uResolution) / min(uResolution.x, uResolution.y);
@@ -360,86 +423,68 @@ const FLOW_FRAGMENT_SHADER = `
     vec3 ro = vec3(0.0, 0.0, 2.5);
     vec3 rd = normalize(vec3(uv * 1.5, -1.0));
 
-    float b = dot(ro, rd);
-    float c = dot(ro, ro) - BOUNDARY_RADIUS * BOUNDARY_RADIUS;
-    float h = b * b - c;
-    if (h < 0.0) {
-      gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
-      return;
-    }
-    float sq = sqrt(h);
-    float t0 = max(-b - sq, 0.0);
-    float t1 = -b + sq;
-    if (t1 <= t0) {
+    float outerBound = CONTAINER_RADIUS + 0.05;
+    float tBound = sphereIntersect(ro, rd, outerBound);
+    if (tBound < 0.0) {
       gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
       return;
     }
 
-    float rotT = uTime * uRotationSpeed;
-
-    float dt = (t1 - t0) / float(FLOW_STEPS);
-    vec3 accumColor = vec3(0.0);
-    float accumAlpha = 0.0;
-    // Jittering the start offset per pixel turns the under-sampling of thin, high-frequency
-    // sheets into fine grain instead of visible gaps where a step happened to straddle a band.
-    float t = t0 + dt * dither(gl_FragCoord.xy, uTime * 0.3);
-    for (int i = 0; i < FLOW_STEPS; i++) {
-      vec3 p = ro + rd * t;
-      vec3 pObj = tumble(p, rotT);
-      float r = length(pObj) / BOUNDARY_RADIUS;
-
-      // A domain-warped noise field folded into thin iso-band "sheets": wherever the field
-      // crosses one of uSheetFrequency evenly-spaced levels, abs(fract(v)-0.5) dips toward 0 and
-      // the sheet brightens — a thin membrane rather than a filled cloud.
-      float n = warpedFbm(pObj * uNoiseScale, uTime * uTimeScale);
-      // warpedFbm is deliberately turbulent at fine spatial detail (it's built from nested domain
-      // warps) — multiplying its contribution by a full turn per unit intensity let it dominate
-      // the coherent geometric banding entirely, turning "folded sheets" into pixel-static. Keeping
-      // this term sub-period lets it fold the bands without erasing their large-scale coherence.
-      float v = (pObj.x * 0.6 + pObj.y * 0.9 + pObj.z * 1.3) * uSheetFrequency + n * uSheetWarp;
-      float f = abs(fract(v) - 0.5) * 2.0;
-      float sheet = 1.0 - smoothstep(0.0, uSheetThinness, f);
-
-      // Concentrates sheet density near the boundary (r -> 1) as uWallBias increases, so the
-      // effect reads as washing against an unseen containment rather than filling the whole orb.
-      // A ray integrates through many depth-layers of a genuinely 3D turbulent field; spread
-      // evenly across the whole volume, those layers don't line up and just accumulate into
-      // moiré/static rather than reading as sheets. Weighting hard toward the outer shell (a
-      // steep power curve, not just a smoothstep) limits any one ray to one or two coherent
-      // crossings, which is also literally what "washing against the inside" means.
-      float wall = mix(1.0, pow(smoothstep(0.35, 1.0, r), 3.0), uWallBias);
-      float density = sheet * uSheetIntensity * wall;
-
-      float colorT = n * 0.13 + 0.08;
-      vec3 col = palette(colorT) * (0.6 + 0.4 * sheet);
-
-      // Each individual band is thin (see uSheetThinness) and only a handful of the 40 marching
-      // steps ever land inside one, so the per-step contribution needs to be large enough that a
-      // few hits alone read as a visible sheet rather than vanishing into rounding.
-      float a = clamp(density * dt * 9.0, 0.0, 1.0);
-      accumColor += (1.0 - accumAlpha) * col * a;
-      accumAlpha += (1.0 - accumAlpha) * a;
-
-      t += dt;
-      if (accumAlpha > 0.98) break;
+    float dist = max(tBound - 0.05, 0.0);
+    float maxDist = tBound + outerBound * 2.2;
+    bool didHit = false;
+    vec3 pos = ro;
+    for (int i = 0; i < 48; i++) {
+      pos = ro + rd * dist;
+      float d = sceneSDF(pos, uTime);
+      if (d < 0.001) { didHit = true; break; }
+      dist += d;
+      if (dist > maxDist) break;
     }
 
-    accumColor += uVoidDarkness * vec3(0.15, 0.05, 0.25) * (1.0 - accumAlpha);
+    if (!didHit) {
+      gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+      return;
+    }
 
-    // The boundary is never drawn as geometry — only a fresnel hint at the silhouette of the
-    // invisible sphere it's contained by.
-    vec3 exitPos = ro + rd * t1;
-    vec3 exitNormal = normalize(exitPos);
-    vec3 viewDirRaw = normalize(ro - exitPos);
-    float NdotV = max(dot(exitNormal, viewDirRaw), 0.0);
+    vec3 normal = calcNormal(pos, uTime);
+    vec3 viewDirRaw = normalize(ro - pos);
+
+    // Which surface is actually visible here: the blob's own bumpy surface, or the flat spherical
+    // patch where the container clipped a blob flush at the boundary — cheap to tell apart since
+    // sceneSDF is just the max() of the two.
+    float ballsVal = metaballUnion(pos, uTime);
+    float containerVal = length(pos) - CONTAINER_RADIUS;
+    bool isClipFace = containerVal > ballsVal;
+
+    // One single fbm sample at the hit point for surface variation — not per raymarch step, so it
+    // costs the same as the Solid Orb's own per-pixel noise call, nothing like the sheets version.
+    float surfN = fbm(pos * 2.2 + uTime * 0.05);
+    float colorT = surfN * 0.13 + 0.08;
+    vec3 color = palette(colorT) * uDarkness;
+
+    if (isClipFace) {
+      // Where a blob presses flush against the containment, the surface reads smoother and
+      // brighter — held metal against glass — rather than the organic blob material.
+      color = mix(color, vec3(dot(color, vec3(0.333))), 0.35);
+      color *= 1.2;
+    }
+
+    vec3 lightDir = normalize(vec3(0.6, 0.7, 0.5));
+    vec3 halfDir = normalize(lightDir + viewDirRaw);
+    float spec = pow(max(dot(normal, halfDir), 0.0), uSpecularPower) * uSpecularIntensity;
+    color += vec3(1.0, 0.92, 1.0) * spec;
+
+    float NdotV = max(dot(normal, viewDirRaw), 0.0);
     float fresnel = pow(1.0 - NdotV, uFresnelPower);
-    accumColor += vec3(0.6, 0.3, 0.8) * fresnel * uBoundaryIntensity;
-    accumAlpha = clamp(accumAlpha + fresnel * uBoundaryIntensity, 0.0, 1.0);
+    color += vec3(0.5, 0.3, 0.7) * fresnel * uFresnelIntensity;
 
     float grain = dither(gl_FragCoord.xy, uTime) * (uGrainAmount * 2.0) - uGrainAmount;
-    accumColor += grain * accumAlpha;
+    color += grain;
 
-    gl_FragColor = vec4(accumColor, accumAlpha);
+    float alpha = smoothstep(0.0, uEdgeSoftness, NdotV);
+
+    gl_FragColor = vec4(color, alpha);
   }
 `;
 
