@@ -220,6 +220,7 @@ export const CONSTRUCT_TIER = {
     VersionHistory: "opinion",
     VideoPlayer: "opinion",
     VoiceComposer: "opinion",
+    VoiceInputBar: "opinion", // mode-driven UI via a required `state` enum (idle/listening/speaking/processing), zero internal useState — same delegated-state shape as VoiceComposer/TextToSpeechBar, not state ownership.
     WaveformAudioPlayer: "opinion",
     Wizard: "opinion",
     WorkspaceSwitcher: "opinion", // real open/closed dropdown + selection state, delegated to Dropdown/Radix — the same shape as ThemeToggle, not page-arrangement governance like NavBar/SidebarNav.

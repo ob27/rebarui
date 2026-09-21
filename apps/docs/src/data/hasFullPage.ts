@@ -170,6 +170,7 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   FloatingSelectionToolbar: "/opinions/floating-selection-toolbar",
   SlashCommandMenu: "/opinions/slash-command-menu",
   VoiceComposer: "/opinions/voice-composer",
+  VoiceInputBar: "/opinions/voice-input-bar",
   AiChatInput: "/imitations/ai-chat-input",
   ShapeGallery: "/opinions/shape-gallery",
   SignaturePad: "/opinions/signature-pad",

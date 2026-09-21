@@ -201,6 +201,7 @@ const COMPONENT_FILES = [
   "FloatingSelectionToolbar.tsx",
   "SlashCommandMenu.tsx",
   "VoiceComposer.tsx",
+  "VoiceInputBar.tsx",
   "AiChatInput.tsx",
   "ShapeGallery.tsx",
   "FileManager.tsx",
