@@ -220,11 +220,13 @@ const COMPONENT_FILES = [
 // `Ellipsis.tsx` purely so its truncation math has a real unit test (jsdom can't exercise the
 // real measure-and-search effect, see that file's own comment); not a component, not part of the
 // public `rebar-ui` API surface.
-// `DEFAULT_FLOAT_ASSISTANT_VOICE_GREETINGS` — a plain exported `string[]` constant from
-// `FloatAssistant.tsx` (the built-in default for its `voiceGreetings` prop), not a component;
-// react-docgen-typescript still parses it out of the file alongside the real `FloatAssistant`
-// export, same as `DrawerPanel`/`buildTruncated` below.
-const INTERNAL_ONLY = new Set(["DrawerPanel", "buildTruncated", "DEFAULT_FLOAT_ASSISTANT_VOICE_GREETINGS"]);
+//
+// Note this class of false-positive keeps recurring for `FloatAssistant.tsx` specifically (its
+// own default-value constants got caught here twice) — those now live in
+// `FloatAssistant.constants.ts` instead, a file this script never scans at all, rather than
+// growing this list further. Prefer that pattern for any component's own plain data constants
+// over adding another name here.
+const INTERNAL_ONLY = new Set(["DrawerPanel", "buildTruncated"]);
 
 const result = {};
 
