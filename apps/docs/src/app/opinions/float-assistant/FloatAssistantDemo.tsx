@@ -27,7 +27,7 @@ export function FloatAssistantDemo() {
       voiceId="alquin"
       persona="chorus"
       theme="dark"
-      edgeDockable
+      sidebarDockable
       onAttachmentPress={() => {}}
       onSlashCommand={() => {}}
       onHistoryPress={() => {}}

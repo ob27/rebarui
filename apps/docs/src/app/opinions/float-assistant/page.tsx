@@ -32,7 +32,7 @@ const BLOCKS: Construct[] = [
   voiceEnabled?: boolean,
   draggable?: boolean,
   minimizable?: boolean,
-  edgeDockable?: boolean,
+  sidebarDockable?: boolean,
   sidebarWidth?: number,
   dockMode?: "floating" | "sidebar",
   apiEndpoint?: string,
@@ -109,7 +109,7 @@ Response:
       },
       {
         kind: "text",
-        text: "**Edge-dock to a full-height sidebar** — set `edgeDockable` and try dragging this demo's own trigger toward the right edge of the screen: a narrow rail peeks into view, and holding there (or dragging deeper) widens it into a drop target. Releasing inside the widened rail flies the trigger into a full-height sidebar instead of the default floating panel, with a Claude-Code-style input toolbar (attachment, slash-command, history, an optional model pill, and submit). A dock-toggle button also appears in the panel header for the same effect without the drag gesture. Off by default — every existing floating-panel behavior is unchanged unless this is set.",
+        text: "**Dock to a full-height sidebar** — set `sidebarDockable` and click the dock-toggle button in this demo's own panel header: it swaps the default floating panel for a full-height sidebar anchored to the right screen edge, with a Claude-Code-style input toolbar (attachment, slash-command, history, an optional model pill, and submit) instead of the compact floating input. Off by default — every existing floating-panel behavior is unchanged unless this is set.",
       },
     ],
   },

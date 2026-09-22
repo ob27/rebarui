@@ -125,65 +125,29 @@ test.describe("FloatAssistant", () => {
   });
 });
 
-test.describe("FloatAssistant edge-dock", () => {
+test.describe("FloatAssistant sidebar dock", () => {
   // The demo page's own trigger defaults to the bottom-right corner, the same corner the docs
-  // site's DevTools toggle occupies — hidden here so raw mouse coordinates land on the trigger
+  // site's DevTools toggle occupies — hidden here so clicks/double-clicks land on the trigger
   // itself, not the DevTools button sitting on top of it.
-  async function gotoAndHideDevtools(page: import("@playwright/test").Page) {
+  async function gotoDemo(page: import("@playwright/test").Page) {
     await page.goto("/opinions/float-assistant");
     await page.waitForLoadState("networkidle");
     await page.addStyleTag({ content: ".rebar-devtools-toggle, .rebar-devtools { display: none !important; }" });
   }
 
-  test("dragging near the right edge reveals a peeking rail", async ({ page }) => {
-    await gotoAndHideDevtools(page);
+  test("dock-toggle button switches the panel to a full-height sidebar", async ({ page }) => {
+    await gotoDemo(page);
     const trigger = page.locator('[data-rebar-part="trigger"]');
-    const box = await trigger.boundingBox();
-    expect(box).not.toBeNull();
-    if (!box) return;
-
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(page.viewportSize()!.width - 90 - box.width, box.y - 200, { steps: 5 });
-
-    const rail = page.locator('[data-rebar-part="edge-rail"]');
-    await expect(rail).toHaveAttribute("data-rebar-state", "peeking");
-
-    await page.mouse.up();
-  });
-
-  test("holding in the peek band past the hold delay escalates to expanded", async ({ page }) => {
-    await gotoAndHideDevtools(page);
-    const trigger = page.locator('[data-rebar-part="trigger"]');
-    const box = await trigger.boundingBox();
-    expect(box).not.toBeNull();
-    if (!box) return;
-
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(page.viewportSize()!.width - 90 - box.width, box.y - 200, { steps: 5 });
-
-    const rail = page.locator('[data-rebar-part="edge-rail"]');
-    await expect(rail).toHaveAttribute("data-rebar-state", "peeking");
-    await expect(rail).toHaveAttribute("data-rebar-state", "expanded", { timeout: 2000 });
-
-    await page.mouse.up();
-  });
-
-  test("dropping inside the expanded rail docks as a full-height sidebar", async ({ page }) => {
-    await gotoAndHideDevtools(page);
-    const trigger = page.locator('[data-rebar-part="trigger"]');
-    const box = await trigger.boundingBox();
-    expect(box).not.toBeNull();
-    if (!box) return;
-
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.mouse.down();
-    // Straight into the expand band — commits immediately, no hold needed.
-    await page.mouse.move(page.viewportSize()!.width - 20 - box.width, box.y - 400, { steps: 8 });
-    await page.mouse.up();
+    await trigger.dblclick();
 
     const panel = page.locator('[data-rebar-part="panel"]');
+    await expect(panel).toBeVisible();
+    await expect(panel).toHaveAttribute("data-rebar-state", "floating");
+
+    const dockToggle = page.locator('[data-rebar-part="dock-toggle"]');
+    await expect(dockToggle).toBeVisible();
+    await dockToggle.click({ force: true });
+
     await expect(panel).toHaveAttribute("data-rebar-state", "sidebar", { timeout: 2000 });
     const panelBox = await panel.boundingBox();
     const viewport = page.viewportSize();
@@ -199,19 +163,26 @@ test.describe("FloatAssistant edge-dock", () => {
     await expect(page.locator('[data-rebar-part="sidebar-input"]')).toBeVisible();
   });
 
-  test("sidebar toolbar wiring — attachment, slash-command, and history buttons fire their handlers", async ({
-    page,
-  }) => {
-    await gotoAndHideDevtools(page);
+  test("dock-toggle button undocks back to the floating panel", async ({ page }) => {
+    await gotoDemo(page);
     const trigger = page.locator('[data-rebar-part="trigger"]');
-    const box = await trigger.boundingBox();
-    expect(box).not.toBeNull();
-    if (!box) return;
+    await trigger.dblclick();
 
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(page.viewportSize()!.width - 20 - box.width, box.y - 400, { steps: 8 });
-    await page.mouse.up();
+    const panel = page.locator('[data-rebar-part="panel"]');
+    const dockToggle = page.locator('[data-rebar-part="dock-toggle"]');
+    await dockToggle.click({ force: true });
+    await expect(panel).toHaveAttribute("data-rebar-state", "sidebar");
+
+    await dockToggle.click({ force: true });
+    await expect(panel).toHaveAttribute("data-rebar-state", "floating");
+    await expect(page.locator('[data-rebar-part="sidebar-input"]')).toHaveCount(0);
+  });
+
+  test("sidebar toolbar wiring — attachment, slash-command, and history buttons are clickable", async ({ page }) => {
+    await gotoDemo(page);
+    const trigger = page.locator('[data-rebar-part="trigger"]');
+    await trigger.dblclick();
+    await page.locator('[data-rebar-part="dock-toggle"]').click({ force: true });
 
     const sidebarInput = page.locator('[data-rebar-part="sidebar-input"]');
     await expect(sidebarInput).toBeVisible();
@@ -224,39 +195,16 @@ test.describe("FloatAssistant edge-dock", () => {
     }
   });
 
-  test("releasing while only peeking (not held, not deep) snaps back without docking", async ({ page }) => {
-    await gotoAndHideDevtools(page);
+  test("sending a message from the sidebar input works the same as the floating panel's", async ({ page }) => {
+    await gotoDemo(page);
     const trigger = page.locator('[data-rebar-part="trigger"]');
-    const box = await trigger.boundingBox();
-    expect(box).not.toBeNull();
-    if (!box) return;
+    await trigger.dblclick();
+    await page.locator('[data-rebar-part="dock-toggle"]').click({ force: true });
 
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(page.viewportSize()!.width - 90 - box.width, box.y - 200, { steps: 5 });
-    await page.mouse.up(); // released well under the hold delay
+    const textarea = page.locator('[data-rebar-part="sidebar-input"] textarea');
+    await textarea.fill("Hello from the sidebar");
+    await textarea.press("Enter");
 
-    const rail = page.locator('[data-rebar-part="edge-rail"]');
-    await expect(rail).toHaveCount(0);
-    // A release that never committed the dock never opens the panel at all — it doesn't exist,
-    // rather than existing with some other dockMode.
-    await expect(page.locator('[data-rebar-part="panel"]')).toHaveCount(0);
-  });
-
-  test("dragging toward a non-right edge never shows the rail", async ({ page }) => {
-    await gotoAndHideDevtools(page);
-    const trigger = page.locator('[data-rebar-part="trigger"]');
-    const box = await trigger.boundingBox();
-    expect(box).not.toBeNull();
-    if (!box) return;
-
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(200, 200, { steps: 8 }); // toward the top-left, away from the right edge
-
-    const rail = page.locator('[data-rebar-part="edge-rail"]');
-    await expect(rail).toHaveCount(0);
-
-    await page.mouse.up();
+    await expect(page.locator('[data-rebar-part="message-user"]').last()).toContainText("Hello from the sidebar");
   });
 });

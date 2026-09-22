@@ -7094,54 +7094,10 @@ div.rebar-chat-message-content > *:last-child { margin-bottom: 0; }
   z-index: 2;
 }
 
-/* FloatAssistant - Edge-dock peek rail. Purely decorative (pointer-events: none) — the drag
-   itself stays tracked by the trigger button's own window-level listeners, this never intercepts
-   pointer events. A plain, subtle light-grey strip (not accent-tinted) — just a bit lighter than
-   the page layer behind it, not a colored highlight. Width stays constant across peeking/expanded
-   (only opacity and the release hint change) — the hold/deeper-drag escalation is communicated by
-   that, not by the rail visibly growing wider. */
-.rebar-float-assistant-edge-rail {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100vh;
-  width: 0;
-  background: var(--rebar-color-border, #e0e0e0);
-  opacity: 0.5;
-  pointer-events: none;
-  z-index: 1490;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: width 0.2s ease-out, opacity 0.2s ease-out;
-}
-
-.rebar-float-assistant-edge-rail-peeking {
-  width: 16px;
-}
-
-.rebar-float-assistant-edge-rail-expanded {
-  width: 16px;
-  opacity: 0.8;
-}
-
-.rebar-float-assistant-edge-rail-flying {
-  width: 0;
-  opacity: 0;
-}
-
-.rebar-float-assistant-edge-rail-hint {
-  writing-mode: vertical-rl;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--rebar-color-text-secondary, #757575);
-  white-space: nowrap;
-}
-
 /* FloatAssistant - Sidebar dock layout. Shares every base .rebar-float-assistant-panel rule
    (background, border, header/messages/input structure) — this modifier only overrides geometry
    and swaps the entrance animation for one that flies in from the edge it's docked to, instead of
-   sliding up from below. */
+   sliding up from below. Reached via the panel header's dock-toggle button, not a drag gesture. */
 .rebar-float-assistant-panel-sidebar {
   border-radius: 0;
   border-right: none;

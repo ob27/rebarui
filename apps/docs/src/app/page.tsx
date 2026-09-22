@@ -1,29 +1,24 @@
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
-import { Box, Button, Card, CodeBlock, Heading, Stack, Text } from "rebar-ui";
+import { Box, Button, Card, CodeBlock, Heading, Stack } from "rebar-ui";
 import type { Construct, FeatureGridItem, PillarGridItem } from "@rebar-ui/placement";
-import { ComparisonDemo } from "@/components/ComparisonDemo";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 // This homepage is itself built through the placement layer (the "RebarUI DSL Packer"), not
-// hand-authored Rebar components — the hero, both section headers, the feature row, the
-// three-pillars grid, the migration comparison (a `comparison` block, both sides real: the Rebar
-// side rendered live, the antd side a real separate build embedded via an `iframe` block), and the
-// "get started" section below are all `BlockRenderer` output from plain Construct[] documents, the same
-// mechanism /benchmarks measures and /about/agent explains. Proof-by-existence, per
-// ref/MARKETING_SITE.md: this site really is built the way it says Rebar is meant to be used, not
-// just described that way. `Section` (page-chrome padding/background) is the one thing the Packer
-// itself is built from and stays hand-authored; `ComparisonDemo` isn't hand-drawn content either —
-// it's a thin client wrapper that keeps the comparison's iframe src in sync with the ambient theme
-// toggle, then hands the resulting `Construct[]` straight to the Packer like everything else here.
+// hand-authored Rebar components — the hero, the section headers, the feature row, the
+// three-pillars grid, the arc narrative, and the benchmark teaser are all `BlockRenderer` output
+// from plain Construct[] documents, the same mechanism /about/benchmarks measures and
+// /about/agent explains. Proof-by-existence, per ref/MARKETING_SITE.md: this site really is built
+// the way it says Rebar is meant to be used, not just described that way. `Section` (page-chrome
+// padding/background) is the one thing the Packer itself is built from and stays hand-authored.
 
 const HERO_BLOCKS: Construct[] = [
   {
     type: "hero",
-    badge: "🚧 0.11.0 — see [the repo](https://github.com/ob27/rebarui)",
+    badge: "🚧 0.12.1 — see [the repo](https://github.com/ob27/rebarui)",
     title: "Rebar UI",
     subtitle:
-      "Headless-first, intentionally low-fidelity React components, built to be built with by an LLM through a small placement layer — not hand-authored. Measured cheaper, faster, and more consistent than hand-authored Ant Design on a single build — and once a design goes through 15+ rounds of revision, still cheaper overall even after fully migrating to a real design system for production.",
+      "Headless-first, intentionally low-fidelity React components, built to be built with by an LLM through a small placement layer — not hand-authored. Measured cheaper and more consistent than hand-authored Ant Design, even after fully migrating to a real design system once you're done iterating.",
     actions: [
       { label: "Agent Context", href: "/about/agent", variant: "primary" },
       { label: "Design Heuristics", href: "/about/agent" },
@@ -47,40 +42,6 @@ const MICRO_FEATURES: FeatureGridItem[] = [
   },
 ];
 
-const THEME_SECTION_HEADER: Construct[] = [
-  {
-    type: "section-header",
-    kicker: "The migration path",
-    title: "Build in Rebar, migrate when it's time to theme for real",
-    subtitle:
-      "The exact same Composite-tier spec from /benchmarks — a filterable project list with a New Project modal — rendered live on the left, and the real, measured build after migrating away to Ant Design on the right.",
-  },
-];
-
-const COMPOSITE_DEMO_BLOCKS: Construct[] = [
-  {
-    type: "filter-bar",
-    searchPlaceholder: "Search projects…",
-    filterLabel: "Status",
-    filterOptions: ["All", "Active", "Archived"],
-    actionLabel: "New Project",
-  },
-  {
-    type: "data-list",
-    items: [
-      { title: "Marketing Site Redesign", badge: "Active" },
-      { title: "Q3 Budget Review", badge: "Active" },
-      { title: "Legacy API Migration", badge: "Archived" },
-      { title: "Customer Portal Beta", badge: "Active" },
-    ],
-  },
-  // The full Composite-tier spec also has a "New Project" modal — deliberately left out of this
-  // live demo. The `modal` block always renders forced-open (see /about/agent#control for
-  // why), which is correct for a benchmark scaffold that's the whole page, but would cover this
-  // entire homepage as a fixed overlay here. The antd screenshot on the right still shows it —
-  // that's a real difference between "a live demo embedded in a bigger page" and "the whole spec."
-];
-
 const PILLARS_HEADER: Construct[] = [
   {
     type: "section-header",
@@ -99,16 +60,53 @@ const PILLARS: PillarGridItem[] = [
     cta: "Read the heuristics",
   },
   {
-    title: "Four Tiers",
-    body: "166 components and 39 blocks, classified by where they sit between a raw static primitive and a piece of page-level structural law — Imitations, Synthetics, Opinions, Orders. Working toward full Ant Design v6 parity, with a real codemod, not just a prompt.",
+    title: "Five Tiers",
+    body: "192 components and 42 blocks, classified by where they sit between a raw static primitive and a piece of page-level structural law — Imitations, Synthetics, Opinions, Orders, Geneses. Working toward full Ant Design v6 parity, with a real codemod, not just a prompt.",
     href: "/about/agent",
     cta: "Browse the tiers",
   },
   {
     title: "Benchmarks",
-    body: "The actual argument for building this way, measured: cheaper, faster, and far more visually consistent than hand-authored AntD on a single build — and cheaper overall even after migrating away for real theming, once a design goes through 15+ rounds of revision.",
+    body: "The actual argument for building this way, measured: cheaper and far more visually consistent than hand-authored AntD from the first build — and still cheaper overall even after migrating away for real theming, once a design goes through enough rounds of revision.",
     href: "/about/benchmarks",
     cta: "See the numbers",
+  },
+];
+
+const ARC_BLOCKS: Construct[] = [
+  {
+    type: "doc-section",
+    heading: "Why build this way",
+    body: [
+      {
+        kind: "text",
+        text: "Real UI work is volatile early — layouts and content shift every round of feedback. Rebar is deliberately plain and low-fidelity while that's happening: an LLM composes it through the placement layer's small typed vocabulary instead of hand-writing layout decisions, so revisions stay cheap while the design is still moving.",
+      },
+      {
+        kind: "text",
+        text: "Once the design stabilizes, that plainness stops being useful — that's the one moment Rebar is meant to be migrated away from, to a real design system, by hand or by an LLM, without rewriting component structure or breaking tests. Building this way isn't free once you count that migration; it's cheaper anyway, on every model and prompt style measured so far.",
+      },
+    ],
+  },
+];
+
+const PROOF_HEADER: Construct[] = [
+  {
+    type: "section-header",
+    kicker: "Measured, not asserted",
+    title: "The numbers behind that claim",
+  },
+];
+
+const PROOF_BLOCKS: Construct[] = [
+  {
+    type: "stats-table",
+    headers: ["Metric", "Result"],
+    rows: [
+      ["Token cost vs. hand-authored AntD (Claude)", "3–5% cheaper"],
+      ["Token cost vs. hand-authored AntD (Qwen / Kimi)", "25–75% cheaper"],
+      ["Migration break-even point", "13–17 revision rounds"],
+    ],
   },
 ];
 
@@ -148,32 +146,22 @@ export default function Home() {
 
       <Section tone="muted">
         <Stack gap="xl">
-          <NextBlockRenderer blocks={THEME_SECTION_HEADER} />
-          <ComparisonDemo
-            leftLabel="Rebar (live — toggle the theme via 🔧 DevTools)"
-            leftBlocks={COMPOSITE_DEMO_BLOCKS}
-            rightLabel="→ migrated to Ant Design (live — a real, separate build)"
-            iframeSrc="/demos/antd-composite/index.html"
-            iframeTitle="The same list view, built directly in Ant Design — a real, separately-built live app, not a screenshot"
-          />
-          <Text size="xs" color="secondary" style={{ textAlign: "center" }}>
-            Both sides are genuinely live implementations, not a real one next to a screenshot: the
-            left renders in this page directly from a ~15-line <code>Construct[]</code> document; the
-            right is a real, separate Vite+antd build (see{" "}
-            <code>apps/docs/scripts/build-antd-demo.sh</code>) embedded live in an iframe. Both
-            intentionally show the base list view rather than the &quot;New Project&quot; modal
-            from the full spec, so the comparison is of the same thing on both sides — see the
-            modal itself, live and properly closable, on the{" "}
-            <a href="/opinions/dialog" className="rebar-link">Dialog reference page</a>. Same underlying spec as the{" "}
-            <a href="/about/benchmarks/tiers" className="rebar-link">Composite tier</a> benchmark.
-          </Text>
+          <NextBlockRenderer blocks={PILLARS_HEADER} />
+          <NextBlockRenderer blocks={[{ type: "pillar-grid", items: PILLARS }]} />
         </Stack>
       </Section>
 
+      <Section>
+        <NextBlockRenderer blocks={ARC_BLOCKS} />
+      </Section>
+
       <Section tone="muted">
-        <Stack gap="xl">
-          <NextBlockRenderer blocks={PILLARS_HEADER} />
-          <NextBlockRenderer blocks={[{ type: "pillar-grid", items: PILLARS }]} />
+        <Stack gap="lg">
+          <NextBlockRenderer blocks={PROOF_HEADER} />
+          <NextBlockRenderer blocks={PROOF_BLOCKS} />
+          <Link href="/about/benchmarks">
+            <Button variant="secondary">See the full methodology and live comparison</Button>
+          </Link>
         </Stack>
       </Section>
 
