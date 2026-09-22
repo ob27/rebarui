@@ -1,16 +1,9 @@
-import { Heading, Stack, Text, FloatAssistant } from "rebar-ui";
+import { Heading, Stack, Text, AssistantOrb } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
-import type { FloatAssistantVoiceOption } from "rebar-ui";
 import componentProps from "@/generated/component-props.json";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { PersonaShowcase } from "./PersonaShowcase";
-
-const DEMO_VOICES: FloatAssistantVoiceOption[] = [
-  { id: "alquin", label: "Alquin", cloudVoiceId: "qwen-voice-alquin" },
-  { id: "nova", label: "Nova", cloudVoiceId: "qwen-voice-nova" },
-  { id: "onyx", label: "Onyx", cloudVoiceId: "qwen-voice-onyx" },
-  { id: "browser-default", label: "Browser Default", browserVoiceName: "Google US English" },
-];
+import { FloatAssistantDemo } from "./FloatAssistantDemo";
 
 const BLOCKS: Construct[] = [
   {
@@ -39,6 +32,9 @@ const BLOCKS: Construct[] = [
   voiceEnabled?: boolean,
   draggable?: boolean,
   minimizable?: boolean,
+  edgeDockable?: boolean,
+  sidebarWidth?: number,
+  dockMode?: "floating" | "sidebar",
   apiEndpoint?: string,
   apiAuthToken?: string,
   // Opinion-tier live bindings — see "API Integration" below
@@ -111,6 +107,10 @@ Response:
         kind: "text",
         text: "**Orb personas** — set `persona` to one of Spark, Strato, or Chorus (see the Personas section above) for a WebGL-shader orb that reacts to the assistant's own interaction state, instead of the default lightweight 2D-canvas animation. Only the trigger button uses the orb; chat message avatars and the typing indicator use a static icon, since animating a full shader per message was distracting and wasteful compute for repeated small instances.",
       },
+      {
+        kind: "text",
+        text: "**Edge-dock to a full-height sidebar** — set `edgeDockable` and try dragging this demo's own trigger toward the right edge of the screen: a narrow rail peeks into view, and holding there (or dragging deeper) widens it into a drop target. Releasing inside the widened rail flies the trigger into a full-height sidebar instead of the default floating panel, with a Claude-Code-style input toolbar (attachment, slash-command, history, an optional model pill, and submit). A dock-toggle button also appears in the panel header for the same effect without the drag gesture. Off by default — every existing floating-panel behavior is unchanged unless this is set.",
+      },
     ],
   },
   {
@@ -145,18 +145,93 @@ export default function FloatAssistantPage() {
         — it never pretends to be human.
       </Text>
 
-      {/* Live demo — the assistant appears in the bottom-right corner */}
-      <FloatAssistant
-        name="Rebar Demo"
-        greeting="Hi! I'm a demo assistant. Try dragging me around, or minimize me to a dot!"
-        position="bottom-right"
-        voiceEnabled={true}
-        draggable={true}
-        minimizable={true}
-        voices={DEMO_VOICES}
-        voiceId="alquin"
-        persona="chorus"
-      />
+      {/* Live demo — orb in glass lens container */}
+      <div
+        style={{
+          width: 128,
+          height: 128,
+          borderRadius: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative",
+          margin: "2rem 0",
+        }}
+      >
+        {/* Orb sits behind the glass */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 6,
+            borderRadius: "50%",
+            background: "#000",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1,
+            overflow: "hidden",
+          }}
+        >
+          <AssistantOrb persona="chorus" state="idle" size={160} />
+        </div>
+
+        {/* Glass lens container - convex effect */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            borderRadius: "50%",
+            background: "linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 40%, transparent 60%, rgba(0,0,0,0.1) 100%)",
+            boxShadow: `
+              0 8px 32px rgba(0,0,0,0.4),
+              0 2px 8px rgba(0,0,0,0.2),
+              inset 0 2px 4px rgba(255,255,255,0.3),
+              inset 0 -2px 4px rgba(0,0,0,0.2),
+              0 0 0 1px rgba(255,255,255,0.15)
+            `,
+            zIndex: 2,
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Top highlight - lens reflection */}
+        <div
+          style={{
+            position: "absolute",
+            top: "8%",
+            left: "15%",
+            width: "45%",
+            height: "25%",
+            borderRadius: "50%",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.1) 50%, transparent 100%)",
+            filter: "blur(2px)",
+            zIndex: 3,
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Bottom rim light */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: "5%",
+            left: "20%",
+            width: "60%",
+            height: "15%",
+            borderRadius: "50%",
+            background: "linear-gradient(0deg, rgba(255,255,255,0.15) 0%, transparent 100%)",
+            filter: "blur(1px)",
+            zIndex: 3,
+            pointerEvents: "none",
+          }}
+        />
+      </div>
+
+      {/* Full FloatAssistant — renders fixed in the bottom-right corner. Its own file (rather than
+          inlined here) because it needs real function props (onAttachmentPress etc.), which can't
+          cross the server/client boundary as literal props on this Server Component page — same
+          reason PersonaShowcase below is its own "use client" file. */}
+      <FloatAssistantDemo />
 
       <Stack gap="sm">
         <Heading level={2}>Personas</Heading>

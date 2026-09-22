@@ -8,7 +8,7 @@ import { ORB_PERSONAS } from "../orb-personas/personas";
 import { AssistantOrb } from "./AssistantOrb";
 import { VoiceInputBar } from "./VoiceInputBar";
 import { Spin } from "./Spin";
-import { AddIcon, AiAgentIcon, ScreenshotIcon } from "./icons-remix";
+import { AddIcon, AiAgentIcon, ArrowUpIcon, CodeSSlashIcon, HistoryIcon, ScreenshotIcon } from "./icons-remix";
 import { DEFAULT_FLOAT_ASSISTANT_VOICE_GREETINGS, DEFAULT_SCREENSHOT_ACKNOWLEDGMENT } from "./FloatAssistant.constants";
 
 export interface FloatAssistantMessage {
@@ -107,6 +107,38 @@ export interface FloatAssistantProps extends Omit<ComponentPropsWithoutRef<"div"
   /** Whether the assistant can be minimized to a small dot. */
   minimizable?: boolean;
   /**
+   * Enables drag-to-edge docking: dragging the closed trigger toward the right screen edge
+   * reveals a narrow rail that widens after a brief hold (or immediately if dragged deeper into
+   * the edge), and dropping the trigger inside the widened rail docks the assistant as a
+   * full-height sidebar instead of the default floating panel. Off by default — every existing
+   * floating-panel drag/dock behavior is completely unchanged unless this is on. A dock-toggle
+   * button also appears in the panel header when this is set, so the same end state is reachable
+   * without the drag gesture (this feature has no keyboard equivalent otherwise).
+   */
+  edgeDockable?: boolean;
+  /** Width in px of the docked sidebar once edge-docking completes. Not resizable. Default 380. */
+  sidebarWidth?: number;
+  /**
+   * Current panel layout once open. `"floating"` (default) is the existing 360x520 panel;
+   * `"sidebar"` is the full-height, right-edge-anchored layout reached via edge-docking or the
+   * header's dock-toggle button. Same controlled/uncontrolled convention as `mode`/`onModeChange`.
+   */
+  dockMode?: "floating" | "sidebar";
+  /** Callback when dockMode changes (via drag-to-edge-dock or the header's dock-toggle button). */
+  onDockModeChange?: (dockMode: "floating" | "sidebar") => void;
+  /** The slash-command button in the sidebar layout's input toolbar. Omitted entirely (no button
+   * rendered) unless a handler is passed — same "no dead control" stance as `onAttachmentPress`.
+   * Only rendered in the sidebar layout's input, never the default floating panel's. */
+  onSlashCommand?: () => void;
+  /** The history/clock button in the sidebar layout's input toolbar. Omitted unless a handler is
+   * passed. */
+  onHistoryPress?: () => void;
+  /** Label shown in the sidebar layout's model-picker pill. Omitted entirely if unset. */
+  modelLabel?: string;
+  /** Optional tap handler for the model pill. If `modelLabel` is set without this, the pill still
+   * renders, just non-interactively — a label can be informative on its own. */
+  onModelPress?: () => void;
+  /**
    * Server-side API endpoint that proxies requests to the LLM/RAG service.
    * The app developer implements this endpoint to hold API keys securely
    * server-side. The construct never sees real API keys.
@@ -168,6 +200,14 @@ export function FloatAssistant({
   onModeChange,
   draggable = true,
   minimizable = true,
+  edgeDockable = false,
+  sidebarWidth = 380,
+  dockMode: controlledDockMode,
+  onDockModeChange,
+  onSlashCommand,
+  onHistoryPress,
+  modelLabel,
+  onModelPress,
   apiEndpoint,
   apiAuthToken,
   voices,
@@ -201,6 +241,10 @@ export function FloatAssistant({
   // `contextAware` is on.
   const pendingPageContextRef = useRef<string[] | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  // Separate from inputRef — the sidebar layout's input is a <textarea>, the floating panel's
+  // stays an <input>, and the two layouts are never mounted at once (mutually exclusive on
+  // dockMode), so there's no need to union one ref's type across both element kinds.
+  const sidebarInputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -208,6 +252,19 @@ export function FloatAssistant({
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const longPressThreshold = 500; // ms
   const isLongPressRef = useRef(false);
+
+  // Edge-dock: dragging the closed trigger toward the right screen edge. Named thresholds
+  // (distance from the right edge, in px) rather than one magic number, since peek/expand/exit
+  // each need their own value and the exit threshold is deliberately looser than the peek one
+  // (hysteresis — without a gap between "enter" and "exit" distances, the phase would flicker
+  // right at the boundary).
+  const EDGE_PEEK_THRESHOLD_PX = 120;
+  const EDGE_EXPAND_THRESHOLD_PX = 40;
+  const EDGE_HOLD_MS = 450;
+  const EDGE_PEEK_EXIT_PX = 144;
+  const [edgeDockPhase, setEdgeDockPhase] = useState<"none" | "peeking" | "expanded" | "flying" | "docked">("none");
+  const edgeHoldTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const [internalDockMode, setInternalDockMode] = useState<"floating" | "sidebar">("floating");
 
   // Drag state
   const [dragState, setDragState] = useState<DragState>({
@@ -223,6 +280,7 @@ export function FloatAssistant({
   const [buttonPosition, setButtonPosition] = useState<{ x: number; y: number } | null>(null);
 
   const mode = controlledMode ?? internalMode;
+  const dockMode = controlledDockMode ?? internalDockMode;
 
   // Only the trigger button's orb reflects live interaction state — recording maps to
   // "listening", an in-flight reply maps to "thinking", everything else is "idle". There's no
@@ -236,6 +294,12 @@ export function FloatAssistant({
   // exactly like grabbing a window's title bar. Deliberately not true while minimized: the
   // minimized dot has its own separate, much simpler affordance.
   const isDocked = Boolean(persona) && isOpen && !isMinimized;
+
+  // The edge-docked full-height sidebar layout — a second, independent "docked" concept from
+  // `isDocked` above (persona-header docking of the floating panel). The two can technically both
+  // be true (a persona set *and* dockMode "sidebar"); isSidebarDocked wins wherever they'd
+  // conflict (button position/style precedence, drag-handler wiring below).
+  const isSidebarDocked = dockMode === "sidebar" && isOpen && !isMinimized;
 
   // Docked-window dragging — deliberately a separate, simpler mechanism from the closed trigger's
   // own drag/momentum system below (dragState/handleDragStart/handleDragMove/handleDragEnd, which
@@ -410,10 +474,6 @@ export function FloatAssistant({
     });
   }, [draggable, buttonPosition]);
 
-  const handleDragEnd = useCallback(() => {
-    setDragState((prev) => ({ ...prev, isDragging: false }));
-  }, []);
-
   // Long press → speech mode (must be before handleDragMove which references cancelLongPressTimer)
   const cancelLongPressTimer = useCallback(() => {
     if (longPressTimerRef.current) {
@@ -421,6 +481,40 @@ export function FloatAssistant({
       longPressTimerRef.current = undefined;
     }
   }, []);
+
+  const cancelEdgeHoldTimer = useCallback(() => {
+    if (edgeHoldTimerRef.current) {
+      clearTimeout(edgeHoldTimerRef.current);
+      edgeHoldTimerRef.current = undefined;
+    }
+  }, []);
+
+  // Release while the rail was widened ("expanded") commits the edge-dock: flies the trigger into
+  // the sidebar's header slot (via the same buttonPositionTransition CSS transition the
+  // persona-header dock already uses, not a new animation system) and opens the panel as a
+  // sidebar. Zeroing velocity in the same update as isDragging:false is essential — an edge-drop's
+  // release velocity can easily exceed the momentum effect's own 0.5 trigger threshold, and if left
+  // non-zero the momentum loop would start bouncing the button away from the dock target at the
+  // exact moment the flight transition is trying to move it there (the same class of competing-
+  // animation bug a past CSS transition/momentum conflict in this file already hit once). Any other
+  // release (edgeDockPhase "none" or "peeking") is a completely ordinary release — normal momentum
+  // physics apply exactly as before this feature existed.
+  const handleDragEnd = useCallback(() => {
+    if (edgeDockPhase === "expanded") {
+      cancelEdgeHoldTimer();
+      setEdgeDockPhase("flying");
+      setDragState((prev) => ({ ...prev, isDragging: false, velocityX: 0, velocityY: 0 }));
+      setIsOpen(true);
+      setInternalDockMode("sidebar");
+      onDockModeChange?.("sidebar");
+      return;
+    }
+    if (edgeDockPhase === "peeking") {
+      cancelEdgeHoldTimer();
+      setEdgeDockPhase("none");
+    }
+    setDragState((prev) => ({ ...prev, isDragging: false }));
+  }, [edgeDockPhase, cancelEdgeHoldTimer, onDockModeChange]);
 
   const startLongPressTimer = useCallback(() => {
     isLongPressRef.current = false;
@@ -494,6 +588,35 @@ export function FloatAssistant({
     }
   }, []);
 
+  // Settles the flight once its CSS transition has had time to finish (same 0.4s duration as
+  // buttonPositionTransition below) — clears buttonPosition so the button's position math falls
+  // through to the deterministic sidebar-docked branch instead of a stale free-floating coordinate.
+  useEffect(() => {
+    if (edgeDockPhase !== "flying") return;
+    const settleTimer = setTimeout(() => {
+      setEdgeDockPhase("docked");
+      setButtonPosition(null);
+    }, 420);
+    return () => clearTimeout(settleTimer);
+  }, [edgeDockPhase]);
+
+  // Resets edge-dock phase whenever the assistant closes — dockMode itself (not edgeDockPhase)
+  // is what keeps the sidebar layout selected across a later reopen, so this is just cleanup for
+  // the rail/animation-phase tracker, not a state a consumer needs to preserve.
+  useEffect(() => {
+    if (!isOpen) {
+      cancelEdgeHoldTimer();
+      setEdgeDockPhase("none");
+    }
+  }, [isOpen, cancelEdgeHoldTimer]);
+
+  const toggleDockMode = useCallback(() => {
+    const next = dockMode === "sidebar" ? "floating" : "sidebar";
+    setInternalDockMode(next);
+    onDockModeChange?.(next);
+    setEdgeDockPhase(next === "sidebar" ? "docked" : "none");
+  }, [dockMode, onDockModeChange]);
+
   const handleOrbPointerDown = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     startLongPressTimer();
     handleDragStart(e);
@@ -537,6 +660,34 @@ export function FloatAssistant({
     newX = Math.max(0, Math.min(maxX, newX));
     newY = Math.max(0, Math.min(maxY, newY));
 
+    // Edge-dock peek/expand — only the closed trigger's own drag ever reaches this (gated on
+    // !isOpen, same as the feature being scoped away from the already-docked window-drag path
+    // entirely, per its own comment above). Reuses newX (already computed above) rather than a
+    // fresh getBoundingClientRect() call, same reasoning as DOCKED_HEADER_OFFSET being a constant.
+    if (edgeDockable && !isOpen && !isMinimized) {
+      const distanceFromRightEdge = window.innerWidth - (newX + 56);
+      if (distanceFromRightEdge <= EDGE_EXPAND_THRESHOLD_PX) {
+        if (edgeDockPhase !== "expanded") {
+          cancelEdgeHoldTimer();
+          setEdgeDockPhase("expanded");
+        }
+      } else if (distanceFromRightEdge <= EDGE_PEEK_THRESHOLD_PX) {
+        if (edgeDockPhase === "none") {
+          setEdgeDockPhase("peeking");
+          cancelEdgeHoldTimer();
+          edgeHoldTimerRef.current = setTimeout(() => setEdgeDockPhase("expanded"), EDGE_HOLD_MS);
+        }
+      } else if (distanceFromRightEdge > EDGE_PEEK_EXIT_PX) {
+        if (edgeDockPhase === "peeking" || edgeDockPhase === "expanded") {
+          cancelEdgeHoldTimer();
+          setEdgeDockPhase("none");
+        }
+      }
+      // Between EDGE_PEEK_THRESHOLD_PX and EDGE_PEEK_EXIT_PX is a deliberate dead zone
+      // (hysteresis) — neither entering nor exiting the peek phase there, to avoid flicker right
+      // at the boundary.
+    }
+
     setDragState((prev) => ({
       ...prev,
       currentX: newX,
@@ -548,7 +699,7 @@ export function FloatAssistant({
       lastMoveTime: now,
     }));
     setButtonPosition({ x: newX, y: newY });
-  }, [dragState, cancelLongPressTimer]);
+  }, [dragState, cancelLongPressTimer, edgeDockable, isOpen, isMinimized, edgeDockPhase, cancelEdgeHoldTimer]);
 
   useEffect(() => {
     if (dragState.isDragging) {
@@ -843,7 +994,19 @@ export function FloatAssistant({
       }
     : null;
 
-  const effectiveButtonSize = isDocked ? DOCKED_BUTTON_SIZE : 56;
+  // The sidebar's header slot, unlike the floating panel's, never moves — no windowDragOffset
+  // involved, computed straight off the viewport width and sidebarWidth.
+  const viewportWidth = typeof window !== "undefined" ? window.innerWidth : 1200;
+  const sidebarDockedButtonStyle: React.CSSProperties | null = isSidebarDocked
+    ? {
+        left: viewportWidth - sidebarWidth + DOCKED_HEADER_OFFSET,
+        top: DOCKED_HEADER_OFFSET,
+        right: "auto",
+        bottom: "auto",
+      }
+    : null;
+
+  const effectiveButtonSize = isDocked || isSidebarDocked ? DOCKED_BUTTON_SIZE : 56;
   // Mirrors the momentum effect's own trigger condition above — released with enough velocity to
   // still be bouncing/decelerating toward a stop. That loop already re-renders left/top at ~60fps
   // directly from the physics, which is already smooth on its own; a competing CSS transition
@@ -860,6 +1023,13 @@ export function FloatAssistant({
       ? "none"
       : "left 0.4s cubic-bezier(0.4, 0, 0.2, 1), top 0.4s cubic-bezier(0.4, 0, 0.2, 1), width 0.4s cubic-bezier(0.4, 0, 0.2, 1), height 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
 
+  // The sidebar layout replaces the floating panel's own position/size entirely rather than
+  // extending effectivePanelPosition — it's full-height and edge-pinned, not something
+  // windowDragOffset (which only ever applies to the floating panel) has any bearing on.
+  const panelStyle: React.CSSProperties = isSidebarDocked
+    ? { position: "fixed", top: 0, right: 0, left: "auto", bottom: "auto", height: "100vh", width: sidebarWidth }
+    : effectivePanelPosition;
+
   return (
     <div
       ref={rootRef}
@@ -868,10 +1038,31 @@ export function FloatAssistant({
       style={{ position: "fixed", zIndex: 1500, pointerEvents: "none" }}
       {...props}
     >
+      {/* Edge-dock peek rail — purely decorative (pointer-events: none), never intercepts the
+          drag itself; the pointer stays tracked by handleDragMove's own window-level listeners.
+          Rendered only mid-gesture (not once "docked" — at that point the sidebar panel below is
+          the only edge-anchored thing left to show). */}
+      {edgeDockable && edgeDockPhase !== "none" && edgeDockPhase !== "docked" && (
+        <div
+          className={clsx("rebar-float-assistant-edge-rail", `rebar-float-assistant-edge-rail-${edgeDockPhase}`)}
+          data-rebar-part="edge-rail"
+          data-rebar-state={edgeDockPhase}
+          aria-hidden="true"
+          style={{ "--assistant-accent": accentColor } as React.CSSProperties}
+        >
+          {edgeDockPhase === "expanded" && (
+            <span className="rebar-float-assistant-edge-rail-hint" data-rebar-part="edge-rail-hint">
+              Release to dock
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Floating Button — this is the whole interactive widget, not just a trigger: once docked
-          (isDocked), it's the literal same element, just repositioned/resized to sit in the panel
-          header, still fully draggable — grabbing it then drags the whole panel, like a window's
-          title bar. */}
+          (isDocked or isSidebarDocked), it's the literal same element, just repositioned/resized to
+          sit in the panel header, still fully draggable while floating-docked — grabbing it then
+          drags the whole panel, like a window's title bar. (A sidebar-docked button has nowhere
+          meaningful to be dragged to, so its own drag handlers are omitted entirely below.) */}
       <button
         ref={buttonRef}
         type="button"
@@ -879,7 +1070,7 @@ export function FloatAssistant({
           "rebar-float-assistant-button",
           (dragState.isDragging || isWindowDragging) && "rebar-float-assistant-button-dragging",
           isMinimized && "rebar-float-assistant-button-minimized",
-          isDocked && "rebar-float-assistant-button-docked",
+          (isDocked || isSidebarDocked) && "rebar-float-assistant-button-docked",
           theme === "dark" && "rebar-float-assistant-button-dark",
         )}
         data-rebar-part="trigger"
@@ -895,14 +1086,14 @@ export function FloatAssistant({
             activateTrigger();
           }
         }}
-        onMouseDown={isDocked ? handleWindowDragStart : handleOrbPointerDown}
-        onMouseUp={isDocked ? handleWindowDragEnd : handleOrbPointerUp}
+        onMouseDown={isSidebarDocked ? undefined : isDocked ? handleWindowDragStart : handleOrbPointerDown}
+        onMouseUp={isSidebarDocked ? undefined : isDocked ? handleWindowDragEnd : handleOrbPointerUp}
         onMouseLeave={cancelLongPressTimer}
-        onTouchStart={isDocked ? handleWindowDragStart : handleOrbPointerDown}
-        onTouchEnd={isDocked ? handleWindowDragEnd : handleOrbPointerUp}
+        onTouchStart={isSidebarDocked ? undefined : isDocked ? handleWindowDragStart : handleOrbPointerDown}
+        onTouchEnd={isSidebarDocked ? undefined : isDocked ? handleWindowDragEnd : handleOrbPointerUp}
         style={
           {
-            ...(dockedButtonStyle ?? buttonStyle),
+            ...(sidebarDockedButtonStyle ?? dockedButtonStyle ?? buttonStyle),
             width: effectiveButtonSize,
             height: effectiveButtonSize,
             transition: buttonPositionTransition,
@@ -910,7 +1101,7 @@ export function FloatAssistant({
             pointerEvents: "auto",
             // The panel is a later DOM sibling, so without this it would paint over the button
             // (which needs to sit visibly on top of the panel's header once docked).
-            zIndex: isDocked ? 1600 : undefined,
+            zIndex: isDocked || isSidebarDocked ? 1600 : undefined,
             cursor: draggable ? (dragState.isDragging || isWindowDragging ? "grabbing" : "grab") : "pointer",
           } as unknown as React.CSSProperties
         }
@@ -934,14 +1125,15 @@ export function FloatAssistant({
       {/* Expanded Panel */}
       {isOpen && !isMinimized && (
         <div
-          className="rebar-float-assistant-panel"
+          className={clsx("rebar-float-assistant-panel", isSidebarDocked && "rebar-float-assistant-panel-sidebar")}
           data-rebar-part="panel"
+          data-rebar-state={dockMode}
           role="dialog"
           aria-label={`${name} assistant`}
           style={
             {
               "--assistant-accent": accentColor,
-              ...effectivePanelPosition,
+              ...panelStyle,
               transition: isWindowDragging ? "none" : undefined,
               pointerEvents: "auto",
             } as unknown as React.CSSProperties
@@ -1011,6 +1203,21 @@ export function FloatAssistant({
                   )}
                 </button>
               )}
+              {edgeDockable && (
+                <button
+                  type="button"
+                  className="rebar-float-assistant-mode-btn"
+                  onClick={toggleDockMode}
+                  aria-label={isSidebarDocked ? "Undock to floating panel" : "Dock as sidebar"}
+                  title={isSidebarDocked ? "Undock to floating panel" : "Dock as sidebar"}
+                  data-rebar-part="dock-toggle"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="4" width="18" height="16" rx="2" />
+                    <line x1="15" y1="4" x2="15" y2="20" />
+                  </svg>
+                </button>
+              )}
               {minimizable && (
                 <button
                   type="button"
@@ -1074,7 +1281,80 @@ export function FloatAssistant({
 
           {/* Input Area */}
           <div className="rebar-float-assistant-input" data-rebar-part="input">
-            {mode === "text" ? (
+            {mode === "text" && isSidebarDocked ? (
+              <div className="rebar-float-assistant-sidebar-input" data-rebar-part="sidebar-input">
+                <textarea
+                  ref={sidebarInputRef}
+                  className="rebar-float-assistant-sidebar-input-field"
+                  placeholder="Type your message..."
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  aria-label="Message input"
+                  rows={1}
+                />
+                <div className="rebar-float-assistant-sidebar-toolbar">
+                  <div className="rebar-float-assistant-sidebar-toolbar-left">
+                    {onAttachmentPress && (
+                      <button
+                        type="button"
+                        className="rebar-float-assistant-sidebar-toolbar-btn"
+                        onClick={onAttachmentPress}
+                        aria-label="Add attachment"
+                      >
+                        <AddIcon size={16} />
+                      </button>
+                    )}
+                    {onSlashCommand && (
+                      <button
+                        type="button"
+                        className="rebar-float-assistant-sidebar-toolbar-btn"
+                        onClick={onSlashCommand}
+                        aria-label="Slash commands"
+                      >
+                        <CodeSSlashIcon size={16} />
+                      </button>
+                    )}
+                    {onHistoryPress && (
+                      <button
+                        type="button"
+                        className="rebar-float-assistant-sidebar-toolbar-btn"
+                        onClick={onHistoryPress}
+                        aria-label="Conversation history"
+                      >
+                        <HistoryIcon size={16} />
+                      </button>
+                    )}
+                  </div>
+                  <div className="rebar-float-assistant-sidebar-toolbar-right">
+                    {modelLabel &&
+                      (onModelPress ? (
+                        <button
+                          type="button"
+                          className="rebar-float-assistant-model-pill"
+                          onClick={onModelPress}
+                          data-rebar-part="model-pill"
+                        >
+                          {modelLabel}
+                        </button>
+                      ) : (
+                        <span className="rebar-float-assistant-model-pill" data-rebar-part="model-pill">
+                          {modelLabel}
+                        </span>
+                      ))}
+                    <button
+                      type="button"
+                      className="rebar-float-assistant-sidebar-submit-btn"
+                      onClick={handleSend}
+                      disabled={!inputValue.trim()}
+                      aria-label="Send message"
+                    >
+                      <ArrowUpIcon size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : mode === "text" ? (
               <div className="rebar-float-assistant-text-input">
                 <div className="rebar-float-assistant-input-wrap">
                   <input
