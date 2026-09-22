@@ -1,4 +1,4 @@
-# Rebar UI — Agent Context (v0.11.0)
+# Rebar UI — Agent Context (v0.12.0)
 
 Compressed operating context for an AI agent building a UI with **Rebar UI**. The single goal: **print the page from constructs first, hand-drawn JSX only as a temporary stop-gap.** Every section below serves that goal.
 
@@ -94,7 +94,7 @@ When the view needs a pattern that doesn't exist in the shipped catalog, **do no
 1. Add a new variant to the `Construct` union in `packages/placement/src/schema.ts`
 2. Add a new `case` to the `renderBlock` switch in `packages/placement/src/BlockRenderer.tsx`
 3. If it has live data bindings (`source`/`onX` fields), add it to `OPINION_CONSTRUCT_TYPES` in `packages/placement/src/opinions.ts`
-4. Add its tier assignment to `BLOCK_TIER` in `apps/docs/src/data/blockTier.ts`
+4. Add its tier assignment to `CONSTRUCT_TIER.block` in `apps/docs/src/data/constructTier.ts`
 
 This gives you:
 - **Reusability** — the same construct prints every instance across every page

@@ -5,8 +5,12 @@ status: living document
 
 # Rebar UI — Architecture
 
-Technical decisions supporting [PLAN.md](PLAN.md). See [ASSESSMENT.md](ASSESSMENT.md) for the
-reasoning behind the departures from the original brainstorm.
+Technical decisions supporting this project's build-out. See [ASSESSMENT.md](ASSESSMENT.md) for the
+reasoning behind the departures from the original brainstorm, [TIERS.md](TIERS.md) for the
+component/block lifecycle classification, and [COMPONENT_BUILD_PLAN.md](COMPONENT_BUILD_PLAN.md)
+for the current catalog-gap build-out plan (the original `PLAN.md` this file once pointed to was
+removed as the project passed its early-scope "v0.1" milestone and never replaced 1:1 — its
+"tried X, here's why not" reasoning lives on in `ASSESSMENT.md`).
 
 ## Package layout
 
@@ -15,7 +19,7 @@ Monorepo (pnpm workspaces + Turborepo, pending confirmation):
 ```
 packages/
   core/            # components + primitives, wraps Radix, ships CSS-var-only styles
-  placement/       # @rebar-ui/placement — the placement layer: construct schema + ConstructRenderer, see below
+  placement/       # @rebar-ui/placement — the placement layer: construct schema + BlockRenderer, see below
   theme-sketch/    # default sketch theme: fonts, sketchy borders, grayscale tokens
   theme-clean/     # plain production-safe baseline theme
   devtools/        # dev-only floating panel — kept out of prod via a consumer-side dynamic import, see below
@@ -39,7 +43,7 @@ for it.
 Rebar UI is meant to be built with by an LLM through a small procedural placement layer, not by
 hand-authoring `Stack`/`Box` JSX directly: the model writes a compact typed document naming a
 handful of pre-built composite archetypes — called **constructs** — and a deterministic renderer
-(`ConstructRenderer`, built from `core`'s own components) turns that document into the actual tree. The
+(`BlockRenderer`, built from `core`'s own components) turns that document into the actual tree. The
 model never decides layout — direction, gap, nesting — only which construct and what content.
 
 Two heuristics do the actual layout work, so the model never has to:
@@ -54,11 +58,11 @@ Two heuristics do the actual layout work, so the model never has to:
   order is the only placement decision the model makes; no `x`/`y`, no `flex`/`grid` value, ever.
 
 **Status: shipped as `@rebar-ui/placement`, dogfooded on this project's own marketing site
-(`apps/docs`)** — not just a benchmark prototype anymore. `ConstructRenderer` and its construct catalog
-(39 types as of this writing — see `packages/core/robot.md`'s own catalog for the full list with
+(`apps/docs`)** — not just a benchmark prototype anymore. `BlockRenderer` and its construct catalog
+(42 types as of this writing — see `packages/core/agent.md`'s own catalog for the full list with
 descriptions, and [`CONSTRUCTS.md`](CONSTRUCTS.md) for how they split across Global/Web/Mobile) live in
 `packages/placement/src`; the homepage's feature-card row and three-pillars grid
-(`apps/docs/src/app/page.tsx`) are real `ConstructRenderer` output, not hand-authored `Stack`/`Card`
+(`apps/docs/src/app/page.tsx`) are real `BlockRenderer` output, not hand-authored `Stack`/`Card`
 JSX — proof-by-existence that the mechanism holds up outside the one benchmark component it was
 validated on, per the dogfooding principle already stated in
 [MARKETING_SITE.md](MARKETING_SITE.md#what-to-change-and-why).
@@ -68,19 +72,23 @@ build-lifecycle — Imitations (static primitives) → Synthetics (static compos
 (real state/reactivity) → Orders (macro/page-level governance) — see
 [`TIERS.md`](TIERS.md). Read literally as a four-step ladder it doesn't quite survive contact with
 the real construct catalog: "Order" turned out to be a different axis entirely (macro governance vs.
-behavioral complexity) than the Imitation→Synthetic→Opinion complexity ladder, so of the 39 constructs
-only ~8 are genuine Orders — the rest split across Synthetic (~22, plain static content) and
-Opinion (9, constructs that already embed real interactive state in `ConstructRenderer.tsx` despite looking
+behavioral complexity) than the Imitation→Synthetic→Opinion complexity ladder, so of the 42 constructs
+9 are genuine Orders — the rest split across Synthetic (22, plain static content) and
+Opinion (11, constructs that already embed real interactive state in `BlockRenderer.tsx` despite looking
 like static schema data). `TIERS.md` keeps that nuance explicit for whoever maintains the schema;
-`robot.md`'s own digest states the four tiers as the clean ascending lifecycle they are for
+`agent.md`'s own digest states the four tiers as the clean ascending lifecycle they are for
 everyday use, since that's still a genuinely good mental model for an LLM composing new content to
 hold, even though "Order" is really the frame the other three render inside rather than a fourth
 rung on their ladder. "Opinion" is not a vibe: a construct *is* an Opinion iff its schema type declares
 a `source`/`onX` live-data-binding field (`packages/placement/src/opinions.ts`), a mechanical,
 compiler-checked fact, not a judgment call.
 
+A fifth, unrelated concept sits alongside these four but isn't a rung on their ladder: a **Genesis**
+is a whole, complete, production-ready application built entirely out of constructs — a seed you
+clone, not a piece you import. See [`TIERS.md`](TIERS.md) and `/geneses` on the site.
+
 The evidence for the underlying mechanism lives in
-[`/benchmarks`](../apps/docs/src/app/benchmarks/page.tsx): a hand-authored-JSX version of Rebar
+[`/about/benchmarks`](../apps/docs/src/app/about/benchmarks/page.tsx): a hand-authored-JSX version of Rebar
 lost to AntD by ~54% in token cost; the placement-layer version not only closed that gap but beat
 AntD outright — cheaper, faster wall-clock, and with visual output that is (with a properly scoped
 prompt) pixel-identical run to run, versus AntD's real run-to-run drift. That result held up again
@@ -158,7 +166,7 @@ the same Packer, not a bespoke SVG each diagram type invents its own responsive 
 **Detection.** Chosen by real viewport/device signals at render time (not, e.g., a user-agent
 string sniff alone — those are unreliable and don't track a foldable or a resized window), matching
 the breakpoint tokens ref/HEURISTICS.md already defines (`### Breakpoints`) rather than inventing a
-second set. The exact mechanism (a `matchMedia` listener driving which print `ConstructRenderer`
+second set. The exact mechanism (a `matchMedia` listener driving which print `BlockRenderer`
 returns, vs. two static builds selected server-side) is an open implementation question, not
 resolved by this doc on purpose — this section exists to state the *shape* of the commitment before
 committing to one specific technical path.

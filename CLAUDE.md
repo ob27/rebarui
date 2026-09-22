@@ -12,15 +12,24 @@ across the repo or left only in conversation. Current docs:
 - `ref/chat-export-1787916853126.json` — the original brainstorm this project grew out of (raw
   export, not edited).
 - `ref/ASSESSMENT.md` — critical review of that brainstorm: what's solid, what changed, why.
-- `ref/PLAN.md` — the actual plan: vision, v0.1 scope, phases.
 - `ref/ARCHITECTURE.md` — technical architecture: package layout, component API conventions,
   theming, migration adapters, devtools, testing.
+- `ref/TIERS.md` — the Imitation/Synthetic/Opinion/Order/Genesis lifecycle classification for every
+  component and block.
+- `ref/CONSTRUCTS.md` — how the construct catalog splits across Global/Web/Mobile.
 - `ref/HEURISTICS.md` — the default design/behavior rules baked into components, with sources.
 - `ref/MARKETING_SITE.md` — the docs/marketing site plan (structure, framework, IA), benchmarked
   against mermaid.js.org.
-- `ref/PLACEMENT_LIVE_DATA.md` — a scoped, not-yet-built proposal for letting `@rebar-ui/placement`
-  blocks bind to live data/handlers instead of only static JSON, prompted by Coherence's two
-  rebuilds both bypassing the Packer entirely for exactly this reason.
+- `ref/COMPONENT_BUILD_PLAN.md` — the current build-out plan for catalog gaps not yet shipped.
+- `ref/COMPONENT_BACKLOG.md` — a point-in-time backlog snapshot (heuristic scoring, duplicate
+  audits, queued fixes); read for context on decisions made there, not as a live task list.
+- `ref/PLACEMENT_LIVE_DATA.md` — the live-data binding mechanism for `@rebar-ui/placement` blocks
+  (`source`/`onX` fields, resolved by `BlockRenderer`'s `data`/`handlers` props) — shipped, not a
+  proposal; this doc is its design record, prompted by Coherence's two rebuilds both bypassing the
+  Packer entirely because blocks used to be static-JSON-only.
+- The original `ref/PLAN.md` (vision, v0.1 scope, phases) was removed once the project passed that
+  early milestone and was never replaced 1:1 — its "tried X, here's why not" reasoning lives on in
+  `ref/ASSESSMENT.md`.
 
 When plans change, update these files in place rather than creating new ones alongside them —
 they're living documents, not a changelog. New planning docs (e.g. a future phase's detailed

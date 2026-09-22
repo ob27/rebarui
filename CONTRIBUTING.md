@@ -1,6 +1,6 @@
 # Contributing to Rebar UI
 
-Rebar UI is a small, Open Beta (0.08) project — one person plus AI-assisted development so
+Rebar UI is a small, `0.12.0` project — one person plus AI-assisted development so
 far. Contributions are genuinely welcome, but the project is young enough that "meaningful
 contribution" mostly means small, well-scoped changes right now, not large architectural ones.
 This doc exists so you don't have to guess how to get from "I want to help" to an opened PR.
@@ -14,7 +14,7 @@ This doc exists so you don't have to guess how to get from "I want to help" to a
   placement layer, the token-only theming discipline, the "don't fine-tune styling, defer to
   migration" rule) is deliberate, not incidental — a quick check before you write code avoids
   building something that doesn't fit the design, or that's already been tried and rejected (see
-  `ref/PLAN.md` and `ref/ASSESSMENT.md` for a lot of "we tried X, here's why not").
+  `ref/ASSESSMENT.md` for a lot of "we tried X, here's why not").
 
 ## Setup
 
@@ -52,14 +52,15 @@ Next's generated route types, which only exist after a build has run once.
   `localhost:3000` after you clone the repo. Also the live dogfooding ground — every component is
   demoed here, and the homepage itself renders through `@rebar-ui/placement`.
 - `bench/` — disposable benchmark scaffolds from measuring rebar-ui against Ant Design across
-  models (see `/benchmarks` on the site, `ref/PLAN.md` for the full methodology history, and
-  `ref/BENCHMARK_CONTRIBUTING.md` if you want to add a new condition or reproduce one).
+  models (see `/about/benchmarks` on the site, and `ref/BENCHMARK_CONTRIBUTING.md` if you want to
+  add a new condition or reproduce one).
   **Not part of the library — don't send changes here** unless you're specifically extending the
   benchmark methodology itself; some of these directories contain intentionally-broken code
   (real captured model failures), and that's correct, not a bug to fix.
-- `ref/` — planning/architecture docs (`PLAN.md`, `ARCHITECTURE.md`, `ASSESSMENT.md`,
-  `HEURISTICS.md`, `MARKETING_SITE.md`). Living documents, updated in place as decisions change —
-  read them before proposing a structural change, so you're not re-litigating a settled decision.
+- `ref/` — planning/architecture docs (`ARCHITECTURE.md`, `ASSESSMENT.md`, `TIERS.md`,
+  `CONSTRUCTS.md`, `HEURISTICS.md`, `MARKETING_SITE.md`, `COMPONENT_BUILD_PLAN.md`,
+  `COMPONENT_BACKLOG.md`). Living documents, updated in place as decisions change — read them
+  before proposing a structural change, so you're not re-litigating a settled decision.
 
 ## Conventions
 
@@ -98,8 +99,8 @@ deviating.
 
 ### Contributing a new benchmark
 
-See `ref/BENCHMARK_CONTRIBUTING.md` before adding a new condition to `/benchmarks` or running your
-own comparable measurement (e.g. against a different model) — it covers the disciplines (n=15,
+See `ref/BENCHMARK_CONTRIBUTING.md` before adding a new condition to `/about/benchmarks` or running
+your own comparable measurement (e.g. against a different model) — it covers the disciplines (n=15,
 isolated scaffolds, verification before trusting a number, harness-adjustment across agentic vs.
 raw-API comparisons) that make a new result genuinely comparable to what's already published,
 rather than a number that merely looks similar. `ref/QWEN_BENCHMARK_PROTOCOL.md` is a full worked
@@ -108,26 +109,28 @@ example of applying it to one specific case.
 ## Opening a PR
 
 - Keep it scoped — one component, one fix, one block. Large multi-part changes are harder to
-  review and more likely to conflict with parallel work on a fast-moving Open Beta project.
+  review and more likely to conflict with parallel work on a fast-moving project.
 - Make sure `pnpm run lint`, `test`, `build`, and `typecheck` all pass locally before pushing —
   CI runs the same four checks and will block merge if any fail.
 - Describe *what* changed and *why* in the PR description; if it's a behavior change, say what you
   tested it against (a specific component page, a Playwright check, etc.) — this project's own
-  practice throughout `ref/PLAN.md` is verifying claims empirically rather than asserting them, and
-  PRs are held to the same bar.
-- If it touches visual output, a before/after screenshot (or a link to the relevant `/components/*`
-  reference page after your change) makes review much faster.
+  practice is verifying claims empirically rather than asserting them, and PRs are held to the same
+  bar.
+- If it touches visual output, a before/after screenshot (or a link to the relevant reference page
+  under `/imitations`, `/synthetics`, `/opinions`, or `/orders` after your change) makes review much
+  faster.
 
 ## Good first contributions
 
 - A missing or incorrect dark-mode color pairing (check via the DevTools panel's dark-mode toggle
-  on any `/components/*` page).
-- A new small component filling a gap `dist/index.d.ts` doesn't cover yet.
-- Improving a `/components/*` or `/docs/*` reference page — more examples, clearer prop
-  descriptions, a missed accessibility note.
-- A `chart` block for `@rebar-ui/placement` (scatter/line/bar) — `/benchmarks`' three
-  hand-authored SVG chart helpers are the reference implementation to generalize from; see that
-  page's `page.tsx` for the existing, already-correct rendering logic.
+  on any component reference page).
+- A new small component filling a real gap `dist/index.d.ts` doesn't cover yet.
+- Improving a reference page under `/imitations`, `/synthetics`, `/opinions`, or `/orders` — more
+  examples, clearer prop descriptions, a missed accessibility note.
+- Closing a gap in `PACKER_COVERAGE.md`'s "Real gaps, prioritized" section — converting more of a
+  reference page's own chrome into printed constructs where it's not already a legitimate exception.
+- See `ref/COMPONENT_BUILD_PLAN.md` for components/blocks identified as catalog gaps but not yet
+  built.
 
 ## License
 

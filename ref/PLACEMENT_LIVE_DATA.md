@@ -1,6 +1,8 @@
 ---
-title: A live-data binding mechanism for @rebar-ui/placement — a scoped future direction
-status: proposal, not implemented — written up for evaluation, not scheduled
+title: A live-data binding mechanism for @rebar-ui/placement
+status: shipped — see packages/placement/src/BlockRenderer.tsx's data/handlers props and
+  packages/placement/src/opinions.ts's OpinionConstructType. This doc is the design record: the
+  finding that prompted it, and the mechanism as proposed, largely unchanged from what's live.
 ---
 
 # A live-data binding mechanism for the placement layer
@@ -8,7 +10,7 @@ status: proposal, not implemented — written up for evaluation, not scheduled
 ## The finding that prompted this
 
 Building Coherence (a real RAG console — chat, document upload/processing, chunk search — against
-a real FastAPI backend) through rebar-ui, twice, in two independent rebuilds (`ref/Tom_v2.md`
+a real FastAPI backend) through rebar-ui, twice, in two independent rebuilds (`ref/TOM_v2.md`
 covers both in detail), neither build ever imported `BlockRenderer`/`Block[]` from
 `@rebar-ui/placement` at all, despite it being a listed dependency in both. Every view was
 hand-authored `rebar-ui` component JSX instead. Checked directly, not assumed: `grep -rn

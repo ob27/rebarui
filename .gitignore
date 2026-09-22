@@ -7,6 +7,11 @@ coverage/
 .env
 .env.local
 .firebase/
-ref/
+ref/*
+!ref/TIERS.md
+!ref/CONSTRUCTS.md
+!ref/BENCHMARK_CONTRIBUTING.md
+!ref/COMPONENT_BUILD_PLAN.md
+!ref/COMPONENT_BACKLOG.md
 Screenshot*
 firebase-debug.log

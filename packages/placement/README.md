@@ -9,7 +9,7 @@ archetype fits each piece of content and supplies the content; it never decides 
 
 ## Why this exists — the measured case, not a claim
 
-Real, repeated (n=15) measurement on [rebar-ui's own `/benchmarks` page](https://rebarui.com/benchmarks)
+Real, repeated (n=15) measurement on [rebar-ui's own `/about/benchmarks` page](https://rebarui.web.app/about/benchmarks)
 found: building the same UI as **hand-authored JSX against `rebar-ui`'s components directly loses
 to hand-authored Ant Design** — an unfamiliar library costs more tokens than a library already
 common in training data, even though rebar-ui's components are simpler. Building the exact same
@@ -18,7 +18,7 @@ outright** — cheaper, faster, and far more consistent run-to-run (near-zero ou
 since a deterministic renderer decides every pixel, not the model). The gap is bigger on cheaper
 models (Qwen, Kimi) than on frontier ones, in the direction you'd expect: composing raw JSX is a
 much harder task to get consistently right than filling in a small typed schema. See
-`ref/ARCHITECTURE.md#the-placement-layer` and `/benchmarks` for the full numbers and methodology.
+`ref/ARCHITECTURE.md#the-placement-layer` and `/about/benchmarks` for the full numbers and methodology.
 
 **If a task is "build a UI with rebar-ui," reach for this package first.** Hand-authoring
 `packages/core` components directly is not the recommended path any more — see that package's own
@@ -88,7 +88,7 @@ export function NextBlockRenderer({ blocks }: { blocks: Block[] }) {
 
 Exact current TypeScript shapes are in `dist/index.d.ts` (the `Block` union and its part types) —
 this is a guide to what each one is for, not the literal source of truth for its fields. **✓
-measured** means real, repeated (n=15) data on `/benchmarks` backs it; **unmeasured** means it's
+measured** means real, repeated (n=15) data on `/about/benchmarks` backs it; **unmeasured** means it's
 real, tested, and shipped, but hasn't been through that rigor yet — treat it as correct, not yet
 as proven cheap.
 
@@ -156,5 +156,5 @@ one is deferred to migration, not worked around here.
 Not codemod-covered by `@rebar-ui/migrate-antd` — that tool targets hand-authored `rebar-ui` JSX,
 not a `Block[]` document. Migrating a placement-layer page means rewriting `BlockRenderer`'s
 output as equivalent JSX in the target library once, by hand or via an LLM (`MIGRATION_PROMPT.md`,
-repo root) — a full rewrite, not a partial pass, and re-measured accordingly on `/benchmarks`
+repo root) — a full rewrite, not a partial pass, and re-measured accordingly on `/about/benchmarks`
 (reported as "rebar-ui + migration").

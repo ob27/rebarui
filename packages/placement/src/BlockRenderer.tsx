@@ -626,7 +626,7 @@ function KanbanBoardBlockView({
  * reusable, directly-importable primitive was the smaller `TodoItem` (a checkable row with an
  * optional celebration burst), while the aspiration/focus-area/goal hierarchy plus inline editing
  * plus add/delete affordances is exactly "a named, pre-decided layout of real components" per
- * `agents.md`'s own component-vs-block test. Local-only state seeded from the block's literal
+ * `agent.md`'s own component-vs-block test. Local-only state seeded from the block's literal
  * data, same convention `KanbanBoardBlockView` above already uses for its own board mutations.
  */
 function GoalTrackerBlockView({

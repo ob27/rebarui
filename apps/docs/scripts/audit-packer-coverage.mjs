@@ -11,8 +11,8 @@ const BASE_URL = process.env.AUDIT_BASE_URL ?? "http://localhost:3000";
 
 const ROUTES = [
   "/", "/about",
-  "/benchmarks", "/benchmarks/scenarios", "/benchmarks/receipts", "/benchmarks/claude",
-  "/benchmarks/qwen", "/benchmarks/kimi", "/benchmarks/tiers", "/benchmarks/iteration",
+  "/about/benchmarks", "/about/benchmarks/scenarios", "/about/benchmarks/receipts", "/about/benchmarks/claude",
+  "/about/benchmarks/qwen", "/about/benchmarks/kimi", "/about/benchmarks/tiers", "/about/benchmarks/iteration",
   "/imitations", "/synthetics", "/opinions", "/orders", "/about/agent",
   "/synthetics/aspect-ratio", "/imitations/avatar", "/imitations/badge",
   "/orders/breadcrumb", "/imitations/button", "/synthetics/card", "/imitations/carousel",
@@ -54,9 +54,7 @@ const ROUTES = [
   "/opinions/text-to-speech-bar", "/opinions/floating-selection-toolbar",
   "/opinions/slash-command-menu", "/opinions/voice-composer", "/opinions/shape-gallery",
   "/opinions/file-manager", "/opinions/layers-panel",
-  "/docs", "/docs/contributing", "/docs/design-philosophy", "/docs/devtools",
-  "/docs/getting-started", "/about/agent", "/docs/mobile-skew",
-  "/docs/migration", "/docs/packer-coverage", "/docs/agents-md", "/docs/theming", "/docs/token-estimate",
+  "/about/agent", "/archetypes", "/geneses", "/heuristics", "/roadmap",
   "/status",
 ];
 

@@ -3,7 +3,7 @@
 Headless-first, low-fidelity React components (real Radix UI underneath, styled via `--rebar-*`
 CSS custom properties).
 
-Read `agents.md` (ships in this package) first — a single compressed context file covering
+Read `agent.md` (ships in this package) first — a single compressed context file covering
 Framework Rules vs. Heuristics, component/block-authoring conventions, and using
 `@rebar-ui/placement` to build a page. What follows here is a narrower, component-only excerpt.
 
@@ -13,7 +13,8 @@ rebar-ui and hand-authored Ant Design. See that package's own llms.txt/README. W
 direct component-level use only.
 
 For an LLM/coding agent: read `dist/index.d.ts` for the exact prop interface of every component
-(one compact file, ~220 lines) instead of the `.tsx` source under `src/components/`. See
+(one file, several thousand lines and growing with the catalog) instead of the `.tsx` source under
+`src/components/`. See
 `README.md` for install steps and composition recipes.
 
 The page background is already correct once `rebar-ui/style.css` is imported — a bare page needs
