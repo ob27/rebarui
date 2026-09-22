@@ -32,15 +32,15 @@ Packer-printed vs. hand-authored, with a prioritized gap list. Regenerate the nu
 by git — `.gitignore`'s blanket `ref/` rule had silently kept it (and a couple other `ref/` docs)
 out of version control entirely.
 
-## Agent context: `agents.md`
+## Agent context: `agent.md`
 
 Before designing a new component, building a block, or using the Packer (`@rebar-ui/placement`)
-to compose a page, read `packages/core/agents.md` — the compressed, single-file context for
+to compose a page, read `packages/core/agent.md` — the compressed, single-file context for
 exactly these tasks: Framework Rules vs. Heuristics (a fixed, binary constraint vs. a
 judgment-requiring design principle — don't conflate the two), the controlled/uncontrolled
 component pattern, the block-authoring conventions, the full block/component catalogs, and the
 47-item heuristics checklist condensed to one line each. It's also published live at
-`/docs/robot-md` and ships inside the real `rebar-ui` npm tarball (see that package's `package.json`
+`/about/agent` and ships inside the real `rebar-ui` npm tarball (see that package's `package.json`
 `files` list) for a consumer's own agent. Keep it in sync with `ref/HEURISTICS.md`/
 `ref/ARCHITECTURE.md` when either changes — it's a compressed derivative of those, not an
 independent source of truth.
