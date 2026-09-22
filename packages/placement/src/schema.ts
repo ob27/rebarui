@@ -547,6 +547,11 @@ export type Construct =
       /** Passed straight through to the real `Table` component's own `loading` prop. Meaningful
        * with or without `source`. */
       loading?: boolean;
+      /** Passed straight through to the real `Table` component's own `pageSize` — paginates the
+       * post-search/post-filter row set client-side. Omit for a table that renders every matching
+       * row unpaginated (fine for a short, fixed list; a large or `source`-backed row set should
+       * set this). */
+      pageSize?: number;
       /** Shows an "Export CSV" button — downloads the currently visible rows (post search/filter)
        * as a real `.csv` file, entirely client-side. */
       exportable?: boolean;

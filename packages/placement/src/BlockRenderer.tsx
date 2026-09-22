@@ -1155,6 +1155,10 @@ function GalleryBlockView({
  * filter row doesn't need to react to arbitrary viewport widths the way a site nav does. */
 const INLINE_FILTER_LIMIT = 2;
 
+/** Sentinel Item value for a `table` filter's "All" option — see `renderFilterSelect`'s own
+ * comment for why this can't just be `""`. */
+const ALL_FILTER_VALUE = "__all__";
+
 // RFC 4180-ish: a cell needing quoting (contains a comma, quote, or newline) gets wrapped in
 // quotes with any internal quote doubled — the minimum a spreadsheet reliably round-trips.
 function csvCell(value: string): string {
@@ -1260,13 +1264,21 @@ function DataTableBlockView({
   const inlineFilters = filters.slice(0, INLINE_FILTER_LIMIT);
   const overflowFilters = filters.slice(INLINE_FILTER_LIMIT);
 
+  // Radix `Select` treats `value=""` as "nothing selected" internally (see its own `isEmpty`
+  // check), so a real Item can never register with that value — the "All" option below used to
+  // use "" and, as a result, could never actually display as selected (the trigger just rendered
+  // blank once `activeFilters` defaulted to it). `ALL_FILTER_VALUE` is a real, non-empty sentinel
+  // Item value instead; `activeFilters` itself still stores "" for "no filter", matching the
+  // `visibleRows` filter check below (`if (!value) return true`) unchanged.
   const renderFilterSelect = (filter: TableFilter) => (
     <Select
       key={filter.label}
       aria-label={filter.label}
-      value={activeFilters[filter.columnIndex] ?? ""}
-      onValueChange={(value) => setActiveFilters((prev) => ({ ...prev, [filter.columnIndex]: value }))}
-      options={[{ value: "", label: `${filter.label}: All` }, ...filter.options.map((o) => ({ value: o, label: o }))]}
+      value={activeFilters[filter.columnIndex] || ALL_FILTER_VALUE}
+      onValueChange={(value) =>
+        setActiveFilters((prev) => ({ ...prev, [filter.columnIndex]: value === ALL_FILTER_VALUE ? "" : value }))
+      }
+      options={[{ value: ALL_FILTER_VALUE, label: `${filter.label}: All` }, ...filter.options.map((o) => ({ value: o, label: o }))]}
     />
   );
 
@@ -1361,6 +1373,7 @@ function DataTableBlockView({
         data={visibleRows}
         rowKey="__rowKey"
         loading={block.loading}
+        pageSize={block.pageSize}
       />
     </Stack>
   );
