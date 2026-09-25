@@ -14,7 +14,7 @@ const INTRO_BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "rebar-ui composes the target through a compact schema plus the Packer, a deterministic renderer built from rebar-ui's own components; antd is hand-authored directly. Same prompt, same model, isolated scaffolds, only the build step measured.",
+        text: "rebar-ui composes the target through a compact schema plus the Packer, a deterministic renderer built from rebar-ui's own components; antd is hand-authored directly. Same prompt, same model, isolated scaffolds, only the build step measured. What this isolates is assembling from primitives versus reaching for a complete unit, not the schema wrapper itself — see the [Coherence field evidence](/about/benchmarks/coherence) for the caveat.",
       },
     ],
   },

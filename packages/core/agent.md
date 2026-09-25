@@ -1,14 +1,14 @@
 # Rebar UI — Agent Context (v0.12.1)
 
-Compressed operating context for an AI agent building a UI with **Rebar UI**. The single goal: **print the page from constructs first, hand-drawn JSX only as a temporary stop-gap.** Every section below serves that goal.
+Compressed operating context for an AI agent building a UI with **Rebar UI**. The single goal: **reach for the highest-tier existing unit that already does most of the job** — an Opinion or Order-tier component or construct, not a primitive. Every section below serves that goal.
 
 ## What Rebar is
 
-Rebar UI is a **headless-first, intentionally low-fidelity** React construct library plus **the Packer** (`@rebar-ui/placement`) — a deterministic renderer that turns a plain `Construct[]` document into a real component tree with zero layout decisions left to whoever authored the document. Build the structure correctly once, then apply visual polish exactly once at migration to a real design system — never mid-build.
+Rebar UI is a **headless-first, intentionally low-fidelity** React component library, classified by tier (Imitation → Synthetic → Opinion → Order, plus the orthogonal Genesis — see below) so an agent can tell at a glance whether a piece already encapsulates real behavior (a full `Kanban` board, a `SignaturePad`, a `Combobox`) or is just a primitive waiting to be assembled (`Box`, `Stack`, a raw `<input>`). Reaching for a high-tier unit and customizing it via props/styling is the real saving; reassembling one from primitives isn't. `@rebar-ui/placement` (**the Packer**) is a deterministic renderer that composes typed `Construct[]` documents into a real tree with zero layout decisions left to the author — genuinely useful when a page's content is naturally construct-shaped, but it is a *delivery mechanism* for high-tier units, not itself the source of the saving (see "The workflow" below for why this distinction matters and what it changes). Build the structure correctly once, then apply visual polish exactly once at migration to a real design system — never mid-build.
 
-## The Packer — your primary tool
+## The Packer — composing typed constructs
 
-The Packer is how every page should be rendered. You author a `Construct[]` array — plain serializable data describing *what* the UI is — and the Packer decides *how* it looks. No CSS, no layout math, no styling decisions in the document.
+Reach for the Packer when a page's content is naturally construct-shaped — a marketing/doc page, or an admin screen composed from existing catalog pieces. You author a `Construct[]` array — plain serializable data describing *what* the UI is — and the Packer decides *how* it looks. No CSS, no layout math, no styling decisions in the document. It is one correct way to compose high-tier units into a page, not the only one — see "The workflow" below.
 
 ### Basic usage
 
@@ -77,51 +77,45 @@ const PAGE: Construct[] = [
 ];
 ```
 
-## The workflow — Packer first, always
+## The workflow — reach for the highest tier first
 
-When asked to build a view, follow this order:
+When asked to build a view, prioritize by **tier**, not by whether something happens to be a typed construct:
 
-### 1. Search existing constructs first
+### 1. Does an existing Opinion/Order-tier component or construct already do most of the job?
 
-Browse the construct catalog at `/imitations`, `/synthetics`, `/opinions`, `/orders`. Every construct listed there is ready to use — just add it to your `Construct[]` document with the right props. The full type schema for every construct type lives in `packages/placement/src/schema.ts` (the `Construct` union type).
+Check both catalogs — the component catalog (`/opinions`, `/orders` list real components, not just constructs) and the construct schema (`packages/placement/src/schema.ts`). A full `Kanban` board, a `SignaturePad`, a `Combobox`, an `ai-chat` construct — these already encapsulate the real behavior (drag-and-drop, canvas capture, filtered search, live chat state). Reaching for one and customizing it via props/styling is the actual saving this library provides — regardless of whether you render it as hand-authored `<Kanban ... />` JSX or as a `{ type: "card-kanban", ... }` construct. **Don't rebuild a state machine a high-tier unit already has.**
 
-**The vast majority of views can be composed entirely from existing constructs.** A hero + checklist + callout + card-grid prints an entire landing page from four lines of data. A site-header + filter-bar + table + modal prints a full CRUD admin screen. Start here.
+### 2. If the content is naturally construct-shaped, compose it through the Packer
 
-### 2. If no existing construct fits, add a new one to the placement package
+For content that's genuinely a sequence of interchangeable, LLM-authorable pieces (a marketing page, a doc page, a CRUD admin screen built from cataloged blocks), author a `Construct[]` document and render it through `BlockRenderer`. Browse the catalog at `/imitations`, `/synthetics`, `/opinions`, `/orders` first — the full type schema for every construct type lives in `packages/placement/src/schema.ts` (the `Construct` union type).
 
-When the view needs a pattern that doesn't exist in the shipped catalog, **do not drop to hand-drawn JSX.** Instead, add a new construct type to `@rebar-ui/placement`:
+If the shipped catalog is missing a shape you'll reuse across pages, add a new construct type to `@rebar-ui/placement`:
 
 1. Add a new variant to the `Construct` union in `packages/placement/src/schema.ts`
 2. Add a new `case` to the `renderBlock` switch in `packages/placement/src/BlockRenderer.tsx`
 3. If it has live data bindings (`source`/`onX` fields), add it to `OPINION_CONSTRUCT_TYPES` in `packages/placement/src/opinions.ts`
 4. Add its tier assignment to `CONSTRUCT_TIER.block` in `apps/docs/src/data/constructTier.ts`
 
-This gives you:
-- **Reusability** — the same construct prints every instance across every page
-- **Consistency** — the Packer handles layout, spacing, and theming deterministically
-- **Migratability** — when you migrate to a real design system, the construct swaps cleanly
-- **Availability for future selections** — it becomes part of the catalog agents can pick from
+Or compose existing constructs into a wrapper component in your project code that renders a fixed `Construct[]` document — this works without modifying the placement package, and is often the right call for a one-off page shape.
 
-Alternatively, compose existing constructs into a wrapper component in your project code that renders a fixed `Construct[]` document — this works without modifying the placement package.
+### 3. Hand-authoring JSX around high-tier components is equally correct — not a fallback
 
-### 3. Hand-drawn JSX is the last resort — and temporary
+Composing `<Kanban>`, `<SignaturePad>`, `<Combobox>`, etc. directly as hand-written JSX is the same tier-appropriate choice as reaching for a construct wrapper, whenever a view doesn't fit the construct-composition shape (a bespoke app view, not marketing/doc content) or no construct wrapper exists yet. What's actually wrong is reassembling behavior from Imitation/Synthetic-tier primitives (`Box`, `Stack`, raw drag event handlers) when a higher-tier unit already provides it — **that's** the real anti-pattern, not the presence of JSX itself.
 
-Only drop to hand-drawn JSX when:
-- A construct genuinely cannot express the interaction (a custom canvas visualization, a WebGL scene)
-- You're prototyping and will replace it with a construct before shipping
-
-When you do write hand-drawn JSX, **mark it with a TODO to convert it to a construct.** Every hand-drawn element is a future construct waiting to be extracted. The goal is always zero hand-drawn elements in production.
+**This is evidence, not assertion.** Real downstream rebuilds of the same app (`ref/PLACEMENT_LIVE_DATA.md`, and the Coherence field evidence on `/about/benchmarks`) repeatedly abandoned the Packer specifically at the first place a construct's schema didn't quite cover a needed shape — while still keeping the real saving, by reaching for the underlying high-tier component directly instead of falling all the way back to primitives. Don't force a construct wrapper past the point where it genuinely fits; drop to the component it wraps instead of to `Box`/`Stack`.
 
 ## The Four-Tier Typology
 
-Every construct belongs to one of four tiers, from simplest to most structurally complex:
+This is the classification that actually matters — it applies uniformly to **components and constructs alike** (a component and its construct wrapper, e.g. `Kanban`/`card-kanban`, share the same tier; picking one over the other is a delivery-mechanism choice, not a tier choice). Every unit belongs to one of four tiers, from simplest to most structurally complex:
 
-1. **Imitations** — Single-primitive constructs (Button, Input, Checkbox, Badge, Skeleton, Spin, etc.). Found at `/imitations/<name>`.
-2. **Synthetics** — Static compositions of primitives (Alert, Banner, Card, Checklist, Callout, Hero, FeatureGrid, etc.). No live data binding. Found at `/synthetics/<name>`.
-3. **Opinions** — Compositions with specific interaction patterns (Accordion, Calendar, DatePicker, Combobox, Dialog, Table, Kanban, etc.). Support live data binding via `source`/`onX`. Found at `/opinions/<name>`.
+1. **Imitations** — Single-primitive units (Button, Input, Checkbox, Badge, Skeleton, Spin, etc.). Found at `/imitations/<name>`.
+2. **Synthetics** — Static compositions of primitives (Alert, Banner, Card, Checklist, Callout, Hero, FeatureGrid, etc.). No live data binding, no real internal state machine. Found at `/synthetics/<name>`.
+3. **Opinions** — Real internal state machines: validation, morphing, multi-step flow, drag/reorder, search-and-filter (Accordion, Calendar, DatePicker, Combobox, Dialog, Table, Kanban, SignaturePad, etc.). Constructs at this tier support live data binding via `source`/`onX`. Found at `/opinions/<name>`.
 4. **Orders** — Full-page or major-section structural frames (AppShell, Modal, NavBar, Sidebar, SiteHeader, etc.). Found at `/orders/<name>`.
 
-Each tier builds on the one below it. A construct at tier N is always composed from constructs at tier N-1 or lower. Never skip tiers.
+Orthogonal to all four: **Geneses** are whole starter applications built from these units, not a fifth rung — see `ref/TIERS.md` and `/geneses`.
+
+Reach for the highest tier that already does the job before considering a lower one. Each tier builds on the one below it — a unit at tier N is always composed from tier N-1 or lower — but that's an implementation fact about how units are built, not a rule that a *consumer* must climb the ladder themselves.
 
 ## Framework Rules
 

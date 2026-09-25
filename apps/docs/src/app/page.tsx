@@ -4,13 +4,12 @@ import { Box, Button, Card, CodeBlock, Heading, Stack } from "rebar-ui";
 import type { Construct, FeatureGridItem, PillarGridItem } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
-// This homepage is itself built through the placement layer (the "RebarUI DSL Packer"), not
-// hand-authored Rebar components — the hero, the section headers, the feature row, the
-// three-pillars grid, the arc narrative, and the benchmark teaser are all `BlockRenderer` output
-// from plain Construct[] documents, the same mechanism /about/benchmarks measures and
-// /about/agent explains. Proof-by-existence, per ref/MARKETING_SITE.md: this site really is built
-// the way it says Rebar is meant to be used, not just described that way. `Section` (page-chrome
-// padding/background) is the one thing the Packer itself is built from and stays hand-authored.
+// This homepage's own content sections (hero, section headers, feature row, three-pillars grid,
+// arc narrative, benchmark teaser) are `BlockRenderer` output from plain Construct[] documents —
+// a real, working example of the Packer composing content-shaped sections, exactly the case it's
+// good for (see ref/TIERS.md and /about/agent for when that's the right call versus reaching for
+// a high-tier component directly). `Section` (page-chrome padding/background) is the one thing
+// the Packer itself is built from and stays hand-authored.
 
 const HERO_BLOCKS: Construct[] = [
   {
@@ -18,7 +17,7 @@ const HERO_BLOCKS: Construct[] = [
     badge: "🚧 0.12.1 — see [the repo](https://github.com/ob27/rebarui)",
     title: "Rebar UI",
     subtitle:
-      "Headless-first, intentionally low-fidelity React components, built to be built with by an LLM through a small placement layer — not hand-authored. Measured cheaper and more consistent than hand-authored Ant Design, even after fully migrating to a real design system once you're done iterating.",
+      "Headless-first, intentionally low-fidelity React components, classified by tier so an agent reaches for a component that already does the job — a full Kanban board, a signature pad, a combobox — instead of rebuilding it from primitives. Measured cheaper and more consistent than hand-authored Ant Design, even after fully migrating to a real design system once you're done iterating.",
     actions: [
       { label: "Agent Context", href: "/about/agent", variant: "primary" },
       { label: "Design Heuristics", href: "/about/agent" },
@@ -55,7 +54,7 @@ const PILLARS_HEADER: Construct[] = [
 const PILLARS: PillarGridItem[] = [
   {
     title: "Design Heuristics",
-    body: "Spacing, type scale, color, and interaction defaults baked in — cited to Nielsen, Shneiderman, Material, Carbon, and USWDS, not invented. See each rule applied live by the DSL Packer.",
+    body: "Spacing, type scale, color, and interaction defaults baked in — cited to Nielsen, Shneiderman, Material, Carbon, and USWDS, not invented. See each rule applied live across the component catalog.",
     href: "/about/agent",
     cta: "Read the heuristics",
   },
@@ -80,7 +79,7 @@ const ARC_BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Real UI work is volatile early — layouts and content shift every round of feedback. Rebar is deliberately plain and low-fidelity while that's happening: an LLM composes it through the placement layer's small typed vocabulary instead of hand-writing layout decisions, so revisions stay cheap while the design is still moving.",
+        text: "Real UI work is volatile early — layouts and content shift every round of feedback. Rebar's real saving is reaching for a component that already does the job (a full Kanban board, a signature pad, a combobox) instead of rebuilding it from primitives — the same reason a carpenter reaches for a pre-built door instead of milling one from raw lumber. The placement layer is one convenient way to compose those components when a page's content is naturally construct-shaped, not the source of the saving itself.",
       },
       {
         kind: "text",

@@ -14,6 +14,7 @@ const BENCHMARK_SECTIONS: NavIndexItem[] = [
   { href: "/about/benchmarks/kimi", label: "Kimi-K3" },
   { href: "/about/benchmarks/tiers", label: "Simple/Composite/Complex" },
   { href: "/about/benchmarks/iteration", label: "Does iteration change it?" },
+  { href: "/about/benchmarks/coherence", label: "Field evidence: Coherence" },
 ];
 
 // Mirrors DocsShell exactly (cross-page left nav via NavIndex), sized wider (1040 vs. 960) since

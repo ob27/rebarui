@@ -116,43 +116,49 @@ its placement layer (see "Positioning" below and [ARCHITECTURE.md](ARCHITECTURE.
 The one standing rule carries over unchanged from when this was methodology-only: never fabricate
 or round a number here — every figure on that page must trace back to a real transcript.
 
-## Positioning: the placement layer, and when to migrate
+## Positioning: reach for the highest tier, and when to migrate
 
-Two things changed since this document was first written that the whole site's copy needs to
-reflect, not just `/benchmarks`:
+**Superseded (kept for history, see below): this section originally said "Rebar is always used
+through its placement layer now... the marketing story for AI-assisted building is the placement
+layer."** Real downstream field evidence since (`ref/PLACEMENT_LIVE_DATA.md`, the Coherence
+benchmark entry on `/about/benchmarks`) shows that claim was wrong about *why* the measured savings
+happen: every independent rebuild of the same real app repeatedly abandoned the placement layer's
+`Block[]` wrapper the moment a construct's schema didn't quite fit a needed shape, while still
+getting the real saving by reaching for the underlying high-tier component directly. The wrapper
+was never the mechanism — it was the delivery vehicle the original benchmark happened to measure
+it through.
 
-1. **Rebar is always used through its placement layer now, not hand-authored.** Earlier language
-   on this page (and on the homepage) describes Rebar purely as "headless components + CSS-
-   variable theming" — true, but no longer the whole story. The measured default building method
-   is: an LLM writes a small typed document naming pre-built composite blocks (a banner, a
-   checklist, a callout, ...), and a deterministic renderer (`@rebar-ui/placement`'s
-   `BlockRenderer` — see [ARCHITECTURE.md](ARCHITECTURE.md#the-placement-layer-rebar-uiplacement))
-   turns that into the real component tree. This isn't a separate "DSL mode" to explain as an
-   alternative — it's simply how Rebar is built with, the same way nobody explains JSX as "the
-   React DSL." Site copy should name the two heuristics that make it work, not just gesture at "a
-   placement layer": **anatomical order** (each block's internal parts render in a fixed, head-to-
-   toe sequence the model never chooses — icon, then text, then action, every time) and **the
-   magnetic heuristic** (blocks snap into place in the order the model lists them, like magnets
-   pulling into a line — no coordinates, no grid math, just sequence). Site copy should stop
-   presenting raw `Stack`/`Box` composition as the primary authoring path (it still is one, for a
-   human hand-writing code, but the marketing story for AI-assisted building is the placement
-   layer, backed by the `/benchmarks` numbers).
+Two things the whole site's copy needs to reflect, not just `/benchmarks`:
+
+1. **The real lever is tier, not the DSL wrapper.** The measured default building method is:
+   reach for the highest-tier existing unit that already encapsulates the behavior you need (a
+   full `Kanban` board, a `SignaturePad`, a `Combobox`) instead of assembling it from primitives
+   (`Stack`/`Box`/raw event handlers) — whether that unit is used directly as hand-authored JSX or
+   composed via `@rebar-ui/placement`'s `Block[]` documents (`BlockRenderer` — see
+   [ARCHITECTURE.md](ARCHITECTURE.md#the-placement-layer-rebar-uiplacement)). The placement layer
+   remains genuinely useful for its own reasons — **anatomical order** (each block's internal parts
+   render in a fixed, head-to-toe sequence the model never chooses) and **the magnetic heuristic**
+   (blocks snap into place in listed order, no coordinates, no grid math) — when a page's content is
+   naturally construct-shaped. Site copy should present both hand-authoring high-tier components
+   and composing them via the placement layer as equally correct paths, not one as the "real" way
+   and the other as a fallback.
 2. **The core hypothesis needs to be stated plainly, not left implicit:** most of the token cost of
    building UI with an LLM is front-loaded, during the early phase of a project when flows and
    layouts are still volatile — many small changes, a lot of exploration, nothing settled yet.
-   That is exactly the phase Rebar (via the placement layer) is built for: no visual decisions in
-   the loop, so iteration is cheap and — per the benchmark's visual-consistency numbers — far more
-   predictable. Once a project's UI has actually stabilized and is heading to production, the
-   right move is to migrate once, via the codemod/migration-prompt path, to a real design system
-   that can be customized for the long term. Rebar isn't positioned as a permanent alternative to a
-   production design system — it's positioned as the cheapest way to get through the volatile
-   phase before you need one. This should be the load-bearing sentence on the homepage hero and
-   the Introduction doc page, not buried in a benchmarks caveat.
+   That is exactly the phase Rebar's tiered catalog is built for: reaching for a complete unit
+   instead of assembling one keeps iteration cheap and — per the benchmark's visual-consistency
+   numbers — far more predictable. Once a project's UI has actually stabilized and is heading to
+   production, the right move is to migrate once, via the codemod/migration-prompt path, to a real
+   design system that can be customized for the long term. Rebar isn't positioned as a permanent
+   alternative to a production design system — it's positioned as the cheapest way to get through
+   the volatile phase before you need one. This should be the load-bearing sentence on the homepage
+   hero and the Introduction doc page, not buried in a benchmarks caveat.
 
 Concretely, this means: the homepage hero subtitle, the Introduction page's "why cheaper" section,
 and the Migration page's framing should all name the volatility→stabilization arc explicitly
-(design volatile → build headless via the placement layer → flows settle → migrate once), rather
-than describing headless-first and migration as two separate, only-loosely-connected features.
+(design volatile → build from high-tier units, by hand or via the placement layer → flows settle →
+migrate once), rather than crediting the placement layer specifically or describing headless-first
+and migration as two separate, only-loosely-connected features.
 
 **Docs sidebar:**
 - **Introduction** — what Rebar is, the pitch, when to reach for it vs. not.

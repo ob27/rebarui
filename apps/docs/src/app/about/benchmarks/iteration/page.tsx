@@ -164,9 +164,9 @@ export default function IterationPage() {
         Every number measured on this site compares a library the model has seen constantly in
         training (antd) against one it has never seen at all (rebar-ui, and the{" "}
         <code>@rebar-ui/placement</code> schema specifically). That&apos;s not a flaw in the
-        comparison — it&apos;s the placement layer&apos;s whole point: a small, generic schema
-        needs far less training familiarity to use well than a large component API does, which
-        is why rebar-ui already wins despite zero training exposure. But it does mean
+        comparison — reaching for a small, complete unit needs far less training familiarity to
+        use well than assembling one from a large component API does, which is a real advantage
+        of the tier system independent of training exposure. But it does mean
         today&apos;s numbers likely understate rebar-ui&apos;s ceiling, not overstate it — the
         image-prompt experiment shows a real, measurable &quot;unfamiliar schema&quot; tax
         (extra lookup calls before the prompt was refined to spell the schema out directly). If

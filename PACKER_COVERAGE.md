@@ -5,11 +5,22 @@ status: living document, regenerate the numbers with `pnpm --filter docs run aud
 
 # Packer coverage
 
+**Reframed:** this doc tracks DSL-wrapper adoption specifically — how much of each page is
+`Block[]`-composed versus hand-authored JSX. It does **not** track how good a page is, or how much
+of the library's real cost/consistency benefit it's getting: this project's own field evidence
+(`/about/benchmarks`'s Coherence entry, `ref/PLACEMENT_LIVE_DATA.md`) found the wrapper gets
+dropped the moment a construct's schema doesn't quite fit, while a page built entirely from
+hand-authored high-tier components (a full `Kanban`, a `SignaturePad`) keeps the real saving with
+0% "printed" by this doc's own metric. Read the percentages below as "how much of this page reaches
+the Packer specifically," a narrower and more secondary question than it used to be treated as —
+see `ref/TIERS.md` for the axis that actually matters (reach for the highest tier, regardless of
+delivery mechanism).
+
 The marketing site (`apps/docs`) is this project's own workbench for the placement layer
-(`@rebar-ui/placement`) — the aim is for it to be printed by the Packer end to end, not
-hand-authored `rebar-ui` component JSX, so that adding a component or construct to the framework
-dogfoods itself immediately on the site that documents it. This doc is a measured inventory of how
-close each page actually is, not an assertion — same discipline as `/about/benchmarks`.
+(`@rebar-ui/placement`) — printed content proves the Packer composes real pages correctly, so that
+adding a construct dogfoods itself immediately on the site that documents it. This doc is a
+measured inventory of how much of each page uses that mechanism, not an assertion — same discipline
+as `/about/benchmarks`.
 
 ## The maker's mark
 

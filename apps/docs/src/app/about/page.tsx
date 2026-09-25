@@ -10,7 +10,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Most of what makes AI-assisted coding expensive and unpredictable isn't logic — it's UI. Layout, spacing, and composition decisions are exactly the kind of open-ended judgment call a model has to re-solve from scratch on every request, and the cost shows up twice: in tokens spent deciding, and in the variance between one run and the next. Rebar removes that decision from the job entirely — an LLM picks a named block and supplies content, the Packer decides the rest. [The measured result](/about/benchmarks) is a real, repeated (n=15) one: cheaper than hand-authored Ant Design outright, faster, and close to zero run-to-run variance, not just cheaper than hand-authoring the same thing without a design system at all.",
+        text: "Most of what makes AI-assisted coding expensive and unpredictable isn't logic — it's UI. Layout, spacing, and composition decisions are exactly the kind of open-ended judgment call a model has to re-solve from scratch on every request, and the cost shows up twice: in tokens spent deciding, and in the variance between one run and the next. Rebar removes that decision from the job by shipping units that already encapsulate it — a full Kanban board, a signature pad, a combobox — so the model supplies content and props instead of re-deriving layout from scratch, whether it reaches for that unit as hand-authored JSX or through the placement layer's own construct wrapper. [The measured result](/about/benchmarks) is a real, repeated (n=15) one: cheaper than hand-authored Ant Design outright, faster, and close to zero run-to-run variance, not just cheaper than hand-authoring the same thing without a design system at all.",
       },
     ],
   },
@@ -30,7 +30,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Cheaper and faster is the headline, but it's not the point on its own. Every interactive component wraps a real Radix UI primitive underneath, so keyboard operability, focus management, and ARIA semantics are correct by construction, not bolted on. Every visual value is a `--rebar-*` CSS custom property, not a hardcoded pixel or color — which is what makes the placement layer's near-zero output variance possible in the first place: the same document renders identically every time, because the Packer decided it, not a model improvising layout from scratch.",
+        text: "Cheaper and faster is the headline, but it's not the point on its own. Every interactive component wraps a real Radix UI primitive underneath, so keyboard operability, focus management, and ARIA semantics are correct by construction, not bolted on. Every visual value is a `--rebar-*` CSS custom property, not a hardcoded pixel or color — which is what makes the near-zero output variance possible in the first place: a pre-built component's own internal layout is fixed by its implementation, not re-derived per request, whether it's reached directly as JSX or composed through the placement layer — either way, the model isn't improvising layout from scratch.",
       },
     ],
   },
@@ -74,13 +74,13 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "The broader thesis this project is betting on: making AI-assisted UI work genuinely more efficient puts real, positive price pressure on both development and AI services generally — not because Rebar itself is special, but because of what a small, deterministic placement layer actually changes about the job. Two concrete mechanisms, not just a hope:",
+        text: "The broader thesis this project is betting on: making AI-assisted UI work genuinely more efficient puts real, positive price pressure on both development and AI services generally — not because Rebar itself is special, but because of what reaching for a pre-built, complete component instead of assembling one from primitives actually changes about the job. Two concrete mechanisms, not just a hope:",
       },
       {
         kind: "list",
         items: [
-          "Cheaper models close the gap with premium ones. The real, measured cross-model benchmarking on this project found the gap between rebar-ui and hand-authored Ant Design is *bigger* on a budget model (Qwen, Kimi) than on a frontier one (Claude) — because most of what a cheaper model struggles with is exactly the open-ended composition work the placement layer removes from the job. A well-designed DSL layer is a lever that helps a cheaper model punch above its weight more than it helps an already-strong one.",
-          "Less total compute, not just less cost per call. Composition and layout decisions currently get re-solved by a model on every single request, everywhere, by every developer independently. Moving that work into a shared, deterministic, reusable DSL layer — open source, one implementation, used by the whole developer community instead of re-derived per project — is a real reduction in the amount of inference the industry collectively needs to do to get the same UI built.",
+          "Cheaper models close the gap with premium ones. The real, measured cross-model benchmarking on this project found the gap between rebar-ui and hand-authored Ant Design is *bigger* on a budget model (Qwen, Kimi) than on a frontier one (Claude) — because most of what a cheaper model struggles with is exactly the open-ended composition work a complete, pre-built component removes from the job. Reaching for the highest-tier existing unit is a lever that helps a cheaper model punch above its weight more than it helps an already-strong one.",
+          "Less total compute, not just less cost per call. Composition and layout decisions currently get re-solved by a model on every single request, everywhere, by every developer independently. Moving that work into a shared, reusable component catalog — open source, one implementation per interaction pattern, used by the whole developer community instead of re-derived per project — is a real reduction in the amount of inference the industry collectively needs to do to get the same UI built.",
         ],
       },
       {

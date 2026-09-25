@@ -1,11 +1,13 @@
 # @rebar-ui/placement
 
-**This is how `rebar-ui` is meant to be used — not by hand-authoring `Stack`/`Box`/`Card` JSX.**
-Compose a small, plain-data `Block[]` document (a fixed vocabulary of fifteen named archetypes —
-`hero`, `banner`, `checklist`, `form`, `table`, ...) and render it through `BlockRenderer`, which
-is the only thing that decides layout, spacing, and nesting. An LLM authoring a page picks which
-archetype fits each piece of content and supplies the content; it never decides `direction`,
-`gap`, `justify`, or any other layout property, because there is no such prop to set.
+**One of two correct ways to use `rebar-ui`** — the other being hand-authoring `packages/core`
+components directly (see that package's own README). Compose a small, plain-data `Block[]`
+document (a fixed vocabulary of named archetypes — `hero`, `banner`, `checklist`, `form`, `table`,
+...) and render it through `BlockRenderer`, which is the only thing that decides layout, spacing,
+and nesting. An LLM authoring a page picks which archetype fits each piece of content and supplies
+the content; it never decides `direction`, `gap`, `justify`, or any other layout property, because
+there is no such prop to set. This is the right tool when a page's content is naturally
+construct-shaped — a marketing/doc page, or an admin screen composed from cataloged pieces.
 
 ## Why this exists — the measured case, not a claim
 
@@ -16,13 +18,22 @@ common in training data, even though rebar-ui's components are simpler. Building
 UI as a `Block[]` document through this package instead **beats hand-authored Ant Design
 outright** — cheaper, faster, and far more consistent run-to-run (near-zero output variance,
 since a deterministic renderer decides every pixel, not the model). The gap is bigger on cheaper
-models (Qwen, Kimi) than on frontier ones, in the direction you'd expect: composing raw JSX is a
-much harder task to get consistently right than filling in a small typed schema. See
-`ref/ARCHITECTURE.md#the-placement-layer` and `/about/benchmarks` for the full numbers and methodology.
+models (Qwen, Kimi) than on frontier ones, in the direction you'd expect: composing raw JSX from
+primitives is a much harder task to get consistently right than filling in a small typed schema.
+See `ref/ARCHITECTURE.md#the-placement-layer` and `/about/benchmarks` for the full numbers and
+methodology — and `/about/benchmarks`'s Coherence field-evidence entry for the honest caveat: what
+was actually measured is the cost of assembling from primitives versus reaching for a complete
+unit, and the `Block[]` wrapper is one delivery mechanism for the latter, not the source of the
+saving itself. Real downstream usage repeatedly abandons this package's wrapper the moment a
+schema doesn't quite fit, while still keeping the saving by reaching for the underlying component
+directly — see `ref/PLACEMENT_LIVE_DATA.md`.
 
-**If a task is "build a UI with rebar-ui," reach for this package first.** Hand-authoring
-`packages/core` components directly is not the recommended path any more — see that package's own
-README for when it's still the right call (short version: almost never, for a whole page).
+**Reach for the highest-tier existing unit that already does the job — component or construct,
+whichever fits your page.** This package is how to compose those units when your content is
+naturally construct-shaped; hand-authoring `packages/core` components directly is equally correct
+when it isn't (a bespoke app view, or a construct schema that doesn't quite cover what you need) —
+see that package's own README, and `ref/TIERS.md` for the tier system this choice is actually
+about.
 
 ## Install
 

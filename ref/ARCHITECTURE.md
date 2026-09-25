@@ -87,13 +87,20 @@ A fifth, unrelated concept sits alongside these four but isn't a rung on their l
 is a whole, complete, production-ready application built entirely out of constructs — a seed you
 clone, not a piece you import. See [`TIERS.md`](TIERS.md) and `/geneses` on the site.
 
-The evidence for the underlying mechanism lives in
-[`/about/benchmarks`](../apps/docs/src/app/about/benchmarks/page.tsx): a hand-authored-JSX version of Rebar
-lost to AntD by ~54% in token cost; the placement-layer version not only closed that gap but beat
-AntD outright — cheaper, faster wall-clock, and with visual output that is (with a properly scoped
-prompt) pixel-identical run to run, versus AntD's real run-to-run drift. That result held up again
-on an image-driven build (read a screenshot, produce the same document), once the prompt spelled
-out the document schema instead of making the agent discover it by reading source files.
+The evidence lives in
+[`/about/benchmarks`](../apps/docs/src/app/about/benchmarks/page.tsx): a version of Rebar
+hand-*assembled from primitives* (`Stack`/`Box`/`Card` JSX) lost to AntD by ~54% in token cost; the
+placement-layer version — reaching for complete archetypes instead of assembling them — not only
+closed that gap but beat AntD outright: cheaper, faster wall-clock, and with visual output that is
+(with a properly scoped prompt) pixel-identical run to run, versus AntD's real run-to-run drift.
+That result held up again on an image-driven build (read a screenshot, produce the same document),
+once the prompt spelled out the document schema instead of making the agent discover it by reading
+source files. **What the measurement actually isolates is assembling-from-primitives versus
+reaching-for-a-complete-unit, not the `Construct[]` wrapper itself** — the Coherence field evidence
+(`/about/benchmarks`'s own Coherence entry, and `PLACEMENT_LIVE_DATA.md`) shows real downstream
+usage repeatedly dropping the wrapper the moment a construct's schema doesn't quite fit, while
+still keeping the saving by reaching for the underlying high-tier component directly instead of
+falling back to primitives.
 
 What's still open: the three archetypes measured in that benchmark (`banner`/`checklist`/`callout`)
 were chosen to fit one benchmark component; `feature-grid`/`pillar-grid` were added to cover this

@@ -55,14 +55,17 @@ component pattern, the block-authoring conventions, the full block/component cat
 independent source of truth.
 
 **`apps/docs` (the marketing site) is this project's own dogfooding workbench** — the goal is for
-it to be printed by the Packer end to end, not hand-authored `rebar-ui` JSX, so a new component or
-block proves itself immediately on the site that documents it. Touching `apps/docs` to add content
-is a Framework Rule trigger, not a free pass: if the needed shape doesn't exist as a block yet,
-close that gap in order (component in `packages/core`, if needed → block in `@rebar-ui/placement`
-→ printed page), never a hand-rolled shortcut. `PACKER_COVERAGE.md` (repo root) is the measured inventory
-of how far along each page actually is (via `pnpm --filter docs run audit:packer`, which reads the
-`data-rebar-placement-block` "maker's mark" every `BlockRenderer`-rendered block already carries)
-— check it, don't assume.
+it to reach for the highest-tier existing unit (component or block) that already does the job,
+composed either as hand-authored JSX or printed by the Packer, so a new component or block proves
+itself immediately on the site that documents it. Touching `apps/docs` to add content is a
+Framework Rule trigger, not a free pass: the actual violation is reassembling something from
+Imitation/Synthetic-tier primitives (`Box`/`Stack`/raw event handlers) when a higher-tier unit
+already covers it — not the presence of hand-authored JSX around a high-tier component. If the
+needed shape doesn't exist at any tier yet, close that gap in order (component in `packages/core`,
+if needed → block in `@rebar-ui/placement` if the content is naturally construct-shaped → printed
+or hand-authored page). `PACKER_COVERAGE.md` (repo root) tracks DSL-wrapper adoption specifically —
+a narrower, secondary metric now that tier (not the wrapper) is understood to be the real driver of
+savings — check it for that, not as a proxy for "how good is this page."
 
 ## Narration audio — regenerate it when you edit the content it reads aloud
 

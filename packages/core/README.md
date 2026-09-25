@@ -4,17 +4,21 @@ Headless-first, intentionally low-fidelity React components — real Radix UI un
 purely via `--rebar-*` CSS custom properties (swap `@rebar-ui/theme-sketch` for
 `@rebar-ui/theme-clean`, or write your own, without touching component code).
 
-## Building a whole page or screen? Use `@rebar-ui/placement` instead
+## Reach for the highest-tier existing component that already does the job
 
-If the task is "build a UI with rebar-ui" rather than "this one component, right here" — install
-`@rebar-ui/placement` and compose a small `Block[]` document instead of hand-authoring `Stack`/
-`Box`/`Card` JSX against these components directly. Real, repeated measurement found hand-authored
-`rebar-ui` JSX loses to hand-authored Ant Design (an unfamiliar library costs more tokens than a
-familiar one, even a simpler one); building the same UI through the placement layer instead beats
-Ant Design outright, on tokens, wall-clock time, and consistency. See that package's own README for
-the full case and the archetype list. What follows below is for direct component-level use — a
-single component, a custom composition the placement layer's archetypes don't cover — not for
-composing a whole screen.
+The real saving isn't in *how* a component is composed into a page — it's in reaching for one
+that already encapsulates the behavior you need (a full `Kanban` board, a `SignaturePad`, a
+`Combobox`) instead of rebuilding it from primitives (`Box`, `Stack`, raw event handlers). Real,
+repeated measurement found hand-*assembled* `rebar-ui` JSX from primitives loses to hand-authored
+Ant Design (an unfamiliar library costs more tokens than a familiar one, even a simpler one);
+reaching for a complete, pre-built unit instead beats Ant Design outright, on tokens, wall-clock
+time, and consistency — whether that unit is used directly as JSX or composed via
+`@rebar-ui/placement`'s `Block[]` documents, which is the right tool specifically when a page's
+content is naturally construct-shaped (a marketing/doc page, an admin screen built from cataloged
+pieces). See that package's own README for the full case and the archetype list, and
+`ref/TIERS.md` for the tier system this choice is actually about. What follows below covers every
+component directly — reach for these whether you're composing a whole screen by hand or through
+the placement layer.
 
 ## For coding agents: read this first, not the source
 
