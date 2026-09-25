@@ -4,9 +4,14 @@ A new, standalone baseline (not a variant of Simple/Composite/Complex) — see
 `ref/BENCHMARK_CONTRIBUTING.md` rule #8. Tests whether reaching for a complete, pre-built
 Opinion-tier unit and customizing it beats hand-assembling the same behavior from primitives,
 independent of whether a DSL wrapper is involved at all (no `@rebar-ui/placement` in any
-condition's scaffold — this benchmark isolates tier, not delivery mechanism).
+condition's scaffold — this benchmark isolates tier, not delivery mechanism). A 4th condition,
+`kanban-antd-*`, was added after the first 3 conditions (45 runs) completed, specifically to
+answer the question those 3 alone can't: is rebar-ui actually cheaper/faster than hand-rolled antd
+for this task, not just internally more efficient than hand-rolling its own primitives. `kanban-antd`
+is the fairest one-to-one comparison against `kanban-primitives` (neither library has a pre-built
+Kanban-shaped component; both are "hand-roll it from what the library gives you").
 
-## The spec (identical across all 3 conditions)
+## The spec (identical across all 4 conditions)
 
 Build a "Sprint Board" — a project Kanban board — in `src/App.tsx` (splitting into additional
 files under `src/` is fine):
@@ -30,7 +35,10 @@ files under `src/` is fine):
 - **Seed data**: start with at least 2 cards in "To Do", 2 in "In Progress" (including at least one
   with a status tag), and 1 in "Done".
 
-Use `@rebar-ui/theme-clean` (already wired in `main.tsx` — don't change it). No backend, no
+Use `@rebar-ui/theme-clean` (already wired in `main.tsx` — don't change it). This line doesn't
+apply to `kanban-antd-*`: that scaffold has no rebar-ui dependency at all by design (its
+`main.tsx` has nothing to leave alone) — style the board with antd's own defaults/CSS-in-JS.
+No backend, no
 persistence required — in-memory React state is sufficient.
 
 ## Your condition's constraint (read the one that applies to your scaffold)
@@ -47,6 +55,13 @@ persistence required — in-memory React state is sufficient.
   (`columns`/`cards`/`onChange`/`search`/`filterCard`/`renderCard`/etc. — see its own prop types).
   Customize via props and styling to hit every requirement above; do not reimplement anything
   `Kanban` already provides.
+- **`kanban-antd-*`**: Build this using Ant Design (`antd`, already a dependency) components —
+  `Card`, `Tag`, `Avatar`, `Input`, `Button`, or whatever else fits — no `rebar-ui` at all. antd has
+  no pre-built Kanban/board component, so drag-and-drop, search-filter, and add-card behavior must
+  all be written, same as `kanban-primitives`. You may add one real drag-and-drop dependency of your
+  own choosing if you want one (e.g. `@dnd-kit/core`, `react-beautiful-dnd`, or plain native HTML5
+  DnD) — pick whatever a real antd developer would naturally reach for; this isn't constrained the
+  way the rebar-ui conditions are, since antd itself doesn't ship a headless DnD primitive.
 
 ## Verification (done after each run, not by the building agent)
 
