@@ -83,18 +83,81 @@ describe("SignaturePad", () => {
     expect(screen.queryByRole("button", { name: "Upload" })).not.toBeInTheDocument();
   });
 
-  it("allowTypedName: typing a name marks the pad non-empty and emits a value", async () => {
+  it("defaultTypedName seeds the typed-name field's initial text (it's otherwise uncontrolled and always blank)", () => {
+    render(<SignaturePad allowTypedName defaultTypedName="Ada Lovelace" />);
+    expect(screen.getByPlaceholderText("Type your name")).toHaveValue("Ada Lovelace");
+  });
+
+  it("actionsEnd renders extra content in the same row as Clear/Upload, after them", () => {
+    render(<SignaturePad allowUpload actionsEnd={<label>Freehand</label>} />);
+    const actions = screen.getByRole("button", { name: "Clear" }).closest('[data-rebar-part="actions"]')!;
+    const children = Array.from(actions.children).map((el) => el.textContent);
+    expect(children.indexOf("Freehand")).toBeGreaterThan(children.indexOf("Upload"));
+  });
+
+  it("markDisabled: blocks drawing and disables Upload, but leaves the typed-name input enabled", () => {
+    const onValueChange = vi.fn();
+    const { container } = render(
+      <SignaturePad allowTypedName allowUpload markDisabled onValueChange={onValueChange} />,
+    );
+    const input = screen.getByPlaceholderText("Type your name") as HTMLInputElement;
+    expect(input).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "Upload" })).toBeDisabled();
+
+    const canvas = container.querySelector('[data-rebar-part="canvas"]') as HTMLElement;
+    fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 10, clientY: 10 });
+    fireEvent.pointerMove(canvas, { pointerId: 1, clientX: 40, clientY: 30 });
+    fireEvent.pointerUp(canvas, { pointerId: 1, clientX: 40, clientY: 30 });
+    expect(container.querySelector('[data-rebar-component="signature-pad"]')).toHaveAttribute(
+      "data-rebar-empty",
+      "true",
+    );
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
+  it("markDisabled does not disable Clear -- removing an existing mark stays possible", async () => {
+    const onValueChange = vi.fn();
+    const { container, rerender } = render(<SignaturePad onValueChange={onValueChange} />);
+    const canvas = container.querySelector('[data-rebar-part="canvas"]') as HTMLElement;
+    fireEvent.pointerDown(canvas, { pointerId: 1, clientX: 10, clientY: 10 });
+    fireEvent.pointerMove(canvas, { pointerId: 1, clientX: 40, clientY: 30 });
+    fireEvent.pointerUp(canvas, { pointerId: 1, clientX: 40, clientY: 30 });
+    await waitFor(() => expect(onValueChange).toHaveBeenCalled());
+
+    rerender(<SignaturePad markDisabled onValueChange={onValueChange} />);
+    expect(screen.getByRole("button", { name: "Clear" })).toBeEnabled();
+  });
+
+  it("markDisabled: typing a name still works normally (only the mark itself is blocked)", () => {
+    const onTypedNameChange = vi.fn();
+    render(<SignaturePad allowTypedName markDisabled onTypedNameChange={onTypedNameChange} />);
+    const input = screen.getByPlaceholderText("Type your name");
+    fireEvent.change(input, { target: { value: "Ada" } });
+    expect(onTypedNameChange).toHaveBeenLastCalledWith("Ada");
+  });
+
+  it("disabled (not just markDisabled) still disables the typed-name input too", () => {
+    render(<SignaturePad allowTypedName disabled />);
+    expect(screen.getByPlaceholderText("Type your name")).toBeDisabled();
+  });
+
+  it("allowTypedName: typing a name marks the pad non-empty immediately, and emits a value on blur", async () => {
     const onValueChange = vi.fn();
     const { container } = render(<SignaturePad allowTypedName onValueChange={onValueChange} />);
-    fireEvent.change(screen.getByPlaceholderText("Type your name"), { target: { value: "Ada Lovelace" } });
+    const input = screen.getByPlaceholderText("Type your name");
+    fireEvent.change(input, { target: { value: "Ada Lovelace" } });
     expect(container.querySelector('[data-rebar-component="signature-pad"]')).not.toHaveAttribute(
       "data-rebar-empty",
     );
+    // Not committed yet -- typing only paints a live preview, the same "commit at the natural end
+    // of the gesture" rule pointer drawing follows (moves paint locally, only pointerup emits).
+    expect(onValueChange).not.toHaveBeenCalled();
+    fireEvent.blur(input);
     await waitFor(() => expect(onValueChange).toHaveBeenCalledWith(expect.any(String)));
     expect(screen.getByRole("button", { name: "Clear" })).toBeEnabled();
   });
 
-  it("allowTypedName: clearing the typed name back to empty resets to empty and emits \"\"", () => {
+  it("allowTypedName: clearing the typed name back to empty resets to empty, and emits \"\" on blur", () => {
     const onValueChange = vi.fn();
     const { container } = render(<SignaturePad allowTypedName onValueChange={onValueChange} />);
     const input = screen.getByPlaceholderText("Type your name");
@@ -104,7 +167,29 @@ describe("SignaturePad", () => {
       "data-rebar-empty",
       "true",
     );
+    fireEvent.blur(input);
     expect(onValueChange).toHaveBeenLastCalledWith("");
+  });
+
+  it("allowTypedName: pressing Enter commits the same way blur does", async () => {
+    const onValueChange = vi.fn();
+    render(<SignaturePad allowTypedName onValueChange={onValueChange} />);
+    const input = screen.getByPlaceholderText("Type your name") as HTMLInputElement;
+    input.focus();
+    fireEvent.change(input, { target: { value: "Ada Lovelace" } });
+    expect(onValueChange).not.toHaveBeenCalled();
+    fireEvent.keyDown(input, { key: "Enter" });
+    await waitFor(() => expect(onValueChange).toHaveBeenCalledWith(expect.any(String)));
+  });
+
+  it("allowTypedName: shows a save hint only once there's a name to commit", () => {
+    render(<SignaturePad allowTypedName />);
+    const input = screen.getByPlaceholderText("Type your name");
+    expect(screen.queryByTitle("Press Enter to save")).not.toBeInTheDocument();
+    fireEvent.change(input, { target: { value: "Ada" } });
+    expect(screen.getByTitle("Press Enter to save")).toBeInTheDocument();
+    fireEvent.change(input, { target: { value: "" } });
+    expect(screen.queryByTitle("Press Enter to save")).not.toBeInTheDocument();
   });
 
   it("Clear also resets a typed name", () => {
@@ -113,6 +198,23 @@ describe("SignaturePad", () => {
     fireEvent.change(input, { target: { value: "Ada" } });
     fireEvent.click(screen.getByRole("button", { name: "Clear" }));
     expect(input.value).toBe("");
+  });
+
+  it("allowTypedName: onTypedNameChange fires the raw text on every keystroke, not just on commit", () => {
+    const onTypedNameChange = vi.fn();
+    render(<SignaturePad allowTypedName onTypedNameChange={onTypedNameChange} />);
+    const input = screen.getByPlaceholderText("Type your name");
+    fireEvent.change(input, { target: { value: "Ada Lovelace" } });
+    expect(onTypedNameChange).toHaveBeenLastCalledWith("Ada Lovelace");
+  });
+
+  it("allowTypedName: Clear also fires onTypedNameChange with an empty string", () => {
+    const onTypedNameChange = vi.fn();
+    render(<SignaturePad allowTypedName onTypedNameChange={onTypedNameChange} />);
+    const input = screen.getByPlaceholderText("Type your name");
+    fireEvent.change(input, { target: { value: "Ada" } });
+    fireEvent.click(screen.getByRole("button", { name: "Clear" }));
+    expect(onTypedNameChange).toHaveBeenLastCalledWith("");
   });
 
   it("allowUpload: renders an Upload button and a hidden file input", () => {

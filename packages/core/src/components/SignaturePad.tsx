@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import type { ChangeEvent, PointerEvent as ReactPointerEvent } from "react";
+import type { ChangeEvent, KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent, ReactNode } from "react";
 import clsx from "clsx";
 import { Button } from "./Button";
 import { Input } from "./Input";
+import { EnterOutlined } from "./icons";
 
 /** A caller-supplied audit stamp baked into the bottom-right corner of the exported/drawn image
  * whenever a signature is captured (stroke end, upload, or typed name) — the visible "signed by /
@@ -83,6 +84,13 @@ export interface SignaturePadProps {
   penColor?: string;
   backgroundColor?: string;
   disabled?: boolean;
+  /** Disables just *capturing a new mark* -- drawing and Upload -- while leaving the typed-name
+   * input (see `allowTypedName`) and Clear enabled, unlike `disabled` which disables everything
+   * including those. Clear stays available on purpose: removing a mark that's already there
+   * should always be possible regardless of whether capturing a new one is currently blocked. For
+   * a caller that only wants drawing/uploading gated on some condition of its own (e.g. a name
+   * already being present) rather than everything `disabled` covers. */
+  markDisabled?: boolean;
   clearLabel?: string;
   /** Shows an "Upload" button that lets the user pick an existing signature image (any raster
    * format a plain `<input type="file" accept="image/*">` accepts) instead of drawing one — drawn
@@ -93,15 +101,31 @@ export interface SignaturePadProps {
    * user types, instead of (or in addition to) drawing — the "type your signature" affordance
    * most e-signature flows offer alongside drawing. Off by default. */
   allowTypedName?: boolean;
+  /** Seeds the typed-name field's initial text (e.g. restoring a name saved earlier via
+   * `onTypedNameChange`) — the field is otherwise uncontrolled and always starts blank on mount
+   * regardless of what a caller has stored, which lets its own state silently drift out of sync
+   * with a real, non-blank saved name (nothing on screen shows one exists). Only read once, on
+   * mount, like a native `defaultValue` -- doesn't fight the user's own typing afterward. */
+  defaultTypedName?: string;
   typedNamePlaceholder?: string;
   /** Font used to render a typed name (see `allowTypedName`) — a generic system cursive stack by
    * default, deliberately not a bundled web font: matches this library's headless-first,
    * bring-your-own-polish convention rather than a core component silently pulling in an
    * external font file. */
   typedNameFont?: string;
+  /** Fires on every keystroke in the typed-name field with its current raw text — the name itself
+   * only ever exists as pixels baked into the canvas otherwise (`onValueChange` only ever returns
+   * the rendered PNG), so a caller that needs the plain string too (to store it separately, gate
+   * on it being non-blank, or show it as real text elsewhere) has no other way to read it. */
+  onTypedNameChange?: (name: string) => void;
   /** Bakes a small audit stamp into the signature image on every capture — see
    * `SignaturePadStamp`. Omit for no stamp (default). */
   stamp?: SignaturePadStamp;
+  /** Extra content rendered in the same row as Clear/Upload, after them — a related toggle or
+   * control a caller wants visually grouped with this pad's own actions rather than placed
+   * elsewhere and left to line up by coincidence. Renders regardless of `disabled`/`markDisabled`;
+   * a caller passing an interactive control is responsible for its own disabled state. */
+  actionsEnd?: ReactNode;
   "aria-label"?: string;
   className?: string;
 }
@@ -120,13 +144,17 @@ export function SignaturePad({
   penColor = "#212121",
   backgroundColor = "#ffffff",
   disabled,
+  markDisabled,
   clearLabel = "Clear",
   allowUpload,
   uploadLabel = "Upload",
   allowTypedName,
+  defaultTypedName = "",
   typedNamePlaceholder = "Type your name",
   typedNameFont = "'Brush Script MT', 'Segoe Script', cursive",
+  onTypedNameChange,
   stamp,
+  actionsEnd,
   "aria-label": ariaLabel = "Signature",
   className,
 }: SignaturePadProps) {
@@ -136,7 +164,8 @@ export function SignaturePad({
   const lastPointRef = useRef<{ x: number; y: number } | null>(null);
   const lastValueRef = useRef<string | undefined>(undefined);
   const [isEmpty, setIsEmpty] = useState(true);
-  const [typedName, setTypedName] = useState("");
+  const [typedName, setTypedName] = useState(defaultTypedName);
+  const markIsDisabled = disabled || markDisabled;
 
   const getContext = () => canvasRef.current?.getContext("2d") ?? null;
 
@@ -148,18 +177,26 @@ export function SignaturePad({
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   };
 
-  // Initial paint, and redraw when the caller loads a genuinely new external value.
+  // Initial paint, and redraw when the caller loads a genuinely new external value. Skipped
+  // entirely when `value` is just our own emitted value echoed back through a controlled prop
+  // (the normal round-trip: draw/type/upload -> emitValue sets lastValueRef + calls
+  // onValueChange -> caller re-renders with that same value) -- the canvas already shows it, and
+  // clearing here would erase what the user just captured before this effect could redraw it.
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = getContext();
     if (!canvas || !ctx) return;
+    if (value === lastValueRef.current) return;
     clearCanvas();
-    if (value && value !== lastValueRef.current) {
+    if (value) {
       const img = new Image();
       img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       img.src = value;
       lastValueRef.current = value;
       setIsEmpty(false);
+    } else {
+      lastValueRef.current = value;
+      setIsEmpty(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-run for a genuinely new value/size, not every render.
   }, [value, width, height, backgroundColor]);
@@ -170,14 +207,14 @@ export function SignaturePad({
   };
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLCanvasElement>) => {
-    if (disabled) return;
+    if (markIsDisabled) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     drawingRef.current = true;
     lastPointRef.current = pointFromEvent(event);
   };
 
   const handlePointerMove = (event: ReactPointerEvent<HTMLCanvasElement>) => {
-    if (!drawingRef.current || disabled) return;
+    if (!drawingRef.current || markIsDisabled) return;
     const point = pointFromEvent(event);
     const last = lastPointRef.current;
     const ctx = getContext();
@@ -214,11 +251,28 @@ export function SignaturePad({
     );
     if (parts.length === 0) return;
     ctx.save();
-    ctx.font = "10px monospace";
-    ctx.fillStyle = "rgba(33, 33, 33, 0.55)";
+    // Scaled to the pad's own height (with a floor) rather than a fixed size -- a fixed 10px was
+    // legible at the canvas's native resolution but became unreadable once the resulting image
+    // was ever displayed smaller (e.g. embedded at table-row height in an exported PDF).
+    const stampFontSize = Math.max(12, Math.round(height * 0.09));
+    ctx.font = `${stampFontSize}px monospace`;
+    ctx.fillStyle = "rgba(33, 33, 33, 0.7)";
     ctx.textAlign = "right";
     ctx.textBaseline = "bottom";
-    ctx.fillText(parts.join(" · "), canvas.width - 6, canvas.height - 4);
+    const maxWidth = canvas.width - 12;
+    const fullText = parts.join(" · ");
+    if (parts.length > 1 && ctx.measureText(fullText).width > maxWidth) {
+      // Doesn't fit on one line at this size (a long role label plus a timestamp, most often) --
+      // wrap onto a second line instead of shrinking the font until an arbitrarily long label
+      // technically fits, which would defeat the point of sizing this for legibility at all.
+      const lastLine = parts[parts.length - 1] ?? "";
+      const firstLine = parts.slice(0, -1).join(" · ");
+      const lineHeight = Math.round(stampFontSize * 1.2);
+      ctx.fillText(firstLine, canvas.width - 6, canvas.height - 4 - lineHeight);
+      ctx.fillText(lastLine, canvas.width - 6, canvas.height - 4);
+    } else {
+      ctx.fillText(fullText, canvas.width - 6, canvas.height - 4);
+    }
     ctx.restore();
   };
 
@@ -244,13 +298,16 @@ export function SignaturePad({
     clearCanvas();
     setIsEmpty(true);
     setTypedName("");
+    onTypedNameChange?.("");
     lastValueRef.current = "";
     onValueChange?.("");
   };
 
-  const handleTypedNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const name = event.target.value;
-    setTypedName(name);
+  // Typing paints a live cursive preview on every keystroke but does *not* emit a value -- same
+  // "commit only at the natural end of the gesture" rule pointer drawing already follows (moves
+  // paint locally, only pointerup calls emitValue). For typed name, that gesture ends on blur:
+  // see handleTypedNameBlur, which is also where the stamp gets baked in, not on every keystroke.
+  const paintTypedName = (name: string) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     clearCanvas();
@@ -270,12 +327,31 @@ export function SignaturePad({
         ctx.restore();
       }
       setIsEmpty(false);
-      emitValue();
     } else {
       setIsEmpty(true);
+    }
+  };
+
+  const handleTypedNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const name = event.target.value;
+    setTypedName(name);
+    paintTypedName(name);
+    onTypedNameChange?.(name);
+  };
+
+  const handleTypedNameBlur = () => {
+    if (typedName.trim()) {
+      emitValue();
+    } else {
       lastValueRef.current = "";
       onValueChange?.("");
     }
+  };
+
+  // Enter commits the same way blur already does -- just blurring the field is enough to trigger
+  // the real onBlur handler above, rather than duplicating its logic here.
+  const handleTypedNameKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") event.currentTarget.blur();
   };
 
   const handleUploadClick = () => fileInputRef.current?.click();
@@ -304,17 +380,26 @@ export function SignaturePad({
   return (
     <div className={clsx("rebar-signature-pad", className)} data-rebar-component="signature-pad" data-rebar-empty={isEmpty || undefined}>
       {allowTypedName ? (
-        <Input
-          type="text"
-          size="sm"
-          value={typedName}
-          onChange={handleTypedNameChange}
-          placeholder={typedNamePlaceholder}
-          disabled={disabled}
-          aria-label={typedNamePlaceholder}
-          className="rebar-signature-pad-typed-name"
-          data-rebar-part="typed-name"
-        />
+        <div className="rebar-signature-pad-typed-name-wrap">
+          <Input
+            type="text"
+            size="sm"
+            value={typedName}
+            onChange={handleTypedNameChange}
+            onBlur={handleTypedNameBlur}
+            onKeyDown={handleTypedNameKeyDown}
+            placeholder={typedNamePlaceholder}
+            disabled={disabled}
+            aria-label={typedNamePlaceholder}
+            className="rebar-signature-pad-typed-name"
+            data-rebar-part="typed-name"
+          />
+          {typedName.trim() && !disabled ? (
+            <span className="rebar-signature-pad-typed-name-hint" aria-hidden="true" title="Press Enter to save">
+              <EnterOutlined />
+            </span>
+          ) : null}
+        </div>
       ) : null}
       <canvas
         ref={canvasRef}
@@ -324,7 +409,7 @@ export function SignaturePad({
         aria-label={ariaLabel}
         className="rebar-signature-pad-canvas"
         data-rebar-part="canvas"
-        style={{ touchAction: "none", cursor: disabled ? "not-allowed" : "crosshair" }}
+        style={{ touchAction: "none", cursor: markIsDisabled ? "not-allowed" : "crosshair" }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -338,6 +423,9 @@ export function SignaturePad({
           className="rebar-signature-pad-clear"
           data-rebar-part="clear"
           onClick={handleClear}
+          // Deliberately not markIsDisabled -- Clear removes a mark that's already there, which
+          // should always be possible regardless of whether *capturing a new one* is currently
+          // blocked (only `disabled`, the form-locked case, should also lock Clear).
           disabled={disabled || isEmpty}
         >
           {clearLabel}
@@ -351,7 +439,7 @@ export function SignaturePad({
               className="rebar-signature-pad-upload"
               data-rebar-part="upload"
               onClick={handleUploadClick}
-              disabled={disabled}
+              disabled={markIsDisabled}
             >
               {uploadLabel}
             </Button>
@@ -360,12 +448,13 @@ export function SignaturePad({
               type="file"
               accept="image/*"
               onChange={handleUploadChange}
-              disabled={disabled}
+              disabled={markIsDisabled}
               className="rebar-visually-hidden"
               aria-label={uploadLabel}
             />
           </>
         ) : null}
+        {actionsEnd}
       </div>
     </div>
   );

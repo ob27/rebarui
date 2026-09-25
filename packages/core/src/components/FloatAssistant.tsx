@@ -3,12 +3,15 @@ import type { ComponentPropsWithoutRef } from "react";
 import clsx from "clsx";
 import { renderBionicChildren, useAmbientBionic } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { renderMarkdown } from "../markdown";
 import type { OrbInteractionState, OrbPersonaId } from "../orb-personas/personas";
 import { ORB_PERSONAS } from "../orb-personas/personas";
 import { AssistantOrb } from "./AssistantOrb";
 import { VoiceInputBar } from "./VoiceInputBar";
 import { Spin } from "./Spin";
-import { AddIcon, AiAgentIcon, ArrowUpIcon, CodeSSlashIcon, HistoryIcon, ScreenshotIcon } from "./icons-remix";
+import { Tooltip } from "./Tooltip";
+import { AddIcon, AiAgentIcon, ArrowUpIcon, CheckIcon, CodeSSlashIcon, HistoryIcon, ScreenshotIcon } from "./icons-remix";
+import { CopyIcon } from "./icons";
 import { DEFAULT_FLOAT_ASSISTANT_VOICE_GREETINGS, DEFAULT_SCREENSHOT_ACKNOWLEDGMENT } from "./FloatAssistant.constants";
 
 export interface FloatAssistantMessage {
@@ -149,6 +152,20 @@ export interface FloatAssistantProps extends Omit<ComponentPropsWithoutRef<"div"
   apiEndpoint?: string;
   /** Optional auth token for the API endpoint (e.g., session token). */
   apiAuthToken?: string;
+  /**
+   * Called fresh before every send and included in the request body as `hostContext` — the host
+   * app's own way to describe *real, structured, currently-on-screen state* (the live numbers
+   * behind a chart, the active filters, which record is open) that a generic DOM scrape or a
+   * screenshot can't reliably capture (see `contextAware`/`onCaptureScreenshot`, which cover a
+   * different, opt-in-per-message case: the user explicitly asking the assistant to "look at" an
+   * arbitrary page). `apiEndpoint`'s own implementation decides how (or whether) to use it — this
+   * construct only threads it through, unmodified, the same "app developer owns the actual LLM
+   * call" stance `apiEndpoint` itself already takes. Returning `undefined`/`""` omits the field
+   * entirely for that send (e.g. a page with nothing relevant to report). Prefer a plain
+   * synchronous return for anything already in memory; async is there for state that's cheap to
+   * compute but not worth keeping constantly up to date (e.g. a light DB read).
+   */
+  getHostContext?: () => string | undefined | Promise<string | undefined>;
   /** Available voices for TTS. Pass a list to enable voice selection. */
   voices?: FloatAssistantVoiceOption[];
   /** Currently selected voice ID. */
@@ -157,6 +174,11 @@ export interface FloatAssistantProps extends Omit<ComponentPropsWithoutRef<"div"
   onVoiceChange?: (voiceId: string) => void;
   /** Visual theme — "light" (default) or "dark" (black panel background for demo/brand use). */
   theme?: "light" | "dark";
+  /** Renders assistant message content as real Markdown (headings, lists, bold/italic/code,
+   * links, fenced code blocks) via `renderMarkdown` — real LLM responses, Qwen/Claude included,
+   * default to Markdown prose, same convention `ChatThread`'s own `markdown` prop already follows.
+   * Default true; set false for a plain-text assistant that never emits Markdown syntax. */
+  markdown?: boolean;
   className?: string;
   bionic?: boolean;
   bionicOptions?: BionicOptions;
@@ -208,12 +230,14 @@ export function FloatAssistant({
   onModelPress,
   apiEndpoint,
   apiAuthToken,
+  getHostContext,
   voices,
   voiceId,
   // Not yet wired to a call site — kept in the public prop type for the voice-picker UI this is
   // meant to drive once that lands, prefixed here only to satisfy the unused-var lint rule.
   onVoiceChange: _onVoiceChange,
   theme = "light",
+  markdown = true,
   className,
   bionic,
   bionicOptions,
@@ -231,6 +255,10 @@ export function FloatAssistant({
   const [isRecording, setIsRecording] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [isCapturingScreenshot, setIsCapturingScreenshot] = useState(false);
+  // Which message's copy button last showed "Copied!" -- a single id, not a set, since the
+  // confirmation is momentary (2s) and copying two messages that fast is not a real scenario worth
+  // tracking independently. Same confirm-then-reset shape `CodeBlock`'s own copy button uses.
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   // Holds the most recently captured screenshot until the *next* message send, at which point
   // it rides along on that call and is cleared — not rendered as a visible attachment/thumbnail
   // itself (see `screenshotAcknowledgment`'s own doc comment).
@@ -644,6 +672,7 @@ export function FloatAssistant({
     if (apiEndpoint) {
       const callApi = async () => {
         try {
+          const hostContext = await getHostContext?.();
           const response = await fetch(apiEndpoint, {
             method: "POST",
             headers: {
@@ -655,6 +684,7 @@ export function FloatAssistant({
               history: messages.map((m) => ({ role: m.role, content: m.content })),
               ...(screenshot ? { screenshot } : {}),
               ...(pageContext ? { pageContext } : {}),
+              ...(hostContext ? { hostContext } : {}),
             }),
           });
           if (!response.ok) {
@@ -669,7 +699,8 @@ export function FloatAssistant({
             timestamp: Date.now(),
           };
           setMessages((prev) => [...prev, assistantMessage]);
-        } catch {
+        } catch (err) {
+          console.error("FloatAssistant: send failed", err);
           setIsTyping(false);
           const errorMessage: FloatAssistantMessage = {
             id: `error-${Date.now()}`,
@@ -694,7 +725,7 @@ export function FloatAssistant({
         setMessages((prev) => [...prev, assistantMessage]);
       }, 1500);
     }
-  }, [inputValue, onSendMessage, apiEndpoint, apiAuthToken, messages]);
+  }, [inputValue, onSendMessage, apiEndpoint, apiAuthToken, getHostContext, messages]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -732,24 +763,48 @@ export function FloatAssistant({
     if (isCapturingScreenshot) return;
     setIsCapturingScreenshot(true);
     try {
-      let dataUrl: string;
-      if (onCaptureScreenshot) {
-        dataUrl = await onCaptureScreenshot();
-      } else {
-        // Dynamically imported — consumers who never enable/use the screenshot button never pay
-        // for html2canvas, the same "lazy-loaded, external in the build" pattern as the orb-
-        // persona shader's own `three` dependency (see orb-shader/createOrbRenderer.ts).
-        const { default: html2canvas } = await import("html2canvas");
-        const canvas = await html2canvas(document.body, {
-          // Never capture the assistant's own button/panel — this is a screenshot of the rest of
-          // the page, not of itself.
-          ignoreElements: (el) => rootRef.current?.contains(el) ?? false,
-        });
-        dataUrl = canvas.toDataURL("image/png");
-      }
-      pendingScreenshotRef.current = dataUrl;
+      // Harvested unconditionally, independent of whether the visual capture below succeeds --
+      // pure DOM reading, never touches html2canvas, so a page whose CSS html2canvas's parser
+      // can't handle (color-mix(), oklch(), and other CSS Color Module Level 4 syntax it predates
+      // entirely -- rebar-ui's own stylesheet included) shouldn't also lose this.
       if (contextAware) {
         pendingPageContextRef.current = harvestPageKeyTerms();
+      }
+      let screenshotOk = true;
+      try {
+        if (onCaptureScreenshot) {
+          pendingScreenshotRef.current = await onCaptureScreenshot();
+        } else {
+          // Dynamically imported — consumers who never enable/use the screenshot button never pay
+          // for html2canvas, the same "lazy-loaded, external in the build" pattern as the orb-
+          // persona shader's own `three` dependency (see orb-shader/createOrbRenderer.ts).
+          const { default: html2canvas } = await import("html2canvas");
+          const canvas = await html2canvas(document.body, {
+            // Never capture the assistant's own button/panel — this is a screenshot of the rest
+            // of the page, not of itself.
+            ignoreElements: (el) => rootRef.current?.contains(el) ?? false,
+          });
+          pendingScreenshotRef.current = canvas.toDataURL("image/png");
+        }
+      } catch (err) {
+        // Best-effort, not a scenario to let take down the whole capture -- logged for the
+        // developer (a consumer whose page trips this reliably wants to know why, not just that
+        // it happened), but the DOM-harvested context above is still real and worth keeping.
+        console.error("FloatAssistant: screenshot capture failed", err);
+        pendingScreenshotRef.current = null;
+        screenshotOk = false;
+      }
+      if (!screenshotOk && !contextAware) {
+        // Neither a screenshot nor any page context was actually captured -- say so, rather than
+        // falsely acknowledging a capture that didn't happen.
+        const errorMessage: FloatAssistantMessage = {
+          id: `screenshot-error-${Date.now()}`,
+          role: "assistant",
+          content: "Sorry, I couldn't capture the screen just now.",
+          timestamp: Date.now(),
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+        return;
       }
       const ackMessage: FloatAssistantMessage = {
         id: `screenshot-${Date.now()}`,
@@ -758,20 +813,23 @@ export function FloatAssistant({
         timestamp: Date.now(),
       };
       setMessages((prev) => [...prev, ackMessage]);
-    } catch {
-      // A real failure (e.g. a tainted/cross-origin canvas somewhere on the page), not a
-      // scenario to silently swallow — say so rather than falsely implying it saw the screen.
-      const errorMessage: FloatAssistantMessage = {
-        id: `screenshot-error-${Date.now()}`,
-        role: "assistant",
-        content: "Sorry, I couldn't capture the screen just now.",
-        timestamp: Date.now(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsCapturingScreenshot(false);
     }
   }, [isCapturingScreenshot, onCaptureScreenshot, screenshotAcknowledgment, contextAware, harvestPageKeyTerms]);
+
+  // Copies the message's own raw content (its literal text, Markdown syntax and all -- same "what
+  // you copy is what was authored" contract CodeBlock's copy button already keeps for its own
+  // `markdown` mode), not whatever DOM text the rendered Markdown happens to produce.
+  const handleCopyMessage = useCallback(async (message: FloatAssistantMessage) => {
+    try {
+      await navigator.clipboard.writeText(message.content);
+    } catch {
+      return;
+    }
+    setCopiedMessageId(message.id);
+    setTimeout(() => setCopiedMessageId((current) => (current === message.id ? null : current)), 2000);
+  }, []);
 
   const toggleRecording = useCallback(() => {
     const newRecording = !isRecording;
@@ -900,14 +958,18 @@ export function FloatAssistant({
       }
     : null;
 
-  // The sidebar's header slot, unlike the floating panel's, never moves — no windowDragOffset
-  // involved, computed straight off the viewport width and sidebarWidth.
-  const viewportWidth = typeof window !== "undefined" ? window.innerWidth : 1200;
+  // The sidebar's header slot, unlike the floating panel's, never moves and is anchored the same
+  // way the sidebar panel itself is (`panelStyle` below: `right: 0`) — right-edge-relative, not a
+  // `left` computed from `window.innerWidth`. That measurement includes the scrollbar's own width,
+  // while the panel's CSS `right: 0` positions against the (scrollbar-excluded) CSS viewport, so on
+  // any page tall enough to scroll the two would disagree by the scrollbar's width and the button
+  // would land short of the avatar's actual on-screen spot. A `right` offset needs no viewport
+  // width at all — both the panel and the button are relative to the same edge.
   const sidebarDockedButtonStyle: React.CSSProperties | null = isSidebarDocked
     ? {
-        left: viewportWidth - sidebarWidth + DOCKED_HEADER_OFFSET,
+        left: "auto",
+        right: sidebarWidth - DOCKED_HEADER_OFFSET - DOCKED_BUTTON_SIZE,
         top: DOCKED_HEADER_OFFSET,
-        right: "auto",
         bottom: "auto",
       }
     : null;
@@ -1055,74 +1117,78 @@ export function FloatAssistant({
             </div>
             <div className="rebar-float-assistant-header-actions">
               {screenshotEnabled && (
-                <button
-                  type="button"
-                  className="rebar-float-assistant-screenshot-btn"
-                  onClick={captureScreenshot}
-                  disabled={isCapturingScreenshot}
-                  aria-label={isCapturingScreenshot ? "Capturing screenshot…" : "Capture a screenshot of the page"}
-                  title="Capture a screenshot of the page"
-                  data-rebar-part="screenshot-button"
-                >
-                  {isCapturingScreenshot ? <Spin size="sm" /> : <ScreenshotIcon size={16} />}
-                </button>
+                <Tooltip content={isCapturingScreenshot ? "Capturing screenshot…" : "Capture a screenshot of the page"}>
+                  <button
+                    type="button"
+                    className="rebar-float-assistant-screenshot-btn"
+                    onClick={captureScreenshot}
+                    disabled={isCapturingScreenshot}
+                    aria-label={isCapturingScreenshot ? "Capturing screenshot…" : "Capture a screenshot of the page"}
+                    data-rebar-part="screenshot-button"
+                  >
+                    {isCapturingScreenshot ? <Spin size="sm" /> : <ScreenshotIcon size={16} />}
+                  </button>
+                </Tooltip>
               )}
               {voiceEnabled && (
-                <button
-                  type="button"
-                  className={clsx("rebar-float-assistant-mode-btn", mode === "voice" && "rebar-float-assistant-mode-btn-active")}
-                  onClick={toggleMode}
-                  aria-label={`Switch to ${mode === "text" ? "voice" : "text"} mode`}
-                  title={`Switch to ${mode === "text" ? "voice" : "text"} mode`}
-                >
-                  {mode === "text" ? (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
-                      <path d="M19 10v2a7 7 0 01-14 0v-2" />
-                      <line x1="12" y1="19" x2="12" y2="23" />
-                      <line x1="8" y1="23" x2="16" y2="23" />
-                    </svg>
-                  ) : (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-                    </svg>
-                  )}
-                </button>
+                <Tooltip content={`Switch to ${mode === "text" ? "voice" : "text"} mode`}>
+                  <button
+                    type="button"
+                    className={clsx("rebar-float-assistant-mode-btn", mode === "voice" && "rebar-float-assistant-mode-btn-active")}
+                    onClick={toggleMode}
+                    aria-label={`Switch to ${mode === "text" ? "voice" : "text"} mode`}
+                  >
+                    {mode === "text" ? (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                        <path d="M19 10v2a7 7 0 01-14 0v-2" />
+                        <line x1="12" y1="19" x2="12" y2="23" />
+                        <line x1="8" y1="23" x2="16" y2="23" />
+                      </svg>
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                      </svg>
+                    )}
+                  </button>
+                </Tooltip>
               )}
               {sidebarDockable && (
-                <button
-                  type="button"
-                  className="rebar-float-assistant-mode-btn"
-                  onClick={toggleDockMode}
-                  aria-label={isSidebarDocked ? "Undock to floating panel" : "Dock as sidebar"}
-                  title={isSidebarDocked ? "Undock to floating panel" : "Dock as sidebar"}
-                  data-rebar-part="dock-toggle"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="4" width="18" height="16" rx="2" />
-                    <line x1="15" y1="4" x2="15" y2="20" />
-                  </svg>
-                </button>
+                <Tooltip content={isSidebarDocked ? "Undock to floating panel" : "Dock as sidebar"}>
+                  <button
+                    type="button"
+                    className="rebar-float-assistant-mode-btn"
+                    onClick={toggleDockMode}
+                    aria-label={isSidebarDocked ? "Undock to floating panel" : "Dock as sidebar"}
+                    data-rebar-part="dock-toggle"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="4" width="18" height="16" rx="2" />
+                      <line x1="15" y1="4" x2="15" y2="20" />
+                    </svg>
+                  </button>
+                </Tooltip>
               )}
               {minimizable && (
-                <button
-                  type="button"
-                  className="rebar-float-assistant-minimize-btn"
-                  onClick={toggleMinimize}
-                  aria-label="Minimize assistant"
-                  title="Minimize to corner"
-                  style={{
-                    "--assistant-accent": accentColor,
-                    pointerEvents: "auto",
-                  } as React.CSSProperties}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="4 14 10 14 10 20" />
-                    <polyline points="20 10 14 10 14 4" />
-                    <line x1="14" y1="10" x2="21" y2="3" />
-                    <line x1="3" y1="21" x2="10" y2="14" />
-                  </svg>
-                </button>
+                <Tooltip content="Minimize to corner">
+                  <button
+                    type="button"
+                    className="rebar-float-assistant-minimize-btn"
+                    onClick={toggleMinimize}
+                    aria-label="Minimize assistant"
+                    style={{
+                      "--assistant-accent": accentColor,
+                      pointerEvents: "auto",
+                    } as React.CSSProperties}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="4 14 10 14 10 20" />
+                      <polyline points="20 10 14 10 14 4" />
+                      <line x1="14" y1="10" x2="21" y2="3" />
+                      <line x1="3" y1="21" x2="10" y2="14" />
+                    </svg>
+                  </button>
+                </Tooltip>
               )}
             </div>
           </div>
@@ -1142,9 +1208,25 @@ export function FloatAssistant({
                 )}
                 <div className="rebar-float-assistant-message-content">
                   <div className="rebar-float-assistant-message-text">
-                    {renderBionicChildren(msg.content, bionicEnabled, bionicOptions)}
+                    {markdown
+                      ? renderMarkdown(msg.content, { bionic: bionicEnabled, bionicOptions })
+                      : renderBionicChildren(msg.content, bionicEnabled, bionicOptions)}
                   </div>
-                  <div className="rebar-float-assistant-message-time">{formatTime(msg.timestamp)}</div>
+                  <div className="rebar-float-assistant-message-footer" data-rebar-part="message-footer">
+                    <span className="rebar-float-assistant-message-time">{formatTime(msg.timestamp)}</span>
+                    {msg.role === "assistant" && (
+                      <button
+                        type="button"
+                        className="rebar-float-assistant-message-copy-btn"
+                        onClick={() => handleCopyMessage(msg)}
+                        aria-label={copiedMessageId === msg.id ? "Copied" : "Copy message"}
+                        title={copiedMessageId === msg.id ? "Copied!" : "Copy message"}
+                        aria-live="polite"
+                      >
+                        {copiedMessageId === msg.id ? <CheckIcon size={13} /> : <CopyIcon size={13} />}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

@@ -82,6 +82,12 @@ export interface KanbanProps {
    * column/section limit enforces is always the true, unfiltered count, so a filter never makes
    * a full column look like it has room. */
   search?: string;
+  /** An additional visibility predicate, composed with `search` (a card must pass both) — for a
+   * caller-defined filter (e.g. "only this tag", "only this assignee") that doesn't fit a single
+   * substring. Same visibility-only guarantee as `search`: never touches the real per-section
+   * cardIds a drag/reorder's own `onChange` reads from, so filtering never drops a card from its
+   * column data just because it's hidden. */
+  filterCard?: (card: KanbanCard) => boolean;
   /** "sticky" renders each card as a postit — procedurally varied rotation/shadow, a
    * caller-or-auto-assigned color, and (by default, see `stickyDefaultLimit`) a hard 3-per-column
    * cap — the same board underneath, not a separate component. Clicking a sticky (not dragging it)
@@ -112,6 +118,17 @@ export interface KanbanProps {
    * omit to keep the built-in behavior (long-press opens the built-in title/description/tags/color
    * edit dialog, same as always). */
   onCardLongPress?: (card: KanbanCard) => void;
+  /** Which columns are collapsed (their body replaced by a tray showing just the card count — see
+   * the eye icon in each column header). Omit to let Kanban track this itself, uncommitted,
+   * resetting on remount — the default, and the right choice for a purely personal view
+   * preference. Pass this (together with `onColumnCollapsedChange`) when a caller wants collapse
+   * state to survive a reload or be the same for every viewer — e.g. persisted as real board data
+   * — the same controlled/uncontrolled split `cardVariant` already has at the board level, just
+   * per-column. */
+  collapsedColumnIds?: string[];
+  /** Required alongside `collapsedColumnIds` to actually toggle a column — Kanban calls this
+   * instead of managing the collapse itself once you're controlling it. */
+  onColumnCollapsedChange?: (columnId: string, collapsed: boolean) => void;
   className?: string;
 }
 
@@ -220,21 +237,37 @@ export function Kanban({
   cards,
   onChange,
   search = "",
+  filterCard,
   cardVariant = "default",
   stickyDefaultLimit = STICKY_CAP_DEFAULT,
   renderCard,
   renderColumnTitle,
   onCardLongPress,
+  collapsedColumnIds,
+  onColumnCollapsedChange,
   className,
 }: KanbanProps) {
   const sticky = cardVariant === "sticky";
   const [dragCard, setDragCard] = useState<DragCard | null>(null);
   const [dragColumnId, setDragColumnId] = useState<string | null>(null);
   const [sortOrders, setSortOrders] = useState<Record<string, KanbanSortOrder>>({});
-  // Purely a view preference (which columns are hidden behind their tray) -- not part of the
-  // board's real data, never goes through `onChange`, and resets on remount, same as sortOrders
-  // above.
-  const [collapsedColumns, setCollapsedColumns] = useState<Record<string, boolean>>({});
+  // Uncontrolled by default: purely a view preference (which columns are hidden behind their
+  // tray), not part of the board's real data, never goes through `onChange`, resets on remount,
+  // same as sortOrders above. A caller that wants this persisted/shared passes
+  // collapsedColumnIds + onColumnCollapsedChange instead (see KanbanProps) -- isControlled below
+  // just decides which of the two toggleColumnCollapsed actually uses.
+  const [internalCollapsedColumns, setInternalCollapsedColumns] = useState<Record<string, boolean>>({});
+  const isCollapseControlled = collapsedColumnIds !== undefined;
+  const collapsedColumns = isCollapseControlled
+    ? Object.fromEntries(collapsedColumnIds!.map((id) => [id, true]))
+    : internalCollapsedColumns;
+  const toggleColumnCollapsed = (columnId: string) => {
+    if (isCollapseControlled) {
+      onColumnCollapsedChange?.(columnId, !collapsedColumns[columnId]);
+    } else {
+      setInternalCollapsedColumns((prev) => ({ ...prev, [columnId]: !prev[columnId] }));
+    }
+  };
   const [addingTo, setAddingTo] = useState<{ columnId: string; sectionId: string } | null>(null);
   const [draftTitle, setDraftTitle] = useState("");
   const [editingCardId, setEditingCardId] = useState<string | null>(null);
@@ -493,7 +526,7 @@ export function Kanban({
                   data-rebar-part="collapse-button"
                   aria-label={collapsedColumns[column.id] ? `Show ${column.title} cards` : `Hide ${column.title} cards`}
                   aria-pressed={Boolean(collapsedColumns[column.id])}
-                  onClick={() => setCollapsedColumns((prev) => ({ ...prev, [column.id]: !prev[column.id] }))}
+                  onClick={() => toggleColumnCollapsed(column.id)}
                 >
                   <EyeOffIcon />
                 </button>
@@ -511,17 +544,18 @@ export function Kanban({
             {column.sections.map((section) => {
               const collapsed = Boolean(collapsedColumns[column.id]);
               const sectionLimit = effectiveLimit(section.limit, sticky, stickyDefaultLimit);
-              const searchActive = search.trim().length > 0;
+              const filterActive = search.trim().length > 0 || filterCard !== undefined;
               const matchingIds = sortCardIds(section.cardIds, cards, sortOrder).filter((id) => {
                 const card = cards[id];
-                return card ? matchesSearch(card, search) : false;
+                if (!card) return false;
+                return matchesSearch(card, search) && (!filterCard || filterCard(card));
               });
-              // A collapsed column stays empty except for its tray -- unless a search is actually
-              // narrowing the board down, in which case whichever of its own cards match surface
-              // as "ghost" cards (styled via .rebar-kanban-section-cards-collapsed below) so a
-              // search doesn't silently look like it missed something that's just hidden. Clearing
-              // the search, or narrowing it to no longer match, goes straight back to tray-only.
-              const visibleIds = collapsed ? (searchActive ? matchingIds : []) : matchingIds;
+              // A collapsed column stays empty except for its tray -- unless a search or filterCard
+              // is actually narrowing the board down, in which case whichever of its own cards match
+              // surface as "ghost" cards (styled via .rebar-kanban-section-cards-collapsed below) so
+              // a filter doesn't silently look like it missed something that's just hidden. Clearing
+              // it, or narrowing it to no longer match, goes straight back to tray-only.
+              const visibleIds = collapsed ? (filterActive ? matchingIds : []) : matchingIds;
               return (
                 <div key={section.id} className="rebar-kanban-section" data-rebar-part="section">
                   {section.label && !collapsed ? (

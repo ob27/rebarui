@@ -737,8 +737,10 @@ body {
   padding: var(--rebar-space-xs, 4px) var(--rebar-space-sm, 8px);
   border-radius: 4px;
   font-size: var(--rebar-font-size-xs, 12px);
-  /* See .rebar-select-content above: above Dialog's content (1001), below Toast (2000). */
-  z-index: 1100;
+  /* Above Dialog's content (1001) and FloatAssistant's own panel (1500) -- a Tooltip attached to
+     a control inside the FloatAssistant panel (its header icon buttons) must render in front of
+     that panel, not behind it. Below Toast (2000), which always needs to sit above everything. */
+  z-index: 1600;
 }
 
 .rebar-tooltip-arrow {
@@ -1981,6 +1983,12 @@ body {
 .rebar-steps-item[data-rebar-status="process"] .rebar-steps-icon {
   border-color: var(--rebar-color-primary, #0066cc);
   color: var(--rebar-color-primary, #0066cc);
+  /* A light tint of the primary color -- distinct from "finish"'s full solid fill, so the
+     currently-active step (plain number + traveling-beam ring) reads as "here", not "done".
+     Static rgba first for engines without color-mix (silently ignored, keeping this as the
+     final value there); color-mix stays theme-aware for whatever --rebar-color-primary is. */
+  background: rgba(0, 102, 204, 0.12);
+  background: color-mix(in srgb, var(--rebar-color-primary, #0066cc) 15%, var(--rebar-color-bg-primary, #ffffff));
 }
 .rebar-steps-item[data-rebar-status="finish"] .rebar-steps-icon {
   border-color: var(--rebar-color-primary, #0066cc);
@@ -6509,8 +6517,24 @@ div.rebar-chat-message-content > *:last-child { margin-bottom: 0; }
   max-width: 100%;
 }
 
+.rebar-signature-pad-typed-name-wrap {
+  position: relative;
+}
+
 .rebar-signature-pad-typed-name {
   width: 100%;
+  padding-right: 32px;
+}
+
+.rebar-signature-pad-typed-name-hint {
+  position: absolute;
+  top: 50%;
+  right: var(--rebar-space-sm, 8px);
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  color: var(--rebar-color-text-secondary, #666666);
+  pointer-events: none;
 }
 
 .rebar-signature-pad-actions {
@@ -6842,14 +6866,43 @@ div.rebar-chat-message-content > *:last-child { margin-bottom: 0; }
   border-bottom-right-radius: 4px;
 }
 
-.rebar-float-assistant-message-time {
-  font-size: 11px;
-  color: var(--rebar-color-text-secondary, #757575);
+.rebar-float-assistant-message-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   padding: 0 4px;
 }
 
-.rebar-float-assistant-message-user .rebar-float-assistant-message-time {
-  text-align: right;
+.rebar-float-assistant-message-user .rebar-float-assistant-message-footer {
+  justify-content: flex-end;
+}
+
+.rebar-float-assistant-message-time {
+  font-size: 11px;
+  color: var(--rebar-color-text-secondary, #757575);
+}
+
+.rebar-float-assistant-message-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--rebar-color-text-secondary, #757575);
+  cursor: pointer;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.rebar-float-assistant-message:hover .rebar-float-assistant-message-copy-btn,
+.rebar-float-assistant-message-copy-btn:focus-visible {
+  opacity: 1;
+}
+
+.rebar-float-assistant-message-copy-btn:hover {
+  color: var(--rebar-color-primary, #0066cc);
 }
 
 /* Typing Indicator */
