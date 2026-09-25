@@ -1,0 +1,50 @@
+.sprint-board {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.sprint-search {
+  width: 100%;
+  max-width: 360px;
+  margin: 16px 0 24px;
+}
+
+.sprint-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.sprint-column {
+  background: var(--rebar-surface-2, #f4f4f4);
+  border-radius: 8px;
+  padding: 12px;
+  min-height: 120px;
+}
+
+.sprint-column-header {
+  width: 100%;
+}
+
+.sprint-column-badge {
+  font-size: 0.85em;
+  opacity: 0.75;
+}
+
+.sprint-column-badge[data-at-cap] {
+  color: var(--rebar-color-error, #b3261e);
+  font-weight: 600;
+}
+
+.sprint-column-list {
+  min-height: 24px;
+}
+
+.sprint-drop-line {
+  height: 2px;
+  background: var(--rebar-color-primary, #3b5bdb);
+  border-radius: 1px;
+  margin: 4px 0;
+}

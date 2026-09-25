@@ -14,6 +14,7 @@ const BENCHMARK_SECTIONS: NavIndexItem[] = [
   { href: "/about/benchmarks/kimi", label: "Kimi-K3" },
   { href: "/about/benchmarks/tiers", label: "Simple/Composite/Complex" },
   { href: "/about/benchmarks/iteration", label: "Does iteration change it?" },
+  { href: "/about/benchmarks/kanban", label: "Kanban: tier without the wrapper" },
   { href: "/about/benchmarks/coherence", label: "Field evidence: Coherence" },
 ];
 

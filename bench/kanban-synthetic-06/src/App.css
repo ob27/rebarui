@@ -1,0 +1,78 @@
+.board-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.board-search {
+  max-width: 320px;
+  margin-bottom: 20px;
+}
+
+.board {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.board-column {
+  flex: 1 1 0;
+  min-width: 0;
+  background: var(--rebar-color-surface-subtle, #f4f4f5);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.board-column-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.board-column-count {
+  font-weight: 400;
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+.board-column-count[data-cap-reached="true"] {
+  color: var(--rebar-color-danger, #b91c1c);
+  font-weight: 600;
+}
+
+.board-column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 40px;
+}
+
+.board-column-list[data-drag-over="true"] {
+  outline: 2px dashed var(--rebar-color-accent, #6366f1);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.board-card[data-hidden="true"] {
+  display: none;
+}
+
+.board-card[data-dragging="true"] {
+  opacity: 0.4;
+}
+
+.board-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.board-add-card {
+  margin-top: 8px;
+}
+
+.board-add-card-input {
+  width: 100%;
+}

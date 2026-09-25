@@ -1,0 +1,17 @@
+.sprint-board-columns {
+  width: 100%;
+}
+
+.sprint-board-columns > * {
+  min-width: 240px;
+}
+
+.sprint-column-count {
+  color: var(--rebar-color-text-secondary, #666666);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.sprint-card[draggable="true"] {
+  user-select: none;
+}

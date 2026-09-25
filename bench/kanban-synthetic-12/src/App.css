@@ -1,0 +1,84 @@
+.sprint-board-page {
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.sprint-board-title {
+  font-size: 1.25rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.sprint-board-toolbar {
+  width: 100%;
+}
+
+.sprint-search-input {
+  flex: 1;
+  max-width: 320px;
+}
+
+.sprint-board-columns {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.sprint-column {
+  flex: 1 1 0;
+  min-width: 0;
+  background: var(--rebar-color-surface-sunken, #f2f2f2);
+  border: 1px solid var(--rebar-color-border, #ccc);
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 200px;
+}
+
+.sprint-column-header {
+  width: 100%;
+}
+
+.sprint-column-title {
+  font-weight: 600;
+}
+
+.sprint-column-add {
+  width: 100%;
+}
+
+.sprint-column-add .rebar-input {
+  width: 100%;
+}
+
+.sprint-column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 40px;
+}
+
+.sprint-column-empty {
+  font-size: 0.85rem;
+  opacity: 0.6;
+  padding: 8px 4px;
+}
+
+.sprint-card-slot {
+  display: flex;
+  flex-direction: column;
+}
+
+.sprint-card {
+  cursor: grab;
+}
+
+.sprint-drop-indicator {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--rebar-color-primary, #4a7dfc);
+  margin: 2px 0;
+}
