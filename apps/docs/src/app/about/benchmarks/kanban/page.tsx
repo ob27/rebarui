@@ -10,6 +10,7 @@ const ANTD_COLOR = "var(--rebar-color-text-secondary, #757575)";
 const PRIMITIVES_COLOR = "var(--rebar-color-danger, #d32f2f)";
 const SYNTHETIC_COLOR = "var(--rebar-color-warning, #f57c00)";
 const OPINION_COLOR = "var(--rebar-color-primary, #0066cc)";
+const PROJECTED_COLOR = "var(--rebar-color-success, #2e7d32)";
 
 const INTRO_BLOCKS: Construct[] = [
   {
@@ -158,6 +159,16 @@ const PROJECTION_BLOCKS: Construct[] = [
       ["antd (real, unchanged)", "63,197", "63,070", "53,811", "81,969", "7,459 (11.8%)"],
       ["opinion (real, measured)", "80,538", "83,137", "67,136", "86,301", "5,783 (7.2%)"],
       ["opinion (projected)", "69,525", "71,337", "55,336", "85,419", "7,138 (10.3%)"],
+    ],
+  },
+  {
+    type: "scatter-chart",
+    title: "Tokens per run: antd (real) vs. opinion-tier rebar-ui, real and projected",
+    ariaLabel: "Scatter plot: antd's real token distribution is lowest and tightest, opinion-tier rebar-ui's real distribution is highest, and the projected distribution (with the Kanban.tsx source-read cost subtracted) sits between the two, closing roughly half the gap to antd but not all of it",
+    series: [
+      { label: "antd (real)", color: ANTD_COLOR, values: [81969, 65247, 63070, 64273, 57427, 59851, 57647, 75045, 56479, 66392, 58923, 64220, 53811, 57393, 66201] },
+      { label: "opinion (real)", color: OPINION_COLOR, values: [77320, 86301, 85559, 85419, 85024, 86139, 73898, 79093, 83137, 67136, 75865, 84336, 81795, 83300, 73750] },
+      { label: "opinion (projected)", color: PROJECTED_COLOR, values: [65520, 74501, 73759, 85419, 73224, 74339, 62098, 67293, 71337, 55336, 64065, 72536, 69995, 71500, 61950] },
     ],
   },
   {
