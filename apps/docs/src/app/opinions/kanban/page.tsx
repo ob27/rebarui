@@ -100,7 +100,21 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: 'Every column header above has an eye icon — click it to collapse that column into a tray showing just its card count, without touching the underlying `columns`/`cards` state at all (purely a local, uncontrolled UI toggle). Type a search term that matches a card inside a collapsed column and it still surfaces as a faded "ghost" card in the tray, so collapsing a column never makes a search look like it silently missed something.',
+        text: 'Every column header above has an eye icon — click it to collapse that column into a tray showing just its card count, without touching the underlying `columns`/`cards` state at all. Type a search term that matches a card inside a collapsed column and it still surfaces as a faded "ghost" card in the tray, so collapsing a column never makes a search look like it silently missed something.',
+      },
+      {
+        kind: "text",
+        text: "Collapse state is uncontrolled by default — Kanban tracks it itself, resetting on remount, the right choice for a purely personal view preference. Pass `collapsedColumnIds` (together with `onColumnCollapsedChange`, required alongside it) when a caller wants collapse state to survive a reload or be the same for every viewer — e.g. persisted as real board data — the same controlled/uncontrolled split `cardVariant` already has at the board level, just per-column.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "filterCard: a caller-defined filter that composes with search",
+    body: [
+      {
+        kind: "text",
+        text: '`filterCard` is an additional visibility predicate, composed with `search` — a card must pass both. For a filter that doesn\'t fit a single substring match (e.g. "only this tag," "only this assignee"). Same visibility-only guarantee as `search`: it only ever hides a card from view — the real per-section `cardIds` array a drag/reorder\'s own `onChange` reads from is untouched either way, so filtering never risks silently dropping a card from its column\'s real data.',
       },
     ],
   },

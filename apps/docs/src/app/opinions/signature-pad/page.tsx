@@ -69,6 +69,24 @@ const BLOCKS: Construct[] = [
   },
   {
     type: "doc-section",
+    heading: "Reading the typed name back, and requiring one before a mark can be captured",
+    body: [
+      {
+        kind: "text",
+        text: "`allowTypedName`'s cursive preview only ever exists as pixels baked into the canvas — `onValueChange` returns just the rendered PNG. `onTypedNameChange` fires on every keystroke (and on Clear, with `\"\"`) with the plain name string, for a caller that needs to store it separately, gate on it being non-blank, or display it as real text elsewhere. `defaultTypedName` seeds the field's initial text from a name saved earlier — the field is otherwise uncontrolled and always starts blank on mount, which can silently drift out of sync with a real, non-blank saved name.",
+      },
+      {
+        kind: "text",
+        text: "`markDisabled` blocks *capturing a new mark* — drawing and Upload — while leaving the typed-name input and Clear enabled, unlike `disabled` which blocks everything. Pairs with `allowTypedName` to require a name before a mark can be drawn or uploaded at all: gate `markDisabled` on the typed name being blank, and drawing/uploading unlocks the moment a name is typed. Clear stays available regardless — removing a mark that's already there should always be possible, independent of whether capturing a new one is currently blocked.",
+      },
+      {
+        kind: "text",
+        text: "`actionsEnd` renders extra content in the same row as Clear/Upload, after them — a related toggle or control a caller wants visually grouped with this pad's own actions, as a real part of its layout rather than a separate row that just happens to line up.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "data-rebar-* attributes",
     body: [
       {

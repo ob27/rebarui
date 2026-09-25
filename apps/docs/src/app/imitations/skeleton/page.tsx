@@ -18,6 +18,16 @@ const BLOCKS: Construct[] = [
   { type: "props-table", heading: "Props", rows: componentProps["Skeleton"] ?? [] },
   {
     type: "doc-section",
+    heading: "width/height on the text variant",
+    body: [
+      {
+        kind: "text",
+        text: '`width`/`height` work on every variant, including `text` — `width` constrains the whole line group (each line\'s own default is a full-width line inside that box, and the last of several lines still shortens to 60% of it); `height` overrides each line\'s own height. Useful for a single custom-width line, e.g. `<Skeleton variant="text" lines={1} width="45%" />` standing in for a short label rather than a full-width paragraph line.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Accessibility",
     body: [
       {

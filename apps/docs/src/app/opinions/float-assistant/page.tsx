@@ -37,6 +37,7 @@ const BLOCKS: Construct[] = [
   dockMode?: "floating" | "sidebar",
   apiEndpoint?: string,
   apiAuthToken?: string,
+  getHostContext?: string,
   // Opinion-tier live bindings — see "API Integration" below
   source?: string,
   onSendMessage?: string,
@@ -69,7 +70,13 @@ Authorization: Bearer <session-token>
   "history": [
     { "role": "user", "content": "Hello" },
     { "role": "assistant", "content": "Hi there!" }
-  ]
+  ],
+  // present only if a screenshot was captured since the last message
+  "screenshot": "data:image/png;base64,...",
+  // present only if contextAware and a screenshot were both on for this send
+  "pageContext": ["Page title", "Active filter: Q3", "..."],
+  // present only if getHostContext was passed and returned a non-empty string
+  "hostContext": "..."
 }
 
 Response:
@@ -110,6 +117,18 @@ Response:
       {
         kind: "text",
         text: "**Dock to a full-height sidebar** — set `sidebarDockable` and click the dock-toggle button in this demo's own panel header: it swaps the default floating panel for a full-height sidebar anchored to the right screen edge, with a Claude-Code-style input toolbar (attachment, slash-command, history, an optional model pill, and submit) instead of the compact floating input. Off by default — every existing floating-panel behavior is unchanged unless this is set.",
+      },
+      {
+        kind: "text",
+        text: "**Markdown replies** — assistant messages render as real Markdown (bold, lists, headings, inline code), reusing the same `renderMarkdown` utility `ChatThread` already uses — a real LLM's reply comes back as Markdown prose, and this is what keeps it from showing up as literal `**text**`/`- item` syntax.",
+      },
+      {
+        kind: "text",
+        text: "**Copy any assistant message** — a copy button appears on hover/focus over each assistant message, copying its raw Markdown content (not whatever text the rendered output happens to produce), and swaps to a checkmark for 2 seconds. User's own messages don't get one — there's nothing to copy back to the person who just typed it.",
+      },
+      {
+        kind: "text",
+        text: "**getHostContext: real structured state, not a screenshot guess** — pass `getHostContext` (sync or async, returning a plain string) and it's called fresh before every send, included in the `apiEndpoint` request body as `hostContext`. This is the host app's own channel for describing *actual, current, structured* on-screen state — the live numbers behind a chart, an active filter, which record is open — that a screenshot or DOM scrape can't reliably capture (see `contextAware` above, which covers a different, opt-in-per-message case: the user explicitly asking the assistant to \"look at\" an arbitrary page). `apiEndpoint`'s own server implementation decides what to do with it, unmodified, the same \"app developer owns the real LLM call\" stance every other integration point here already takes.",
       },
     ],
   },
