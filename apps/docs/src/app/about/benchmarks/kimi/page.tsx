@@ -10,7 +10,7 @@ const TOP_BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Qwen3.7 is one model family. To test whether the pattern above holds for a real architectural difference, not just another Qwen size, the same text-prompt spec was run against *Kimi-K3* (Moonshot AI, via the same DashScope-compatible endpoint) — a reasoning model, unrelated to Qwen. Same rigor as every condition above: n=15 per condition, every run written to disk and type-checked, a Playwright-verified subset for clean render and correct DOM order, full screenshot galleries.",
+        text: "Qwen3.7 is one model family. To test whether the pattern above holds for a real architectural difference, not just another Qwen size, the same text-prompt spec was run against *Kimi-K3* (Moonshot AI, via the same DashScope-compatible endpoint) — a reasoning model, unrelated to Qwen. Same rigor as every condition above: n=15 per condition, every run written to disk and type-checked, a Playwright-verified subset for clean render and correct DOM order, full screenshot galleries. Run 2026-08-30 against rebar-ui v0.1.0.",
       },
     ],
   },

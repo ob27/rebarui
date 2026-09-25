@@ -10,7 +10,7 @@ const INTRO_BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Same spec, same blocks, same rigor — run against Qwen (qwen3.7-max for text, qwen3.7-plus for image) via the DashScope API, to test whether a cheaper model benefits even more from having layout/composition decisions removed from it.",
+        text: "Same spec, same blocks, same rigor — run against Qwen (qwen3.7-max for text, qwen3.7-plus for image) via the DashScope API, to test whether a cheaper model benefits even more from having layout/composition decisions removed from it. Run 2026-08-30 against rebar-ui v0.1.0.",
       },
     ],
   },

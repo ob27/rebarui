@@ -19,7 +19,7 @@ const INTRO_BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Everything measured elsewhere on this site is one build. The real question a single build can't answer: once realistic follow-up work (add a field, reorder content, add a note, change an option) is layered on round after round, does antd's head start survive, or does rebar-ui's pay-once-at-migration cost structure eventually overtake it? Rather than stop at an arbitrary round count, each tier was iterated until it actually crossed over — a measured answer, not an extrapolation.",
+        text: "Everything measured elsewhere on this site is one build. The real question a single build can't answer: once realistic follow-up work (add a field, reorder content, add a note, change an option) is layered on round after round, does antd's head start survive, or does rebar-ui's pay-once-at-migration cost structure eventually overtake it? Rather than stop at an arbitrary round count, each tier was iterated until it actually crossed over — a measured answer, not an extrapolation. Run 2026-08-30 against rebar-ui v0.1.0.",
       },
       {
         kind: "text",

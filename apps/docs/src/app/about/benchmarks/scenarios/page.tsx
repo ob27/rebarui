@@ -18,7 +18,7 @@ const INTRO_BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Six realistic ways people actually build things, each priced with real, current API rates (Claude Sonnet 5: $2/$10 per million input/output tokens; Qwen3.7: $2.50-7.50/MTok depending on tier; Kimi-K3: $3/$15 per MTok — all current list prices as of this writing). The token counts behind every dollar figure are the same real, measured data in [the receipts](/about/benchmarks/receipts) — nothing here is invented for effect. Where we scale a measured result up to a more realistic project size, we say so plainly.",
+        text: "Six realistic ways people actually build things, each priced with real, current API rates (Claude Sonnet 5: $2/$10 per million input/output tokens; Qwen3.7: $2.50-7.50/MTok depending on tier; Kimi-K3: $3/$15 per MTok — all current list prices as of this writing). The token counts behind every dollar figure are the same real, measured data in [the receipts](/about/benchmarks/receipts) — nothing here is invented for effect. Where we scale a measured result up to a more realistic project size, we say so plainly. The underlying builds were measured against rebar-ui v0.1.0 (2026-08-29/30) — only the API prices above are kept current.",
       },
     ],
   },

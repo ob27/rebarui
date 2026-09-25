@@ -26,7 +26,7 @@ const INTRO_BLOCKS: Construct[] = [
       },
       {
         kind: "text",
-        text: "Same target spec, same model (Claude Sonnet 5), same agentic harness, isolated scaffolds (fresh `bench/kanban-<condition>-<NN>` per run, `workspace:*` deps, no shared state), n=15 per condition — 45 real dispatches total, run 2026-09-25. Every one of the 45 outputs was independently re-typechecked in a single-threaded pass after all runs completed (not trusted from each building agent's own self-report — see the verification section below for why that distinction mattered).",
+        text: "Same target spec, same model (Claude Sonnet 5), same agentic harness, isolated scaffolds (fresh `bench/kanban-<condition>-<NN>` per run, `workspace:*` deps, no shared state), n=15 per condition — 45 real dispatches total, run 2026-09-25 against rebar-ui v0.12.1 (the current version — every other benchmark on this section was measured against v0.1.0; see the version note on the [benchmarks overview](/about/benchmarks)). Every one of the 45 outputs was independently re-typechecked in a single-threaded pass after all runs completed (not trusted from each building agent's own self-report — see the verification section below for why that distinction mattered).",
       },
     ],
   },

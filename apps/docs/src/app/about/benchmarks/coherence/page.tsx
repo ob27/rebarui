@@ -10,7 +10,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Everything else on this section is a controlled benchmark: n=15, isolated scaffolds, the same target spec across conditions. This page is different on purpose — it's a real record of what happened across 4 independent, non-isolated rebuilds of the same production app (Coherence, a RAG console) over time, each one a genuinely fresh attempt, not a repeated measurement of the same task. Read it as a single, real data point about how the placement layer actually gets used once real requirements and real iteration pressure show up — not as something to average into the n=15 numbers elsewhere on this page.",
+        text: "Everything else on this section is a controlled benchmark: n=15, isolated scaffolds, the same target spec across conditions. This page is different on purpose — it's a real record of what happened across 4 independent, non-isolated rebuilds of the same production app (Coherence, a RAG console) over time, each one a genuinely fresh attempt, not a repeated measurement of the same task. Read it as a single, real data point about how the placement layer actually gets used once real requirements and real iteration pressure show up — not as something to average into the n=15 numbers elsewhere on this page. Rebuilds 1-3 predate live-data binding (shipped 2026-09-12 at rebar-ui v0.4.0, see `ref/PLACEMENT_LIVE_DATA.md`); rebuild 4 happened at/after that point, specifically to test whether it changed anything.",
       },
     ],
   },

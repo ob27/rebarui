@@ -1,6 +1,7 @@
 import type { Construct } from "@rebar-ui/placement";
+import Link from "next/link";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
-import { Image, Stack } from "rebar-ui";
+import { Alert, Image, Stack } from "rebar-ui";
 
 const BLOCKS: Construct[] = [
   {
@@ -60,6 +61,14 @@ export default function BenchmarksPage() {
         style={{ width: "100%", borderRadius: "8px" }}
       />
       <NextBlockRenderer blocks={BLOCKS} />
+      <Alert type="info" title="Which rebar-ui version each measurement is against">
+        The claude/qwen/kimi/tiers/iteration/receipts/scenarios pages below were all measured
+        2026-08-29/30 against rebar-ui v0.1.0. The{" "}
+        <Link href="/about/benchmarks/kanban">Kanban benchmark</Link> is the newest addition and
+        the only one measured against the current v0.12.1 — it also answers a narrower, more
+        direct question those earlier pages don&apos;t: hand-rolled antd vs. hand-rolled rebar-ui
+        vs. a complete rebar-ui component, on the same task.
+      </Alert>
     </Stack>
   );
 }
