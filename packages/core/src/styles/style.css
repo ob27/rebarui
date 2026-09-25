@@ -2896,10 +2896,10 @@ body {
    schema.ts's `wordmarkSrcDark` doc comment. Same [data-theme="dark"] attribute ThemeToggle
    writes; light-mode default (no attribute) needs no rule since the light image's own inline
    style already defaults to visible and the dark one to hidden. */
-:root[data-theme="dark"] .rebar-siteheader-wordmark-light {
+:root[data-theme="dark"] .rebar-theme-image-light {
   display: none !important;
 }
-:root[data-theme="dark"] .rebar-siteheader-wordmark-dark {
+:root[data-theme="dark"] .rebar-theme-image-dark {
   display: block !important;
 }
 

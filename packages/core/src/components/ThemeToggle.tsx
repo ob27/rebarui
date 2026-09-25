@@ -29,6 +29,12 @@ export interface ThemeToggleProps {
    * keeps the popover (there's still more than one control to hide behind a trigger) but only
    * shows the named ones inside it. */
   sections?: ThemeToggleSection[];
+  /** Drops the state-matching `"Light Mode"`/`"Dark Mode"` text next to the switch when
+   * `sections` names exactly `["mode"]` — the bare switch alone, for a spot (a compact header)
+   * where the label reads as redundant. The `Switch`'s own `aria-label="Dark mode"` still names
+   * it for assistive tech either way; this only affects the visible text. Ignored otherwise
+   * (the popover trigger and the style/bionic-only controls keep their own labels regardless). */
+  hideLabel?: boolean;
   className?: string;
 }
 
@@ -68,7 +74,7 @@ function SunIcon() {
  * (or "clean") state silently has nothing to switch to — indistinguishable from a broken control,
  * since nothing on screen indicates the missing half. See `ref/HEURISTICS.md` #50.
  */
-export function ThemeToggle({ label = "Theme", size = "sm", sections = ALL_SECTIONS, className }: ThemeToggleProps) {
+export function ThemeToggle({ label = "Theme", size = "sm", sections = ALL_SECTIONS, hideLabel = false, className }: ThemeToggleProps) {
   const [style, setStyle] = useState<"sketch" | "clean">(() =>
     typeof document !== "undefined" && document.documentElement.getAttribute("data-rebar-theme") === "clean"
       ? "clean"
@@ -159,7 +165,7 @@ export function ThemeToggle({ label = "Theme", size = "sm", sections = ALL_SECTI
               onCheckedChange={(checked) => setMode(checked ? "dark" : "light")}
               thumbIcon={mode === "dark" ? <SunIcon /> : <MoonIcon />}
             />
-            <Text size="sm">{mode === "dark" ? "Dark Mode" : "Light Mode"}</Text>
+            {hideLabel ? null : <Text size="sm">{mode === "dark" ? "Dark Mode" : "Light Mode"}</Text>}
           </Stack>
         </span>
       );

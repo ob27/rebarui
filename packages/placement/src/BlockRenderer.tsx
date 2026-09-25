@@ -1462,14 +1462,14 @@ function renderBlock(
               <img
                 src={block.logo.wordmarkSrc}
                 alt={block.logo.label}
-                className={block.logo.wordmarkSrcDark ? "rebar-siteheader-wordmark-light" : undefined}
+                className={block.logo.wordmarkSrcDark ? "rebar-theme-image-light" : undefined}
                 style={{ display: "block", width: "auto", height: block.logo.wordmarkHeight ?? 28 }}
               />
               {block.logo.wordmarkSrcDark ? (
                 <img
                   src={block.logo.wordmarkSrcDark}
                   alt={block.logo.label}
-                  className="rebar-siteheader-wordmark-dark"
+                  className="rebar-theme-image-dark"
                   style={{ display: "none", width: "auto", height: block.logo.wordmarkHeight ?? 28 }}
                 />
               ) : null}
@@ -1568,7 +1568,12 @@ function renderBlock(
             ) : null}
             {trailingContent || block.themeToggle ? (
               <Stack direction="row" align="center" gap="sm" style={{ marginLeft: "auto", flexShrink: 0 }}>
-                {block.themeToggle ? <ThemeToggle /> : null}
+                {block.themeToggle ? (
+                  <ThemeToggle
+                    sections={typeof block.themeToggle === "object" ? block.themeToggle.sections : undefined}
+                    hideLabel={typeof block.themeToggle === "object" ? block.themeToggle.hideLabel : undefined}
+                  />
+                ) : null}
                 {trailingContent}
               </Stack>
             ) : null}
@@ -2013,9 +2018,28 @@ function renderBlock(
               {renderInline(block.badge, renderLink)}
             </Box>
           ) : null}
-          <Heading level={1} style={{ fontSize: 56, lineHeight: 1.1 }}>
-            {block.title}
-          </Heading>
+          {block.imageSrc ? (
+            <>
+              <img
+                src={block.imageSrc}
+                alt={block.title}
+                className={block.imageSrcDark ? "rebar-theme-image-light" : undefined}
+                style={{ display: "block", width: "auto", height: block.imageHeight ?? 64 }}
+              />
+              {block.imageSrcDark ? (
+                <img
+                  src={block.imageSrcDark}
+                  alt={block.title}
+                  className="rebar-theme-image-dark"
+                  style={{ display: "none", width: "auto", height: block.imageHeight ?? 64 }}
+                />
+              ) : null}
+            </>
+          ) : (
+            <Heading level={1} style={{ fontSize: 56, lineHeight: 1.1 }}>
+              {block.title}
+            </Heading>
+          )}
           <Text size="md" color="secondary" style={{ maxWidth: 560 }}>
             {renderInline(block.subtitle, renderLink)}
           </Text>

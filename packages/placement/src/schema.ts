@@ -419,13 +419,17 @@ export type Construct =
             href?: string;
             placeholder?: boolean;
           };
-      /** Adds a "Theme" popover to the header's trailing edge, alongside (not instead of)
-       * `trailing` — two independent toggles, `sketch`/`clean` (labeled "Sketch"/"Simple") writing
-       * `data-rebar-theme`, and `light`/`dark` writing/removing `data-theme`, the same two
-       * attributes and values `RebarDevTools`' own dev-only panel already toggles. A visitor-facing
-       * escape hatch onto the same real theme switch a developer gets in DevTools, not a new one.
-       * Off by default. */
-      themeToggle?: boolean;
+      /** Adds a `ThemeToggle` to the header's trailing edge, alongside (not instead of)
+       * `trailing` — a visitor-facing escape hatch onto the same real theme attributes
+       * `RebarDevTools`' own dev-only panel already toggles (`data-rebar-theme`, `data-theme`),
+       * not a new mechanism. `true` renders the full "Theme" popover (all of Style/Mode/Bionic —
+       * see `ThemeToggle`'s own `sections` prop). An object with `sections` narrows it to just
+       * those controls, same as passing `sections` to the real component directly: naming exactly
+       * one (e.g. `{ sections: ["mode"] }`) drops the popover for a classic, icon-in-thumb
+       * light/dark switch with no trigger button at all. `hideLabel` (only meaningful alongside
+       * `sections: ["mode"]`) drops that switch's own `"Light Mode"`/`"Dark Mode"` text, same as
+       * the real component's own `hideLabel` prop. Off by default. */
+      themeToggle?: boolean | { sections?: ("style" | "mode" | "bionic")[]; hideLabel?: boolean };
       /** An inline, progressive type-ahead search box in the header's middle, over every named
        * construct across every tier (see `packages/core`'s `ConstructSearch`) — omit entirely for
        * a header with no search box. `source` is a key into `BlockRenderer`'s `data` prop
@@ -628,7 +632,31 @@ export type Construct =
       shareUrl?: string;
       settingsBlocks?: Construct[];
     }
-  | { type: "hero"; badge?: string; title: string; subtitle: string; actions?: Action[]; codeSnippet?: string; imageSrc?: string }
+  | {
+      type: "hero";
+      badge?: string;
+      title: string;
+      subtitle: string;
+      actions?: Action[];
+      codeSnippet?: string;
+      /** A wordmark/logo image, rendered in place of the plain-text `title` heading — for a brand
+       * that wants its actual mark displayed, not its name typeset in the page's own font. `title`
+       * is still required (used as this image's `alt` text, and still the real content when
+       * neither this nor `imageSrcDark` is set). Same `<img>`-can't-see-page-CSS caveat as
+       * `site-header`'s `logo.wordmarkSrc` — a flat image can't react to the light/dark toggle via
+       * `currentColor`, so a mark that needs to takes two assets (`imageSrcDark` alongside this
+       * one) rather than just this field alone. */
+      imageSrc?: string;
+      /** The dark-mode counterpart to `imageSrc`, CSS-swapped by the same `data-theme="dark"`
+       * attribute `ThemeToggle` writes (see `rebar-ui/style.css`'s `.rebar-theme-image-*` rules —
+       * the same mechanism `site-header`'s `logo.wordmarkSrcDark` uses). Omit for a mark that
+       * looks fine unchanged in both modes. */
+      imageSrcDark?: string;
+      /** Rendered height in px for `imageSrc`/`imageSrcDark` — width follows each image's own
+       * natural aspect ratio. Default `64`, roughly matching the plain-text title's own rendered
+       * height. */
+      imageHeight?: number;
+    }
   | { type: "section-header"; kicker?: string; title: string; subtitle?: string }
   | {
       type: "doc-section";
