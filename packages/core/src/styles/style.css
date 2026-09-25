@@ -2892,6 +2892,17 @@ body {
   justify-content: center;
 }
 
+/* site-header wordmark light/dark swap — see BlockRenderer.tsx's `site-header` case and
+   schema.ts's `wordmarkSrcDark` doc comment. Same [data-theme="dark"] attribute ThemeToggle
+   writes; light-mode default (no attribute) needs no rule since the light image's own inline
+   style already defaults to visible and the dark one to hidden. */
+:root[data-theme="dark"] .rebar-siteheader-wordmark-light {
+  display: none !important;
+}
+:root[data-theme="dark"] .rebar-siteheader-wordmark-dark {
+  display: block !important;
+}
+
 /* CodeBlock */
 .rebar-code-block {
   border-radius: 4px;

@@ -1457,24 +1457,43 @@ function renderBlock(
         // CSS technique — text-decoration otherwise propagates through plain inline descendants
         // regardless of their own value).
         <span style={{ display: "inline-block", textDecoration: "none" }}>
-          <Stack direction="row" align="center" gap="xs">
-            {block.logo.iconPath ? (
-              <svg
-                viewBox={block.logo.iconViewBox ?? "0 0 24 24"}
-                width={24}
-                height={24}
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path d={block.logo.iconPath} />
-              </svg>
-            ) : block.logo.iconSrc ? (
-              <img src={block.logo.iconSrc} alt="" width={24} height={24} />
-            ) : null}
-            <Text as="span" size="md" style={{ fontWeight: "var(--rebar-font-weight-bold, 700)" }}>
-              {block.logo.label}
-            </Text>
-          </Stack>
+          {block.logo.wordmarkSrc ? (
+            <>
+              <img
+                src={block.logo.wordmarkSrc}
+                alt={block.logo.label}
+                className={block.logo.wordmarkSrcDark ? "rebar-siteheader-wordmark-light" : undefined}
+                style={{ display: "block", width: "auto", height: block.logo.wordmarkHeight ?? 28 }}
+              />
+              {block.logo.wordmarkSrcDark ? (
+                <img
+                  src={block.logo.wordmarkSrcDark}
+                  alt={block.logo.label}
+                  className="rebar-siteheader-wordmark-dark"
+                  style={{ display: "none", width: "auto", height: block.logo.wordmarkHeight ?? 28 }}
+                />
+              ) : null}
+            </>
+          ) : (
+            <Stack direction="row" align="center" gap="xs">
+              {block.logo.iconPath ? (
+                <svg
+                  viewBox={block.logo.iconViewBox ?? "0 0 24 24"}
+                  width={24}
+                  height={24}
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d={block.logo.iconPath} />
+                </svg>
+              ) : block.logo.iconSrc ? (
+                <img src={block.logo.iconSrc} alt="" width={24} height={24} />
+              ) : null}
+              <Text as="span" size="md" style={{ fontWeight: "var(--rebar-font-weight-bold, 700)" }}>
+                {block.logo.label}
+              </Text>
+            </Stack>
+          )}
         </span>
       );
       let trailingContent: ReactNode = null;

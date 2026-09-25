@@ -388,6 +388,22 @@ export type Construct =
          * the common icon default `"0 0 24 24"` (e.g. a hand-drawn wordmark drawn at its own,
          * larger native scale). */
         iconViewBox?: string;
+        /** A full logotype/wordmark image — one asset that already spells out the product name
+         * graphically, rendered alone (no separate icon glyph + `label` text beside it, which
+         * would just repeat the name twice). Takes priority over `iconSrc`/`iconPath` and `label`
+         * when set; `label` is still required and used as both images' `alt` text. This is the
+         * light-mode asset — shown whenever `wordmarkSrcDark` isn't, or always when
+         * `wordmarkSrcDark` is omitted. */
+        wordmarkSrc?: string;
+        /** The dark-mode counterpart to `wordmarkSrc` — a flat brand image (unlike `iconPath`)
+         * can't react to the light/dark toggle via `currentColor`, so a wordmark that needs to
+         * takes two assets instead, CSS-swapped by the same `data-theme="dark"` attribute
+         * `ThemeToggle` writes (see `rebar-ui/style.css`'s `.rebar-siteheader-wordmark-*` rules).
+         * Omit for a wordmark that looks fine unchanged in both modes. */
+        wordmarkSrcDark?: string;
+        /** Rendered height in px for `wordmarkSrc`/`wordmarkSrcDark` — width follows each image's
+         * own natural aspect ratio. Default `28`. */
+        wordmarkHeight?: number;
       };
       items: NavBarItem[];
       ariaLabel?: string;
