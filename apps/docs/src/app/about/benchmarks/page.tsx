@@ -1,7 +1,31 @@
 import type { Construct } from "@rebar-ui/placement";
-import Link from "next/link";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
-import { Alert, Image, Stack } from "rebar-ui";
+import { Image, Stack } from "rebar-ui";
+
+const UPDATE_BLOCKS: Construct[] = [
+  {
+    type: "doc-section",
+    heading: "Update, following the Kanban benchmark: the antd comparison needs a caveat",
+    body: [
+      {
+        kind: "text",
+        text: "The Conclusion above says every number on this page pits a library the model has trained on constantly (antd) against one it's never seen (rebar-ui), and calls that unfair in rebar-ui's favor since it wins anyway. The [Kanban benchmark](/about/benchmarks/kanban) — the first thing on this site to directly compare hand-rolled antd, hand-rolled rebar-ui, and a complete rebar-ui component with no DSL wrapper involved at all — complicates that framing rather than confirming it.",
+      },
+      {
+        kind: "text",
+        text: "On tool-calls and wall-clock, reaching for rebar-ui's own complete `Kanban` component still beats hand-rolled antd, matching the pattern above. But on raw tokens, antd is actually the *cheapest* of all four conditions measured — training familiarity cut against rebar-ui there, not for it. The old framing wasn't wrong about effort; it was incomplete about tokens.",
+      },
+      {
+        kind: "text",
+        text: "That raises a natural question: would the token gap close if a future model had trained on rebar-ui as much as it has on antd? Part of that has a real, measured answer rather than a guess. 14 of the 15 opinion-tier Kanban runs read `Kanban.tsx`'s own source in full before writing any code, to learn its prop API — a real cost of 11,800 tokens per run, confirmed directly from each run's own saved transcript, that a model with antd-level familiarity wouldn't need to pay (none of the antd-condition runs ever read antd's own source). Subtracting that measured cost projects opinion-tier's median token cost from 83,137 down to about 71,337 — closing roughly half the real gap to antd's 63,070, but not all of it. That's a conservative floor, not a full simulation: a genuinely well-trained model would likely also write the customization itself more fluently, an effect this projection can't isolate from the data collected. See the full breakdown, methodology, and caveats on the [Kanban benchmark](/about/benchmarks/kanban) page.",
+      },
+      {
+        kind: "text",
+        text: "The claude/qwen/kimi/tiers/iteration/receipts/scenarios sections below were all measured 2026-08-29/30 against rebar-ui v0.1.0. The Kanban benchmark was measured 2026-09-25 against the current v0.12.1.",
+      },
+    ],
+  },
+];
 
 const BLOCKS: Construct[] = [
   {
@@ -61,14 +85,7 @@ export default function BenchmarksPage() {
         style={{ width: "100%", borderRadius: "8px" }}
       />
       <NextBlockRenderer blocks={BLOCKS} />
-      <Alert type="info" title="Which rebar-ui version each measurement is against">
-        The claude/qwen/kimi/tiers/iteration/receipts/scenarios pages below were all measured
-        2026-08-29/30 against rebar-ui v0.1.0. The{" "}
-        <Link href="/about/benchmarks/kanban">Kanban benchmark</Link> is the newest addition and
-        the only one measured against the current v0.12.1 — it also answers a narrower, more
-        direct question those earlier pages don&apos;t: hand-rolled antd vs. hand-rolled rebar-ui
-        vs. a complete rebar-ui component, on the same task.
-      </Alert>
+      <NextBlockRenderer blocks={UPDATE_BLOCKS} />
     </Stack>
   );
 }

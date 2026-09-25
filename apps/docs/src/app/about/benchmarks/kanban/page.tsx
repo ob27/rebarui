@@ -136,6 +136,45 @@ const INTERPRETATION_BLOCKS: Construct[] = [
   },
 ];
 
+const PROJECTION_BLOCKS: Construct[] = [
+  {
+    type: "doc-section",
+    heading: "If rebar-ui were as pretrained as antd — a projection, not a measurement",
+    body: [
+      {
+        kind: "text",
+        text: "The token gap has an obvious candidate explanation: training familiarity. antd has been a top-tier React UI library for years, all over public code the model trained on; rebar-ui is new and unfamiliar to it. As more real code using rebar-ui exists publicly, future model training runs plausibly pick some of it up the same way — antd wasn't always in the training data either. That raises a real question this benchmark can partially answer with actual measurements, not a guess: if a future model knew `Kanban`'s prop API as well as it already knows antd's, how much of the token gap would close?",
+      },
+      {
+        kind: "text",
+        text: "**Methodology.** Every opinion-tier run's own saved transcript was checked directly for whether it read `packages/core/src/components/Kanban.tsx` — 14 of the 15 did (kanban-opinion-04 is the one exception), each exactly once, to learn the component's prop surface before writing any customization code. The actual token cost of that one read was measured directly from a real transcript at 11,800 tokens (a 884-line, ~44KB file) — not estimated from file size alone. None of the 15 antd-condition runs ever read antd's own source; every one used its Card/Tag/Avatar/Input/Button API from memory, the way a model with deep training exposure would for any library. That's the concrete, measurable stand-in for \"a model that already knows rebar-ui cold\": subtract the one real, identified cost of *not* already knowing the API — the forced source-read — from each run that paid it, leave the one run that didn't pay it (opinion-04) unchanged, and recompute.",
+      },
+    ],
+  },
+  {
+    type: "stats-table",
+    headers: ["Tokens", "Mean", "Median", "Min", "Max", "Std. dev."],
+    rows: [
+      ["antd (real, unchanged)", "63,197", "63,070", "53,811", "81,969", "7,459 (11.8%)"],
+      ["opinion (real, measured)", "80,538", "83,137", "67,136", "86,301", "5,783 (7.2%)"],
+      ["opinion (projected)", "69,525", "71,337", "55,336", "85,419", "7,138 (10.3%)"],
+    ],
+  },
+  {
+    type: "doc-section",
+    body: [
+      {
+        kind: "text",
+        text: "The projected median (71,337) closes roughly half the real gap to antd (83,137 → 71,337, versus antd's 63,070) but doesn't close all of it. The same subtraction applied to tool-calls (remove one tool-call from the 14 runs that paid it) projects a median of 16, versus antd's real 20 — opinion-tier's existing tool-call lead would widen, not just hold.",
+      },
+      {
+        kind: "text",
+        text: "Read the ranking this way: if rebar-ui reached antd-level training familiarity, opinion-tier rebar-ui would very likely still win on tool-calls and probably still win on wall-clock, by a wider margin than it does today — those metrics were never about reading the source in the first place. On tokens, the gap would shrink substantially but, on this one identified cost driver alone, likely wouldn't fully close. That's almost certainly a conservative floor, not a ceiling: a genuinely well-trained model would probably also write the customization itself more fluently (less exploratory back-and-forth on the render-prop API, fewer false starts like the add-to-top workaround several runs needed), an effect this projection has no way to measure from the data collected here. The honest summary: pretraining would likely help rebar-ui's token cost meaningfully, probably not enough on its own to fully catch antd, but enough that the two libraries would be much closer than the 24% gap measured today — while rebar-ui's effort advantage would likely hold or grow.",
+      },
+    ],
+  },
+];
+
 const VERIFICATION_BLOCKS: Construct[] = [
   {
     type: "doc-section",
@@ -175,6 +214,7 @@ export default function KanbanBenchmarkPage() {
       <NextBlockRenderer blocks={INTRO_BLOCKS} />
       <NextBlockRenderer blocks={TOKEN_BLOCKS} />
       <NextBlockRenderer blocks={INTERPRETATION_BLOCKS} />
+      <NextBlockRenderer blocks={PROJECTION_BLOCKS} />
       <NextBlockRenderer blocks={VERIFICATION_BLOCKS} />
       <Alert type="info" title="What this is, and isn't">
         This is a new, standalone baseline (per <code>ref/BENCHMARK_CONTRIBUTING.md</code> rule
