@@ -1,5 +1,6 @@
 import { Alert, Stack } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import { BenchmarkDateline } from "@/components/BenchmarkDateline";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const SECTIONS = [
@@ -223,6 +224,7 @@ export default function ScenariosPage() {
   return (
     <Stack direction="row" gap="xl" style={{ alignItems: "flex-start" }}>
       <Stack gap="md" style={{ flex: 1, minWidth: 0, maxWidth: 800 }}>
+        <BenchmarkDateline published="2026-09-14" updated="2026-09-25" />
         <NextBlockRenderer blocks={INTRO_BLOCKS} />
 
         <Alert type="info" title="Traditional development costs about 10.7x more">

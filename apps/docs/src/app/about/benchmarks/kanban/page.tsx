@@ -1,5 +1,6 @@
 import { Alert, Stack } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import { BenchmarkDateline } from "@/components/BenchmarkDateline";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 // A new, standalone baseline — not a variant of Simple/Composite/Complex — per
@@ -222,6 +223,7 @@ const VERIFICATION_BLOCKS: Construct[] = [
 export default function KanbanBenchmarkPage() {
   return (
     <Stack gap="lg">
+      <BenchmarkDateline published="2026-09-25" />
       <NextBlockRenderer blocks={INTRO_BLOCKS} />
       <NextBlockRenderer blocks={TOKEN_BLOCKS} />
       <NextBlockRenderer blocks={INTERPRETATION_BLOCKS} />

@@ -1,5 +1,6 @@
 import { Alert, Stack } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import { BenchmarkDateline } from "@/components/BenchmarkDateline";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const BLOCKS: Construct[] = [
@@ -58,6 +59,7 @@ const BLOCKS: Construct[] = [
 export default function CoherenceBenchmarkPage() {
   return (
     <Stack gap="lg">
+      <BenchmarkDateline published="2026-09-25" />
       <NextBlockRenderer blocks={BLOCKS} />
       <Alert type="info" title="What this actually tests, versus what the rest of this page tests">
         The controlled benchmarks elsewhere on this section measure assembling a UI from

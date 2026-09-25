@@ -1,5 +1,6 @@
 import { Alert, Box, Carousel, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import { BenchmarkDateline } from "@/components/BenchmarkDateline";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const FINAL_SHOTS = [
@@ -93,6 +94,7 @@ const CHART_BLOCKS: Construct[] = [
 export default function IterationPage() {
   return (
     <Stack gap="md">
+      <BenchmarkDateline published="2026-09-14" updated="2026-09-25" />
       <NextBlockRenderer blocks={INTRO_BLOCKS} />
 
       <Alert type="warning" title="Rigid by design: rebar-ui is meant to refuse style/color requests">

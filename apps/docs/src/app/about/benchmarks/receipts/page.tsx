@@ -1,5 +1,6 @@
 import { Alert, Stack } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import { BenchmarkDateline } from "@/components/BenchmarkDateline";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const BLOCKS: Construct[] = [
@@ -63,6 +64,7 @@ const BLOCKS: Construct[] = [
 export default function ReceiptsPage() {
   return (
     <Stack gap="lg">
+      <BenchmarkDateline published="2026-09-14" updated="2026-09-25" />
       <NextBlockRenderer blocks={BLOCKS} />
       <Alert type="info" title="rebar-ui is cheaper, faster, and more visually consistent every time">
         Fewer tokens (average <strong>32.6% cheaper</strong> across five experiments), faster

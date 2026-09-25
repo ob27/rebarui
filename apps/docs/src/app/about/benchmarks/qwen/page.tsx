@@ -1,5 +1,6 @@
 import { Alert, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import { BenchmarkDateline } from "@/components/BenchmarkDateline";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const INTRO_BLOCKS: Construct[] = [
@@ -76,6 +77,7 @@ const RESULT_BLOCKS: Construct[] = [
 export default function QwenPage() {
   return (
     <Stack gap="lg">
+      <BenchmarkDateline published="2026-09-14" updated="2026-09-25" />
       <NextBlockRenderer blocks={INTRO_BLOCKS} />
 
       <Alert type="warning" title="Not directly comparable to Claude's numbers">

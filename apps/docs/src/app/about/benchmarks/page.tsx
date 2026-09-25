@@ -1,76 +1,70 @@
 import type { Construct } from "@rebar-ui/placement";
+import { BenchmarkDateline } from "@/components/BenchmarkDateline";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { Image, Stack } from "rebar-ui";
 
-const UPDATE_BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Update, following the Kanban benchmark: the antd comparison needs a caveat",
-    body: [
-      {
-        kind: "text",
-        text: "The Conclusion above says every number on this page pits a library the model has trained on constantly (antd) against one it's never seen (rebar-ui), and calls that unfair in rebar-ui's favor since it wins anyway. The [Kanban benchmark](/about/benchmarks/kanban) — the first thing on this site to directly compare hand-rolled antd, hand-rolled rebar-ui, and a complete rebar-ui component with no DSL wrapper involved at all — complicates that framing rather than confirming it.",
-      },
-      {
-        kind: "text",
-        text: "On tool-calls and wall-clock, reaching for rebar-ui's own complete `Kanban` component still beats hand-rolled antd, matching the pattern above. But on raw tokens, antd is actually the *cheapest* of all four conditions measured — training familiarity cut against rebar-ui there, not for it. The old framing wasn't wrong about effort; it was incomplete about tokens.",
-      },
-      {
-        kind: "text",
-        text: "That raises a natural question: would the token gap close if a future model had trained on rebar-ui as much as it has on antd? Part of that has a real, measured answer rather than a guess. 14 of the 15 opinion-tier Kanban runs read `Kanban.tsx`'s own source in full before writing any code, to learn its prop API — a real cost of 11,800 tokens per run, confirmed directly from each run's own saved transcript, that a model with antd-level familiarity wouldn't need to pay (none of the antd-condition runs ever read antd's own source). Subtracting that measured cost projects opinion-tier's median token cost from 83,137 down to about 71,337 — closing roughly half the real gap to antd's 63,070, but not all of it. That's a conservative floor, not a full simulation: a genuinely well-trained model would likely also write the customization itself more fluently, an effect this projection can't isolate from the data collected. See the full breakdown, methodology, and caveats on the [Kanban benchmark](/about/benchmarks/kanban) page.",
-      },
-      {
-        kind: "text",
-        text: "The claude/qwen/kimi/tiers/iteration/receipts/scenarios sections below were all measured 2026-08-29/30 against rebar-ui v0.1.0. The Kanban benchmark was measured 2026-09-25 against the current v0.12.1.",
-      },
-    ],
-  },
-];
+// Narration was deliberately dropped from this page's 2026-09-25 rewrite: its 3 prior
+// doc-sections had narration audio attached (see CLAUDE.md's rule on regenerating narration when
+// edited text changes), and this session has no DASHSCOPE_API_KEY to regenerate it — shipping
+// stale audio against new copy is explicitly what that rule forbids, so the safer move was to
+// remove the narration entries (see apps/docs/src/data/narrationSources.mjs and
+// apps/docs/public/narration/manifest.json) rather than guess at credentials. Re-add narration
+// once the repo owner supplies a key and this copy has settled.
 
 const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Does building with AI on rebar-ui actually save you money?",
     level: 1,
-    narration: { src: "/narration/benchmarks-does-it-save-money.mp3" },
     body: [
       {
         kind: "text",
-        text: "Short answer: yes — real, measured savings on every model and every prompt style we've tested, from a few percent on a frontier model up to roughly three-quarters cheaper on a budget one. Everything on this page is a real number pulled from real API usage, not a guess — the methodology and every underlying data point are still here for anyone who wants to check our work, further down the page.",
+        text: "Reaching for the highest-tier complete unit available — a real, finished component, not primitives you assemble yourself — measurably lowers the effort of building the same UI, in every comparison run so far, including the most direct one yet: hand-rolled antd vs. hand-rolled rebar-ui vs. a complete rebar-ui component, with no DSL wrapper involved in any of the three. That's real and holds up. What it isn't is a blanket \"rebar-ui is always cheaper\" — against a library the model has trained on for years, rebar-ui currently wins on *effort* (fewer actions, usually less wall-clock) but not on *raw token cost*, and closing that specific gap looks like it needs deeper training exposure to rebar-ui itself, not a change this project can make on its own.",
       },
     ],
   },
   {
     type: "doc-section",
-    heading: "The short answer",
-    narration: { src: "/narration/benchmarks-short-answer.mp3" },
+    heading: "What actually holds up",
     body: [
       {
-        kind: "text",
-        text: "*Building the same UI with rebar-ui instead of hand-written antd costs less, every time we've measured it* — 3-5% cheaper on a top-tier model like Claude, and 25-75% cheaper on cheaper models like Qwen and Kimi. The cheaper the model you're using, the bigger rebar-ui's advantage — because most of what a model struggles with when hand-writing a UI is layout and composition decisions, and rebar-ui removes those decisions from the job entirely.",
-      },
-      {
-        kind: "text",
-        text: "The one thing rebar-ui doesn't do is look like a finished product out of the box — it's deliberately plain until you (or an agent) migrate it to a real design system once, at the end. That migration has a real cost, so the honest question is whether the savings along the way actually earn it back. We measured that too, round by round, rather than guessing: on Claude, it takes 13-17 rounds of revisions before rebar-ui (even counting the full cost of migrating away from it) is cheaper than antd was ever going to be. Most real projects go through more revisions than that before they ship — and if you're building something you'll never bother re-skinning at all (an internal tool, a prototype), there's no migration cost to earn back in the first place, so rebar-ui is simply cheaper, full stop. See [what this costs you](/about/benchmarks/scenarios) for what that looks like in real dollars.",
+        kind: "list",
+        items: [
+          "*Tool-calls and wall-clock: rebar-ui wins, including against a well-known library.* The [Kanban benchmark](/about/benchmarks/kanban) is the first thing on this site to test hand-rolled antd, hand-rolled rebar-ui, and a complete rebar-ui component head to head, with no DSL wrapper anywhere. Reaching for the complete component beat *both* hand-rolled conditions on tool-calls (median 17 vs. 20–29) and typical wall-clock (188s vs. 235–351s).",
+          "*Raw tokens: antd wins, and training familiarity is the likely reason, not task difficulty.* antd came out cheapest of all four conditions measured (median 63,070 tokens vs. rebar-ui's complete-component median of 83,137) — the model already knows antd's API cold, while an opinion-tier rebar-ui build still had to read the component's own source to learn how to customize it (confirmed directly: 14 of 15 runs did, at a measured 11,800 tokens each). A [projection](/about/benchmarks/kanban) modeling what removing that one specific cost would do closes roughly half the gap, not all of it.",
+          "*The original antd-vs-rebar-ui token comparisons (Claude/Qwen/Kimi, 2026-08-29/30) are real, but measured a different mechanism.* Those built rebar-ui through the Packer/DSL schema wrapper specifically, and found real savings there too — but this project no longer believes the wrapper itself is what earned them (see [Field evidence: Coherence](/about/benchmarks/coherence)). The current best explanation is the same one above: reaching for a complete, high-tier unit costs less effort, independent of whether a DSL wrapper delivers it.",
+        ],
       },
     ],
   },
   {
     type: "doc-section",
-    heading: "Conclusion",
-    narration: { src: "/narration/benchmarks-conclusion.mp3" },
+    heading: "The migration payoff, still real",
     body: [
       {
         kind: "text",
-        text: "If you're deciding whether to build with rebar-ui or hand-code against antd directly: on every model and prompt style we've tested, rebar-ui costs less and renders more consistently, from the very first build. The cheaper the model you're using, the more that matters — the gap ranges from a few percent on a frontier model up to three-quarters cheaper on a budget one.",
+        text: "rebar-ui doesn't look like a finished product out of the box — it stays deliberately plain until you, or an agent, migrate it to a real design system once, at the end. That migration has a real cost, so the honest question is whether iterating on rebar-ui first actually earns it back rather than costing more overall. The [iteration benchmark](/about/benchmarks/iteration) measured this round by round instead of guessing: on Claude, it takes 13-17 rounds of revisions before rebar-ui, even counting the full migration cost, beats what antd was ever going to cost. Most real projects go through more revisions than that before they ship, and a project that's never re-skinned at all (an internal tool, a prototype) has nothing to earn back in the first place.",
       },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "This is a build diary, not a verdict",
+    body: [
       {
         kind: "text",
-        text: "The one real cost on rebar-ui's side is migrating to a proper design system once you're done iterating — and we measured how long that takes to pay for itself rather than guess: 13-17 rounds of revisions, depending on complexity. Most real projects go through more revisions than that. If you're building something you won't re-skin at all, there's nothing to pay back in the first place, and rebar-ui is simply the cheaper choice throughout.",
+        text: "Every page in this section is a dated entry recording what was actually measured at the time, not a single, settled proof of the platform's superiority — treat the date on each one as real information about how current it still is. The Kanban benchmark above is a working example of why that framing matters: it directly complicated a claim (\"training familiarity is unfair to rebar-ui, and it wins anyway\") that this page itself stated as settled from 2026-09-14 until the more direct comparison ran on 2026-09-25. Expect this page to keep being revised in place as better-designed comparisons replace weaker ones — that's the intended process, not a failure of the earlier ones.",
       },
       {
-        kind: "text",
-        text: "Worth knowing: every number on this page compares a library the model has trained on constantly (antd) against one it's never seen before (rebar-ui) — a genuinely unfair comparison in rebar-ui's favor, if anything, since it still wins despite that disadvantage. What we'd still like to test: the same round-by-round migration payoff on Qwen and Kimi, not just Claude; a wider range of app types beyond the three we picked; and a fourth model, to see how far the \"cheaper model, bigger gap\" pattern actually goes.",
+        kind: "list",
+        items: [
+          "[Kanban: antd vs. hand-rolled vs. shell-only vs. complete unit](/about/benchmarks/kanban) — 2026-09-25, rebar-ui v0.12.1. The most direct comparison: no DSL wrapper in any of the 4 conditions.",
+          "[Field evidence: Coherence](/about/benchmarks/coherence) — 2026-09-25. Real, non-isolated rebuilds of a production app, across the DSL-wrapper's live-data-binding feature boundary.",
+          "[Claude Sonnet 5](/about/benchmarks/claude), [Qwen3.7](/about/benchmarks/qwen), [Kimi-K3](/about/benchmarks/kimi) — 2026-08-29/30, rebar-ui v0.1.0. Token/wall-clock cost of antd vs. rebar-ui-via-the-Packer, across three models.",
+          "[Simple/Composite/Complex tiers](/about/benchmarks/tiers) — 2026-08-29/30, v0.1.0. The same comparison across three complexity levels.",
+          "[Does iteration change it?](/about/benchmarks/iteration) — 2026-08-29/30, v0.1.0. Round-by-round cost through 13-17 revisions, including the full migration-away cost.",
+          "[The receipts](/about/benchmarks/receipts) and [what this costs you](/about/benchmarks/scenarios) — 2026-08-29/30 data, written up 2026-09-14. The raw numbers, and what they mean in real dollars.",
+        ],
       },
     ],
   },
@@ -84,8 +78,8 @@ export default function BenchmarksPage() {
         alt="Benchmarks hero image"
         style={{ width: "100%", borderRadius: "8px" }}
       />
+      <BenchmarkDateline published="2026-09-14" updated="2026-09-25" />
       <NextBlockRenderer blocks={BLOCKS} />
-      <NextBlockRenderer blocks={UPDATE_BLOCKS} />
     </Stack>
   );
 }

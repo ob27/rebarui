@@ -64,21 +64,6 @@
     "generatedAt": "2026-09-19T02:26:05.500Z",
     "chars": 1243
   },
-  "benchmarks-does-it-save-money": {
-    "textHash": "059f53d56cba8af3",
-    "generatedAt": "2026-09-19T02:26:15.408Z",
-    "chars": 396
-  },
-  "benchmarks-short-answer": {
-    "textHash": "7c73cf370944b730",
-    "generatedAt": "2026-09-19T02:26:39.820Z",
-    "chars": 1265
-  },
-  "benchmarks-conclusion": {
-    "textHash": "2baf20540125558e",
-    "generatedAt": "2026-09-19T02:27:01.227Z",
-    "chars": 1076
-  },
   "heuristics-intro": {
     "textHash": "149f61d8ef04616b",
     "generatedAt": "2026-09-19T02:27:24.196Z",

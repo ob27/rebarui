@@ -1,5 +1,6 @@
 import { Alert, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import { BenchmarkDateline } from "@/components/BenchmarkDateline";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const TOP_BLOCKS: Construct[] = [
@@ -45,6 +46,7 @@ const TOP_BLOCKS: Construct[] = [
 export default function KimiPage() {
   return (
     <Stack gap="lg">
+      <BenchmarkDateline published="2026-09-14" updated="2026-09-25" />
       <NextBlockRenderer blocks={TOP_BLOCKS} />
 
       <Alert type="info" title="The gap is bigger here than on Qwen — and much bigger than on Claude">

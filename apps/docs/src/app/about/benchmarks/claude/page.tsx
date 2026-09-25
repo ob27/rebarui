@@ -1,5 +1,6 @@
 import { Box, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import { BenchmarkDateline } from "@/components/BenchmarkDateline";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 // The two scatter plots on this page are bespoke hand-drawn SVGs with hardcoded historical pixel
@@ -76,6 +77,7 @@ const IMAGE_RESULT_BLOCKS: Construct[] = [
 export default function ClaudePage() {
   return (
     <Stack gap="md">
+      <BenchmarkDateline published="2026-09-14" updated="2026-09-25" />
       <NextBlockRenderer blocks={INTRO_BLOCKS} />
 
       <svg
