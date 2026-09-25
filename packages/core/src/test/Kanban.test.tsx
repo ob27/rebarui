@@ -269,6 +269,18 @@ describe("Kanban", () => {
     expect(next.cards[newCardId].title).toBe("New task");
   });
 
+  it("inserts a new card at the start of its section when addPosition is start", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(<Kanban columns={COLUMNS} cards={CARDS} onChange={onChange} addPosition="start" />);
+    await user.click(screen.getAllByText("+ Add card")[0]!);
+    await user.type(screen.getByLabelText("New card title"), "New task");
+    await user.click(screen.getByRole("button", { name: "Add" }));
+    const next = onChange.mock.calls[0]![0];
+    const newCardId = next.columns[0].sections[0].cardIds[0];
+    expect(next.cards[newCardId].title).toBe("New task");
+  });
+
   it("disables the add-card button once a section is at its limit", () => {
     render(<Kanban columns={COLUMNS} cards={CARDS} />);
     const buttons = screen.getAllByText("+ Add card");

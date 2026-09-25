@@ -29,6 +29,14 @@ files under `src/components/`. The `.tsx` source files carry full implementation
 `forwardRef` boilerplate, JSX) that's irrelevant to "what props does this take" and costs far more
 to read than the type declarations alone.
 
+**Prop shapes aren't the same as usage patterns, though** — a component with a `render*` prop or a
+stateful `onChange` contract (`Kanban`, `NavBar`, `SidebarNav`, `ConstructSearch`, and a handful of
+others — see each one's own file) has a real customization *pattern* that a type signature alone
+doesn't show. Check for a `<ComponentName>.cookbook.md` next to that component's source first —
+a short, common-patterns reference, cheaper to read than reverse-engineering the pattern from the
+full implementation. Only read the `.tsx` source itself when the cookbook doesn't cover what you
+need.
+
 ```
 node_modules/rebar-ui/dist/index.d.ts
 ```

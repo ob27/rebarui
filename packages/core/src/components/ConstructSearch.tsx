@@ -1,3 +1,5 @@
+// See ConstructSearch.cookbook.md (next to this file) for common customization patterns — read that first,
+// it's much cheaper than reverse-engineering the pattern from this implementation.
 import type { ComponentPropsWithoutRef, KeyboardEvent, ReactNode } from "react";
 import { Fragment, useId, useMemo, useRef, useState } from "react";
 import clsx from "clsx";

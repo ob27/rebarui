@@ -615,7 +615,14 @@ function KanbanBoardBlockView({
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-      <Kanban columns={board.columns} cards={board.cards} search={search} cardVariant={variant} onChange={handleBoardChange} />
+      <Kanban
+        columns={board.columns}
+        cards={board.cards}
+        search={search}
+        cardVariant={variant}
+        addPosition={block.addPosition}
+        onChange={handleBoardChange}
+      />
     </Stack>
   );
 }

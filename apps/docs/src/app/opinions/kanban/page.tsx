@@ -120,6 +120,16 @@ const BLOCKS: Construct[] = [
   },
   {
     type: "doc-section",
+    heading: "addPosition: where a new card lands",
+    body: [
+      {
+        kind: "text",
+        text: 'The built-in "+ Add card" control always appended to the end of its section until this prop existed — kept as the default (`"end"`) so an existing caller\'s card order never silently changes underneath it. Pass `addPosition="start"` for a "newest first" board. This only affects the add-card control; a drag-and-drop always lands exactly where it was dropped, regardless of this setting.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Full ownership of the card face and column title",
     body: [
       {

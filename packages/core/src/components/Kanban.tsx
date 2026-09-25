@@ -1,3 +1,5 @@
+// See Kanban.cookbook.md (next to this file) for common customization patterns — read that first,
+// it's much cheaper than reverse-engineering the pattern from this implementation.
 import { Fragment, useRef, useState } from "react";
 import type { DragEvent, ReactNode, TouchEvent } from "react";
 import clsx from "clsx";
@@ -129,6 +131,12 @@ export interface KanbanProps {
   /** Required alongside `collapsedColumnIds` to actually toggle a column — Kanban calls this
    * instead of managing the collapse itself once you're controlling it. */
   onColumnCollapsedChange?: (columnId: string, collapsed: boolean) => void;
+  /** Where the built-in "+ Add card" control inserts a newly-created card within its section.
+   * Defaults to `"end"` (this component's original, unconditional behavior — kept as the default
+   * so an existing caller's card order doesn't silently change underneath it). Pass `"start"` for
+   * a "newest first" board. This has no effect on drag-and-drop placement, which is always exactly
+   * where the card was dropped regardless of this setting. */
+  addPosition?: "start" | "end";
   className?: string;
 }
 
@@ -245,6 +253,7 @@ export function Kanban({
   onCardLongPress,
   collapsedColumnIds,
   onColumnCollapsedChange,
+  addPosition = "end",
   className,
 }: KanbanProps) {
   const sticky = cardVariant === "sticky";
@@ -352,7 +361,8 @@ export function Kanban({
     if (columnLimit !== undefined && columnCount(targetColumn) >= columnLimit) return;
     const id = `card-${Math.random().toString(36).slice(2, 10)}`;
     const nextCards = { ...cards, [id]: { id, title: draftTitle.trim() } };
-    const nextColumns = insertCard(columns, addingTo.columnId, addingTo.sectionId, id, undefined);
+    const beforeCardId = addPosition === "start" ? targetSection.cardIds[0] : undefined;
+    const nextColumns = insertCard(columns, addingTo.columnId, addingTo.sectionId, id, beforeCardId);
     emit(nextColumns, nextCards);
     setAddingTo(null);
     setDraftTitle("");

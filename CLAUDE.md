@@ -62,8 +62,10 @@ Framework Rule trigger, not a free pass: the actual violation is reassembling so
 Imitation/Synthetic-tier primitives (`Box`/`Stack`/raw event handlers) when a higher-tier unit
 already covers it — not the presence of hand-authored JSX around a high-tier component. If the
 needed shape doesn't exist at any tier yet, close that gap in order (component in `packages/core`,
-if needed → block in `@rebar-ui/placement` if the content is naturally construct-shaped → printed
-or hand-authored page). `PACKER_COVERAGE.md` (repo root) tracks DSL-wrapper adoption specifically —
+if needed → block in `@rebar-ui/placement` if the content is naturally construct-shaped *and*
+needs nothing beyond what the schema already expresses as data → printed or hand-authored page).
+A block whose schema can't express the needed customization isn't a candidate at all, regardless
+of how construct-shaped the page around it is — hand-author that one piece instead of forcing it. `PACKER_COVERAGE.md` (repo root) tracks DSL-wrapper adoption specifically —
 a narrower, secondary metric now that tier (not the wrapper) is understood to be the real driver of
 savings — check it for that, not as a proxy for "how good is this page."
 

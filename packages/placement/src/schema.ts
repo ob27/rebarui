@@ -619,6 +619,9 @@ export type Construct =
       shareUrl?: string;
       /** Content shown inside the "Board settings" modal — omit to hide the button entirely. */
       settingsBlocks?: Construct[];
+      /** Forwarded straight to `Kanban`'s own `addPosition` prop — where the built-in "+ Add
+       * card" control inserts a new card within its section. Defaults to `"end"`. */
+      addPosition?: "start" | "end";
     }
   | {
       type: "sticky-kanban";
@@ -631,6 +634,7 @@ export type Construct =
       searchPlaceholder?: string;
       shareUrl?: string;
       settingsBlocks?: Construct[];
+      addPosition?: "start" | "end";
     }
   | {
       type: "hero";

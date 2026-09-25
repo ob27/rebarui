@@ -28,12 +28,26 @@ saving itself. Real downstream usage repeatedly abandons this package's wrapper 
 schema doesn't quite fit, while still keeping the saving by reaching for the underlying component
 directly — see `ref/PLACEMENT_LIVE_DATA.md`.
 
-**Reach for the highest-tier existing unit that already does the job — component or construct,
-whichever fits your page.** This package is how to compose those units when your content is
-naturally construct-shaped; hand-authoring `packages/core` components directly is equally correct
-when it isn't (a bespoke app view, or a construct schema that doesn't quite cover what you need) —
-see that package's own README, and `ref/TIERS.md` for the tier system this choice is actually
-about.
+**A newer, more direct measurement complicates "beats Ant Design outright," and the caveat matters
+more than the headline.** The [Kanban benchmark](https://rebarui.web.app/about/benchmarks/kanban)
+tested hand-rolled antd against a *hand-authored* (not `Block[]`-composed) complete `rebar-ui`
+component directly, with no wrapper in either condition — and antd won on raw token cost, because
+the model already knows antd's API and had to read `Kanban`'s own source to learn its
+customization surface. That's a different comparison than the one above (whole-page composition
+of *non-customized* blocks), but it's real evidence that "rebar-ui wins" isn't a blanket claim —
+it depends on whether the content stays inside what a construct's schema already expresses as
+plain data.
+
+**So: before authoring a construct, check whether your customization is already expressible as a
+field on that construct's own schema type.** If what you need is a render callback or any behavior
+that can't be serialized as `Block[]` data, it doesn't matter how construct-shaped the surrounding
+page is — that one piece isn't expressible as a construct, full stop. Reach for the highest-tier
+existing unit that already does the job — component or construct, whichever actually fits. This
+package is how to compose those units when your content is naturally construct-shaped and needs
+nothing beyond what the schema exposes; hand-authoring `packages/core` components directly is
+equally correct — not a fallback — the moment it isn't (a bespoke app view, or a schema that
+doesn't quite cover what you need) — see that package's own README, and `ref/TIERS.md` for the
+tier system this choice is actually about.
 
 ## Install
 

@@ -1,3 +1,5 @@
+// See IndexBar.cookbook.md (next to this file) for common customization patterns — read that first,
+// it's much cheaper than reverse-engineering the pattern from this implementation.
 import { useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent, ReactNode } from "react";
 import clsx from "clsx";

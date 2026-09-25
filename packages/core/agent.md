@@ -89,6 +89,8 @@ Check both catalogs — the component catalog (`/opinions`, `/orders` list real 
 
 For content that's genuinely a sequence of interchangeable, LLM-authorable pieces (a marketing page, a doc page, a CRUD admin screen built from cataloged blocks), author a `Construct[]` document and render it through `BlockRenderer`. Browse the catalog at `/imitations`, `/synthetics`, `/opinions`, `/orders` first — the full type schema for every construct type lives in `packages/placement/src/schema.ts` (the `Construct` union type).
 
+**Check this before authoring the construct, not after it breaks**: does the customization you actually need already exist as a field on that construct's own schema type? A construct can only express what's serializable as plain data — if what you need is a render callback, a bespoke interaction, or any behavior the schema has no field for, it isn't expressible as a `Construct[]` document at all, no matter how construct-shaped the surrounding page is. Skip straight to hand-authoring the component in that one spot (see #3 below) rather than forcing a wrapper that can't cover it — that's not a fallback, it's the correct call.
+
 If the shipped catalog is missing a shape you'll reuse across pages, add a new construct type to `@rebar-ui/placement`:
 
 1. Add a new variant to the `Construct` union in `packages/placement/src/schema.ts`
