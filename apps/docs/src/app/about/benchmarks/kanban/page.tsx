@@ -258,6 +258,29 @@ const PROJECTION_BLOCKS: Construct[] = [
         kind: "text",
         text: "Worth reading directly off this chart: `opinion-dsl`'s real median (59,472) isn't just close to the *projected* \"if rebar-ui were as pretrained as antd\" opinion-tier figure (71,337) — it beats it outright, and antd's real median too. The projection modeled removing one specific cost (reading `Kanban.tsx`'s source); the DSL condition removes that cost differently, by never needing to read the source at all, since the schema itself already expresses the customization as data. Two different routes to the same underlying fix — don't read source to learn a pattern — and the one that's actually achievable today (widen the schema) already outperforms the hypothetical one (wait for better training exposure).",
       },
+      {
+        kind: "text",
+        text: "**But does opinion-dsl have its own pretraining tax, and did we account for it?** Not by default — so this was checked directly, the same way as before: every one of the 15 opinion-dsl transcripts was searched for reads of `packages/placement/src/schema.ts` and `BlockRenderer.tsx` (the two files a DSL build actually needs to learn the block's field shapes, as opposed to `Kanban.tsx`'s full implementation). All 15 read `schema.ts`; about half also checked `BlockRenderer.tsx` or, less often, `Kanban.tsx` itself. The real, measured difference from the opinion-tier case: these are small, *targeted* reads (`offset`/`limit` around the specific block definition, roughly 20-280 lines at a time) rather than one uniform full-file ingest — the real per-run cost of every such read, measured directly from each transcript, ranges from about 1,000 to 15,800 tokens, averaging far below `Kanban.tsx`'s flat 11,800-token tax.",
+      },
+    ],
+  },
+  {
+    type: "stats-table",
+    headers: ["Tokens", "Mean", "Median", "Min", "Max", "Std. dev."],
+    rows: [
+      ["opinion-dsl (real, n=15)", "63,494", "59,472", "55,151", "92,504", "10,168 (16.0%)"],
+      ["opinion-dsl (real, excl. run 01)", "61,422", "58,894", "55,151", "78,129", "6,480 (10.5%)"],
+      ["opinion-dsl (projected, n=15)", "58,658", "56,099", "52,864", "86,570", "8,277 (14.1%)"],
+      ["opinion-dsl (projected, excl. run 01)", "56,664", "56,054", "52,864", "63,794", "3,094 (5.5%)"],
+    ],
+  },
+  {
+    type: "doc-section",
+    body: [
+      {
+        kind: "text",
+        text: "Subtracting each run's own real, measured reading cost (not a guess) drops opinion-dsl's median from 58,894 to 56,054 (excluding run 01's stale-build outlier on both sides for a clean comparison) — the entire measured cost removed, same method as the opinion-tier projection, just applied to a much smaller number to begin with, because these reads were already small and targeted rather than one uniform full-file ingest. opinion-dsl's real, un-projected number already beat antd's real median (58,894 vs. 63,070); the projection widens that lead further, to roughly 11% cheaper than antd rather than about 7%. Pretraining would help every rebar-ui condition on this page, not just the hand-authored one — it isn't a special exemption for whichever condition needs the story most, and this project doesn't get to claim it selectively.",
+      },
     ],
   },
   {
