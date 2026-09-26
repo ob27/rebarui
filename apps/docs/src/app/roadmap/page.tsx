@@ -20,13 +20,21 @@ const MILESTONES: TimelineItem[] = [
     children: "The Packer's blocks stop being purely static data — source and onX fields let a real backend-driven app wire its own state and handlers straight through, resolved by BlockRenderer's data/handlers props.",
   },
   {
-    label: "0.11 Open Beta — current",
+    label: "The tier-vs-DSL pivot",
+    tone: "success",
+    children: "Direct investigation into real downstream usage (four independent rebuilds of a production app) and a controlled, n=15-per-condition Kanban benchmark found the Packer's schema wrapper wasn't actually the source of the measured savings — reaching for the highest-tier existing unit was, independent of delivery mechanism. Site copy, agent.md, and every package README were rewritten around that finding instead of \"compose everything through the Packer.\" A follow-up condition then tested whether a properly-scoped DSL (its schema widened to actually cover the real customization needed, instead of forcing a hand-authored escape hatch) could still win outright once separated from tier — it did, on every metric measured, including beating the previous benchmark's cheapest condition on raw token cost.",
+  },
+  {
+    label: "0.12.1 Open Beta — current",
     tone: "info",
     children: (
       <>
-        The catalog crosses 190 components and 40+ blocks. Cross-tier ConstructSearch, the
-        Construct Library nav, the Geneses tier&apos;s scaffolding, and per-section narration audio
-        all ship as part of this line. See the{" "}
+        The catalog crosses 192 components and 44 blocks. FloatAssistant&apos;s sidebar-dock mode,
+        several components&apos; real customization gaps closed directly from controlled-benchmark
+        findings (Kanban&apos;s <code>addPosition</code>/<code>assignee</code>/<code>statusTag</code>,
+        SignaturePad&apos;s typed-name tracking), and a real search-rendering bug found and fixed in
+        Kanban itself (a non-matching card was being unmounted instead of hidden) all ship as part
+        of this line. See the{" "}
         <a href="/about/version-log" className="rebar-link">
           Version Log
         </a>{" "}
