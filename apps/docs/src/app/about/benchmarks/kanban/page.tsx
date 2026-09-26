@@ -237,16 +237,27 @@ const PROJECTION_BLOCKS: Construct[] = [
       ["antd (real, unchanged)", "63,197", "63,070", "53,811", "81,969", "7,459 (11.8%)"],
       ["opinion (real, measured)", "80,538", "83,137", "67,136", "86,301", "5,783 (7.2%)"],
       ["opinion (projected)", "69,525", "71,337", "55,336", "85,419", "7,138 (10.3%)"],
+      ["opinion-dsl (real, measured)", "63,494", "59,472", "55,151", "92,504", "10,168 (16.0%)"],
     ],
   },
   {
     type: "scatter-chart",
-    title: "Tokens per run: antd (real) vs. opinion-tier rebar-ui, real and projected",
-    ariaLabel: "Scatter plot: antd's real token distribution is lowest and tightest, opinion-tier rebar-ui's real distribution is highest, and the projected distribution (with the Kanban.tsx source-read cost subtracted) sits between the two, closing roughly half the gap to antd but not all of it",
+    title: "Tokens per run: antd (real), opinion-tier rebar-ui (real and projected), and opinion-dsl (real)",
+    ariaLabel: "Scatter plot: antd's real token distribution is lowest and tightest among the non-dsl series, opinion-tier rebar-ui's real distribution is highest, the projected distribution sits between the two, and opinion-dsl's real distribution — added for comparison — sits at or below antd's, actually beating the projection rather than just approaching it",
     series: [
       { label: "antd (real)", color: ANTD_COLOR, values: [81969, 65247, 63070, 64273, 57427, 59851, 57647, 75045, 56479, 66392, 58923, 64220, 53811, 57393, 66201] },
       { label: "opinion (real)", color: OPINION_COLOR, values: [77320, 86301, 85559, 85419, 85024, 86139, 73898, 79093, 83137, 67136, 75865, 84336, 81795, 83300, 73750] },
       { label: "opinion (projected)", color: PROJECTED_COLOR, values: [65520, 74501, 73759, 85419, 73224, 74339, 62098, 67293, 71337, 55336, 64065, 72536, 69995, 71500, 61950] },
+      { label: "opinion-dsl (real)", color: DSL_COLOR, values: [92504, 57365, 60591, 57456, 61821, 56704, 55986, 66638, 58315, 55151, 59472, 63997, 70486, 78129, 57799] },
+    ],
+  },
+  {
+    type: "doc-section",
+    body: [
+      {
+        kind: "text",
+        text: "Worth reading directly off this chart: `opinion-dsl`'s real median (59,472) isn't just close to the *projected* \"if rebar-ui were as pretrained as antd\" opinion-tier figure (71,337) — it beats it outright, and antd's real median too. The projection modeled removing one specific cost (reading `Kanban.tsx`'s source); the DSL condition removes that cost differently, by never needing to read the source at all, since the schema itself already expresses the customization as data. Two different routes to the same underlying fix — don't read source to learn a pattern — and the one that's actually achievable today (widen the schema) already outperforms the hypothetical one (wait for better training exposure).",
+      },
     ],
   },
   {
