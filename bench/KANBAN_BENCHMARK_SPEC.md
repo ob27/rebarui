@@ -3,13 +3,20 @@
 A new, standalone baseline (not a variant of Simple/Composite/Complex) — see
 `ref/BENCHMARK_CONTRIBUTING.md` rule #8. Tests whether reaching for a complete, pre-built
 Opinion-tier unit and customizing it beats hand-assembling the same behavior from primitives,
-independent of whether a DSL wrapper is involved at all (no `@rebar-ui/placement` in any
-condition's scaffold — this benchmark isolates tier, not delivery mechanism). A 4th condition,
+independent of whether a DSL wrapper is involved at all (no `@rebar-ui/placement` in the first 4
+conditions' scaffolds — those isolate tier, not delivery mechanism). A 4th condition,
 `kanban-antd-*`, was added after the first 3 conditions (45 runs) completed, specifically to
 answer the question those 3 alone can't: is rebar-ui actually cheaper/faster than hand-rolled antd
 for this task, not just internally more efficient than hand-rolling its own primitives. `kanban-antd`
 is the fairest one-to-one comparison against `kanban-primitives` (neither library has a pre-built
 Kanban-shaped component; both are "hand-roll it from what the library gives you").
+
+A 5th condition, `kanban-opinion-dsl-*`, was added after the first 4 (60 runs) completed, testing
+whether a DSL strategy can still deliver the clean wins the original Claude/Qwen/Kimi benchmarks
+found — now that `Kanban`'s own schema (`card-kanban`/`sticky-kanban` in
+`packages/placement/src/schema.ts`) has been widened with `assignee`/`statusTag`/`addPosition`
+fields specifically so the Sprint Board spec is expressible as pure data, no `renderCard` escape
+hatch needed. This condition *does* use `@rebar-ui/placement` — that's the whole point of it.
 
 ## The spec (identical across all 4 conditions)
 
@@ -62,6 +69,40 @@ persistence required — in-memory React state is sufficient.
   own choosing if you want one (e.g. `@dnd-kit/core`, `react-beautiful-dnd`, or plain native HTML5
   DnD) — pick whatever a real antd developer would naturally reach for; this isn't constrained the
   way the rebar-ui conditions are, since antd itself doesn't ship a headless DnD primitive.
+- **`kanban-opinion-dsl-*`**: Author a `Construct[]` array with one `card-kanban` block (from
+  `@rebar-ui/placement`) and render it through `BlockRenderer` — do not import `Kanban` directly,
+  do not write any drag-and-drop/search/add-card/cap logic yourself, and do not pass a custom
+  `renderCard`/`renderColumnTitle` (that would defeat the point of this condition — everything the
+  spec asks for should already be expressible as the block's own literal `columns`/`cards` data,
+  using its `assignee`/`statusTag`/`addPosition` fields directly). See
+  `packages/placement/src/schema.ts`'s `card-kanban` case for the exact field shapes. Search,
+  drag-and-drop, and cap enforcement are already built into the block itself — there should be
+  close to zero behavior code in this condition's `App.tsx`, just the block definition and
+  rendering it. If you find yourself needing a `renderCard` to hit a spec requirement, that's a
+  real, reportable finding (the schema still doesn't cover something) — say so explicitly rather
+  than silently reaching for it.
+
+  **Known, accepted gap — don't work around it**: `Kanban`'s built-in column header only shows a
+  count/cap badge when that column has a `limit` set; there's no way to show a plain count on an
+  *uncapped* column through pure block data. Leave "To Do" and "Done" with no `limit` (they
+  shouldn't be capped) and no visible count — this is a real, honest limit of what the schema
+  currently expresses, not something to route around with a fake high `limit` as a stand-in for
+  "just show a count." Report it as a finding if you hit it; do not invent a workaround.
+
+## Known gotcha — read this before writing the search filter
+
+Across the first 60 runs, a Playwright-verified sample found 4 of 12 sampled runs (across 3 of
+the 4 conditions — primitives, synthetic, and antd, not any one library specifically) implemented
+"hidden, not removed" incorrectly: they wrote `cards.filter(matchesSearch).map(...)` (or the
+equivalent), which never mounts a non-matching card to the page at all. That is removal, not
+hiding, even though no data was lost — the spec's own verification step checks the actual DOM
+element count before and after a search, not just what's visually shown, specifically because this
+mistake is easy to make and easy to miss in a quick manual check.
+
+**Render every card unconditionally, every time** (`cards.map(...)`, no `.filter()` in the render
+path), and toggle only its visibility — `display: none` (or an equivalent hidden style/attribute)
+on the ones that don't match. The card must still be a real, present DOM element while hidden; a
+card that was never rendered in the first place is not "hidden."
 
 ## Verification (done after each run, not by the building agent)
 

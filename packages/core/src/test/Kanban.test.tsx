@@ -33,6 +33,20 @@ describe("Kanban", () => {
     expect(screen.getByText("docs")).toBeInTheDocument();
   });
 
+  it("renders assignee and statusTag in the default card face", () => {
+    const cardsWithMeta: Record<string, KanbanCard> = {
+      ...CARDS,
+      a: { ...CARDS.a!, assignee: "T", statusTag: { label: "Blocked", tone: "error" } },
+    };
+    render(<Kanban columns={COLUMNS} cards={cardsWithMeta} />);
+    expect(screen.getByText("T")).toBeInTheDocument();
+    expect(screen.getByText("Blocked")).toBeInTheDocument();
+    // statusTag renders ahead of any plain tags, both via the same labels slot
+    const card = screen.getByText("Write spec").closest('[data-rebar-part="card"]')!;
+    const labelTexts = Array.from(card.querySelectorAll(".rebar-tag")).map((el) => el.textContent);
+    expect(labelTexts).toEqual(["Blocked", "docs"]);
+  });
+
   it("shows a column's total against its limit", () => {
     render(<Kanban columns={COLUMNS} cards={CARDS} />);
     expect(screen.getByText("1/2")).toBeInTheDocument();
@@ -302,10 +316,32 @@ describe("Kanban", () => {
     expect(titles()).toEqual(["Write spec", "Build UI"]);
   });
 
-  it("filters visible cards by the search prop without affecting limit counts", () => {
+  it("hides non-matching cards under a custom renderCard the same way it does the default card face", () => {
+    render(
+      <Kanban
+        columns={COLUMNS}
+        cards={CARDS}
+        search="write"
+        renderCard={(card) => <div data-testid={`custom-${card.id}`}>{card.title}</div>}
+      />,
+    );
+    const matching = screen.getByTestId("custom-a").closest('[data-rebar-part="card-visibility"]') as HTMLElement;
+    const nonMatching = screen.getByTestId("custom-b").closest('[data-rebar-part="card-visibility"]') as HTMLElement;
+    expect(matching).toBeInTheDocument();
+    expect(nonMatching).toBeInTheDocument();
+    expect(matching.style.display).not.toBe("none");
+    expect(nonMatching.style.display).toBe("none");
+  });
+
+  it("hides non-matching cards via the search prop without removing them from the DOM, and without affecting limit counts", () => {
     render(<Kanban columns={COLUMNS} cards={CARDS} search="write" />);
-    expect(screen.getByText("Write spec")).toBeInTheDocument();
-    expect(screen.queryByText("Build UI")).not.toBeInTheDocument();
+    const matching = screen.getByText("Write spec").closest('[data-rebar-part="card"]') as HTMLElement;
+    const nonMatching = screen.getByText("Build UI").closest('[data-rebar-part="card"]') as HTMLElement;
+    // Still real, present DOM elements — a filter hides, it never unmounts.
+    expect(matching).toBeInTheDocument();
+    expect(nonMatching).toBeInTheDocument();
+    expect(matching.style.display).not.toBe("none");
+    expect(nonMatching.style.display).toBe("none");
     expect(screen.getByText("1/2")).toBeInTheDocument();
   });
 

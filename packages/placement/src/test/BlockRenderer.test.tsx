@@ -245,6 +245,29 @@ describe("BlockRenderer", () => {
     expect(container.querySelector('[data-rebar-placement-block="card-kanban"]')).toBeInTheDocument();
   });
 
+  it("forwards a card-kanban block's assignee/statusTag/addPosition straight to the real Kanban rendering", async () => {
+    const user = userEvent.setup();
+    const blocks: Construct[] = [
+      {
+        type: "card-kanban",
+        title: "Sprint board",
+        addPosition: "start",
+        columns: [{ id: "todo", title: "To do", sections: [{ id: "todo-main", cardIds: ["a"] }] }],
+        cards: {
+          a: { id: "a", title: "Write spec", assignee: "T", statusTag: { label: "Blocked", tone: "error" } },
+        },
+      },
+    ];
+    render(<BlockRenderer blocks={blocks} />);
+    expect(screen.getByText("T")).toBeInTheDocument();
+    expect(screen.getByText("Blocked")).toBeInTheDocument();
+    await user.click(screen.getAllByText("+ Add card")[0]!);
+    await user.type(screen.getByLabelText("New card title"), "New task");
+    await user.click(screen.getByRole("button", { name: "Add" }));
+    const cardTitles = screen.getAllByText(/Write spec|New task/).map((el) => el.textContent);
+    expect(cardTitles[0]).toBe("New task");
+  });
+
   it("shows a card-kanban block's shared-with avatars and copies a share link on click", async () => {
     const user = userEvent.setup();
     const blocks: Construct[] = [
@@ -267,7 +290,7 @@ describe("BlockRenderer", () => {
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith("https://example.com/board/1");
   });
 
-  it("filters a card-kanban block's visible cards via its search box", async () => {
+  it("hides a card-kanban block's non-matching cards via its search box without removing them from the DOM", async () => {
     const user = userEvent.setup();
     const blocks: Construct[] = [
       {
@@ -279,8 +302,11 @@ describe("BlockRenderer", () => {
     ];
     render(<BlockRenderer blocks={blocks} />);
     await user.type(screen.getByLabelText("Search cards"), "write");
-    expect(screen.getByText("Write spec")).toBeInTheDocument();
-    expect(screen.queryByText("Ship it")).not.toBeInTheDocument();
+    const matching = screen.getByText("Write spec").closest('[data-rebar-part="card"]') as HTMLElement;
+    const nonMatching = screen.getByText("Ship it").closest('[data-rebar-part="card"]') as HTMLElement;
+    expect(matching).toBeInTheDocument();
+    expect(nonMatching).toBeInTheDocument();
+    expect(nonMatching.style.display).toBe("none");
   });
 
   it("shows a card-kanban block's board-settings button only when settingsBlocks is set", () => {

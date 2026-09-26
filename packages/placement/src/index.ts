@@ -10,6 +10,9 @@ export type {
   GoalTrackerFocusAreaData,
   GoalTrackerGoalData,
   IconName,
+  KanbanCardData,
+  KanbanColumnData,
+  KanbanSectionData,
   PillarGridItem,
   Tone,
 } from "./schema";

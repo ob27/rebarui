@@ -3815,6 +3815,516 @@ importers:
         specifier: ^6.0.7
         version: 6.4.3(@types/node@22.20.1)
 
+  bench/kanban-opinion-dsl-01:
+    dependencies:
+      '@rebar-ui/placement':
+        specifier: workspace:*
+        version: link:../../packages/placement
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-opinion-dsl-02:
+    dependencies:
+      '@rebar-ui/placement':
+        specifier: workspace:*
+        version: link:../../packages/placement
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-opinion-dsl-03:
+    dependencies:
+      '@rebar-ui/placement':
+        specifier: workspace:*
+        version: link:../../packages/placement
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-opinion-dsl-04:
+    dependencies:
+      '@rebar-ui/placement':
+        specifier: workspace:*
+        version: link:../../packages/placement
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-opinion-dsl-05:
+    dependencies:
+      '@rebar-ui/placement':
+        specifier: workspace:*
+        version: link:../../packages/placement
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-opinion-dsl-06:
+    dependencies:
+      '@rebar-ui/placement':
+        specifier: workspace:*
+        version: link:../../packages/placement
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-opinion-dsl-07:
+    dependencies:
+      '@rebar-ui/placement':
+        specifier: workspace:*
+        version: link:../../packages/placement
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-opinion-dsl-08:
+    dependencies:
+      '@rebar-ui/placement':
+        specifier: workspace:*
+        version: link:../../packages/placement
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-opinion-dsl-09:
+    dependencies:
+      '@rebar-ui/placement':
+        specifier: workspace:*
+        version: link:../../packages/placement
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-opinion-dsl-10:
+    dependencies:
+      '@rebar-ui/placement':
+        specifier: workspace:*
+        version: link:../../packages/placement
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-opinion-dsl-11:
+    dependencies:
+      '@rebar-ui/placement':
+        specifier: workspace:*
+        version: link:../../packages/placement
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-opinion-dsl-12:
+    dependencies:
+      '@rebar-ui/placement':
+        specifier: workspace:*
+        version: link:../../packages/placement
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-opinion-dsl-13:
+    dependencies:
+      '@rebar-ui/placement':
+        specifier: workspace:*
+        version: link:../../packages/placement
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-opinion-dsl-14:
+    dependencies:
+      '@rebar-ui/placement':
+        specifier: workspace:*
+        version: link:../../packages/placement
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-opinion-dsl-15:
+    dependencies:
+      '@rebar-ui/placement':
+        specifier: workspace:*
+        version: link:../../packages/placement
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
   bench/kanban-primitives-01:
     dependencies:
       '@rebar-ui/theme-clean':
@@ -4715,6 +5225,161 @@ importers:
         version: 6.4.3(@types/node@22.20.1)
 
   bench/kanban-synthetic-15:
+    dependencies:
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-synthetic-16:
+    dependencies:
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-synthetic-17:
+    dependencies:
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-synthetic-18:
+    dependencies:
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-synthetic-19:
+    dependencies:
+      '@rebar-ui/theme-clean':
+        specifier: workspace:*
+        version: link:../../packages/theme-clean
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
+      rebar-ui:
+        specifier: workspace:*
+        version: link:../../packages/core
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.7.0(supports-color@7.2.0)(vite@6.4.3(@types/node@22.20.1))
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vite:
+        specifier: ^6.0.7
+        version: 6.4.3(@types/node@22.20.1)
+
+  bench/kanban-synthetic-20:
     dependencies:
       '@rebar-ui/theme-clean':
         specifier: workspace:*

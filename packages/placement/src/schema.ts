@@ -246,6 +246,15 @@ export interface KanbanCardData {
   tags?: string[];
   /** Sticky-note background color — `sticky-kanban` only, ignored by `card-kanban`. */
   color?: string;
+  /** A single-letter assignee initial, rendered as a small avatar — forwarded straight to
+   * `Kanban`'s own `assignee` field, expressible as plain data instead of needing a `renderCard`
+   * escape hatch (see the Kanban benchmark's Coherence-style finding on why this field exists). */
+  assignee?: string;
+  /** A single lifecycle-status tag with its own tone — forwarded straight to `Kanban`'s own
+   * `statusTag` field, same reasoning as `assignee`. `"default"` (Kanban's own `TagTone` has it,
+   * this schema's shared `Tone` doesn't) is included here specifically so a round-tripped
+   * `onChange` value type-checks without narrowing. */
+  statusTag?: { label: string; tone?: Tone | "default" };
 }
 
 export interface KanbanSectionData {

@@ -5,8 +5,10 @@ import type { DragEvent, ReactNode, TouchEvent } from "react";
 import clsx from "clsx";
 import { resolveStickyColor, STICKY_PALETTE } from "../stickyColor";
 import { useLongPress } from "../useLongPress";
+import { Avatar } from "./Avatar";
 import { Button } from "./Button";
 import { Card } from "./Card";
+import type { TagTone } from "./Tag";
 import { ColorPicker } from "./ColorPicker";
 import { Dialog } from "./Dialog";
 import { Input } from "./Input";
@@ -22,6 +24,18 @@ export interface KanbanCard {
   /** Sticky-note background color (`cardVariant="sticky"` only) — a hex value. Unset picks one
    * deterministically from a small pastel palette, keyed off the card's own id. */
   color?: string;
+  /** A single-letter (or short) assignee initial, rendered as a small `Avatar` before the title in
+   * the built-in default (non-sticky) card face — the exact "who owns this" need every real
+   * customization of this component's default rendering reached for before this field existed
+   * (see the addPosition/assignee history in this file's own commits). A custom `renderCard`
+   * ignores this entirely and decides its own card face; this only affects the built-in default. */
+  assignee?: string;
+  /** A single lifecycle-status tag with its own tone (`"Blocked"`/error, `"Review"`/warning, or
+   * any caller-defined label/tone pair) — kept separate from the plain `tags` field specifically
+   * because a status needs a tone and a plain tag doesn't. Shown first, ahead of `tags`, in the
+   * built-in default (non-sticky) card face only; `renderCard` decides this for itself, same as
+   * `assignee`. */
+  statusTag?: { label: string; tone?: TagTone };
 }
 
 export interface KanbanSection {
@@ -555,17 +569,27 @@ export function Kanban({
               const collapsed = Boolean(collapsedColumns[column.id]);
               const sectionLimit = effectiveLimit(section.limit, sticky, stickyDefaultLimit);
               const filterActive = search.trim().length > 0 || filterCard !== undefined;
-              const matchingIds = sortCardIds(section.cardIds, cards, sortOrder).filter((id) => {
+              const sortedIds = sortCardIds(section.cardIds, cards, sortOrder);
+              const isCardMatch = (id: string): boolean => {
                 const card = cards[id];
                 if (!card) return false;
                 return matchesSearch(card, search) && (!filterCard || filterCard(card));
-              });
+              };
+              const matchingIds = sortedIds.filter(isCardMatch);
               // A collapsed column stays empty except for its tray -- unless a search or filterCard
               // is actually narrowing the board down, in which case whichever of its own cards match
               // surface as "ghost" cards (styled via .rebar-kanban-section-cards-collapsed below) so
               // a filter doesn't silently look like it missed something that's just hidden. Clearing
               // it, or narrowing it to no longer match, goes straight back to tray-only.
-              const visibleIds = collapsed ? (filterActive ? matchingIds : []) : matchingIds;
+              //
+              // Not collapsed: every card renders unconditionally (`sortedIds`, not `matchingIds`) —
+              // a non-matching card is hidden via `display: none` in the per-card render below, never
+              // unmounted. `search`/`filterCard`'s own doc comments already promise this ("hides",
+              // never "removes") for exactly the reason a real consumer's drag/reorder math, focus
+              // state, or scroll position shouldn't silently break just because a filter is active —
+              // rendering only `matchingIds` here violated that promise despite the docs already
+              // stating it; fixed in place rather than shipped as a documented gap.
+              const visibleIds = collapsed ? (filterActive ? matchingIds : []) : sortedIds;
               return (
                 <div key={section.id} className="rebar-kanban-section" data-rebar-part="section">
                   {section.label && !collapsed ? (
@@ -731,9 +755,15 @@ export function Kanban({
                             },
                           };
 
+                          // Not collapsed, `visibleIds` is `sortedIds` (every card in this section) --
+                          // a card that doesn't match the active search/filterCard is still rendered
+                          // here, just hidden, so it stays a real DOM element (see the comment on
+                          // `visibleIds` above for why that distinction matters).
+                          const hiddenBySearch = !collapsed && !isCardMatch(cardId);
+
                           if (renderCard) {
                             return (
-                              <Fragment key={cardId}>
+                              <div key={cardId} data-rebar-part="card-visibility" style={hiddenBySearch ? { display: "none" } : undefined}>
                                 {renderCard(card, {
                                   columnId: column.id,
                                   sectionId: section.id,
@@ -741,11 +771,15 @@ export function Kanban({
                                   dragHandlers,
                                   touchHandlers,
                                 })}
-                              </Fragment>
+                              </div>
                             );
                           }
 
                           if (!sticky) {
+                            const labels = [
+                              ...(card.statusTag ? [{ label: card.statusTag.label, tone: card.statusTag.tone }] : []),
+                              ...(card.tags?.map((tag) => ({ label: tag })) ?? []),
+                            ];
                             return (
                               <Card
                                 key={cardId}
@@ -753,7 +787,9 @@ export function Kanban({
                                 title={card.title}
                                 editable
                                 onTitleChange={(value) => emit(columns, { ...cards, [cardId]: { ...card, title: value } })}
-                                labels={card.tags?.map((tag) => ({ label: tag }))}
+                                avatar={card.assignee ? <Avatar size="sm" fallback={card.assignee} /> : undefined}
+                                labels={labels.length > 0 ? labels : undefined}
+                                style={hiddenBySearch ? { display: "none" } : undefined}
                                 {...dragHandlers}
                                 onDoubleClick={() => openEdit(card)}
                                 {...touchHandlers}
@@ -771,6 +807,7 @@ export function Kanban({
                               tags={card.tags}
                               color={card.color}
                               seed={card.id}
+                              style={hiddenBySearch ? { display: "none" } : undefined}
                               {...dragHandlers}
                               onClick={() => {
                                 if (dragOccurredRef.current) return;
