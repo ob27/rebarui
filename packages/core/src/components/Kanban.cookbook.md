@@ -4,15 +4,28 @@ Read this before `Kanban.tsx`'s implementation. This covers the customization pa
 actually come up — the ones a real, repeated n=15 benchmark (`/about/benchmarks/kanban`) found
 every independent build reaching for. If your need isn't below, then read the source.
 
-## Adding fields a card doesn't have (assignee, status, priority, ...)
+## An assignee avatar and a lifecycle-status tag — built in, no `renderCard` needed
 
-`KanbanCard` only has `id`/`title`/`description`/`tags`. To add a real field (a single-letter
-assignee avatar, a colored status tag), extend it locally and use `renderCard`:
+`KanbanCard` has `assignee?: string` (a single-letter initial, rendered as a small `Avatar`) and
+`statusTag?: { label: string; tone?: TagTone }` (shown ahead of any plain `tags`) directly — just
+set them as plain data, in the default (non-sticky, non-custom) card face:
+
+```tsx
+cards={{
+  a: { id: "a", title: "Wire up auth", assignee: "T", statusTag: { label: "Blocked", tone: "error" } },
+}}
+```
+
+These only affect the *default* card face — a custom `renderCard` decides its own, and needs to
+read `card.assignee`/`card.statusTag` itself if it wants to show them (see below).
+
+## Adding a field that isn't `assignee`/`statusTag` (priority, due date, ...)
+
+For anything beyond those two built-in fields, extend `KanbanCard` locally and use `renderCard`:
 
 ```tsx
 interface SprintCard extends KanbanCard {
-  assignee?: string;
-  status?: "Blocked" | "Review";
+  dueDate?: string;
 }
 
 <Kanban
@@ -23,8 +36,9 @@ interface SprintCard extends KanbanCard {
     return (
       <Card
         title={c.title}
-        labels={c.status ? [{ text: c.status, tone: c.status === "Blocked" ? "error" : "warning" }] : []}
-        footer={c.assignee ? <Avatar size="sm" fallback={c.assignee} /> : undefined}
+        labels={c.statusTag ? [c.statusTag] : []}
+        avatar={c.assignee ? <Avatar size="sm" fallback={c.assignee} /> : undefined}
+        footer={c.dueDate}
         {...ctx.dragHandlers}
         {...ctx.touchHandlers}
       />
@@ -35,10 +49,17 @@ interface SprintCard extends KanbanCard {
 
 **Always spread `ctx.dragHandlers` and `ctx.touchHandlers` onto whatever you return.** Skipping
 this is the single most common way a custom `renderCard` silently breaks drag-and-drop — the card
-looks right but can no longer be dragged, or loses touch/long-press parity.
+looks right but can no longer be dragged, or loses touch/long-press parity. One caveat specific to
+`ctx.touchHandlers.onTouchMove`: the default card face attaches it as a real, non-passive native
+listener (via a ref) instead of a plain JSX prop, specifically so its internal `preventDefault()`
+call doesn't log a browser warning — React registers a JSX `onTouchMove` prop as passive by
+default. A `renderCard` that spreads `ctx.touchHandlers` as plain JSX props (the normal, supported
+way) still works correctly, just with that same warning Kanban's own default face used to have;
+apply the same non-passive-ref pattern yourself if you want to avoid it too.
 
 Cards added later via the built-in "+ Add card" control only ever get `id`/`title` — your added
-fields are always optional for exactly this reason. Don't assume every card has one.
+fields (`assignee`/`statusTag`/anything of your own) are always optional for exactly this reason.
+Don't assume every card has one.
 
 ## Where a new card lands
 

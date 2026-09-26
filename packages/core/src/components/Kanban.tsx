@@ -305,6 +305,12 @@ export function Kanban({
   // the drag already handled the interaction — this flag, set the moment a drag starts and cleared
   // just after it ends, is what stops that trailing click from also opening the edit modal.
   const dragOccurredRef = useRef(false);
+  // Tracks the (element, handler) pair currently attached natively per card id, for the
+  // non-passive touchmove workaround below -- a ref callback's returned cleanup function is a
+  // React 19-only feature, and this component's own peerDependencies also allow React 18, so
+  // cleanup here is done by hand (remove the previous pairing before attaching the next one)
+  // rather than relying on that API.
+  const touchMoveAttachmentsRef = useRef<Map<string, { el: HTMLElement; handler: (e: globalThis.TouchEvent) => void }>>(new Map());
 
   const emit = (columnsNext: KanbanColumn[], cardsNext: Record<string, KanbanCard> = cards) => {
     onChange?.({ columns: columnsNext, cards: cardsNext });
@@ -761,6 +767,34 @@ export function Kanban({
                           // `visibleIds` above for why that distinction matters).
                           const hiddenBySearch = !collapsed && !isCardMatch(cardId);
 
+                          // React attaches its own `touchmove` listener as passive by default (a
+                          // browser-recommended perf optimization for the common "let it scroll"
+                          // case) -- calling `e.preventDefault()` from a plain JSX `onTouchMove` prop
+                          // logs "Unable to preventDefault inside passive event listener invocation"
+                          // even though the drag itself still works. `touchHandlers.onTouchMove`
+                          // needs to actually prevent the page from scrolling mid-drag, so the
+                          // built-in (non-`renderCard`) card face attaches it as a real, non-passive
+                          // native listener via this ref instead of the JSX prop -- everything else
+                          // (touchstart/touchend/touchcancel, none of which call preventDefault) stays
+                          // as ordinary JSX props. A caller-supplied `renderCard` still receives
+                          // `ctx.touchHandlers.onTouchMove` as a plain prop (changing that would be a
+                          // breaking change to a documented, existing contract) and should apply the
+                          // same non-passive-ref pattern itself if it needs `preventDefault` warning-free
+                          // too -- see Kanban.cookbook.md.
+                          const { onTouchMove, ...touchHandlersWithoutMove } = touchHandlers;
+                          const attachNonPassiveTouchMove = (el: HTMLElement | null) => {
+                            const attachments = touchMoveAttachmentsRef.current;
+                            const previous = attachments.get(cardId);
+                            if (previous) {
+                              previous.el.removeEventListener("touchmove", previous.handler);
+                              attachments.delete(cardId);
+                            }
+                            if (!el) return;
+                            const handler = onTouchMove as unknown as (e: globalThis.TouchEvent) => void;
+                            el.addEventListener("touchmove", handler, { passive: false });
+                            attachments.set(cardId, { el, handler });
+                          };
+
                           if (renderCard) {
                             return (
                               <div key={cardId} data-rebar-part="card-visibility" style={hiddenBySearch ? { display: "none" } : undefined}>
@@ -783,6 +817,7 @@ export function Kanban({
                             return (
                               <Card
                                 key={cardId}
+                                ref={attachNonPassiveTouchMove}
                                 data-rebar-part="card"
                                 title={card.title}
                                 editable
@@ -792,7 +827,7 @@ export function Kanban({
                                 style={hiddenBySearch ? { display: "none" } : undefined}
                                 {...dragHandlers}
                                 onDoubleClick={() => openEdit(card)}
-                                {...touchHandlers}
+                                {...touchHandlersWithoutMove}
                               >
                                 {card.description}
                               </Card>

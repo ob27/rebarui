@@ -3,13 +3,9 @@ import { BenchmarkDateline } from "@/components/BenchmarkDateline";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { Image, Stack } from "rebar-ui";
 
-// Narration was deliberately dropped from this page's 2026-09-25 rewrite: its 3 prior
-// doc-sections had narration audio attached (see CLAUDE.md's rule on regenerating narration when
-// edited text changes), and this session has no DASHSCOPE_API_KEY to regenerate it — shipping
-// stale audio against new copy is explicitly what that rule forbids, so the safer move was to
-// remove the narration entries (see apps/docs/src/data/narrationSources.mjs and
-// apps/docs/public/narration/manifest.json) rather than guess at credentials. Re-add narration
-// once the repo owner supplies a key and this copy has settled.
+// No narration on this page (dropped in the 2026-09-25 rewrite — see that commit — since this
+// session has no DASHSCOPE_API_KEY to regenerate it against new copy, and shipping stale audio is
+// exactly what CLAUDE.md's narration rule forbids). Re-add once a key is available.
 
 const BLOCKS: Construct[] = [
   {
@@ -19,7 +15,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Reaching for the highest-tier complete unit available — a real, finished component, not primitives you assemble yourself — measurably lowers the effort of building the same UI, in every comparison run so far, including the most direct one yet: hand-rolled antd vs. hand-rolled rebar-ui vs. a complete rebar-ui component, with no DSL wrapper involved in any of the three. That's real and holds up. What it isn't is a blanket \"rebar-ui is always cheaper\" — against a library the model has trained on for years, rebar-ui currently wins on *effort* (fewer actions, usually less wall-clock) but not on *raw token cost*, and closing that specific gap looks like it needs deeper training exposure to rebar-ui itself, not a change this project can make on its own.",
+        text: "Short answer: yes — and the newest, most direct measurement is also the strongest one yet, though it comes with a real condition attached, not a blanket guarantee. Reaching for a complete rebar-ui component beats hand-rolling the same feature, whether you're hand-rolling from rebar-ui's own primitives or from a well-known library like antd, on *effort* — fewer actions, less wall-clock — every time it's been measured. Composed as plain data through the Packer, once its schema was widened to actually cover what a real task needed, that same component beat every other approach on *every* metric, including raw token cost — the one place antd had never lost before. The condition: that win depends on the schema genuinely expressing the customization needed. When it doesn't, you're back to hand-authoring, which still wins on effort but not on tokens against a library the model already knows by heart.",
       },
     ],
   },
@@ -30,9 +26,10 @@ const BLOCKS: Construct[] = [
       {
         kind: "list",
         items: [
-          "*Tool-calls and wall-clock: rebar-ui wins, including against a well-known library.* The [Kanban benchmark](/about/benchmarks/kanban) is the first thing on this site to test hand-rolled antd, hand-rolled rebar-ui, and a complete rebar-ui component head to head, with no DSL wrapper anywhere. Reaching for the complete component beat *both* hand-rolled conditions on tool-calls (median 17 vs. 20–29) and typical wall-clock (188s vs. 235–351s).",
-          "*Raw tokens: antd wins, and training familiarity is the likely reason, not task difficulty.* antd came out cheapest of all four conditions measured (median 63,070 tokens vs. rebar-ui's complete-component median of 83,137) — the model already knows antd's API cold, while an opinion-tier rebar-ui build still had to read the component's own source to learn how to customize it (confirmed directly: 14 of 15 runs did, at a measured 11,800 tokens each). A [projection](/about/benchmarks/kanban) modeling what removing that one specific cost would do closes roughly half the gap, not all of it.",
-          "*The original antd-vs-rebar-ui token comparisons (Claude/Qwen/Kimi, 2026-08-29/30) are real, but measured a different mechanism.* Those built rebar-ui through the Packer/DSL schema wrapper specifically, and found real savings there too — but this project no longer believes the wrapper itself is what earned them (see [Field evidence: Coherence](/about/benchmarks/coherence)). The current best explanation is the same one above: reaching for a complete, high-tier unit costs less effort, independent of whether a DSL wrapper delivers it.",
+          "*Reaching for a complete unit beats hand-rolling on effort, full stop.* The [Kanban benchmark](/about/benchmarks/kanban) tested five ways to build the same feature — hand-rolled antd, hand-rolled rebar-ui primitives, a rebar-ui shell with hand-written behavior, the complete `Kanban` component via its props, and that same component composed as data through the Packer. On tool-calls and wall-clock, the two conditions that reach for a complete unit (props or data) both beat every hand-rolled condition, including antd's.",
+          "*When the Packer's schema actually covers the need, it wins outright — even on tokens.* This is the new result: after widening `card-kanban`'s schema with the `assignee`/`statusTag`/`addPosition` fields a real customization task needed, a 5th condition (pure `Construct[]` data, zero behavior code, no escape hatch) came out cheapest on tokens of *all five* conditions measured — beating antd, the previous cheapest, for the first time on this site. The earlier antd-vs-rebar-ui token comparisons (Claude/Qwen/Kimi, 2026-08-29/30) also went through the Packer and also won — this is the first controlled test confirming why: the DSL wrapper wins when its schema already models the real need as data, not because the wrapper itself is inherently cheap.",
+          "*When it doesn't cover the need, training familiarity decides the token count, not tier.* Kanban's complete component customized via hand-authored props (no Packer) came out *most* expensive on tokens, because the model still had to read the component's source to learn its customization surface — a cost a library it already knows cold (antd) never pays. A [projection](/about/benchmarks/kanban) modeling what removing exactly that cost would do closes roughly half the gap, not all of it.",
+          "*The benchmark itself found and fixed a real bug, not just numbers.* Validating the new DSL condition surfaced an actual defect in the shipped `Kanban` component — its search implementation was unmounting non-matching cards instead of hiding them, the exact mistake this page's own \"hidden, not removed\" framing has been checking for in hand-rolled code all along, except this instance was in the library itself. It's fixed now, with new test coverage that didn't exist before. That's the point of measuring this way: a claim gets checked against the actual code, not taken on a self-report, and sometimes that check finds something worth fixing.",
         ],
       },
     ],
@@ -53,12 +50,12 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Every page in this section is a dated entry recording what was actually measured at the time, not a single, settled proof of the platform's superiority — treat the date on each one as real information about how current it still is. The Kanban benchmark above is a working example of why that framing matters: it directly complicated a claim (\"training familiarity is unfair to rebar-ui, and it wins anyway\") that this page itself stated as settled from 2026-09-14 until the more direct comparison ran on 2026-09-25. Expect this page to keep being revised in place as better-designed comparisons replace weaker ones — that's the intended process, not a failure of the earlier ones.",
+        text: "Every page in this section is a dated entry recording what was actually measured at the time, not a single, settled proof of the platform's superiority — treat the date on each one as real information about how current it still is. The Kanban benchmark is now a working example of this twice over: it first complicated a claim (\"training familiarity is unfair to rebar-ui, and it wins anyway\") that this page itself stated as settled from 2026-09-14 until 2026-09-25, and then, days later, the follow-up investigation into *that* finding turned up a genuine library bug and a DSL-strategy result stronger than anything measured before it. Expect this page to keep being revised in place as better-designed comparisons replace weaker ones and as real defects get found and fixed along the way — that's the intended process, not a failure of the earlier ones.",
       },
       {
         kind: "list",
         items: [
-          "[Kanban: antd vs. hand-rolled vs. shell-only vs. complete unit](/about/benchmarks/kanban) — 2026-09-25, rebar-ui v0.12.1. The most direct comparison: no DSL wrapper in any of the 4 conditions.",
+          "[Kanban: antd vs. hand-rolled vs. shell-only vs. complete unit vs. the Packer](/about/benchmarks/kanban) — 2026-09-25, rebar-ui v0.12.1. The most direct comparison yet, across five conditions, plus the library bug fix and gotcha-note validation this investigation turned up.",
           "[Field evidence: Coherence](/about/benchmarks/coherence) — 2026-09-25. Real, non-isolated rebuilds of a production app, across the DSL-wrapper's live-data-binding feature boundary.",
           "[Claude Sonnet 5](/about/benchmarks/claude), [Qwen3.7](/about/benchmarks/qwen), [Kimi-K3](/about/benchmarks/kimi) — 2026-08-29/30, rebar-ui v0.1.0. Token/wall-clock cost of antd vs. rebar-ui-via-the-Packer, across three models.",
           "[Simple/Composite/Complex tiers](/about/benchmarks/tiers) — 2026-08-29/30, v0.1.0. The same comparison across three complexity levels.",
@@ -78,7 +75,7 @@ export default function BenchmarksPage() {
         alt="Benchmarks hero image"
         style={{ width: "100%", borderRadius: "8px" }}
       />
-      <BenchmarkDateline published="2026-09-14" updated="2026-09-25" />
+      <BenchmarkDateline published="2026-09-14" updated="2026-09-26" />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

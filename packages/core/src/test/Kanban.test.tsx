@@ -196,6 +196,18 @@ describe("Kanban", () => {
       expect(next.columns[1].sections[0].cardIds).toEqual(["a"]);
     });
 
+    it("attaches touchmove as a real, non-passive native listener per card (in addition to React's own passive-by-default delegated one)", () => {
+      const addEventListenerSpy = vi.spyOn(HTMLElement.prototype, "addEventListener");
+      render(<Kanban columns={COLUMNS} cards={CARDS} />);
+      const touchMoveCalls = addEventListenerSpy.mock.calls.filter(([type]) => type === "touchmove");
+      // One non-passive listener per rendered card (this fix), on top of React's own internal
+      // delegated touchmove listener (which stays passive, as always, and isn't what's being
+      // tested here).
+      const nonPassiveCalls = touchMoveCalls.filter(([, , options]) => (options as AddEventListenerOptions)?.passive === false);
+      expect(nonPassiveCalls.length).toBe(Object.keys(CARDS).length);
+      addEventListenerSpy.mockRestore();
+    });
+
     it("does not treat a touch below the movement threshold as a drag", () => {
       const onChange = vi.fn();
       const { container } = render(<Kanban columns={COLUMNS} cards={CARDS} onChange={onChange} />);
