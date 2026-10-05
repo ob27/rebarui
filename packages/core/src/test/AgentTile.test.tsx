@@ -15,6 +15,22 @@ describe("AgentTile", () => {
     expect(screen.getByText("researching a pile wall")).toBeInTheDocument();
   });
 
+  it("shows a robot icon and the count of helping sub-agents, with an explaining title; hidden at 0, unset, or for a service", () => {
+    const { container, rerender } = render(<AgentTile name="Barry" helpers={2} />);
+    const el = container.querySelector('[data-rebar-part="helpers"]')!;
+    expect(el).toHaveAttribute("title", "These are the sub-agents helping Barry.");
+    expect(el).toHaveAttribute("aria-label", "2 sub-agents helping Barry");
+    expect(el).toHaveTextContent("2");
+    rerender(<AgentTile name="Barry" helpers={1} />);
+    expect(container.querySelector('[data-rebar-part="helpers"]')).toHaveAttribute("aria-label", "1 sub-agent helping Barry");
+    rerender(<AgentTile name="Barry" helpers={0} />);
+    expect(container.querySelector('[data-rebar-part="helpers"]')).toBeNull();
+    rerender(<AgentTile name="Barry" />);
+    expect(container.querySelector('[data-rebar-part="helpers"]')).toBeNull();
+    rerender(<AgentTile name="Svc" kind="service" helpers={3} />);
+    expect(container.querySelector('[data-rebar-part="helpers"]')).toBeNull();
+  });
+
   it("lets statusLabel override the default text", () => {
     render(<AgentTile name="Barry" status="idle" statusLabel="Idle 30mins" />);
     expect(screen.getByText("Idle 30mins")).toBeInTheDocument();

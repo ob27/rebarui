@@ -26,6 +26,8 @@ export interface AgentWallMember {
   modelName?: string;
   /** Lifetime turns, drawn as honeycomb digits; see `AgentTile`. */
   turns?: number;
+  /** Sub-agents helping this agent right now; see `AgentTile`. */
+  helpers?: number;
   /** Set while the agent is writing a reply to a human or another agent; see `AgentTile`. */
   composing?: "human" | "agent";
   /** Which orb persona this member wears; overrides the status rule (see `AgentTile`). */
@@ -205,6 +207,7 @@ export function AgentWall({
                 modelFamily={m.modelFamily}
                 modelName={m.modelName}
                 turns={m.turns}
+                helpers={m.helpers}
                 composing={m.composing}
                 persona={m.persona}
                 hue={m.hue}

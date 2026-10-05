@@ -43,6 +43,16 @@ const BLOCKS: Construct[] = [
   },
   {
     type: "doc-section",
+    heading: "Multi-speaker chats (all additive)",
+    body: [
+      {
+        kind: "text",
+        text: "For a group chat with many named people/agents: `role: \"system\"` renders a muted, italic, unbubbled single line (no avatar, no retry); `sender` shows a bold name with the timestamp above the bubble (\"Ada · 14:02\"); `header` renders a node above the bubble's content (e.g. a quoted reply) and `actions` a node in the meta row (e.g. a Reply button); `tone: \"highlight\"` tints a bubble; and the thread prop `align=\"start\"` (default `\"sides\"`) left-aligns every message into one column. When any of these is used the transcript becomes a labelled `role=\"list\"` of `listitem`s so a screen reader reads each sender in order; without them the markup is unchanged.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Markdown by default — real LLM responses aren't plain text",
     body: [
       {
@@ -57,7 +67,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: '`data-rebar-component="chat-thread"`; each message carries `data-rebar-role` and `data-rebar-status`.',
+        text: '`data-rebar-component="chat-thread"`; each message carries `data-rebar-role` and `data-rebar-status` (and `data-rebar-tone="highlight"` when tinted); the thread carries `data-rebar-align="start"` when set; parts include `byline`, `sender`, `header` and `actions`.',
       },
     ],
   },

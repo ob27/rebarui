@@ -1,5 +1,5 @@
 import { forwardRef, useLayoutEffect, useRef, useState } from "react";
-import type { ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import clsx from "clsx";
 import { renderBionicChildren, useAmbientBionic } from "../bionic";
 import type { BionicOptions } from "../bionic";
@@ -8,7 +8,10 @@ import { Avatar } from "./Avatar";
 import { Button } from "./Button";
 import { Empty } from "./Empty";
 
-export type ChatMessageRole = "user" | "assistant";
+/** `"system"` is a muted, italic, unbubbled single line (an event or notice) — no avatar, no retry. */
+export type ChatMessageRole = "user" | "assistant" | "system";
+/** `"highlight"` tints the bubble (e.g. to mark human lines in a group chat). */
+export type ChatMessageTone = "default" | "highlight";
 export type ChatMessageStatus = "sending" | "sent" | "streaming" | "error";
 
 export interface ChatMessage {
@@ -26,6 +29,15 @@ export interface ChatMessage {
   avatarFallback?: string;
   avatarSrc?: string;
   avatarPlaceholder?: boolean;
+  /** Who said it — a bold name shown above the bubble with the timestamp ("Ada · 14:02"), for a
+   * multi-speaker chat. Omitted: nothing extra renders. */
+  sender?: string;
+  /** Rendered above the bubble's content, inside the bubble (e.g. a quoted reply). */
+  header?: ReactNode;
+  /** Rendered in the message's meta row, after the timestamp (e.g. a Reply button). */
+  actions?: ReactNode;
+  /** `"highlight"` tints the bubble. Default `"default"`. */
+  tone?: ChatMessageTone;
 }
 
 export interface ChatThreadProps extends ComponentPropsWithoutRef<"div"> {
@@ -57,6 +69,9 @@ export interface ChatThreadProps extends ComponentPropsWithoutRef<"div"> {
    * data-rebar-bionic setting. */
   bionic?: boolean;
   bionicOptions?: BionicOptions;
+  /** `"sides"` (default): user messages right, assistant left. `"start"`: every message is
+   * left-aligned so a many-speaker group chat reads as one column. */
+  align?: "sides" | "start";
 }
 
 /** How close to the real bottom (in px) still counts as "at the bottom" for auto-scroll and for
@@ -90,9 +105,10 @@ function formatTimestamp(value: string | Date): string {
   return date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
 }
 
-function TypingIndicator() {
+function TypingIndicator({ listItem = false }: { listItem?: boolean }) {
   return (
     <div
+      role={listItem ? "listitem" : undefined}
       className="rebar-chat-message rebar-chat-message-assistant"
       data-rebar-part="typing-indicator"
       data-rebar-role="assistant"
@@ -112,7 +128,9 @@ function MessageBubble({
   bionic,
   bionicOptions,
   markdown = true,
+  listItem = false,
 }: {
+  listItem?: boolean;
   message: ChatMessage;
   onRetry?: (message: ChatMessage) => void;
   bionic?: boolean;
@@ -129,15 +147,59 @@ function MessageBubble({
   const plainContent = renderBionicChildren(message.content, bionicEnabled, bionicOptions);
   const status = message.status ?? "sent";
   const isError = status === "error";
+  const itemRole = listItem ? "listitem" : undefined;
+
+  if (message.role === "system") {
+    return (
+      <div
+        role={itemRole}
+        className="rebar-chat-message rebar-chat-message-system"
+        data-rebar-part="message"
+        data-rebar-role="system"
+        data-rebar-status={status}
+      >
+        <span className="rebar-chat-message-content" data-rebar-part="content">
+          {plainContent}
+        </span>
+        {message.actions ? (
+          <span className="rebar-chat-message-actions" data-rebar-part="actions">
+            {message.actions}
+          </span>
+        ) : null}
+      </div>
+    );
+  }
+
+  const timestamp = message.timestamp ? (
+    <span className="rebar-chat-message-timestamp" data-rebar-part="timestamp">
+      {formatTimestamp(message.timestamp)}
+    </span>
+  ) : null;
 
   const bubble = (
     <div
+      role={message.avatarFallback ? undefined : itemRole}
       className={clsx("rebar-chat-message", `rebar-chat-message-${message.role}`)}
       data-rebar-part="message"
       data-rebar-role={message.role}
       data-rebar-status={status}
+      data-rebar-tone={message.tone === "highlight" ? "highlight" : undefined}
     >
+      {message.sender ? (
+        <div className="rebar-chat-message-byline" data-rebar-part="byline">
+          <strong className="rebar-chat-message-sender" data-rebar-part="sender">
+            {message.sender}
+          </strong>
+          {timestamp ? <span aria-hidden="true"> · </span> : null}
+          {timestamp}
+        </div>
+      ) : null}
       <div className="rebar-chat-message-bubble" data-rebar-part="bubble">
+        {message.header ? (
+          <div className="rebar-chat-message-header" data-rebar-part="header">
+            {message.header}
+          </div>
+        ) : null}
         {markdown ? (
           <div className="rebar-chat-message-content" data-rebar-part="content">
             {renderMarkdown(message.content, { bionic: bionicEnabled, bionicOptions })}
@@ -171,11 +233,7 @@ function MessageBubble({
         ) : null}
       </div>
       <div className="rebar-chat-message-meta" data-rebar-part="meta">
-        {message.timestamp ? (
-          <span className="rebar-chat-message-timestamp" data-rebar-part="timestamp">
-            {formatTimestamp(message.timestamp)}
-          </span>
-        ) : null}
+        {message.sender ? null : timestamp}
         {status === "sending" ? (
           <span className="rebar-chat-message-pending" data-rebar-part="pending">
             Sending…
@@ -184,6 +242,11 @@ function MessageBubble({
         {isError ? (
           <span className="rebar-chat-message-error-text" data-rebar-part="error-text">
             Failed to send
+          </span>
+        ) : null}
+        {message.actions ? (
+          <span className="rebar-chat-message-actions" data-rebar-part="actions">
+            {message.actions}
           </span>
         ) : null}
       </div>
@@ -207,6 +270,7 @@ function MessageBubble({
 
   return (
     <div
+      role={itemRole}
       className="rebar-chat-message-row"
       data-rebar-part="message-row"
       data-rebar-role={message.role}
@@ -240,13 +304,19 @@ function MessageBubble({
  * button, which itself scrolls to bottom and resumes auto-scroll on click.
  */
 export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function ChatThread(
-  { messages, isTyping, onRetry, emptyMessage, bionic, bionicOptions, markdown = true, className, ...props },
+  { messages, isTyping, onRetry, emptyMessage, bionic, bionicOptions, markdown = true, align = "sides", className, ...props },
   ref,
 ) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const atBottomRef = useRef(true);
   const prevSignatureRef = useRef("");
   const [hasNewContent, setHasNewContent] = useState(false);
+
+  // Group-chat features (names, system lines, "start" alignment) make the transcript a labelled
+  // list so a screen reader announces "list, N items" and each speaker's name in order; a plain
+  // two-sided transcript keeps its original, role-less markup.
+  const multiSpeaker =
+    align === "start" || messages.some((m) => m.role === "system" || m.sender !== undefined);
 
   const handleScroll = () => {
     const el = scrollRef.current;
@@ -279,7 +349,13 @@ export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function C
   };
 
   return (
-    <div ref={ref} className={clsx("rebar-chat-thread", className)} data-rebar-component="chat-thread" {...props}>
+    <div
+      ref={ref}
+      className={clsx("rebar-chat-thread", className)}
+      data-rebar-component="chat-thread"
+      data-rebar-align={align === "start" ? "start" : undefined}
+      {...props}
+    >
       {messages.length === 0 ? (
         <Empty description={emptyMessage ?? "Start the conversation"} />
       ) : (
@@ -288,6 +364,8 @@ export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function C
             ref={scrollRef}
             className="rebar-chat-thread-scroll"
             data-rebar-part="scroll"
+            role={multiSpeaker ? "list" : undefined}
+            aria-label={multiSpeaker ? "Conversation" : undefined}
             onScroll={handleScroll}
           >
             {messages.map((message) => (
@@ -298,9 +376,10 @@ export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function C
                 bionic={bionic}
                 bionicOptions={bionicOptions}
                 markdown={markdown}
+                listItem={multiSpeaker}
               />
             ))}
-            {isTyping ? <TypingIndicator /> : null}
+            {isTyping ? <TypingIndicator listItem={multiSpeaker} /> : null}
           </div>
           {hasNewContent ? (
             <button

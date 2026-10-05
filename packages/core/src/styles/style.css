@@ -5244,6 +5244,37 @@ div.rebar-chat-message-content > *:last-child { margin-bottom: 0; }
   font-size: var(--rebar-font-size-xs, 12px);
   color: var(--rebar-color-text-secondary, #757575);
 }
+/* Multi-speaker additions: system lines, sender byline, header/actions slots, "start" alignment, tone. */
+.rebar-chat-message-system {
+  align-self: stretch;
+  max-width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--rebar-space-sm, 8px);
+  font-size: var(--rebar-font-size-sm, 14px);
+  font-style: italic;
+  color: var(--rebar-color-text-secondary, #757575);
+}
+.rebar-chat-message-byline {
+  font-size: var(--rebar-font-size-xs, 12px);
+  color: var(--rebar-color-text-secondary, #757575);
+  margin-bottom: var(--rebar-space-xs, 4px);
+}
+.rebar-chat-message-sender { color: var(--rebar-color-text-primary, #212121); font-weight: 600; }
+.rebar-chat-message-header { margin-bottom: var(--rebar-space-xs, 4px); }
+.rebar-chat-message-actions { display: inline-flex; align-items: center; gap: var(--rebar-space-sm, 8px); font-style: normal; }
+.rebar-chat-message[data-rebar-tone="highlight"] .rebar-chat-message-bubble {
+  background: var(--rebar-color-bg-secondary, #f5f5f5);
+  background: color-mix(in srgb, var(--rebar-color-primary, #0066cc) 12%, var(--rebar-color-bg-primary, #ffffff));
+  color: var(--rebar-color-text-primary, #212121);
+  border-color: var(--rebar-color-primary, #0066cc);
+}
+.rebar-chat-thread[data-rebar-align="start"] .rebar-chat-message-user,
+.rebar-chat-thread[data-rebar-align="start"] .rebar-chat-message-row[data-rebar-role="user"] { align-self: flex-start; align-items: flex-start; }
+.rebar-chat-thread[data-rebar-align="start"] .rebar-chat-message-row[data-rebar-role="user"] { flex-direction: row; }
+.rebar-chat-thread[data-rebar-align="start"] .rebar-chat-message { max-width: 100%; }
+.rebar-chat-thread[data-rebar-align="start"] .rebar-chat-message-row .rebar-chat-message { max-width: calc(100% - 40px); }
 .rebar-chat-message-error-text { color: var(--rebar-color-danger, #d32f2f); }
 .rebar-chat-message-retry { margin-top: var(--rebar-space-xs, 4px); }
 .rebar-chat-typing-bubble {
@@ -7619,6 +7650,17 @@ button.rebar-float-assistant-model-pill:hover {
   display: inline-flex;
   flex: none;
 }
+.rebar-agent-tile-helpers {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+  color: var(--rebar-color-text-secondary, #555);
+  font-size: var(--rebar-font-size-xs, 0.75rem);
+  font-weight: 600;
+  cursor: help;
+}
+.rebar-agent-tile-helpers svg { width: 16px; height: 16px; }
 .rebar-honeycomb {
   display: inline-flex;
   flex: none;

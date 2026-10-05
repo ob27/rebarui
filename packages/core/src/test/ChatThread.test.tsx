@@ -386,4 +386,70 @@ describe("ChatThread", () => {
       expect(screen.getByText("Hi, how can I help?")).toBeInTheDocument();
     });
   });
+
+  describe("multi-speaker mode", () => {
+    const GROUP: ChatMessage[] = [
+      { id: "1", role: "system", content: "Ada joined", actions: <button type="button">Reply</button> },
+      {
+        id: "2",
+        role: "user",
+        content: "Morning",
+        sender: "Ada",
+        timestamp: new Date(2026, 0, 1, 14, 2),
+        tone: "highlight",
+        header: <blockquote>quoted</blockquote>,
+        actions: <button type="button">Reply to Ada</button>,
+      },
+      { id: "3", role: "assistant", content: "Hi", sender: "Bot", avatarFallback: "B" },
+    ];
+
+    it("renders a system line unbubbled, with no avatar, retry, or bubble, and keeps it in the list", () => {
+      const { container } = render(<ChatThread messages={[{ ...GROUP[0]!, status: "error", avatarFallback: "X" }]} />);
+      const line = container.querySelector('[data-rebar-role="system"]')!;
+      expect(line).toHaveTextContent("Ada joined");
+      expect(line.querySelector('[data-rebar-part="bubble"]')).toBeNull();
+      expect(container.querySelector('[data-rebar-component="avatar"]')).toBeNull();
+      expect(screen.queryByRole("button", { name: "Retry" })).toBeNull();
+      expect(screen.getByRole("button", { name: "Reply" })).toBeInTheDocument();
+    });
+
+    it("shows a bold sender with the timestamp, header above content, actions in the meta row", () => {
+      const { container } = render(<ChatThread messages={GROUP} />);
+      const byline = container.querySelector('[data-rebar-part="byline"]')!;
+      expect(byline.querySelector("strong")).toHaveTextContent("Ada");
+      expect(byline.querySelector('[data-rebar-part="timestamp"]')).toBeInTheDocument();
+      const bubble = container.querySelector('[data-rebar-tone="highlight"] [data-rebar-part="bubble"]')!;
+      expect(bubble.firstElementChild).toHaveAttribute("data-rebar-part", "header");
+      expect(bubble.querySelector("blockquote")).toHaveTextContent("quoted");
+      const meta = container.querySelector('[data-rebar-tone="highlight"] [data-rebar-part="meta"]')!;
+      expect(meta).toContainElement(screen.getByRole("button", { name: "Reply to Ada" }));
+      expect(meta.querySelector('[data-rebar-part="timestamp"]')).toBeNull(); // shown once, in the byline
+    });
+
+    it("is a labelled list of listitems, so the sender is read in order", () => {
+      render(<ChatThread messages={GROUP} />);
+      const list = screen.getByRole("list", { name: "Conversation" });
+      expect(list).toBeInTheDocument();
+      expect(screen.getAllByRole("listitem")).toHaveLength(3);
+      expect(screen.getAllByRole("listitem")[1]).toHaveTextContent(/Ada/);
+    });
+
+    it("align=\"start\" sets data-rebar-align and is a list; default sets neither", () => {
+      const { container, rerender } = render(<ChatThread messages={BASE_MESSAGES} align="start" />);
+      expect(container.firstElementChild).toHaveAttribute("data-rebar-align", "start");
+      expect(screen.getByRole("list")).toBeInTheDocument();
+      rerender(<ChatThread messages={BASE_MESSAGES} />);
+      expect(container.firstElementChild).not.toHaveAttribute("data-rebar-align");
+      expect(screen.queryByRole("list")).toBeNull();
+    });
+
+    it("leaves a plain transcript's markup unchanged (no byline, header, actions, tone, roles)", () => {
+      const { container } = render(<ChatThread messages={BASE_MESSAGES} />);
+      for (const part of ["byline", "header", "actions"]) {
+        expect(container.querySelector(`[data-rebar-part="${part}"]`)).toBeNull();
+      }
+      expect(container.querySelector("[data-rebar-tone]")).toBeNull();
+      expect(container.querySelector('[role="list"], [role="listitem"]')).toBeNull();
+    });
+  });
 });

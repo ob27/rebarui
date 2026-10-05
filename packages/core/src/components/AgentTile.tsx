@@ -3,6 +3,7 @@ import type { ComponentPropsWithoutRef, KeyboardEvent } from "react";
 import clsx from "clsx";
 import { Avatar } from "./Avatar";
 import { AssistantOrb } from "./AssistantOrb";
+import { Robot3Icon } from "./icons-remix";
 import { Badge } from "./Badge";
 import type { BadgeTone } from "./Badge";
 import { OrbSprite } from "./OrbSprite";
@@ -58,6 +59,9 @@ export interface AgentTileProps extends Omit<ComponentPropsWithoutRef<"div">, "c
   modelName?: string;
   /** The agent's lifetime turns, drawn as honey-yellow hexagon digits after the model glyph. Omit to hide. Never drawn for a `service`. */
   turns?: number;
+  /** How many sub-agents are helping this agent right now: a small robot icon and the count after the name, with a hover title explaining it.
+   * Omit, or 0, to hide. Never drawn for a `service`. */
+  helpers?: number;
   /** Present while the agent is writing a reply to a human or to another agent: a small blue "typing" bubble over the avatar. */
   composing?: "human" | "agent";
   /** Greys the tile out without removing it (an out-of-focus tile on a wall). */
@@ -124,6 +128,7 @@ export function AgentTile({
   modelFamily,
   modelName,
   turns,
+  helpers,
   composing,
   dimmed = false,
   selected = false,
@@ -147,6 +152,7 @@ export function AgentTile({
   const isAgent = kind === "agent";
   const showModel = isAgent && (modelFamily !== undefined || modelName !== undefined);
   const showTurns = isAgent && typeof turns === "number";
+  const showHelpers = isAgent && typeof helpers === "number" && helpers > 0;
   const interactive = typeof onSelect === "function";
   const onKeyDown = interactive
     ? (e: KeyboardEvent<HTMLDivElement>) => {
@@ -187,6 +193,18 @@ export function AgentTile({
             </span>
             {showModel ? <ModelIcon family={modelFamily} modelName={modelName} /> : null}
             {showTurns ? <HoneycombCount value={turns} /> : null}
+            {showHelpers ? (
+              <span
+                className="rebar-agent-tile-helpers"
+                data-rebar-part="helpers"
+                role="img"
+                aria-label={`${helpers} sub-agent${helpers === 1 ? "" : "s"} helping ${name}`}
+                title={`These are the sub-agents helping ${name}.`}
+              >
+                <Robot3Icon aria-hidden="true" />
+                <span className="rebar-agent-tile-helpers-count">{helpers}</span>
+              </span>
+            ) : null}
           </span>
           <span className="rebar-agent-tile-status" data-rebar-part="status" title={statusReason} aria-description={statusReason}>
             <span>{label}</span>
