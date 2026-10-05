@@ -17,6 +17,12 @@ function seededActivity() {
 
 const DATA = seededActivity();
 
+// Cream-to-amber honey scale for the hexagon example; colorScale stays caller-supplied.
+const HONEY_SCALE = (t: number): string => {
+  const clamped = Math.max(0, Math.min(1, t));
+  return "color-mix(in srgb, #b45309 " + Math.round(clamped * 100) + "%, #fef3c7)";
+};
+
 const BLOCKS: Construct[] = [
   {
     type: "doc-section",
@@ -69,6 +75,16 @@ export default function CalendarHeatmapPage() {
 
       <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-lg)" }}>
         <CalendarHeatmap title="Activity" data={DATA} />
+      </Box>
+
+      <Heading level={2}>Hexagon cells</Heading>
+      <Text color="secondary">
+        <code>cellShape=&quot;hexagon&quot;</code> draws a flat-top honeycomb; <code>cellSize</code> is then the
+        hexagon&apos;s flats-to-flats width, and odd week columns sit half a cell lower. Here with a honey{" "}
+        <code>colorScale</code>.
+      </Text>
+      <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-lg)" }}>
+        <CalendarHeatmap title="Activity (honeycomb)" data={DATA} cellShape="hexagon" cellSize={14} colorScale={HONEY_SCALE} />
       </Box>
 
       <NextBlockRenderer blocks={BLOCKS} />

@@ -25,8 +25,14 @@ export interface CalendarHeatmapProps extends Omit<ComponentPropsWithoutRef<"fig
   title?: string;
   /** Falls back to `title` when omitted — the chart's own `role="img"` accessible name. */
   ariaLabel?: string;
-  /** Side length of one day cell, in SVG units. */
+  /** Side length of one day cell, in SVG units. With `cellShape="hexagon"` it is instead the
+   * hexagon's width across its flats-to-flats axis (the flat-top hexagon's height; its
+   * corner-to-corner width is `2 / sqrt(3)` times larger). */
   cellSize?: number;
+  /** `"square"` (default) is the GitHub-style grid. `"hexagon"` draws each day as a flat-top regular
+   * hexagon in a true honeycomb: week columns left to right, 7 day rows top to bottom, every odd
+   * week column shifted down half a cell so neighbours interlock, with `gap` kept between flats. */
+  cellShape?: "square" | "hexagon";
   /** Maps a value normalized to 0-1 (relative to the min/max `value` across all of `data`) to a
    * CSS color string. Defaults to a simple light-to-dark blend of the same token `Heatmap` uses. */
   colorScale?: (normalizedValue: number) => string;
@@ -75,6 +81,7 @@ export function CalendarHeatmap({
   title,
   ariaLabel,
   cellSize = 12,
+  cellShape = "square",
   colorScale = DEFAULT_COLOR_SCALE,
   bionic,
   bionicOptions,
@@ -116,12 +123,36 @@ export function CalendarHeatmap({
   const monthLabelHeight = 16;
   const legendHeight = 20;
   const gap = 2;
-  const width = dayLabelWidth + weekCount * (cellSize + gap);
-  const gridHeight = 7 * (cellSize + gap);
+  const hex = cellShape === "hexagon";
+  // Flat-top honeycomb: `cellSize` is flats-to-flats (vertical), R the circumradius. With pitch
+  // p = cellSize + gap, a neighbour in the adjacent column sits p/2 lower, so the column spacing
+  // that keeps centres p apart is p * sqrt(3) / 2.
+  const hexR = cellSize / Math.sqrt(3);
+  const hexPitch = cellSize + gap;
+  const hexDx = (hexPitch * Math.sqrt(3)) / 2;
+  const hexOffset = weekCount > 1 ? hexPitch / 2 : 0;
+  const width = hex
+    ? dayLabelWidth + (weekCount - 1) * hexDx + 2 * hexR
+    : dayLabelWidth + weekCount * (cellSize + gap);
+  const gridHeight = hex ? 6 * hexPitch + cellSize + hexOffset : 7 * (cellSize + gap);
   const height = monthLabelHeight + gridHeight + legendHeight;
 
-  const cellX = (week: number) => dayLabelWidth + week * (cellSize + gap);
-  const cellY = (dow: number) => monthLabelHeight + dow * (cellSize + gap);
+  const cellX = (week: number) => (hex ? dayLabelWidth + week * hexDx : dayLabelWidth + week * (cellSize + gap));
+  const cellY = (dow: number, week = 0) =>
+    hex ? monthLabelHeight + dow * hexPitch + (week % 2 === 1 ? hexPitch / 2 : 0) : monthLabelHeight + dow * (cellSize + gap);
+  const hexPoints = (cx: number, cy: number) => {
+    const h = cellSize / 2;
+    return [
+      [cx - hexR, cy],
+      [cx - hexR / 2, cy - h],
+      [cx + hexR / 2, cy - h],
+      [cx + hexR, cy],
+      [cx + hexR / 2, cy + h],
+      [cx - hexR / 2, cy + h],
+    ]
+      .map(([x, y]) => `${x!},${y!}`)
+      .join(" ");
+  };
 
   // A month label goes at the first column whose top (Sunday) row falls in a month different
   // from the previous column's — so each month is labeled exactly once, at the week it begins.
@@ -170,7 +201,7 @@ export function CalendarHeatmap({
           <text
             key={dow}
             x={dayLabelWidth - 6}
-            y={cellY(dow) + cellSize - 2}
+            y={hex ? cellY(dow) + cellSize / 2 + 3 : cellY(dow) + cellSize - 2}
             fontSize={9}
             textAnchor="end"
             fill="var(--rebar-color-text-secondary, #757575)"
@@ -188,22 +219,39 @@ export function CalendarHeatmap({
           const fill = hasValue ? colorScale(normalized) : MISSING_CELL_FILL;
           const key = String(epochDay);
           const selected = hasValue && isSelected(key);
+          const part = hasValue ? "cell" : "cell-missing";
+          const markProps = {
+            fill,
+            stroke: selected ? "var(--rebar-color-border-strong, #333333)" : "transparent",
+            strokeWidth: selected ? 1.5 : 0,
+            style: hasValue ? { cursor: "pointer" } : undefined,
+            ...(hasValue ? getMarkProps(key) : {}),
+          };
+          const titleEl = <title>{formatDateUTC(epochDay) + ": " + (hasValue ? value : "no data")}</title>;
+          if (hex) {
+            return (
+              <polygon
+                key={epochDay}
+                data-rebar-part={part}
+                points={hexPoints(cellX(week) + hexR, cellY(dow, week) + cellSize / 2)}
+                {...markProps}
+              >
+                {titleEl}
+              </polygon>
+            );
+          }
           return (
             <rect
               key={epochDay}
-              data-rebar-part={hasValue ? "cell" : "cell-missing"}
+              data-rebar-part={part}
               x={cellX(week)}
               y={cellY(dow)}
               width={cellSize}
               height={cellSize}
               rx={2}
-              fill={fill}
-              stroke={selected ? "var(--rebar-color-border-strong, #333333)" : "transparent"}
-              strokeWidth={selected ? 1.5 : 0}
-              style={hasValue ? { cursor: "pointer" } : undefined}
-              {...(hasValue ? getMarkProps(key) : {})}
+              {...markProps}
             >
-              <title>{formatDateUTC(epochDay) + ": " + (hasValue ? value : "no data")}</title>
+              {titleEl}
             </rect>
           );
         })}
@@ -215,7 +263,17 @@ export function CalendarHeatmap({
         >
           Less
         </text>
-        {[0, 0.25, 0.5, 0.75, 1].map((t, i) => (
+        {[0, 0.25, 0.5, 0.75, 1].map((t, i) =>
+          hex ? (
+            <polygon
+              key={i}
+              points={hexPoints(
+                dayLabelWidth + 34 + hexR + i * (2 * hexR + gap),
+                monthLabelHeight + gridHeight + 4 + cellSize / 2,
+              )}
+              fill={colorScale(t)}
+            />
+          ) : (
           <rect
             key={i}
             x={dayLabelWidth + 34 + i * (cellSize + gap)}
@@ -225,9 +283,10 @@ export function CalendarHeatmap({
             rx={2}
             fill={colorScale(t)}
           />
-        ))}
+          ),
+        )}
         <text
-          x={dayLabelWidth + 34 + 5 * (cellSize + gap) + 6}
+          x={dayLabelWidth + 34 + 5 * (hex ? 2 * hexR + gap : cellSize + gap) + 6}
           y={monthLabelHeight + gridHeight + 14}
           fontSize={10}
           fill="var(--rebar-color-text-secondary, #757575)"
@@ -240,8 +299,8 @@ export function CalendarHeatmap({
               const dow = dayOfWeekUTC(activeEpochDay);
               return (
                 <ChartValueTag
-                  x={cellX(week) + cellSize / 2}
-                  y={cellY(dow)}
+                  x={cellX(week) + (hex ? hexR : cellSize / 2)}
+                  y={cellY(dow, week)}
                   viewBoxWidth={width}
                   viewBoxHeight={height}
                   lines={[formatDateUTC(activeEpochDay), String(activeValue)]}
