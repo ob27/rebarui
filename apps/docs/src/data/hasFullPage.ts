@@ -191,6 +191,8 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   Slider: "/imitations/slider",
   Progress: "/imitations/progress",
   Accordion: "/opinions/accordion",
+  AgentWall: "/opinions/agent-wall",
+  AgentTile: "/opinions/agent-wall",
   AccordionItem: "/opinions/accordion",
   ToastProvider: "/opinions/toast",
   Toast: "/opinions/toast",

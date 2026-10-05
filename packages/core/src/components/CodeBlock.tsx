@@ -1,3 +1,4 @@
+import { copyToClipboard } from "../clipboard";
 import type { ComponentPropsWithoutRef } from "react";
 import { useState } from "react";
 import clsx from "clsx";
@@ -15,6 +16,8 @@ export interface CodeBlockProps extends Omit<ComponentPropsWithoutRef<"pre">, "c
   /** Hides the copy button — off by default. For an illustrative snippet that isn't meant to be
    * copy-pasted verbatim (e.g. `...` elisions, a diff-style before/after). */
   hideCopyButton?: boolean;
+  /** Called after every copy attempt with whether it worked, so the app can confirm it (a toast, say) or say it failed. */
+  onCopyResult?: (ok: boolean) => void;
   /** Renders `code` as styled Markdown (headings, lists, blockquotes, fenced code, inline
    * bold/italic/code/links) instead of plain preformatted text. Off by default. Copying still
    * copies the original raw Markdown source, not the rendered output — the same "what you copy is
@@ -34,19 +37,17 @@ export function CodeBlock({
   code,
   language,
   hideCopyButton = false,
+  onCopyResult,
   markdown = false,
   className,
   ...props
 }: CodeBlockProps) {
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<"ok" | "failed" | false>(false);
 
   const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-    } catch {
-      return;
-    }
-    setCopied(true);
+    const ok = await copyToClipboard(code);
+    onCopyResult?.(ok);
+    setCopied(ok ? "ok" : "failed");
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -67,7 +68,7 @@ export function CodeBlock({
               data-rebar-part="copy-button"
               aria-live="polite"
             >
-              {copied ? "Copied!" : "Copy"}
+              {copied === "ok" ? "Copied!" : copied === "failed" ? "Copy failed" : "Copy"}
             </Button>
           )}
         </div>

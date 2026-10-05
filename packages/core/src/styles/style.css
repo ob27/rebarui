@@ -510,6 +510,8 @@ body {
 }
 
 .rebar-checkbox {
+  /* Never let a long label squash the box. */
+  flex-shrink: 0;
   box-sizing: border-box;
   width: 20px;
   height: 20px;
@@ -3825,7 +3827,9 @@ body {
 }
 .rebar-resizable-panels-panel {
   overflow: auto;
-  flex: 0 0 auto;
+  /* The two panes are sized to 100% between them and the divider sits alongside — they must be
+     allowed to shrink, or every instance overflows its container by exactly the divider's size. */
+  flex: 0 1 auto;
   min-width: 0;
   min-height: 0;
   box-sizing: border-box;
@@ -7400,4 +7404,352 @@ button.rebar-float-assistant-model-pill:hover {
 @keyframes rebar-voice-input-bar-glow {
   0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--voice-glow) 45%, transparent), 0 0 16px 2px color-mix(in srgb, var(--voice-glow) 55%, transparent); }
   50% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--voice-glow) 0%, transparent), 0 0 28px 8px color-mix(in srgb, var(--voice-glow) 75%, transparent); }
+}
+
+/* ---- AgentTile / AgentWall (AI Hive) ---------------------------------------------------------------------- */
+/* A fixed-size card: its text is clipped (with an ellipsis), never allowed to grow it, so a longer or shorter status changes nothing. */
+.rebar-agent-tile {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rebar-space-md, 12px);
+  box-sizing: border-box;
+  height: var(--rebar-agent-tile-height, 108px);
+  overflow: hidden;
+  min-width: 0;
+  padding: var(--rebar-space-md, 12px);
+  border-radius: var(--rebar-radius, 8px);
+  color: var(--rebar-color-text-primary, #1a1a1a);
+  font-family: var(--rebar-font-family-sans, inherit);
+}
+.rebar-agent-tile[role="button"] {
+  cursor: pointer;
+}
+.rebar-agent-tile[role="button"]:hover {
+  background: var(--rebar-color-bg-secondary, #f5f5f5);
+}
+.rebar-agent-tile[role="button"]:focus-visible {
+  outline: 2px solid var(--rebar-color-border-focus, #0066cc);
+  outline-offset: 2px;
+}
+.rebar-agent-tile[data-rebar-selected] {
+  background: var(--rebar-color-bg-secondary, #f5f5f5);
+  box-shadow: inset 0 0 0 1px var(--rebar-color-primary, #0066cc);
+}
+.rebar-agent-tile[data-rebar-dimmed] {
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+.rebar-agent-tile-orb {
+  position: relative;
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #000;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 4px var(--rebar-color-border, #e0e0e0), 0 0 14px 4px rgba(0, 0, 0, 0.06);
+}
+.rebar-agent-tile-orb::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46%;
+  height: 56%;
+  transform: translate(-50%, -50%) rotate(-20deg);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 40% 35%, #fff 0, #f3cdf0 30%, #c85cc0 70%, #7a2f78 100%);
+}
+/* Persona look-alikes (cheap CSS stand-ins; the real shaders are AssistantOrb personas, used via liveOrb). */
+.rebar-agent-tile[data-rebar-persona="spark"] .rebar-agent-tile-orb {
+  background: #0b0830;
+}
+.rebar-agent-tile[data-rebar-persona="strato"] .rebar-agent-tile-orb {
+  background: radial-gradient(circle at 50% 55%, #f2b84b 0, #e8803a 45%, #a9361f 100%);
+  box-shadow: 0 0 0 3px #fff, 0 0 0 4px var(--rebar-color-border, #e0e0e0), 0 0 18px 6px rgba(232, 128, 58, 0.35);
+}
+.rebar-agent-tile[data-rebar-persona="strato"] .rebar-agent-tile-orb::after {
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 244, 214, 0.9) 0, rgba(255, 244, 214, 0) 70%);
+}
+.rebar-agent-tile[data-rebar-persona="chorus"] .rebar-agent-tile-orb {
+  background: radial-gradient(circle at 38% 32%, #fff 0, #e8e4f5 35%, #b9b3d6 70%, #8c86b0 100%);
+}
+.rebar-agent-tile[data-rebar-persona="chorus"] .rebar-agent-tile-orb::after {
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(ellipse at 40% 35%, rgba(255, 255, 255, 0.85) 0, rgba(255, 255, 255, 0) 65%);
+}
+/* The real shader, shown as the docs' glass lens: a black disc, the middle of the render (OrbSprite crops it), and glass over the top. */
+.rebar-agent-tile-orb[data-rebar-live] {
+  overflow: hidden;
+  background: #000 !important;
+}
+.rebar-agent-tile-orb[data-rebar-live] canvas {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.rebar-agent-tile-orb[data-rebar-live] canvas.rebar-agent-tile-classic-orb {
+  /* The metaball orb draws its blobs small inside a padded canvas: render it big and let the disc crop the middle, as the docs do (about 55%). */
+  inset: auto;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 0;
+}
+.rebar-agent-tile-orb[data-rebar-live]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 40%, transparent 60%, rgba(0, 0, 0, 0.1) 100%);
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.3), inset 0 -1px 3px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+}
+.rebar-agent-tile-orb[data-rebar-live]::after {
+  z-index: 3;
+  top: 8%;
+  left: 15%;
+  width: 45%;
+  height: 25%;
+  transform: none;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+  filter: blur(1px);
+  animation: none !important;
+  pointer-events: none;
+}
+/* Badge's "default" tone falls back to red; idle, ghost and offline are not failures, so they get a neutral dot. */
+.rebar-agent-tile .rebar-badge-indicator[data-rebar-tone="default"] {
+  background: var(--rebar-color-text-secondary, #888);
+}
+/* Avatar look: an illustrated portrait in the orb's round slot, no black disc, no glass, no blob. */
+.rebar-agent-tile-orb[data-rebar-look="avatar"] {
+  overflow: hidden;
+  background: var(--rebar-color-bg-secondary, #f5f5f5) !important;
+}
+.rebar-agent-tile-orb[data-rebar-look="avatar"]::before,
+.rebar-agent-tile-orb[data-rebar-look="avatar"]::after {
+  display: none;
+}
+.rebar-agent-tile-orb[data-rebar-look="avatar"] .rebar-avatar {
+  width: 100%;
+  height: 100%;
+}
+/* A ghost is an agent that has gone quiet: faded and still, not a failure. */
+.rebar-agent-tile[data-rebar-status="ghost"] {
+  opacity: 0.55;
+}
+.rebar-agent-tile[data-rebar-status="active"] .rebar-agent-tile-orb::after {
+  animation: rebar-agent-orb 3.2s ease-in-out infinite;
+  animation-delay: var(--rebar-orb-delay, 0s);
+}
+@keyframes rebar-agent-orb {
+  0%, 100% { transform: translate(-50%, -50%) rotate(-20deg) scale(1); }
+  50% { transform: translate(-50%, -50%) rotate(-8deg) scale(1.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rebar-agent-tile-orb::after {
+    animation: none !important;
+  }
+}
+.rebar-agent-tile-body {
+  flex: 1;
+  min-width: 0;
+}
+.rebar-agent-tile-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--rebar-space-sm, 8px);
+}
+.rebar-agent-tile-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--rebar-font-size-md, 1rem);
+  font-weight: var(--rebar-font-weight-medium, 500);
+}
+.rebar-agent-tile-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rebar-space-xs, 4px);
+  white-space: nowrap;
+  font-size: var(--rebar-font-size-xs, 0.75rem);
+  font-style: italic;
+  color: var(--rebar-color-text-secondary, #555);
+}
+.rebar-agent-tile-project {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--rebar-font-size-xs, 0.75rem);
+  color: var(--rebar-color-text-secondary, #555);
+}
+.rebar-agent-tile-activity {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  margin-top: var(--rebar-space-xs, 4px);
+  font-size: var(--rebar-font-size-sm, 0.875rem);
+  overflow-wrap: anywhere;
+}
+.rebar-agent-tile-ident {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.rebar-agent-tile-ident .rebar-agent-tile-name {
+  min-width: 0;
+}
+.rebar-agent-tile-head:has(.rebar-agent-tile-ident) {
+  flex-wrap: wrap;
+  row-gap: 0;
+}
+.rebar-agent-tile-head:has(.rebar-agent-tile-ident) .rebar-agent-tile-status {
+  margin-left: auto;
+}
+.rebar-model-icon {
+  display: inline-flex;
+  flex: none;
+}
+.rebar-honeycomb {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 1px;
+}
+.rebar-honeycomb-plus {
+  margin-left: 1px;
+  font-size: var(--rebar-font-size-xs, 0.75rem);
+  font-weight: 700;
+  color: #f6be5a;
+}
+.rebar-agent-tile-orb[data-rebar-look="avatar"]:has(.rebar-composing-bubble) {
+  overflow: visible;
+}
+.rebar-agent-tile-orb[data-rebar-look="avatar"]:has(.rebar-composing-bubble) .rebar-avatar {
+  border-radius: 50%;
+  overflow: hidden;
+}
+.rebar-composing-bubble {
+  position: absolute;
+  right: -8px;
+  bottom: -4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 16px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: #0a9bd8;
+  box-shadow: 0 0 0 2px var(--rebar-color-bg-primary, #fff);
+  z-index: 2;
+}
+.rebar-composing-bubble i {
+  width: 3.5px;
+  height: 3.5px;
+  border-radius: 50%;
+  background: #fff;
+  animation: rebar-composing-dot 1.3s ease-in-out infinite;
+}
+.rebar-composing-bubble i:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.rebar-composing-bubble i:nth-child(3) {
+  animation-delay: 0.36s;
+}
+@keyframes rebar-composing-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.45;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-1.5px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rebar-composing-bubble i {
+    animation: none;
+    opacity: 0.9;
+  }
+}
+
+.rebar-agent-wall {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rebar-space-md, 12px);
+  font-family: var(--rebar-font-family-sans, inherit);
+  color: var(--rebar-color-text-primary, #1a1a1a);
+}
+.rebar-agent-wall-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rebar-space-md, 12px);
+}
+.rebar-agent-wall-title {
+  font-size: var(--rebar-font-size-2xl, 1.5rem);
+  font-style: italic;
+}
+.rebar-agent-wall-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rebar-space-sm, 8px);
+}
+.rebar-agent-wall-search {
+  padding: var(--rebar-space-xs, 4px) var(--rebar-space-sm, 8px);
+  border: var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0);
+  border-radius: var(--rebar-radius-sm, 4px);
+  background: var(--rebar-color-bg-primary, #fff);
+  color: inherit;
+  font: inherit;
+}
+.rebar-agent-wall-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rebar-space-xs, 4px);
+}
+.rebar-agent-wall-filters button {
+  padding: 2px 10px;
+  border: var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0);
+  border-radius: 999px;
+  background: var(--rebar-color-bg-primary, #fff);
+  color: inherit;
+  font: inherit;
+  font-size: var(--rebar-font-size-sm, 0.875rem);
+  cursor: pointer;
+}
+.rebar-agent-wall-filters button[aria-pressed="true"] {
+  border-color: var(--rebar-color-primary, #0066cc);
+  background: var(--rebar-color-primary, #0066cc);
+  color: var(--rebar-color-primary-text, #fff);
+}
+/* `columns` is a maximum: a tile never gets narrower than 240px, so a narrow wall shows fewer columns instead of crushing the text. */
+.rebar-agent-wall-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(max(240px, calc(100% / var(--rebar-agent-wall-columns, 5) - var(--rebar-space-sm, 8px))), 1fr));
+  gap: var(--rebar-space-xs, 4px);
+}
+.rebar-agent-wall-empty {
+  margin: 0;
+  padding: var(--rebar-space-xl, 32px);
+  text-align: center;
+  color: var(--rebar-color-text-secondary, #555);
+}
+.rebar-agent-wall-pages {
+  display: flex;
+  justify-content: center;
 }

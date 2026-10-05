@@ -406,6 +406,8 @@ export type { BackTopProps } from "./components/BackTop";
 export { Affix } from "./components/Affix";
 export type { AffixProps } from "./components/Affix";
 
+export { AVATAR_PLACEHOLDER_KINDS } from "./assets/avatarPlaceholderKinds";
+export type { AvatarKind } from "./assets/avatarPlaceholderKinds";
 export { AvatarGroup } from "./components/AvatarGroup";
 export type { AvatarGroupProps, AvatarGroupItem } from "./components/AvatarGroup";
 
@@ -614,6 +616,14 @@ export {
 export { AssistantOrb } from "./components/AssistantOrb";
 export { VoiceInputBar } from "./components/VoiceInputBar";
 export type { VoiceInputBarProps, VoiceInputBarState } from "./components/VoiceInputBar";
+export { copyToClipboard } from "./clipboard";
+export { AgentTile } from "./components/AgentTile";
+export { agentPersona } from "./components/agentPersona";
+export type { AgentStatus, AgentTileProps } from "./components/AgentTile";
+export { ComposingBubble, ModelIcon, HoneycombCount } from "./components/AgentTileMarks";
+export type { ComposingBubbleProps, ModelIconProps, HoneycombCountProps, ModelFamily } from "./components/AgentTileMarks";
+export { AgentWall } from "./components/AgentWall";
+export type { AgentWallMember, AgentWallProps, AgentWallStatusFilter } from "./components/AgentWall";
 export type { AssistantOrbProps } from "./components/AssistantOrb";
 
 // Pure data/types, zero `three` dependency (only `orb-shader/createOrbRenderer.ts` — reached via

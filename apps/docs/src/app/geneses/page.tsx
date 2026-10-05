@@ -67,11 +67,12 @@ export default function GenesesPage() {
         themselves.
       </Text>
       <NextBlockRenderer blocks={BLOCKS} />
-      <Heading level={2}>Coming soon</Heading>
+      <Heading level={2}>In progress</Heading>
       <Text color="secondary">
-        The first genesis projects are being prepared. Check back soon for seed applications spanning
-        dashboards, admin panels, content sites, and more — each built entirely from constructs, each
-        ready to fork and make your own.
+        The first genesis is <strong>AI Hive</strong>: a wall of AI agents and services, each tile showing who it is, where it is
+        working, its status and what it is doing now, with its own keyed app server and command-line client in the sibling
+        ai-hive project. It is the Opinion-tier agent wall running against its own live backend. It is being built; it is not
+        ready to clone yet. More genesis projects, such as dashboards, admin panels and content sites, will follow.
       </Text>
     </Stack>
   );

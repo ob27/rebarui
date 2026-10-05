@@ -83,6 +83,7 @@ export const CONSTRUCT_TIER = {
 
     AccordionItem: "synthetic",
     Affix: "synthetic",
+    AgentTile: "synthetic", // a CSS orb + text + a Badge dot; no state of its own (AgentWall is the Opinion over many of these)
     Alert: "synthetic",
     AspectRatio: "synthetic",
     AvatarGroup: "synthetic",
@@ -129,6 +130,7 @@ export const CONSTRUCT_TIER = {
     WordCloud: "synthetic",
 
     Accordion: "opinion",
+    AgentWall: "opinion", // search + status filter + paging clamped to the filtered list + selection, hide-vs-dim filter modes
     ActionSheet: "opinion",
     AreaChart: "opinion",
     BottomSheet: "opinion",

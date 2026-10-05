@@ -28,6 +28,12 @@ export interface OrbRendererHandle {
 export interface CreateOrbRendererOptions {
   /** Exponential-smoothing time constant, in seconds. Default 0.35s. */
   smoothingTau?: number;
+  /**
+   * Called right after each frame is drawn. The drawing buffer of a WebGL canvas is only guaranteed to hold the finished
+   * frame until the browser composites it, so this is the one reliable moment to copy it elsewhere (`drawImage`) — see
+   * `orbHub.ts`, which shares one renderer between many small orbs instead of opening a WebGL context for each.
+   */
+  onFrame?: () => void;
 }
 
 // The shader's own geometry is resolution-independent (a normalized-UV sphere always fills the
@@ -157,6 +163,7 @@ export function createOrbRenderer(
     }
 
     composer.render();
+    options.onFrame?.();
   };
   animate();
 

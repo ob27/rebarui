@@ -27,6 +27,10 @@ across the repo or left only in conversation. Current docs:
   (`source`/`onX` fields, resolved by `BlockRenderer`'s `data`/`handlers` props) — shipped, not a
   proposal; this doc is its design record, prompted by Coherence's two rebuilds both bypassing the
   Packer entirely because blocks used to be static-JSON-only.
+- `ref/AI_HIVE.md` — design record for AI Hive: a wall of agent and service tiles built as a Rebar UI
+  Opinion (`AgentTile`, `agent-wall`), with its keyed app server and CLI in the sibling `ai-hive` repo
+  (`../ai-hive`, formerly `workspace-office`), and the first Genesis (in progress). Holds the `HiveMember`
+  contract the two repos share; read it before touching either side.
 - The original `ref/PLAN.md` (vision, v0.1 scope, phases) was removed once the project passed that
   early milestone and was never replaced 1:1 — its "tried X, here's why not" reasoning lives on in
   `ref/ASSESSMENT.md`.
