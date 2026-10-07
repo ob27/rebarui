@@ -15,3 +15,11 @@ ref/*
 !ref/COMPONENT_BACKLOG.md
 Screenshot*
 firebase-debug.log
+
+# Standard ignores (dependencies, build output, caches, logs, local env)
+build/
+*.log
+__pycache__/
+*.pyc
+venv/
+.venv/
