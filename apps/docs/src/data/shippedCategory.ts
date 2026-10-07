@@ -48,6 +48,8 @@ const DIAGRAM: readonly string[] = [
   "Histogram",
   "RibbonChart",
   "CalendarHeatmap",
+  "SchematicHeatmap",
+  "HeatmapPainter",
   "BulletGraph",
   "PackedBubbleChart",
   "UMAPPlot",
