@@ -7,8 +7,9 @@ import { chromium } from "@playwright/test";
 import { spawn } from "node:child_process";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const REPO_ROOT = "/Users/tom/Documents/GitHub/rebarui";
+const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_DIR = path.join(REPO_ROOT, "apps/docs/public/benchmark-screenshots-kimi");
 mkdirSync(OUT_DIR, { recursive: true });
 
