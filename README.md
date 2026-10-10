@@ -10,7 +10,7 @@ technical decisions and [`ref/TIERS.md`](ref/TIERS.md) for the component/block c
 
 ## Packages
 
-- [`packages/core`](packages/core) (`rebar-ui` on npm) — 192 components across five tiers
+- [`packages/core`](packages/core) (`rebar-ui` on npm) — 196 components across five tiers
   (Imitation/Synthetic/Opinion/Order/Genesis, see [`ref/TIERS.md`](ref/TIERS.md)): everything from
   `Box`/`Stack`/`Text` up through charts, data grids, diagramming, and a floating AI assistant.
   Browse the live catalog at `/imitations`, `/synthetics`, `/opinions`, `/orders` on the docs site,

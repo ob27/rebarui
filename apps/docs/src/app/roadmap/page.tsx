@@ -29,7 +29,7 @@ const MILESTONES: TimelineItem[] = [
     tone: "info",
     children: (
       <>
-        The catalog crosses 192 components and 44 blocks. FloatAssistant&apos;s sidebar-dock mode,
+        The catalog crosses 196 components and 44 blocks. FloatAssistant&apos;s sidebar-dock mode,
         several components&apos; real customization gaps closed directly from controlled-benchmark
         findings (Kanban&apos;s <code>addPosition</code>/<code>assignee</code>/<code>statusTag</code>,
         SignaturePad&apos;s typed-name tracking), and a real search-rendering bug found and fixed in
