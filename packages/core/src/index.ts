@@ -766,3 +766,18 @@ export { EmailCapture } from "./components/EmailCapture";
 export type { EmailCaptureProps } from "./components/EmailCapture";
 
 export { getIconByName } from "./components/iconLookup";
+
+export { FloatCard } from "./components/FloatCard";
+export type { FloatCardProps } from "./components/FloatCard";
+
+export { DeviceStage } from "./components/DeviceStage";
+export type { DeviceStageProps, DeviceStageFloat } from "./components/DeviceStage";
+
+export { BentoGrid } from "./components/BentoGrid";
+export type { BentoGridProps } from "./components/BentoGrid";
+
+export { BentoCard } from "./components/BentoCard";
+export type { BentoCardProps } from "./components/BentoCard";
+
+export { BackdropSection } from "./components/BackdropSection";
+export type { BackdropSectionProps } from "./components/BackdropSection";

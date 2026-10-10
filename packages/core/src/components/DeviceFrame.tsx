@@ -10,6 +10,12 @@ export interface DeviceFrameProps extends ComponentPropsWithoutRef<"figure"> {
   title?: string;
   /** Optional `<figcaption>`. */
   caption?: ReactNode;
+  /** Phone and tablet: a thin status strip above the content, so the app's own header clears the
+   * rounded corners. Holds the camera hole-punch on a phone. Default `true`. */
+  statusBar?: boolean;
+  /** Phone and tablet: a home-indicator strip below the content, so the app's own tab bar clears
+   * the rounded corners. Default `true`. */
+  homeIndicator?: boolean;
 }
 
 export function DeviceFrame({
@@ -17,6 +23,8 @@ export function DeviceFrame({
   children,
   title,
   caption,
+  statusBar = true,
+  homeIndicator = true,
   className,
   ...props
 }: DeviceFrameProps) {
@@ -28,9 +36,9 @@ export function DeviceFrame({
       {...props}
     >
       <div className="rebar-device-frame-device">
-        {/* The bezel, notch and toolbar are decoration only; the screen is a sibling so it stays accessible. */}
+        {/* The bezel, camera, status strip, home-indicator strip and toolbar are decoration only; the content is never inside an aria-hidden element. */}
         <div className="rebar-device-frame-bezel" data-rebar-part="bezel" aria-hidden="true" />
-        {variant === "phone" ? (
+        {variant === "phone" && statusBar ? (
           <div className="rebar-device-frame-notch" data-rebar-part="notch" aria-hidden="true" />
         ) : null}
         {variant === "browser" ? (
@@ -40,7 +48,13 @@ export function DeviceFrame({
           </div>
         ) : null}
         <div className="rebar-device-frame-screen" data-rebar-part="screen">
+          {variant !== "browser" && statusBar ? (
+            <div className="rebar-device-frame-status" data-rebar-part="status-bar" aria-hidden="true" />
+          ) : null}
           {children}
+          {variant !== "browser" && homeIndicator ? (
+            <div className="rebar-device-frame-home" data-rebar-part="home-indicator" aria-hidden="true" />
+          ) : null}
         </div>
       </div>
       {caption ? <figcaption className="rebar-device-frame-caption">{caption}</figcaption> : null}
