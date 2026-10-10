@@ -50,6 +50,9 @@
   --rebar-color-border: #e0e0e0;
   --rebar-color-border-strong: #d0d0d0;
   --rebar-color-border-focus: #0066cc;
+  --rebar-color-bg-inverse: #1e1e1e;
+  --rebar-color-text-inverse: #f5f5f5;
+  --rebar-color-text-inverse-secondary: #bdbdbd;
 
   --rebar-border-width: 1px;
   --rebar-radius: 4px;

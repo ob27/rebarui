@@ -734,3 +734,17 @@ export type {
   HeatmapCamera,
   HeatmapHandle,
 } from "./components/heatmapGeometry";
+
+export { ScrollRail } from "./components/ScrollRail";
+export type { ScrollRailProps } from "./components/ScrollRail";
+
+export { DeviceFrame } from "./components/DeviceFrame";
+export type { DeviceFrameProps } from "./components/DeviceFrame";
+
+export { FeatureShowcase } from "./components/FeatureShowcase";
+export type { FeatureShowcaseProps } from "./components/FeatureShowcase";
+
+export { EmailCapture } from "./components/EmailCapture";
+export type { EmailCaptureProps } from "./components/EmailCapture";
+
+export { getIconByName } from "./components/iconLookup";
