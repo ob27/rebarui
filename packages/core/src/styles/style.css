@@ -5318,19 +5318,22 @@ div.rebar-chat-message-content > *:last-child { margin-bottom: 0; }
 
 /* WaveformAudioPlayer */
 .rebar-waveform-audio-player { display: flex; flex-direction: column; gap: var(--rebar-space-sm, 8px); width: 100%; }
-.rebar-waveform-audio-player-controls { display: flex; align-items: center; gap: var(--rebar-space-sm, 8px); }
+.rebar-waveform-audio-player-controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--rebar-space-sm, 8px); }
 .rebar-waveform-audio-player-waveform {
   display: flex;
   align-items: flex-end;
   gap: 2px;
-  flex-grow: 1;
+  /* Shrinkable, and wraps onto its own row when the controls don't leave it ~10rem: a phone must not scroll sideways. */
+  flex: 1 1 10rem;
+  min-width: 0;
+  overflow: hidden;
   height: 44px;
   padding: 0 var(--rebar-space-sm, 8px);
   cursor: pointer;
   border-radius: var(--rebar-radius, 4px);
 }
 .rebar-waveform-audio-player-waveform:focus-visible { outline: 2px solid var(--rebar-color-border-focus, #0066cc); outline-offset: 2px; }
-.rebar-waveform-audio-player-bar { flex: 1 1 0; min-width: 2px; border-radius: 999px; background: var(--rebar-color-border, #e0e0e0); }
+.rebar-waveform-audio-player-bar { flex: 1 1 0; min-width: 1px; border-radius: 999px; background: var(--rebar-color-border, #e0e0e0); }
 .rebar-waveform-audio-player-bar[data-played] { background: var(--rebar-color-primary, #0066cc); }
 .rebar-waveform-audio-player-time { flex-shrink: 0; white-space: nowrap; color: var(--rebar-color-text-secondary, #757575); }
 .rebar-waveform-audio-player-error { color: var(--rebar-color-danger, #d32f2f); }
