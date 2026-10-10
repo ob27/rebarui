@@ -54,9 +54,12 @@ const inPage = () => {
   // reported as a note, and the failing check is that no kit element extends past the viewport.
   const KIT = '[data-rebar-component="device-frame"],[data-rebar-component="device-stage"],[data-rebar-component="float-card"],[data-rebar-component="bento-grid"],[data-rebar-component="bento-card"],[data-rebar-component="backdrop-section"],[data-rebar-component="feature-showcase"],[data-rebar-component="scroll-rail"]';
   for (const root of document.querySelectorAll(KIT)) {
+    // An element is only a problem if it is actually visible past the edge: one that an ancestor inside the viewport
+    // clips (a scroll rail's track, an ellipsised chip) does not count.
+    const clippedInside = (el) => { for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) { const st = getComputedStyle(p); if (/hidden|clip|auto|scroll/.test(st.overflowX)) { const pr = R(p); if (pr.left >= -1 && pr.right <= vw + 1) return true; } } return false; };
     for (const el of [root, ...root.querySelectorAll('*')]) {
       const r = R(el);
-      if (r.width > 0 && (r.right > vw + 1 || r.left < -1)) { out.push(['kit element extends past the viewport', `${desc(root)} > ${desc(el)} ${r.left | 0}..${r.right | 0} of ${vw}`]); break; }
+      if (r.width > 0 && (r.right > vw + 1 || r.left < -1) && !clippedInside(el)) { out.push(['kit element extends past the viewport', `${desc(root)} > ${desc(el)} ${r.left | 0}..${r.right | 0} of ${vw}`]); break; }
     }
   }
   if (document.documentElement.scrollWidth > vw + 1) out.push(['NOTE', `docs shell scrolls horizontally: ${document.documentElement.scrollWidth} > ${vw}`]);
