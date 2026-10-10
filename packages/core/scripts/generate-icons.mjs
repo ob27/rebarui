@@ -30,8 +30,10 @@ const EXISTING_REMIX_NAMES = new Set([
   "CopyIcon", "DeleteIcon", "MoveIcon", "DownloadIcon", "MoreIcon", "LockIcon", "UnlockIcon", "SearchIcon",
   "ErrorWarningIcon", "WifiOffIcon", "TimeIcon", "CloseIcon", "HomeIcon", "FolderIcon", "SettingsIcon",
   "QuestionIcon", "DashboardIcon", "LineChartIcon", "ChatIcon", "TeamIcon", "TaskIcon", "CreditCardIcon", "CalendarIcon",
+  // Imported directly by components (see icons.tsx), kept out of the bulk file so it can stay lazy.
+  "Robot3Icon", "AddIcon", "AiAgentIcon", "ArrowUpIcon", "CheckIcon", "CodeSSlashIcon", "HistoryIcon", "ScreenshotIcon", "CameraIcon", "KeyboardIcon",
 ]);
-const EXISTING_ANTD_NAMES = new Set(["EnterOutlined", "InboxOutlined"]);
+const EXISTING_ANTD_NAMES = new Set(["EnterOutlined", "InboxOutlined", "BoldOutlined", "ItalicOutlined", "LinkOutlined", "OrderedListOutlined", "PictureOutlined", "UnderlineOutlined", "UnorderedListOutlined"]);
 
 function toPascalCase(base) {
   const words = base.split(/[^a-zA-Z0-9]+/).filter(Boolean);

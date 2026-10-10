@@ -3,7 +3,7 @@ import type { ComponentPropsWithoutRef, KeyboardEvent } from "react";
 import clsx from "clsx";
 import { Avatar } from "./Avatar";
 import { AssistantOrb } from "./AssistantOrb";
-import { Robot3Icon } from "./icons-remix";
+import { Robot3Icon } from "./icons";
 import { Badge } from "./Badge";
 import type { BadgeTone } from "./Badge";
 import { OrbSprite } from "./OrbSprite";

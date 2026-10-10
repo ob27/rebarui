@@ -1,6 +1,6 @@
 import type { ComponentPropsWithoutRef } from "react";
 import clsx from "clsx";
-import { CameraIcon, KeyboardIcon } from "./icons-remix";
+import { CameraIcon, KeyboardIcon } from "./icons";
 import { MicIcon } from "./icons";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";

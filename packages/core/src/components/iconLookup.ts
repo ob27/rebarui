@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
-import { ICON_REGISTRY } from "./icons";
-import type { IconProps } from "./icons";
+import { ICON_REGISTRY } from "./iconRegistry";
+import type { IconProps } from "./iconFactory";
 
 let index: Map<string, ComponentType<IconProps>> | undefined;
 

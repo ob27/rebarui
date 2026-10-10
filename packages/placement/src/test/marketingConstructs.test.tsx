@@ -99,14 +99,14 @@ describe("feature-grid icons", () => {
     expect(container.querySelector('[data-rebar-part="icon"]')).toBeNull();
   });
 
-  it("resolves icon names from core's icon sets", () => {
+  it("resolves icon names from core's icon sets", async () => {
     const { container } = render(
       <BlockRenderer
         blocks={[{ type: "feature-grid", items: [{ title: "A", body: "b", icon: "calendar" }, { title: "B", body: "b", icon: "LockIcon" }] }]}
       />,
     );
+    await waitFor(() => expect(container.querySelectorAll('[data-rebar-part="icon"] svg')).toHaveLength(2));
     const icons = container.querySelectorAll('[data-rebar-part="icon"] svg');
-    expect(icons).toHaveLength(2);
     expect(icons[0]).toHaveAttribute("data-rebar-icon", "CalendarIcon");
     expect(icons[1]).toHaveAttribute("data-rebar-icon", "LockIcon");
   });
@@ -123,14 +123,14 @@ describe("feature-grid icons", () => {
     expect(svg).not.toHaveAttribute("data-rebar-icon");
   });
 
-  it("renders nothing for an unknown icon, without crashing, and warns in development", () => {
+  it("renders nothing for an unknown icon, without crashing, and warns in development", async () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const { container } = render(
       <BlockRenderer blocks={[{ type: "feature-grid", items: [{ title: "A", body: "b", icon: "no-such-icon" }] }]} />,
     );
+    await waitFor(() => expect(warn).toHaveBeenCalledWith(expect.stringContaining("no-such-icon")));
     expect(container.querySelector('[data-rebar-part="icon"]')).toBeNull();
     expect(screen.getByText("A")).toBeInTheDocument();
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining("no-such-icon"));
     warn.mockRestore();
   });
 });

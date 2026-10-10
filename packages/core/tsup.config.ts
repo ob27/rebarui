@@ -7,6 +7,8 @@ export default defineConfig({
   entry: {
     index: "src/index.ts",
     "orb-shader/index": "src/orb-shader/index.ts",
+    // The icon-name lookup holds the whole icon registry; it is its own entry so a consumer can load it on demand.
+    "icon-lookup": "src/components/iconLookup.ts",
   },
   format: ["esm", "cjs"],
   dts: true,
@@ -31,5 +33,11 @@ export default defineConfig({
   publicDir: "src/styles",
   banner: {
     js: '"use client";',
+  },
+  // `createIcon(...)` only builds a component, but a bundler can't know that, so ~1,500 generated
+  // icon exports were all kept even when a consumer imported one component. Marking the factory pure
+  // lets an app's bundler drop every icon it doesn't use.
+  esbuildOptions(options) {
+    options.pure = [...(options.pure ?? []), "createIcon"];
   },
 });

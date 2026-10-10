@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { ComponentType, CSSProperties, ReactNode } from "react";
 import { Fragment, useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -48,9 +48,8 @@ import {
   ThemeToggle,
   TodoItem,
   Wizard,
-  getIconByName,
 } from "rebar-ui";
-import type { AiChatInputIntent, ChatMessage, ConstructSearchResult, TableColumn, WizardValue } from "rebar-ui";
+import type { AiChatInputIntent, ChatMessage, ConstructSearchResult, IconProps, TableColumn, WizardValue } from "rebar-ui";
 import type {
   Action,
   Construct,
@@ -315,31 +314,46 @@ function warnUnknownIcon(name: string) {
   console.warn(`[@rebar-ui/placement] feature-grid: unknown icon "${name}"; rendering no icon.`);
 }
 
-/** A `feature-grid` item's icon: an inline `iconPath` (same convention as `site-header`'s
- * `logo.iconPath`) wins over a named `icon` looked up in core's icon sets. Unknown names render
- * nothing and warn in development. */
-function renderFeatureIcon(item: { icon?: string; iconPath?: string; iconViewBox?: string }): ReactNode {
-  let glyph: ReactNode = null;
-  if (item.iconPath) {
-    glyph = (
-      <svg viewBox={item.iconViewBox ?? "0 0 24 24"} width={24} height={24} fill="currentColor" aria-hidden="true">
-        <path d={item.iconPath} />
-      </svg>
-    );
-  } else if (item.icon) {
-    const Icon = getIconByName(item.icon);
-    if (!Icon) {
-      warnUnknownIcon(item.icon);
-      return null;
-    }
-    glyph = <Icon size={24} />;
-  }
-  if (!glyph) return null;
+/** Looks a named icon up on demand: the registry holds ~1,800 icons, so it is loaded the first time a
+ * `feature-grid` item names one rather than bundled with the renderer. (An inline `iconPath` needs no
+ * lookup at all.) Unknown names render nothing and warn in development. */
+function NamedFeatureIcon({ name }: { name: string }) {
+  const [Icon, setIcon] = useState<ComponentType<IconProps> | null>(null);
+
+  useEffect(() => {
+    let live = true;
+    void import("rebar-ui/icon-lookup").then((m) => {
+      if (!live) return;
+      const found = m.getIconByName(name);
+      if (!found) warnUnknownIcon(name);
+      setIcon(() => found ?? null);
+    });
+    return () => {
+      live = false;
+    };
+  }, [name]);
+
+  if (!Icon) return null;
   return (
     <span style={{ display: "inline-flex", justifyContent: "center" }} data-rebar-part="icon" aria-hidden="true">
-      {glyph}
+      <Icon size={24} />
     </span>
   );
+}
+
+/** A `feature-grid` item's icon: an inline `iconPath` (same convention as `site-header`'s
+ * `logo.iconPath`) wins over a named `icon`. */
+function renderFeatureIcon(item: { icon?: string; iconPath?: string; iconViewBox?: string }): ReactNode {
+  if (item.iconPath) {
+    return (
+      <span style={{ display: "inline-flex", justifyContent: "center" }} data-rebar-part="icon" aria-hidden="true">
+        <svg viewBox={item.iconViewBox ?? "0 0 24 24"} width={24} height={24} fill="currentColor" aria-hidden="true">
+          <path d={item.iconPath} />
+        </svg>
+      </span>
+    );
+  }
+  return item.icon ? <NamedFeatureIcon name={item.icon} /> : null;
 }
 
 function renderActionContent(action: Action | undefined) {
