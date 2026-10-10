@@ -186,6 +186,16 @@ export interface Action {
 export interface FeatureGridItem {
   title: string;
   body: string;
+  /** An icon from the sets `rebar-ui` ships, by name: the exact export (`"CalendarIcon"`,
+   * `"EnterOutlined"`) or a short, case/dash-insensitive form (`"calendar"`, `"home-heart"`,
+   * `"lock"`, `"book"`). Unknown names render no icon and warn in development. Ignored when
+   * `iconPath` is set. */
+  icon?: string;
+  /** An inline SVG path (`<path d={iconPath} />`, `fill="currentColor"`), same convention as
+   * `site-header`'s `logo.iconPath`, for a custom mark. Takes priority over `icon`. */
+  iconPath?: string;
+  /** The `viewBox` `iconPath` was drawn against. Default `"0 0 24 24"`. */
+  iconViewBox?: string;
 }
 
 export interface PillarGridItem {
@@ -521,6 +531,46 @@ export type Construct =
     }
   | { type: "callout"; tone: Tone; icon?: IconName; title: string; subtitle?: string }
   | { type: "feature-grid"; items: FeatureGridItem[] }
+  | {
+      /** One feature row (eyebrow, title, body) beside an image, optionally inside a device frame.
+       * `device` defaults to `"phone"`; `"none"` renders the bare image. Stacks on narrow screens. */
+      type: "feature-showcase";
+      eyebrow?: string;
+      title: string;
+      body?: string;
+      image: { src: string; alt: string };
+      device?: "phone" | "tablet" | "browser" | "none";
+      /** Browser device only: text in the address bar. */
+      deviceTitle?: string;
+      reverse?: boolean;
+      tone?: "default" | "inverse";
+    }
+  | {
+      /** A horizontally scrolling rail of image cards. Each item renders as a link when `href` is
+       * set. `autoScroll`/`loop`/`controls` pass through to `ScrollRail` (auto-scroll pauses on
+       * hover/focus/hidden tab and never runs under reduced motion). `itemWidth` is any CSS length
+       * (sets `--rebar-scroll-rail-item-width`). Static data only, so a Synthetic by the mechanical
+       * `source`/`onX` rule even though `ScrollRail` itself is an Opinion component. */
+      type: "scroll-rail";
+      label: string;
+      items: { image: { src: string; alt: string }; eyebrow?: string; title?: string; href?: string }[];
+      autoScroll?: boolean | number;
+      loop?: boolean;
+      controls?: boolean;
+      itemWidth?: string;
+    }
+  | {
+      /** An email sign-up form. `onSubmit` is a key into `BlockRenderer`'s `handlers` prop
+       * (an `EmailCaptureSubmitHandler`, see `./live`); declaring it is what makes this an Opinion.
+       * With no handler wired, submitting just shows the success state (a demo). */
+      type: "email-capture";
+      label?: string;
+      placeholder?: string;
+      submitLabel?: string;
+      successMessage?: string;
+      helperText?: string;
+      onSubmit?: string;
+    }
   | { type: "pillar-grid"; items: PillarGridItem[] }
   | { type: "card-grid"; items: CardGridItem[] }
   | { type: "persona-card"; items: PersonaCardItem[] }
@@ -669,6 +719,15 @@ export type Construct =
        * natural aspect ratio. Default `64`, roughly matching the plain-text title's own rendered
        * height. */
       imageHeight?: number;
+      /** An image beside the text (stacking below it on narrow screens), inside a `DeviceFrame`
+       * unless `device` is `"none"`. `device` defaults to `"phone"`. */
+      media?: { src: string; alt: string; device?: "phone" | "tablet" | "browser" | "none" };
+      /** A full-bleed background image behind the hero, under a token-driven scrim
+       * (`--rebar-hero-scrim`) with the text on `--rebar-hero-text` so it keeps contrast. Decorative
+       * (`alt=""`). */
+      backgroundSrc?: string;
+      /** Text alignment. Default `"center"`, today's behaviour. */
+      align?: "start" | "center";
     }
   | { type: "section-header"; kicker?: string; title: string; subtitle?: string }
   | {

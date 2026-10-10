@@ -20,6 +20,7 @@ export type {
 export type {
   AiChatSendHandler,
   AiChatSource,
+  EmailCaptureSubmitHandler,
   GoalTrackerChangeHandler,
   GoalTrackerSource,
   KanbanBoardSource,

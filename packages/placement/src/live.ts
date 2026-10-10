@@ -43,3 +43,7 @@ export type FormSubmitHandler = (values: Record<string, WizardValue>) => void;
 export type ScatterChartSource = { label: string; color?: string; values: number[] }[];
 export type LineChartSource = { label: string; color?: string; values: number[]; dashed?: boolean }[];
 export type StackedBarChartSource = { label: string; segments: { label: string; value: number; color?: string }[] }[];
+
+/** `email-capture`'s `onSubmit` handler: receives the validated, trimmed address; a rejected
+ * promise or a throw shows the form's error state. */
+export type EmailCaptureSubmitHandler = (email: string) => Promise<void> | void;
