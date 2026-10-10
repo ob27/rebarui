@@ -52,6 +52,7 @@ export const CONSTRUCT_TIER = {
     Button: "imitation",
     Carousel: "synthetic", // composes a real `Button` (prev/next) + a track/dots grouping — see file header.
     Checkbox: "imitation",
+    DeviceFrame: "imitation", // a static bezel (own divs + <figure>) around arbitrary screen content; composes no other named component, no state.
     Divider: "imitation",
     Heading: "imitation",
     Iframe: "imitation",
@@ -97,6 +98,7 @@ export const CONSTRUCT_TIER = {
     CodeBlock: "synthetic",
     Countdown: "synthetic",
     Descriptions: "synthetic",
+    FeatureShowcase: "synthetic", // static text-beside-media row composing real `Heading`/`Text`; no state of its own.
     DiagramMinimap: "synthetic",
     DiffViewer: "synthetic",
     Empty: "synthetic",
@@ -144,6 +146,8 @@ export const CONSTRUCT_TIER = {
     Collapsible: "opinion",
     ColorPicker: "opinion",
     Combobox: "opinion",
+    EmailCapture: "opinion", // validation + idle/submitting/success/error submit state machine, caller-owned network via onSubmit.
+    ScrollRail: "opinion", // real scroll position (can-scroll-start/end), paused state and an rAF auto-scroll loop that pauses on hover/focus/hidden tab and is disabled under reduced motion.
     CommentThread: "opinion",
     CommandPalette: "opinion",
     ConstructSearch: "opinion", // real query/open/activeIndex + keyboard nav + filtered dropdown — same shape as CommandPalette. See file header.
@@ -263,6 +267,9 @@ export const CONSTRUCT_TIER = {
     "error-block": "synthetic",
     footer: "synthetic",
     "feature-grid": "synthetic",
+    "feature-showcase": "synthetic",
+    "scroll-rail": "synthetic", // no `source`/`onX` field, so mechanically not an Opinion (see opinions.ts) even though the ScrollRail component it renders is.
+    "email-capture": "opinion", // declares `onSubmit` (a live handler key), so it is an Opinion by the mechanical rule.
     "pillar-grid": "synthetic",
     hero: "synthetic",
     "section-header": "synthetic",

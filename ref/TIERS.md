@@ -115,35 +115,35 @@ though Order is really the frame Imitations/Synthetics/Opinions render inside, n
 their own ladder. It's stated plainly here and once in `ref/ARCHITECTURE.md`, for whoever maintains
 the schema.
 
-## Components, by tier (192)
+## Components, by tier (196)
 
 This list (and the block list below it) is generated straight from `apps/docs/src/data/
 constructTier.ts` — that file is the mechanically-enforced source of truth (a compile-time
 assertion checks every exported component/block has an entry), so treat any drift between it and
 this list as this list being wrong, not the other way around.
 
-- **Imitation** (33): `Avatar`, `Badge`, `Barcode`, `Box`, `Button`, `Checkbox`, `Divider`, `Heading`,
+- **Imitation** (34): `Avatar`, `Badge`, `Barcode`, `Box`, `Button`, `Checkbox`, `DeviceFrame`, `Divider`, `Heading`,
   `Iframe`, `Input`, `Kbd`, `NumberInput`, `Pagination`, `PinInput`, `Progress`, `ProgressCircle`,
   `QRCode`, `Radio`, `RadioGroup`, `Rate`, `ScrollArea`, `SegmentedControl`, `Selector`, `Skeleton`,
   `Slider`, `Spin`, `Stack`, `Statistic`, `Switch`, `Tag`, `Text`, `Toggle`, `Watermark`.
-- **Synthetic** (49): `AccordionItem`, `Affix`, `AiChatInput`, `Alert`, `AspectRatio`, `AvatarGroup`,
+- **Synthetic** (50): `AccordionItem`, `Affix`, `AiChatInput`, `Alert`, `AspectRatio`, `AvatarGroup`,
   `BackTop`, `BarChart`, `BulletGraph`, `ButtonGroup`, `CandlestickChart`, `Card`, `Carousel`,
   `ChatThread`, `CodeBlock`, `Countdown`, `Descriptions`, `DiagramMinimap`, `DiffViewer`, `Empty`,
-  `ErrorBlock`, `FormItem`, `FunnelChart`, `GanttChart`, `GaugeChart`, `GeoChart`, `GitGraph`,
+  `ErrorBlock`, `FeatureShowcase`, `FormItem`, `FunnelChart`, `GanttChart`, `GaugeChart`, `GeoChart`, `GitGraph`,
   `InfiniteScrollGrid`, `Masonry`, `NoticeBar`, `PieChart`, `PivotTable`, `Result`, `SankeyDiagram`,
   `ScrollMask`, `Sparkline`, `SteppedBarChart`, `Steps`, `Sticky`, `Tab`, `TabList`, `TabPanel`,
   `Timeline`, `ToastProvider`, `ToggleGroup`, `Treemap`, `WaterfallChart`, `WaybackSlider`,
   `WordCloud`.
-- **Opinion** (96): `Accordion`, `ActionSheet`, `AreaChart`, `BottomSheet`, `BoxPlot`, `BubbleChart`,
+- **Opinion** (98): `Accordion`, `ActionSheet`, `AreaChart`, `BottomSheet`, `BoxPlot`, `BubbleChart`,
   `Calendar`, `CalendarHeatmap`, `Cascader`, `Collapsible`, `ColorPicker`, `Combobox`,
   `CommandPalette`, `CommentThread`, `ConstructSearch`, `ContextMenu`, `DataGrid`, `DatePicker`,
-  `Dialog`, `DistributionChart`, `Drawer`, `Dropdown`, `Editable`, `Ellipsis`, `FileManager`,
+  `Dialog`, `DistributionChart`, `Drawer`, `Dropdown`, `Editable`, `Ellipsis`, `EmailCapture`, `FileManager`,
   `FileUpload`, `FloatAssistant`, `FloatingBubble`, `FloatingPanel`, `FloatingSelectionToolbar`,
   `Flowchart`, `Form`, `GraphExplorer`, `Heatmap`, `Histogram`, `HoverCard`, `Image`, `ImageCropper`,
   `IndexBar`, `IndexChart`, `Kanban`, `LayersPanel`, `Lightbox`, `LineChart`, `Mentions`, `Menubar`,
   `MindMap`, `MultiSelect`, `NodeLinkGraph`, `NumberKeyboard`, `OrgChart`, `PackedBubbleChart`,
   `PertChart`, `PhoneInput`, `PickerWheel`, `Popconfirm`, `Popover`, `PullToRefresh`, `RadarChart`,
-  `ResizablePanels`, `RibbonChart`, `RichTextEditor`, `ScatterChart`, `Select`, `ShapeGallery`,
+  `ResizablePanels`, `RibbonChart`, `RichTextEditor`, `ScatterChart`, `ScrollRail`, `Select`, `ShapeGallery`,
   `SignaturePad`, `SlashCommandMenu`, `SpeedDial`, `SplitButton`, `StackedAreaChart`,
   `StackedBarChart`, `StackedLineChart`, `StepChart`, `SwipeActions`, `Table`, `Tabs`, `TagInput`,
   `TextToSpeechBar`, `ThemeToggle`, `TimePicker`, `Toast`, `TodoItem`, `Tooltip`, `Tour`, `Transfer`,
@@ -152,17 +152,19 @@ this list as this list being wrong, not the other way around.
 - **Order** (14): `AppShell`, `Breadcrumb`, `Col`, `Container`, `Footer`, `Grid`, `MobileTabBar`,
   `NavBar`, `NavIndex`, `Row`, `SectionNav`, `SidePanel`, `SidebarNav`, `SkipLink`.
 
-## Blocks, by tier (42)
+## Blocks, by tier (45)
 
 - **Order** (9): `comparison`, `mega-menu`, `modal`, `nav-bar`, `nav-index`, `page-index`,
   `side-panel`, `site-header`, `tabs`.
-- **Synthetic** (22): `banner`, `callout`, `card-grid`, `checklist`, `construct-entry`, `data-list`,
-  `doc-section`, `error-block`, `feature-grid`, `filter-bar`, `footer`, `gallery`, `header`, `hero`,
-  `heuristic`, `iframe`, `persona-card`, `pillar-grid`, `props-table`, `section-header`,
-  `spin-card`, `stats-table`.
-- **Opinion** (11) — mechanically true, each declares a `source`/`onX` field: `ai-chat`,
-  `card-kanban`, `float-assistant`, `form`, `goal-tracker`, `line-chart`, `scatter-chart`,
+- **Synthetic** (24): `banner`, `callout`, `card-grid`, `checklist`, `construct-entry`, `data-list`,
+  `doc-section`, `error-block`, `feature-grid`, `feature-showcase`, `filter-bar`, `footer`, `gallery`, `header`, `hero`,
+  `heuristic`, `iframe`, `persona-card`, `pillar-grid`, `props-table`, `scroll-rail`,
+  `section-header`, `spin-card`, `stats-table`.
+- **Opinion** (12) — mechanically true, each declares a `source`/`onX` field: `ai-chat`,
+  `card-kanban`, `email-capture`, `float-assistant`, `form`, `goal-tracker`, `line-chart`, `scatter-chart`,
   `stacked-bar-chart`, `sticky-kanban`, `table`, `wizard`.
+
+`scroll-rail` is the mirror case: the `ScrollRail` component it renders is an Opinion (real scroll/paused/auto-scroll state), but the block declares no `source`/`onX`, so by the mechanical rule the block is Synthetic.
 
 One call worth stating explicitly, since the schema field name alone would suggest otherwise:
 `filter-bar` *looks* interactive (a real search box and filter select) but its actual
