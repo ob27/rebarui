@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, CalendarHeatmap, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
