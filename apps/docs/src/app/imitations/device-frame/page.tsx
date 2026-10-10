@@ -3,16 +3,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { LivePreview } from "@/components/LivePreview";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
-
-// An inline SVG data URI stands in for a real tall screenshot (taller than the phone screen, so the
-// top-anchored crop is visible).
-const TALL_SCREENSHOT = `data:image/svg+xml;utf8,${encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" width="360" height="1000" viewBox="0 0 360 1000"><rect width="360" height="1000" fill="#f5f5f5"/><rect x="20" y="30" width="320" height="56" rx="8" fill="#0066cc"/><rect x="20" y="110" width="320" height="140" rx="8" fill="#e0e0e0"/><rect x="20" y="270" width="320" height="140" rx="8" fill="#e0e0e0"/><rect x="20" y="430" width="320" height="140" rx="8" fill="#e0e0e0"/><rect x="20" y="590" width="320" height="140" rx="8" fill="#e0e0e0"/></svg>',
-)}`;
-
-const WIDE_SCREENSHOT = `data:image/svg+xml;utf8,${encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750"><rect width="1200" height="750" fill="#f5f5f5"/><rect x="40" y="40" width="1120" height="70" rx="8" fill="#0066cc"/><rect x="40" y="140" width="540" height="560" rx="8" fill="#e0e0e0"/><rect x="620" y="140" width="540" height="560" rx="8" fill="#e0e0e0"/></svg>',
-)}`;
+import { APP_SCREEN, WIDE_SCREEN } from "@/data/placeholderScreens";
 
 const BLOCKS: Construct[] = [
   {
@@ -32,7 +23,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Size and colour come from tokens with fallbacks: `--rebar-device-frame-bezel-color` (dark by default), `--rebar-device-frame-bezel-width`, `--rebar-device-frame-radius`, `--rebar-device-frame-phone-ratio` (default 9 / 19.5), `--rebar-device-frame-tablet-ratio` (default 4 / 3) and `--rebar-device-frame-max-width`. A tall screenshot in the phone or tablet frame is cropped from the top (`object-fit: cover; object-position: top`), never stretched.",
+        text: "The frame is sized to the content and shows it whole: an `<img>` child renders at `width: 100%; height: auto`, so a phone or tablet screenshot is never cropped or distorted, and the frame is as tall as the screenshot is. A status strip above and a home-indicator strip below (both inside the rounded screen) keep the app's own header and tab bar clear of the rounded corners; turn them off with `statusBar={false}` / `homeIndicator={false}`. Every proportion is a share of the frame's width, so the frame scales as one piece. Tokens, all with fallbacks: `--rebar-device-frame-bezel-color`, `--rebar-device-frame-bezel-width`, `--rebar-device-frame-radius`, `--rebar-device-frame-status-bg` (default the bezel colour), `--rebar-device-frame-home-bg` (default `--rebar-color-bg-primary`), `--rebar-device-frame-home-indicator` (default a muted border colour), `--rebar-device-frame-punch-size` and `--rebar-device-frame-max-width`. Use a screenshot that already includes the app's own header and tab bar and was captured without the operating system's status bar.",
       },
     ],
   },
@@ -42,7 +33,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "The bezel, notch and browser toolbar are decoration and are `aria-hidden`. The screen content is a sibling, not a child, of those pieces, so the image's `alt` text and any other content stay in the accessibility tree. The root is a real `<figure>`; `caption` renders a `<figcaption>`.",
+        text: "The bezel, camera, status strip, home-indicator strip and browser toolbar are decoration and are `aria-hidden`. The screen content is a sibling, not a child, of those pieces, so the image's `alt` text and any other content stay in the accessibility tree. The root is a real `<figure>`; `caption` renders a `<figcaption>`.",
       },
     ],
   },
@@ -52,7 +43,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: '`data-rebar-component="device-frame"` and `data-rebar-variant` (`phone`, `tablet` or `browser`) on the root; `data-rebar-part` values `bezel`, `screen`, `notch` (phone only) and `toolbar` (browser only).',
+        text: '`data-rebar-component="device-frame"` and `data-rebar-variant` (`phone`, `tablet` or `browser`) on the root; `data-rebar-part` values `bezel`, `screen`, `notch` (the phone camera hole-punch, drawn only with the status strip), `status-bar` and `home-indicator` (phone and tablet) and `toolbar` (browser only).',
       },
     ],
   },
@@ -80,13 +71,13 @@ export default function DeviceFramePage() {
       <LivePreview>
         <Stack direction="row" gap="lg" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
           <DeviceFrame variant="phone" caption="Phone">
-            <img src={TALL_SCREENSHOT} alt="A tall placeholder app screen, cropped from the top" />
+            <img src={APP_SCREEN} alt="A placeholder app screen with its own header and tab bar" />
           </DeviceFrame>
           <DeviceFrame variant="tablet" caption="Tablet">
-            <img src={WIDE_SCREENSHOT} alt="A wide placeholder app screen" />
+            <img src={WIDE_SCREEN} alt="A wide placeholder app screen" />
           </DeviceFrame>
           <DeviceFrame variant="browser" title="app.example.com" caption="Browser">
-            <img src={WIDE_SCREENSHOT} alt="A placeholder dashboard in a browser" />
+            <img src={WIDE_SCREEN} alt="A placeholder dashboard in a browser" />
           </DeviceFrame>
         </Stack>
       </LivePreview>

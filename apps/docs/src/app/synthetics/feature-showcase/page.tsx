@@ -3,10 +3,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { LivePreview } from "@/components/LivePreview";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
-
-const SCREENSHOT = `data:image/svg+xml;utf8,${encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" width="360" height="1000" viewBox="0 0 360 1000"><rect width="360" height="1000" fill="#f5f5f5"/><rect x="20" y="30" width="320" height="56" rx="8" fill="#0066cc"/><rect x="20" y="110" width="320" height="140" rx="8" fill="#e0e0e0"/><rect x="20" y="270" width="320" height="140" rx="8" fill="#e0e0e0"/></svg>',
-)}`;
+import { APP_SCREEN } from "@/data/placeholderScreens";
 
 const BLOCKS: Construct[] = [
   {
@@ -79,7 +76,7 @@ export default function FeatureShowcasePage() {
             body="Drag tasks between days and the plan updates everywhere."
             media={
               <DeviceFrame variant="phone">
-                <img src={SCREENSHOT} alt="A placeholder week view" />
+                <img src={APP_SCREEN} alt="A placeholder week view" />
               </DeviceFrame>
             }
           />
@@ -91,7 +88,7 @@ export default function FeatureShowcasePage() {
             body={<Button variant="secondary">Learn more</Button>}
             media={
               <DeviceFrame variant="phone">
-                <img src={SCREENSHOT} alt="A placeholder reminders screen" />
+                <img src={APP_SCREEN} alt="A placeholder reminders screen" />
               </DeviceFrame>
             }
           />

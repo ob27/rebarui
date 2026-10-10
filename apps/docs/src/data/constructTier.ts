@@ -52,6 +52,9 @@ export const CONSTRUCT_TIER = {
     Button: "imitation",
     Carousel: "synthetic", // composes a real `Button` (prev/next) + a track/dots grouping — see file header.
     Checkbox: "imitation",
+    BackdropSection: "imitation", // art + scrim + content in plain elements; composes no named component, no state.
+    BentoGrid: "imitation", // a CSS grid wrapper; composes no named component, no state.
+    FloatCard: "imitation", // an elevated card of plain elements; no state.
     DeviceFrame: "imitation", // a static bezel (own divs + <figure>) around arbitrary screen content; composes no other named component, no state.
     Divider: "imitation",
     Heading: "imitation",
@@ -98,6 +101,8 @@ export const CONSTRUCT_TIER = {
     CodeBlock: "synthetic",
     Countdown: "synthetic",
     Descriptions: "synthetic",
+    BentoCard: "synthetic", // composes real `Heading`/`Text`; no state.
+    DeviceStage: "synthetic", // composes `FloatCard`s around a device; its only state mirrors a container-query breakpoint as a data attribute.
     FeatureShowcase: "synthetic", // static text-beside-media row composing real `Heading`/`Text`; no state of its own.
     DiagramMinimap: "synthetic",
     DiffViewer: "synthetic",
