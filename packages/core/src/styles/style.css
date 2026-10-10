@@ -8104,19 +8104,19 @@ button.rebar-float-assistant-model-pill:hover {
   position: absolute;
   inset: 0;
   background: var(--rebar-device-frame-bezel-color, #1a1a1a);
-  border-radius: var(--rebar-device-frame-radius, calc(var(--rebar-radius, 4px) * 8));
+  border-radius: var(--rebar-device-frame-radius, min(calc(var(--rebar-radius, 4px) * 8), 2.5rem));
   box-shadow: var(--rebar-device-frame-shadow, none);
 }
 
 .rebar-device-frame[data-rebar-variant="tablet"] .rebar-device-frame-bezel {
-  border-radius: var(--rebar-device-frame-radius, calc(var(--rebar-radius, 4px) * 4));
+  border-radius: var(--rebar-device-frame-radius, min(calc(var(--rebar-radius, 4px) * 4), 1.5rem));
 }
 
 .rebar-device-frame-screen {
   position: relative;
   overflow: hidden;
   background: var(--rebar-color-bg-primary, #ffffff);
-  border-radius: calc(var(--rebar-device-frame-radius, calc(var(--rebar-radius, 4px) * 8)) - var(--rebar-device-frame-bezel-width, var(--rebar-space-sm, 8px)));
+  border-radius: calc(var(--rebar-device-frame-radius, min(calc(var(--rebar-radius, 4px) * 8), 2.5rem)) - var(--rebar-device-frame-bezel-width, var(--rebar-space-sm, 8px)));
 }
 
 .rebar-device-frame[data-rebar-variant="phone"] .rebar-device-frame-screen {
@@ -8125,7 +8125,7 @@ button.rebar-float-assistant-model-pill:hover {
 
 .rebar-device-frame[data-rebar-variant="tablet"] .rebar-device-frame-screen {
   aspect-ratio: var(--rebar-device-frame-tablet-ratio, 4 / 3);
-  border-radius: calc(var(--rebar-device-frame-radius, calc(var(--rebar-radius, 4px) * 4)) - var(--rebar-device-frame-bezel-width, var(--rebar-space-sm, 8px)));
+  border-radius: calc(var(--rebar-device-frame-radius, min(calc(var(--rebar-radius, 4px) * 4), 1.5rem)) - var(--rebar-device-frame-bezel-width, var(--rebar-space-sm, 8px)));
 }
 
 /* A tall screenshot is cropped from the top, never stretched. */
@@ -8149,14 +8149,15 @@ button.rebar-float-assistant-model-pill:hover {
 
 .rebar-device-frame-notch {
   position: absolute;
-  top: var(--rebar-device-frame-bezel-width, var(--rebar-space-sm, 8px));
+  /* A camera hole-punch, not a notch: a full-width notch hides the top of the screenshot. */
+  top: calc(var(--rebar-device-frame-bezel-width, var(--rebar-space-sm, 8px)) + var(--rebar-space-sm, 8px));
   left: 50%;
   z-index: 2;
-  width: 30%;
-  height: var(--rebar-space-md, 16px);
+  width: var(--rebar-device-frame-punch-size, 0.625rem);
+  height: var(--rebar-device-frame-punch-size, 0.625rem);
   transform: translateX(-50%);
   background: var(--rebar-device-frame-bezel-color, #1a1a1a);
-  border-radius: 0 0 var(--rebar-space-sm, 8px) var(--rebar-space-sm, 8px);
+  border-radius: 50%;
 }
 
 /* Browser: a thin chrome, not a thick bezel. */

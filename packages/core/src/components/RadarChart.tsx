@@ -84,6 +84,9 @@ export function RadarChart({
   const margin = 34;
   const center = size / 2;
   const radius = Math.max(size / 2 - margin, 1);
+  // Axis labels sit outside the plot and are not clipped by it: widen the viewBox sideways by roughly
+  // however far the longest label overhangs the margin (about 6px per character at the label size).
+  const labelPad = Math.min(120, Math.max(0, Math.round(Math.max(0, ...axes.map((a) => a.length)) * 6.2 - margin + 14)));
 
   const allValues = series.flatMap((s) => s.values);
   if (series.length === 0 || allValues.length === 0) {
@@ -125,8 +128,8 @@ export function RadarChart({
       {...props}
     >
       <svg
-        viewBox={`0 0 ${size} ${size}`}
-        style={{ width: "100%", maxWidth: size, height: "auto", margin: "0 auto", display: "block" }}
+        viewBox={`${-labelPad} 0 ${size + labelPad * 2} ${size}`}
+        style={{ width: "100%", maxWidth: size + labelPad * 2, height: "auto", margin: "0 auto", display: "block" }}
         role="img"
         aria-label={ariaLabel ?? title ?? "Radar chart"}
       >

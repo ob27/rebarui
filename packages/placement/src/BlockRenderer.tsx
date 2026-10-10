@@ -2086,7 +2086,8 @@ function renderBlock(
 
     case "hero": {
       const wrapped = !!block.media || !!block.backgroundSrc;
-      const alignStart = block.align === "start";
+      // With a side visual the text reads from the start edge; centred text beside media looks adrift.
+      const alignStart = block.align ? block.align === "start" : !!block.media;
       // Over a background image the text switches to the inverse text token so it keeps contrast
       // against the scrim; with no background image the colours are untouched.
       const heroTextColor = block.backgroundSrc
@@ -2182,12 +2183,7 @@ function renderBlock(
             position: "relative",
             isolation: "isolate",
             overflow: "hidden",
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "var(--rebar-space-xl, 32px)",
-            ...(block.backgroundSrc ? { padding: "var(--rebar-space-3xl, 64px) var(--rebar-space-lg, 24px)" } : {}),
+            padding: "var(--rebar-space-3xl, 64px) var(--rebar-space-lg, 24px)",
           }}
         >
           {block.backgroundSrc ? (
@@ -2206,12 +2202,25 @@ function renderBlock(
               />
             </>
           ) : null}
-          <div style={{ flex: "1 1 20rem", minWidth: 0 }}>{text}</div>
-          {block.media ? (
-            <div data-rebar-part="media" style={{ flex: `0 1 ${wideMedia ? "24rem" : "16rem"}`, minWidth: 0 }}>
-              {renderDeviceMedia(block.media, block.media.device)}
-            </div>
-          ) : null}
+          <div
+            data-rebar-part="inner"
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "var(--rebar-space-2xl, 48px)",
+              maxWidth: "var(--rebar-hero-max-width, 72rem)",
+              margin: "0 auto",
+            }}
+          >
+            <div style={{ flex: "1 1 20rem", minWidth: 0 }}>{text}</div>
+            {block.media ? (
+              <div data-rebar-part="media" style={{ flex: `0 1 ${wideMedia ? "24rem" : "16rem"}`, minWidth: 0 }}>
+                {renderDeviceMedia(block.media, block.media.device)}
+              </div>
+            ) : null}
+          </div>
         </div>
       );
     }
