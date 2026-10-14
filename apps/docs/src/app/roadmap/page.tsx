@@ -29,7 +29,7 @@ const MILESTONES: TimelineItem[] = [
     tone: "info",
     children: (
       <>
-        The catalog crosses 196 components and 44 blocks. FloatAssistant&apos;s sidebar-dock mode,
+        The catalog crosses 196 components and 42 blocks. FloatAssistant&apos;s sidebar-dock mode,
         several components&apos; real customization gaps closed directly from controlled-benchmark
         findings (Kanban&apos;s <code>addPosition</code>/<code>assignee</code>/<code>statusTag</code>,
         SignaturePad&apos;s typed-name tracking), and a real search-rendering bug found and fixed in
@@ -66,7 +66,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Illustrative, not a committed schedule — Rebar UI is a small, Open Beta project with one maintainer plus AI-assisted development, and dates here are deliberately omitted rather than guessed. The completed milestones above are real; the ones after \"0.10 Open Beta\" describe direction and intent, not promised delivery order or timing. See [Contributing](/about) if a specific gap here is something you'd want to help build.",
+        text: "Illustrative, not a committed schedule — Rebar UI is a small, Open Beta project with one maintainer plus AI-assisted development, and dates here are deliberately omitted rather than guessed. The completed milestones above are real; the ones after \"0.12.1 Open Beta\" describe direction and intent, not promised delivery order or timing. See [Contributing](/about) if a specific gap here is something you'd want to help build.",
       },
     ],
   },

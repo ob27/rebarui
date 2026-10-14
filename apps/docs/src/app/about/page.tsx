@@ -30,7 +30,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Cheaper and faster is the headline, but it's not the point on its own. Every interactive component wraps a real Radix UI primitive underneath, so keyboard operability, focus management, and ARIA semantics are correct by construction, not bolted on. Every visual value is a `--rebar-*` CSS custom property, not a hardcoded pixel or color — which is what makes the near-zero output variance possible in the first place: a pre-built component's own internal layout is fixed by its implementation, not re-derived per request, whether it's reached directly as JSX or composed through the placement layer — either way, the model isn't improvising layout from scratch.",
+        text: "Cheaper and faster is the headline, but it's not the point on its own. The interactive primitives (dialogs, menus, selects, tabs, tooltips, popovers and the like) wrap real Radix UI primitives underneath, and the components built on them inherit that, so keyboard operability, focus management, and ARIA semantics come from a maintained library rather than being bolted on. Visual values are driven by `--rebar-*` CSS custom properties rather than hardcoded pixels or colors — which is what makes the near-zero output variance possible in the first place: a pre-built component's own internal layout is fixed by its implementation, not re-derived per request, whether it's reached directly as JSX or composed through the placement layer — either way, the model isn't improvising layout from scratch.",
       },
     ],
   },
