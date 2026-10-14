@@ -1,6 +1,6 @@
 // See Kanban.cookbook.md (next to this file) for common customization patterns — read that first,
 // it's much cheaper than reverse-engineering the pattern from this implementation.
-import { Fragment, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import type { DragEvent, ReactNode, TouchEvent } from "react";
 import clsx from "clsx";
 import { resolveStickyColor, STICKY_PALETTE } from "../stickyColor";
