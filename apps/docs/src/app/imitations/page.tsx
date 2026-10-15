@@ -1,4 +1,5 @@
-import { Heading, Image, Stack, Text } from "rebar-ui";
+import { Stack } from "rebar-ui";
+import { TierIntro } from "@/components/docs/TierIntro";
 import type { Construct } from "@rebar-ui/placement";
 import { tierComponentNames } from "@/data/tierSections";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -82,12 +83,7 @@ export default function ImitationsPage() {
 
   return (
     <Stack gap="lg">
-      <Image src="/catalogue-heros/immitations.jpeg" alt="Imitations hero image" style={{ width: "100%", borderRadius: "8px" }} />
-      <Heading level={1}>Imitations</Heading>
-      <Text color="secondary">
-        Static, standalone primitives — the smallest, closest-to-HTML building block in the
-        catalog. Browse all {count} in the sidebar.
-      </Text>
+      <TierIntro tier="imitation" title="Imitations" lead="Static, standalone primitives — the smallest, closest-to-HTML building block in the catalog." lines={["Raw pieces.", "Nothing fancy in here."]} />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

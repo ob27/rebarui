@@ -1,4 +1,5 @@
-import { Heading, Image, Stack, Text } from "rebar-ui";
+import { Stack } from "rebar-ui";
+import { TierIntro } from "@/components/docs/TierIntro";
 import type { Construct } from "@rebar-ui/placement";
 import { tierComponentNames } from "@/data/tierSections";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -90,12 +91,7 @@ export default function OrdersPage() {
 
   return (
     <Stack gap="lg">
-      <Image src="/catalogue-heros/orders.jpeg" alt="Orders hero image" style={{ width: "100%", borderRadius: "8px" }} />
-      <Heading level={1}>Orders</Heading>
-      <Text color="secondary">
-        Macro/page-level structural governance — arranges other things at a page or app scale.
-        Browse all {count} in the sidebar.
-      </Text>
+      <TierIntro tier="order" title="Orders" lead="Macro/page-level structural governance — arranges other things at a page or app scale." lines={["Page-level law.", "Structure before decoration."]} />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

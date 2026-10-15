@@ -1,4 +1,5 @@
-import { Heading, Image, Stack, Text } from "rebar-ui";
+import { Stack } from "rebar-ui";
+import { TierIntro } from "@/components/docs/TierIntro";
 import type { Construct } from "@rebar-ui/placement";
 import { tierComponentNames } from "@/data/tierSections";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -92,12 +93,7 @@ export default function SyntheticsPage() {
 
   return (
     <Stack gap="lg">
-      <Image src="/catalogue-heros/synthetics.jpeg" alt="Synthetics hero image" style={{ width: "100%", borderRadius: "8px" }} />
-      <Heading level={1}>Synthetics</Heading>
-      <Text color="secondary">
-        Static compositions of primitives with a unified purpose, no real dynamism. Browse all{" "}
-        {count} in the sidebar.
-      </Text>
+      <TierIntro tier="synthetic" title="Synthetics" lead="Static compositions of primitives with a unified purpose, no real dynamism." lines={["Fixed compositions.", "Nothing moves. On purpose."]} />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

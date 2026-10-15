@@ -1,4 +1,5 @@
-import { Heading, Image, Stack, Text } from "rebar-ui";
+import { Stack } from "rebar-ui";
+import { TierIntro } from "@/components/docs/TierIntro";
 import type { Construct } from "@rebar-ui/placement";
 import { tierComponentNames } from "@/data/tierSections";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -95,12 +96,7 @@ export default function OpinionsPage() {
 
   return (
     <Stack gap="lg">
-      <Image src="/catalogue-heros/opinions.jpeg" alt="Opinions hero image" style={{ width: "100%", borderRadius: "8px" }} />
-      <Heading level={1}>Opinions</Heading>
-      <Text color="secondary">
-        Real internal state — validation, morphing, multi-step flow, drag/reorder,
-        search-and-filter, open/closed with focus management. Browse all {count} in the sidebar.
-      </Text>
+      <TierIntro tier="opinion" title="Opinions" lead="Real internal state — validation, morphing, multi-step flow, drag/reorder, search-and-filter, open/closed with focus management." lines={["State. But rich.", "Rich state. Hold the bloat."]} />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

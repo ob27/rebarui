@@ -34,7 +34,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "A mascot that feels alive without being a video. The character is cut into plain transparent images on one shared canvas and `Puppet` stacks them: a `body`, parts that `wobble` on their own (antennae, a tail), `pupils` that glance around inside an `eyesMask`, and `lids` that blink. It is a rigid paper cut-out on an unseen stick: it never squashes or stretches, it pivots from below its feet, and it pops up when it appears. Poking it wiggles it and skips to its next line.",
+        text: "A mascot that feels alive without being a video. The character is cut into plain transparent images on one shared canvas and `Puppet` stacks them: a **body**, parts that **wobble** on their own (antennae, a tail), **pupils** that glance around inside an **eyes mask**, and **lids** that blink. It is a rigid paper cut-out on an unseen stick: it never squashes or stretches, it pivots from below its feet, and it pops up when it appears. Poking it wiggles it and skips to its next line.",
       },
       {
         kind: "text",
@@ -48,7 +48,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Every layer must be the same size as the body (a transparent PNG on the same canvas) so they line up 1:1 with no positioning data. `canvas` only supplies the aspect ratio. `wobble[].pivot` is where the part hinges, in percent of the canvas. `eyesMask` is the white of the eyes as an alpha mask: the pupils and lids are clipped to it, which is what keeps a glancing pupil inside the eye. `lidLine` is how far down the canvas the lids start, in percent, because a blink drops the lids from that line.",
+        text: "Every layer must be the **same size** as the body (a transparent PNG on the same canvas) so they line up 1:1 with no positioning data. `canvas` only supplies the aspect ratio. `wobble[].pivot` is where the part hinges, in percent of the canvas. `eyesMask` is the white of the eyes as an alpha mask: the pupils and lids are clipped to it, which is what keeps a glancing pupil inside the eye. `lidLine` is how far down the canvas the lids start, in percent, because a blink drops the lids from that line.",
       },
       {
         kind: "text",
@@ -128,6 +128,7 @@ export default function PuppetPage() {
       </Text>
 
       <div
+        className="cs-poster"
         style={{
           background: "#1181ff",
           border: "2px solid #0b0b14",
@@ -147,7 +148,7 @@ export default function PuppetPage() {
       </Text>
 
       <Heading level={2}>Expressions</Heading>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))", gap: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 12 }}>
         {POSES.map(({ pose, label }) => (
           <figure key={pose} style={{ margin: 0, background: "#1181ff", border: "2px solid #0b0b14", borderRadius: 10, padding: "12px 0 0", display: "grid", justifyItems: "center", overflow: "hidden" }}>
             <Puppet layers={CON} canvas={CON_CANVAS} size={96} weight="heavy" pose={pose} />

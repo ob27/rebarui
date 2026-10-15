@@ -123,3 +123,76 @@
   .cs-float--yellow { top: 118px !important; right: 0 !important; } .cs-float--pink { left: 0 !important; bottom: 215px !important; } .cs-float--concrete { right: 0 !important; bottom: 110px !important; }
   .cs-peek { height: 220px; } .cs-float .rebar-float-card-body b { font-size: 28px; }
 }
+
+/* ---- docs template: sidebar | page | "on this page" ---------------------------------------------------------------- */
+.cs-docs { max-width: 1240px; margin: 0 auto; padding: 48px 32px 96px; display: grid; grid-template-columns: 260px minmax(0, 1fr) 210px; gap: 48px; align-items: start; }
+.cs-docs-nav { position: sticky; top: 88px; align-self: start; max-height: calc(100vh - 110px); overflow: auto; }
+.cs-docs-navtoggle { display: none; }
+.cs-docs-main { min-width: 0; }
+.cs-chrome { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.cs-crumbs { font: 500 13px/1.4 monospace; color: var(--rebar-color-text-secondary); }
+.cs-crumbs a { color: inherit; }
+.cs-chrome-tags { display: inline-flex; gap: 8px; }
+.cs-tag--new { background: var(--cs-yellow); } .cs-tag--none { background: transparent; color: var(--rebar-color-text-secondary); border-style: dashed; border-color: var(--rebar-color-text-secondary); }
+.cs-toc { position: sticky; top: 96px; align-self: start; font-size: 14px; display: grid; gap: 8px; border-left: 2px solid var(--rebar-color-border); padding-left: 16px; max-height: calc(100vh - 120px); overflow: auto; }
+.cs-toc a { color: var(--rebar-color-text-secondary); text-decoration: none; line-height: 1.35; }
+.cs-toc a[aria-current="true"] { color: var(--rebar-color-text-primary); font-weight: 600; }
+.cs-toc b { font: 600 12px/1 monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+.cs-docs-main h2 { scroll-margin-top: 96px; }
+.cs-docs-main code { overflow-wrap: anywhere; }
+.cs-visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---- tier catalogue ------------------------------------------------------------------------------------------------ */
+.cs-page-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end; margin-bottom: 32px; }
+.cs-page-head-text { display: grid; gap: 16px; }
+.cs-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.cs-h1--page { font-size: clamp(44px, 5.4vw, 76px); }
+.cs-count { font: 500 14px monospace; color: var(--rebar-color-text-secondary); }
+.cs-lead { font-size: 19px; color: var(--rebar-color-text-secondary); max-width: 42em; margin: 0; }
+.cs-mascot { position: relative; width: 230px; height: 210px; }
+.cs-mascot .rebar-puppet { position: absolute; right: 0; bottom: 0; }
+.cs-mascot .rebar-puppet-bubble { font: 800 15px/1.15 var(--cs-display); width: 150px; max-width: none; padding: 8px 14px; }
+.cs-filters { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 24px; }
+.cs-filters > :first-child { flex: 1; min-width: 240px; }
+.cs-pill { border: 2px solid var(--rebar-color-border); border-radius: 999px; padding: 7px 16px; font: 600 14px/1 var(--rebar-font-family-sans); background: var(--rebar-color-bg-primary); color: var(--rebar-color-text-primary); cursor: pointer; }
+.cs-pill[aria-pressed="true"] { background: var(--cs-ink); color: #fff; border-color: var(--cs-ink); }
+:root[data-theme="dark"] .cs-pill[aria-pressed="true"] { background: var(--rebar-color-primary); color: var(--rebar-color-primary-text); border-color: var(--rebar-color-primary); }
+.cs-grid li { display: grid; }
+.cs-grid { list-style: none; margin: 0 0 48px; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 24px; }
+.cs-ccard { display: grid; gap: 12px; padding: 12px; align-self: stretch; border: 2px solid var(--rebar-color-border); border-radius: 14px; background: var(--rebar-color-bg-primary); color: var(--rebar-color-text-primary); text-decoration: none; box-shadow: 4px 4px 0 var(--cs-shadow); transition: transform 0.14s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.14s cubic-bezier(0.2, 0.8, 0.2, 1); align-content: start; }
+a.cs-ccard:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--cs-shadow); }
+.cs-ccard--static { opacity: 0.7; box-shadow: none; border-style: dashed; }
+.cs-ccard b { font: 800 18px/1.1 var(--cs-display); letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.cs-ccard-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+.cs-tile { height: 84px; border: 2px solid var(--rebar-color-border); border-radius: 10px; display: grid; place-items: center; font: 800 40px var(--cs-display); color: var(--cs-ink); letter-spacing: -0.03em; }
+.cs-tile--1 { background: var(--cs-concrete); } .cs-tile--2 { background: var(--cs-pink); } .cs-tile--3 { background: #9fd0ff; } .cs-tile--4 { background: var(--cs-yellow); } .cs-tile--5 { background: #b7f0c8; }
+.cs-empty { display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: center; border: 2px dashed var(--rebar-color-border); border-radius: 22px; padding: 32px; background: var(--rebar-color-bg-primary); margin-bottom: 48px; }
+.cs-empty > div { display: grid; gap: 12px; justify-items: start; } .cs-empty-con { display: block; width: 110px; }
+
+/* ---- mobile header -------------------------------------------------------------------------------------------------- */
+.cs-header-desktop { display: contents; }
+.cs-mobile-header { display: none; position: sticky; top: 0; z-index: 40; background: var(--rebar-color-bg-secondary); border-bottom: 2px solid var(--rebar-color-border); }
+.cs-mobile-bar { display: flex; align-items: center; justify-content: space-between; height: 60px; padding: 0 16px; }
+.cs-mobile-logo { display: flex; align-items: center; gap: 10px; color: var(--rebar-color-text-primary); text-decoration: none; font: 800 22px var(--cs-display); letter-spacing: -0.03em; }
+.cs-mobile-logo svg { color: var(--rebar-color-primary); }
+.cs-mobile-menubtn { border: 2px solid var(--rebar-color-border); border-radius: 999px; padding: 8px 18px; font: 600 15px/1 var(--rebar-font-family-sans); background: var(--rebar-color-bg-primary); color: var(--rebar-color-text-primary); cursor: pointer; box-shadow: 3px 3px 0 var(--cs-shadow); }
+.cs-mobile-menu { display: grid; gap: 20px; padding: 16px 16px 28px; max-height: calc(100vh - 60px); overflow: auto; border-top: 2px solid var(--rebar-color-border); background: var(--rebar-color-bg-secondary); }
+.cs-mobile-group { display: grid; gap: 4px; }
+.cs-mobile-group h2 { font: 600 12px/1 monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rebar-color-text-secondary); margin: 0 0 6px; }
+.cs-mobile-group a { display: block; padding: 10px 12px; border-radius: 8px; color: var(--rebar-color-text-primary); text-decoration: none; font-weight: 500; }
+.cs-mobile-group a:hover { background: var(--rebar-color-tint-1); }
+.cs-mobile-gh { color: var(--rebar-color-text-secondary); font-size: 14px; }
+
+/* ---- 404 ----------------------------------------------------------------------------------------------------------- */
+.cs-404 { font: 800 clamp(120px, 20vw, 260px)/0.8 var(--cs-display); letter-spacing: -0.07em; color: #fff; text-shadow: 8px 8px 0 var(--cs-ink); }
+
+@media (max-width: 1180px) { .cs-docs { grid-template-columns: 240px minmax(0, 1fr); } .cs-toc, .cs-toc-slot { display: none; } }
+@media (max-width: 900px) { .cs-header-desktop { display: none; } .cs-mobile-header { display: block; } }
+@media (max-width: 760px) {
+  .cs-docs { grid-template-columns: 1fr; padding: 24px 16px 64px; gap: 24px; }
+  .cs-docs-navtoggle { display: block; justify-self: start; border: 2px solid var(--rebar-color-border); border-radius: 999px; padding: 9px 18px; font: 600 15px/1 var(--rebar-font-family-sans); background: var(--rebar-color-bg-primary); color: var(--rebar-color-text-primary); cursor: pointer; box-shadow: 3px 3px 0 var(--cs-shadow); }
+  .cs-docs-nav { display: none; position: static; max-height: none; } .cs-docs-nav[data-open="true"] { display: block; }
+  .cs-page-head, .cs-empty { grid-template-columns: 1fr; } .cs-mascot { display: none; }
+  .cs-poster .rebar-puppet-bubble[data-rebar-side="start"] { right: auto; left: -12%; top: -9%; max-width: 72%; }
+  .cs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+}

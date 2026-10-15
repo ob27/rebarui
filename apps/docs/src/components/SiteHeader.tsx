@@ -1,4 +1,5 @@
 "use client";
+import { MobileHeader } from "@/components/MobileHeader";
 
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -62,6 +63,15 @@ const BLOCKS: Construct[] = [
   },
 ];
 
+// Two headers, one visible at a time (CSS switches at 900px): the full navigation block on a desktop, a logo and Menu button on a phone,
+// because the block's links, search and theme controls cannot fit a narrow screen and never wrapped or collapsed.
 export function SiteHeader() {
-  return <NextBlockRenderer blocks={BLOCKS} data={{ constructSearchIndex: CONSTRUCT_SEARCH_INDEX }} />;
+  return (
+    <>
+      <div className="cs-header-desktop">
+        <NextBlockRenderer blocks={BLOCKS} data={{ constructSearchIndex: CONSTRUCT_SEARCH_INDEX }} />
+      </div>
+      <MobileHeader />
+    </>
+  );
 }
