@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import * as RadixAvatar from "@radix-ui/react-avatar";
 import clsx from "clsx";
-import { resolvePlaceholderSrc } from "./avatarPlaceholder";
+import { useAvatarPlaceholderSrc } from "./avatarPlaceholder";
 
 export interface AvatarProps extends Omit<ComponentPropsWithoutRef<"span">, "className"> {
   src?: string;
@@ -26,7 +26,8 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
   { src, alt, fallback, className, placeholder, size = "md", ...props },
   ref,
 ) {
-  const imageSrc = src ?? resolvePlaceholderSrc(placeholder, fallback);
+  const placeholderSrc = useAvatarPlaceholderSrc(src ? undefined : placeholder, fallback);
+  const imageSrc = src ?? placeholderSrc;
 
   return (
     <RadixAvatar.Root

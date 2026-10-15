@@ -1,8 +1,6 @@
 import type { ComponentType } from "react";
 import { createIcon } from "./iconFactory";
 import type { IconProps } from "./iconFactory";
-import * as RemixBulkIcons from "./icons-remix";
-import * as AntdBulkIcons from "./icons-antd";
 
 export { createIcon };
 export type { IconProps, IconPathSpec } from "./iconFactory";
@@ -231,65 +229,100 @@ export const InboxOutlined = createIcon(
   "0 0 1024 1024",
 );
 
-// ---------------------------------------------------------------------------------------------
-// ICON_REGISTRY — every icon this package ships, tagged with its real source, for the
-// `/imitations/icon` catalogue page. Built once, here, rather than hand-listed a second time in
-// `apps/docs/src/data/iconManifest.ts` — that file would otherwise need one entry per icon (1,835
-// of them) kept in sync by hand every time either bulk set regenerates. The two bulk sets are
-// pulled in via a namespace import specifically so a newly-generated icon in either file is picked
-// up automatically the next time this module loads, with no second list to remember to update.
-export type IconSource = "RemixIcon" | "Ant Design";
+export type { IconSource, IconRegistryEntry } from "./iconRegistry";
 
-export interface IconRegistryEntry {
-  name: string;
-  Icon: ComponentType<IconProps>;
-  source: IconSource;
-}
+// Icons that components import directly. They live here, not in the generated bulk files, so a
+// consumer's bundler can keep these few without also keeping every icon in the bulk sets (the
+// registry namespace-imports those files, which would otherwise force all ~1,800 to stay).
+export const Robot3Icon = createIcon(
+  `M11 1V2H7C5.34315 2 4 3.34315 4 5V8C4 10.7614 6.23858 13 9 13H15C17.7614 13 20 10.7614 20 8V5C20 3.34315 18.6569 2 17 2H13V1H11ZM6 5C6 4.44772 6.44772 4 7 4H17C17.5523 4 18 4.44772 18 5V8C18 9.65685 16.6569 11 15 11H9C7.34315 11 6 9.65685 6 8V5ZM9.5 9C10.3284 9 11 8.32843 11 7.5C11 6.67157 10.3284 6 9.5 6C8.67157 6 8 6.67157 8 7.5C8 8.32843 8.67157 9 9.5 9ZM14.5 9C15.3284 9 16 8.32843 16 7.5C16 6.67157 15.3284 6 14.5 6C13.6716 6 13 6.67157 13 7.5C13 8.32843 13.6716 9 14.5 9ZM6 22C6 18.6863 8.68629 16 12 16C15.3137 16 18 18.6863 18 22H20C20 17.5817 16.4183 14 12 14C7.58172 14 4 17.5817 4 22H6Z`,
+  "Robot3Icon",
+);
 
-const CURATED: IconRegistryEntry[] = [
-  { name: "ChevronDownIcon", Icon: ChevronDownIcon, source: "RemixIcon" },
-  { name: "ChevronRightIcon", Icon: ChevronRightIcon, source: "RemixIcon" },
-  { name: "ChevronLeftIcon", Icon: ChevronLeftIcon, source: "RemixIcon" },
-  { name: "MicIcon", Icon: MicIcon, source: "RemixIcon" },
-  { name: "StopCircleIcon", Icon: StopCircleIcon, source: "RemixIcon" },
-  { name: "SendPlaneIcon", Icon: SendPlaneIcon, source: "RemixIcon" },
-  { name: "CopyIcon", Icon: CopyIcon, source: "RemixIcon" },
-  { name: "DeleteIcon", Icon: DeleteIcon, source: "RemixIcon" },
-  { name: "MoveIcon", Icon: MoveIcon, source: "RemixIcon" },
-  { name: "DownloadIcon", Icon: DownloadIcon, source: "RemixIcon" },
-  { name: "MoreIcon", Icon: MoreIcon, source: "RemixIcon" },
-  { name: "LockIcon", Icon: LockIcon, source: "RemixIcon" },
-  { name: "UnlockIcon", Icon: UnlockIcon, source: "RemixIcon" },
-  { name: "SearchIcon", Icon: SearchIcon, source: "RemixIcon" },
-  { name: "ErrorWarningIcon", Icon: ErrorWarningIcon, source: "RemixIcon" },
-  { name: "WifiOffIcon", Icon: WifiOffIcon, source: "RemixIcon" },
-  { name: "TimeIcon", Icon: TimeIcon, source: "RemixIcon" },
-  { name: "CloseIcon", Icon: CloseIcon, source: "RemixIcon" },
-  { name: "HomeIcon", Icon: HomeIcon, source: "RemixIcon" },
-  { name: "FolderIcon", Icon: FolderIcon, source: "RemixIcon" },
-  { name: "SettingsIcon", Icon: SettingsIcon, source: "RemixIcon" },
-  { name: "QuestionIcon", Icon: QuestionIcon, source: "RemixIcon" },
-  { name: "DashboardIcon", Icon: DashboardIcon, source: "RemixIcon" },
-  { name: "LineChartIcon", Icon: LineChartIcon, source: "RemixIcon" },
-  { name: "ChatIcon", Icon: ChatIcon, source: "RemixIcon" },
-  { name: "TeamIcon", Icon: TeamIcon, source: "RemixIcon" },
-  { name: "TaskIcon", Icon: TaskIcon, source: "RemixIcon" },
-  { name: "CreditCardIcon", Icon: CreditCardIcon, source: "RemixIcon" },
-  { name: "CalendarIcon", Icon: CalendarIcon, source: "RemixIcon" },
-  { name: "EnterOutlined", Icon: EnterOutlined, source: "Ant Design" },
-  { name: "InboxOutlined", Icon: InboxOutlined, source: "Ant Design" },
-];
+export const AddIcon = createIcon(
+  `M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z`,
+  "AddIcon",
+);
 
-export const ICON_REGISTRY: IconRegistryEntry[] = [
-  ...CURATED,
-  ...Object.entries(RemixBulkIcons).map(([name, Icon]) => ({
-    name,
-    Icon: Icon as ComponentType<IconProps>,
-    source: "RemixIcon" as const,
-  })),
-  ...Object.entries(AntdBulkIcons).map(([name, Icon]) => ({
-    name,
-    Icon: Icon as ComponentType<IconProps>,
-    source: "Ant Design" as const,
-  })),
-];
+export const AiAgentIcon = createIcon(
+  `M12 2C17.5228 2 22 6.47715 22 12C22 14.7096 20.9205 17.1697 19.1709 18.9697C17.3551 20.8376 14.8124 22 12 22C9.18756 22 6.64488 20.8376 4.8291 18.9697C3.07949 17.1697 2 14.7096 2 12C2 6.47715 6.47715 2 12 2ZM12 16C10.0022 16 8.20124 16.8375 6.9248 18.1816C8.30642 19.3175 10.0724 20 12 20C13.9274 20 15.6927 19.3173 17.0742 18.1816C15.7978 16.8377 13.9975 16 12 16ZM12 4C7.58172 4 4 7.58172 4 12C4 13.7701 4.57462 15.4044 5.54785 16.7295C7.1822 15.0483 9.46797 14 12 14C14.5318 14 16.8169 15.0485 18.4512 16.7295C19.4246 15.4043 20 13.7703 20 12C20 7.58172 16.4183 4 12 4ZM11.5293 5.31934C11.7058 4.89329 12.2943 4.89329 12.4707 5.31934L12.7236 5.93066C13.1556 6.97343 13.9615 7.80622 14.9746 8.25684L15.6924 8.5752C16.1029 8.75796 16.1028 9.35627 15.6924 9.53906L14.9326 9.87695C13.9448 10.3163 13.1534 11.1193 12.7139 12.1279L12.4668 12.6934C12.2864 13.1074 11.7137 13.1074 11.5332 12.6934L11.2871 12.1279C10.8476 11.1193 10.0552 10.3163 9.06738 9.87695L8.30762 9.53906C7.89719 9.35628 7.89717 8.75795 8.30762 8.5752L9.02539 8.25684C10.0385 7.80623 10.8445 6.97345 11.2764 5.93066L11.5293 5.31934Z`,
+  "AiAgentIcon",
+);
+
+export const ArrowUpIcon = createIcon(
+  `M13.0001 7.82843V20H11.0001V7.82843L5.63614 13.1924L4.22192 11.7782L12.0001 4L19.7783 11.7782L18.3641 13.1924L13.0001 7.82843Z`,
+  "ArrowUpIcon",
+);
+
+export const CheckIcon = createIcon(
+  `M9.9997 15.1709L19.1921 5.97852L20.6063 7.39273L9.9997 17.9993L3.63574 11.6354L5.04996 10.2212L9.9997 15.1709Z`,
+  "CheckIcon",
+);
+
+export const CodeSSlashIcon = createIcon(
+  `M24 12L18.3431 17.6569L16.9289 16.2426L21.1716 12L16.9289 7.75736L18.3431 6.34315L24 12ZM2.82843 12L7.07107 16.2426L5.65685 17.6569L0 12L5.65685 6.34315L7.07107 7.75736L2.82843 12ZM9.78845 21H7.66009L14.2116 3H16.3399L9.78845 21Z`,
+  "CodeSSlashIcon",
+);
+
+export const HistoryIcon = createIcon(
+  `M12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12H4C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C9.25022 4 6.82447 5.38734 5.38451 7.50024L8 7.5V9.5H2V3.5H4L3.99989 5.99918C5.82434 3.57075 8.72873 2 12 2ZM13 7L12.9998 11.585L16.2426 14.8284L14.8284 16.2426L10.9998 12.413L11 7H13Z`,
+  "HistoryIcon",
+);
+
+export const ScreenshotIcon = createIcon(
+  `M11.9926 14.4068L10.4406 15.9587C10.7959 16.5563 11 17.2543 11 18C11 20.2091 9.20914 22 7 22C4.79086 22 3 20.2091 3 18C3 15.7909 4.79086 14 7 14C7.73792 14 8.42917 14.1998 9.0226 14.5483L10.5783 12.9926L6.3934 8.80761L7.80761 7.3934L11.9926 11.5783L16.1819 7.38904L17.5961 8.80325L13.4068 12.9926L14.968 14.5538C15.5635 14.2019 16.2582 14 17 14C19.2091 14 21 15.7909 21 18C21 20.2091 19.2091 22 17 22C14.7909 22 13 20.2091 13 18C13 17.2582 13.2019 16.5635 13.5538 15.968L11.9926 14.4068ZM7 20C8.10457 20 9 19.1046 9 18C9 16.8954 8.10457 16 7 16C5.89543 16 5 16.8954 5 18C5 19.1046 5.89543 20 7 20ZM17 20C18.1046 20 19 19.1046 19 18C19 16.8954 18.1046 16 17 16C15.8954 16 15 16.8954 15 18C15 19.1046 15.8954 20 17 20ZM19 13V5H5V13H3V4C3 3.44772 3.44772 3 4 3H20C20.5523 3 21 3.44772 21 4V13H19Z`,
+  "ScreenshotIcon",
+);
+
+export const CameraIcon = createIcon(
+  `M9.82843 5L7.82843 7H4V19H20V7H16.1716L14.1716 5H9.82843ZM9 3H15L17 5H21C21.5523 5 22 5.44772 22 6V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V6C2 5.44772 2.44772 5 3 5H7L9 3ZM12 18C8.96243 18 6.5 15.5376 6.5 12.5C6.5 9.46243 8.96243 7 12 7C15.0376 7 17.5 9.46243 17.5 12.5C17.5 15.5376 15.0376 18 12 18ZM12 16C13.933 16 15.5 14.433 15.5 12.5C15.5 10.567 13.933 9 12 9C10.067 9 8.5 10.567 8.5 12.5C8.5 14.433 10.067 16 12 16Z`,
+  "CameraIcon",
+);
+
+export const KeyboardIcon = createIcon(
+  `M3 17H21V19H3V17ZM3 11H6V14H3V11ZM8 11H11V14H8V11ZM3 5H6V8H3V5ZM13 5H16V8H13V5ZM18 5H21V8H18V5ZM13 11H16V14H13V11ZM18 11H21V14H18V11ZM8 5H11V8H8V5Z`,
+  "KeyboardIcon",
+);
+
+export const BoldOutlined = createIcon(
+  `M697.8 481.4c33.6-35 54.2-82.3 54.2-134.3v-10.2C752 229.3 663.9 142 555.3 142H259.4c-15.1 0-27.4 12.3-27.4 27.4v679.1c0 16.3 13.2 29.5 29.5 29.5h318.7c117 0 211.8-94.2 211.8-210.5v-11c0-73-37.4-137.3-94.2-175.1zM328 238h224.7c57.1 0 103.3 44.4 103.3 99.3v9.5c0 54.8-46.3 99.3-103.3 99.3H328V238zm366.6 429.4c0 62.9-51.7 113.9-115.5 113.9H328V542.7h251.1c63.8 0 115.5 51 115.5 113.9v10.8z`,
+  "BoldOutlined",
+  "64 64 896 896",
+);
+
+export const ItalicOutlined = createIcon(
+  `M798 160H366c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h181.2l-156 544H229c-4.4 0-8 3.6-8 8v64c0 4.4 3.6 8 8 8h432c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8H474.4l156-544H798c4.4 0 8-3.6 8-8v-64c0-4.4-3.6-8-8-8z`,
+  "ItalicOutlined",
+  "64 64 896 896",
+);
+
+export const LinkOutlined = createIcon(
+  `M574 665.4a8.03 8.03 0 00-11.3 0L446.5 781.6c-53.8 53.8-144.6 59.5-204 0-59.5-59.5-53.8-150.2 0-204l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3l-39.8-39.8a8.03 8.03 0 00-11.3 0L191.4 526.5c-84.6 84.6-84.6 221.5 0 306s221.5 84.6 306 0l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3L574 665.4zm258.6-474c-84.6-84.6-221.5-84.6-306 0L410.3 307.6a8.03 8.03 0 000 11.3l39.7 39.7c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c53.8-53.8 144.6-59.5 204 0 59.5 59.5 53.8 150.2 0 204L665.3 562.6a8.03 8.03 0 000 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c84.5-84.6 84.5-221.5 0-306.1zM610.1 372.3a8.03 8.03 0 00-11.3 0L372.3 598.7a8.03 8.03 0 000 11.3l39.6 39.6c3.1 3.1 8.2 3.1 11.3 0l226.4-226.4c3.1-3.1 3.1-8.2 0-11.3l-39.5-39.6z`,
+  "LinkOutlined",
+  "64 64 896 896",
+);
+
+export const OrderedListOutlined = createIcon(
+  `M920 760H336c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0-568H336c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 284H336c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM216 712H100c-2.2 0-4 1.8-4 4v34c0 2.2 1.8 4 4 4h72.4v20.5h-35.7c-2.2 0-4 1.8-4 4v34c0 2.2 1.8 4 4 4h35.7V838H100c-2.2 0-4 1.8-4 4v34c0 2.2 1.8 4 4 4h116c2.2 0 4-1.8 4-4V716c0-2.2-1.8-4-4-4zM100 188h38v120c0 2.2 1.8 4 4 4h40c2.2 0 4-1.8 4-4V152c0-4.4-3.6-8-8-8h-78c-2.2 0-4 1.8-4 4v36c0 2.2 1.8 4 4 4zm116 240H100c-2.2 0-4 1.8-4 4v36c0 2.2 1.8 4 4 4h68.4l-70.3 77.7a8.3 8.3 0 00-2.1 5.4V592c0 2.2 1.8 4 4 4h116c2.2 0 4-1.8 4-4v-36c0-2.2-1.8-4-4-4h-68.4l70.3-77.7a8.3 8.3 0 002.1-5.4V432c0-2.2-1.8-4-4-4z`,
+  "OrderedListOutlined",
+  "64 64 896 896",
+);
+
+export const PictureOutlined = createIcon(
+  `M928 160H96c-17.7 0-32 14.3-32 32v640c0 17.7 14.3 32 32 32h832c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32zm-40 632H136v-39.9l138.5-164.3 150.1 178L658.1 489 888 761.6V792zm0-129.8L664.2 396.8c-3.2-3.8-9-3.8-12.2 0L424.6 666.4l-144-170.7c-3.2-3.8-9-3.8-12.2 0L136 652.7V232h752v430.2zM304 456a88 88 0 100-176 88 88 0 000 176zm0-116c15.5 0 28 12.5 28 28s-12.5 28-28 28-28-12.5-28-28 12.5-28 28-28z`,
+  "PictureOutlined",
+  "64 64 896 896",
+);
+
+export const UnderlineOutlined = createIcon(
+  `M824 804H200c-4.4 0-8 3.4-8 7.6v60.8c0 4.2 3.6 7.6 8 7.6h624c4.4 0 8-3.4 8-7.6v-60.8c0-4.2-3.6-7.6-8-7.6zm-312-76c69.4 0 134.6-27.1 183.8-76.2C745 602.7 772 537.4 772 468V156c0-6.6-5.4-12-12-12h-60c-6.6 0-12 5.4-12 12v312c0 97-79 176-176 176s-176-79-176-176V156c0-6.6-5.4-12-12-12h-60c-6.6 0-12 5.4-12 12v312c0 69.4 27.1 134.6 76.2 183.8C377.3 701 442.6 728 512 728z`,
+  "UnderlineOutlined",
+  "64 64 896 896",
+);
+
+export const UnorderedListOutlined = createIcon(
+  `M912 192H328c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 284H328c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 284H328c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h584c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM104 228a56 56 0 10112 0 56 56 0 10-112 0zm0 284a56 56 0 10112 0 56 56 0 10-112 0zm0 284a56 56 0 10112 0 56 56 0 10-112 0z`,
+  "UnorderedListOutlined",
+  "64 64 896 896",
+);
+

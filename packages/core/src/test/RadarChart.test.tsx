@@ -80,4 +80,13 @@ describe("RadarChart", () => {
     fireEvent.click(toggledButton);
     expect(container.querySelectorAll('[data-rebar-part="radar-series"]')).toHaveLength(2);
   });
+
+  it("widens the viewBox so a long axis label is not clipped", () => {
+    const { container } = render(
+      <RadarChart axes={["Mission Over Profit", "Cost", "Faith"]} series={[{ label: "A", values: [1, 2, 3] }]} />,
+    );
+    const [minX, , width] = container.querySelector("svg")!.getAttribute("viewBox")!.split(" ").map(Number);
+    expect(minX).toBeLessThan(0);
+    expect(width).toBeGreaterThan(280);
+  });
 });

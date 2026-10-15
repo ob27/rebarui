@@ -1,4 +1,4 @@
-import { AVATAR_PLACEHOLDERS } from "../assets/avatarPlaceholders";
+import { useEffect, useState } from "react";
 
 // Kept out of Avatar.tsx deliberately: react-docgen-typescript (which generates the docs site's
 // props tables from every export in each COMPONENT_FILES entry) treats any exported function in
@@ -17,9 +17,42 @@ export function hashString(value: string): number {
   return Math.abs(hash);
 }
 
-export function resolvePlaceholderSrc(placeholder: boolean | number | undefined, fallback: string): string | undefined {
+export function resolvePlaceholderSrc(
+  placeholder: boolean | number | undefined,
+  fallback: string,
+  list: readonly string[],
+): string | undefined {
   // Not a plain truthiness check: placeholder={0} must mean "index 0," not "unset" — 0 is falsy.
   if (placeholder === undefined || placeholder === false) return undefined;
   const index = typeof placeholder === "number" ? placeholder : hashString(fallback);
-  return AVATAR_PLACEHOLDERS[index % AVATAR_PLACEHOLDERS.length];
+  return list[index % list.length];
+}
+
+// The portraits are ~650 KB of embedded images. They live in their own module and are fetched the
+// first time a placeholder is actually asked for, so an app that never uses `placeholder` (or only
+// renders real `src` images) never downloads them. Until they arrive the avatar shows its fallback.
+let loaded: readonly string[] | undefined;
+let loading: Promise<readonly string[]> | undefined;
+
+function loadPlaceholders(): Promise<readonly string[]> {
+  loading ??= import("../assets/avatarPlaceholders").then((m) => (loaded = m.AVATAR_PLACEHOLDERS));
+  return loading;
+}
+
+export function useAvatarPlaceholderSrc(placeholder: boolean | number | undefined, fallback: string): string | undefined {
+  const wanted = placeholder !== undefined && placeholder !== false;
+  const [list, setList] = useState<readonly string[] | undefined>(loaded);
+
+  useEffect(() => {
+    if (!wanted || list) return;
+    let live = true;
+    void loadPlaceholders().then((l) => {
+      if (live) setList(l);
+    });
+    return () => {
+      live = false;
+    };
+  }, [wanted, list]);
+
+  return wanted && list ? resolvePlaceholderSrc(placeholder, fallback, list) : undefined;
 }

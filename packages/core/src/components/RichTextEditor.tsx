@@ -3,7 +3,7 @@ import type { ChangeEvent, ClipboardEvent, ComponentPropsWithoutRef, DragEvent, 
 import type { ComponentType } from "react";
 import clsx from "clsx";
 import { Button } from "./Button";
-import { BoldOutlined, ItalicOutlined, LinkOutlined, OrderedListOutlined, PictureOutlined, UnderlineOutlined, UnorderedListOutlined } from "./icons-antd";
+import { BoldOutlined, ItalicOutlined, LinkOutlined, OrderedListOutlined, PictureOutlined, UnderlineOutlined, UnorderedListOutlined } from "./icons";
 import type { IconProps } from "./iconFactory";
 
 export interface RichTextEditorProps

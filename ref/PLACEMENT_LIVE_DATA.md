@@ -91,6 +91,9 @@ callback for links" to "any block-appropriate data source or handler."
   (`ref/HEURISTICS.md` #54) generically instead of per-app.
 - `form`: `onSubmit` → a keyed handler receiving the form's values, replacing today's
   submit-does-nothing placeholder.
+- `email-capture`: `onSubmit` → a keyed `EmailCaptureSubmitHandler` `(email: string) => Promise<void> | void`
+  receiving the validated, trimmed address; a rejection or throw shows the form's error state. With
+  no handler wired the block is a demo and just shows its success state. (Shipped.)
 - `filter-bar`/`data-list`: `source` for `data-list`'s `items`; `onSearch`/`onFilterChange` for
   `filter-bar`.
 

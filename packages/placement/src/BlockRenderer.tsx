@@ -1,5 +1,5 @@
-import type { CSSProperties, ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import type { ComponentType, CSSProperties, ReactNode } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import {
   Alert,
   AiChatInput,
@@ -12,10 +12,13 @@ import {
   Checkbox,
   CodeBlock,
   ConstructSearch,
+  DeviceFrame,
   Dialog,
   Editable,
+  EmailCapture,
   Empty,
   ErrorBlock,
+  FeatureShowcase,
   FloatAssistant,
   Footer,
   Heading,
@@ -28,6 +31,7 @@ import {
   Popconfirm,
   Popover,
   ScatterChart,
+  ScrollRail,
   SectionNav,
   Select,
   SidePanel,
@@ -45,7 +49,7 @@ import {
   TodoItem,
   Wizard,
 } from "rebar-ui";
-import type { AiChatInputIntent, ChatMessage, ConstructSearchResult, TableColumn, WizardValue } from "rebar-ui";
+import type { AiChatInputIntent, ChatMessage, ConstructSearchResult, IconProps, TableColumn, WizardValue } from "rebar-ui";
 import type {
   Action,
   Construct,
@@ -57,6 +61,7 @@ import type {
 import type {
   AiChatSendHandler,
   AiChatSource,
+  EmailCaptureSubmitHandler,
   FormSubmitHandler,
   GoalTrackerChangeHandler,
   GoalTrackerSource,
@@ -285,6 +290,70 @@ function resolveHandler<T extends (...args: never[]) => void>(
   key: string | undefined,
 ): T | undefined {
   return key === undefined ? undefined : (handlers[key] as T | undefined);
+}
+
+/** Renders a `{ src, alt }` image either bare (`device: "none"`) or inside a `DeviceFrame`. The
+ * default device is `"phone"`. Shared by `hero.media` and `feature-showcase`. */
+function renderDeviceMedia(
+  image: { src: string; alt: string },
+  device: "phone" | "tablet" | "browser" | "none" | undefined,
+  deviceTitle?: string,
+): ReactNode {
+  if (device === "none") {
+    return <img src={image.src} alt={image.alt} style={{ display: "block", width: "100%", height: "auto" }} />;
+  }
+  return (
+    <DeviceFrame variant={device ?? "phone"} title={deviceTitle}>
+      <img src={image.src} alt={image.alt} />
+    </DeviceFrame>
+  );
+}
+
+function warnUnknownIcon(name: string) {
+  if (typeof process !== "undefined" && process.env?.NODE_ENV === "production") return;
+  console.warn(`[@rebar-ui/placement] feature-grid: unknown icon "${name}"; rendering no icon.`);
+}
+
+/** Looks a named icon up on demand: the registry holds ~1,800 icons, so it is loaded the first time a
+ * `feature-grid` item names one rather than bundled with the renderer. (An inline `iconPath` needs no
+ * lookup at all.) Unknown names render nothing and warn in development. */
+function NamedFeatureIcon({ name }: { name: string }) {
+  const [Icon, setIcon] = useState<ComponentType<IconProps> | null>(null);
+
+  useEffect(() => {
+    let live = true;
+    void import("rebar-ui/icon-lookup").then((m) => {
+      if (!live) return;
+      const found = m.getIconByName(name);
+      if (!found) warnUnknownIcon(name);
+      setIcon(() => found ?? null);
+    });
+    return () => {
+      live = false;
+    };
+  }, [name]);
+
+  if (!Icon) return null;
+  return (
+    <span style={{ display: "inline-flex", justifyContent: "center" }} data-rebar-part="icon" aria-hidden="true">
+      <Icon size={24} />
+    </span>
+  );
+}
+
+/** A `feature-grid` item's icon: an inline `iconPath` (same convention as `site-header`'s
+ * `logo.iconPath`) wins over a named `icon`. */
+function renderFeatureIcon(item: { icon?: string; iconPath?: string; iconViewBox?: string }): ReactNode {
+  if (item.iconPath) {
+    return (
+      <span style={{ display: "inline-flex", justifyContent: "center" }} data-rebar-part="icon" aria-hidden="true">
+        <svg viewBox={item.iconViewBox ?? "0 0 24 24"} width={24} height={24} fill="currentColor" aria-hidden="true">
+          <path d={item.iconPath} />
+        </svg>
+      </span>
+    );
+  }
+  return item.icon ? <NamedFeatureIcon name={item.icon} /> : null;
 }
 
 function renderActionContent(action: Action | undefined) {
@@ -918,6 +987,32 @@ function AiChatBlockView({
         onDictationToggle={setDictating}
       />
     </Stack>
+  );
+}
+
+/** `email-capture`'s live binding: `onSubmit` is a key into `handlers`. With no handler wired the
+ * block is a demo: submitting just shows the success state. */
+function EmailCaptureBlockView({
+  block,
+  path,
+  handlers,
+}: {
+  block: Extract<Construct, { type: "email-capture" }>;
+  path: string;
+  handlers: BlockRendererHandlers;
+}) {
+  const onSubmit = resolveHandler<EmailCaptureSubmitHandler>(handlers, block.onSubmit);
+  return (
+    <EmailCapture
+      data-rebar-placement-block="email-capture"
+      data-rebar-block-path={path}
+      onSubmit={(email) => onSubmit?.(email)}
+      label={block.label}
+      placeholder={block.placeholder}
+      submitLabel={block.submitLabel}
+      successMessage={block.successMessage}
+      helperText={block.helperText}
+    />
   );
 }
 
@@ -1696,6 +1791,7 @@ function renderBlock(
               data-rebar-block-path={itemPath(path, "items", itemIndex)}
               data-rebar-block-item-label={item.title}
             >
+              {renderFeatureIcon(item)}
               <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
                 {item.title}
               </Text>
@@ -2002,14 +2098,21 @@ function renderBlock(
         />
       );
 
-    case "hero":
-      return (
+    case "hero": {
+      const wrapped = !!block.media || !!block.backgroundSrc;
+      // With a side visual the text reads from the start edge; centred text beside media looks adrift.
+      const alignStart = block.align ? block.align === "start" : !!block.media;
+      // Over a background image the text switches to the inverse text token so it keeps contrast
+      // against the scrim; with no background image the colours are untouched.
+      const heroTextColor = block.backgroundSrc
+        ? { color: "var(--rebar-hero-text, var(--rebar-color-text-inverse, #ffffff))" }
+        : undefined;
+      const text = (
         <Stack
           key={index}
           gap="lg"
-          style={{ alignItems: "center", textAlign: "center" }}
-          data-rebar-placement-block="hero"
-          data-rebar-block-path={path}
+          style={alignStart ? { alignItems: "flex-start", textAlign: "start" } : { alignItems: "center", textAlign: "center" }}
+          {...(wrapped ? {} : { "data-rebar-placement-block": "hero", "data-rebar-block-path": path })}
         >
           {block.badge ? (
             <Box
@@ -2043,11 +2146,11 @@ function renderBlock(
               ) : null}
             </>
           ) : (
-            <Heading level={1} style={{ fontSize: 56, lineHeight: 1.1 }}>
+            <Heading level={1} style={{ fontSize: 56, lineHeight: 1.1, ...heroTextColor }}>
               {block.title}
             </Heading>
           )}
-          <Text size="md" color="secondary" style={{ maxWidth: 560 }}>
+          <Text size="md" color="secondary" style={{ maxWidth: 560, ...heroTextColor }}>
             {renderInline(block.subtitle, renderLink)}
           </Text>
           {block.actions && block.actions.length > 0 ? (
@@ -2082,6 +2185,59 @@ function renderBlock(
           ) : null}
         </Stack>
       );
+      if (!wrapped) return text;
+      const wideMedia = block.media && block.media.device !== undefined && block.media.device !== "phone";
+      return (
+        <div
+          key={index}
+          data-rebar-placement-block="hero"
+          data-rebar-block-path={path}
+          data-rebar-hero-layout={block.media ? "media" : "background"}
+          style={{
+            position: "relative",
+            isolation: "isolate",
+            overflow: "hidden",
+            padding: "var(--rebar-space-3xl, 64px) var(--rebar-space-lg, 24px)",
+          }}
+        >
+          {block.backgroundSrc ? (
+            <>
+              <img
+                src={block.backgroundSrc}
+                alt=""
+                aria-hidden="true"
+                data-rebar-part="background"
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: -2 }}
+              />
+              <div
+                aria-hidden="true"
+                data-rebar-part="scrim"
+                style={{ position: "absolute", inset: 0, background: "var(--rebar-hero-scrim, rgba(0, 0, 0, 0.55))", zIndex: -1 }}
+              />
+            </>
+          ) : null}
+          <div
+            data-rebar-part="inner"
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "var(--rebar-space-2xl, 48px)",
+              maxWidth: "var(--rebar-hero-max-width, 72rem)",
+              margin: "0 auto",
+            }}
+          >
+            <div style={{ flex: "1 1 20rem", minWidth: 0 }}>{text}</div>
+            {block.media ? (
+              <div data-rebar-part="media" style={{ flex: `0 1 ${wideMedia ? "24rem" : "16rem"}`, minWidth: 0 }}>
+                {renderDeviceMedia(block.media, block.media.device)}
+              </div>
+            ) : null}
+          </div>
+        </div>
+      );
+    }
 
     case "section-header":
       return (
@@ -2456,6 +2612,61 @@ function renderBlock(
         </Box>
       );
     }
+
+    case "feature-showcase":
+      return (
+        <FeatureShowcase
+          key={index}
+          data-rebar-placement-block="feature-showcase"
+          data-rebar-block-path={path}
+          eyebrow={block.eyebrow}
+          title={block.title}
+          body={block.body ? renderInline(block.body, renderLink) : undefined}
+          media={renderDeviceMedia(block.image, block.device, block.deviceTitle)}
+          reverse={block.reverse}
+          tone={block.tone}
+        />
+      );
+
+    case "scroll-rail":
+      return (
+        <ScrollRail
+          key={index}
+          aria-label={block.label}
+          autoScroll={block.autoScroll}
+          loop={block.loop}
+          controls={block.controls}
+          style={block.itemWidth ? ({ "--rebar-scroll-rail-item-width": block.itemWidth } as CSSProperties) : undefined}
+          data-rebar-placement-block="scroll-rail"
+          data-rebar-block-path={path}
+        >
+          {block.items.map((item, itemIndex) => {
+            const content = (
+              <Stack
+                gap="xs"
+                data-rebar-block-path={itemPath(path, "items", itemIndex)}
+                data-rebar-block-item-label={item.title ?? item.image.alt}
+              >
+                <img src={item.image.src} alt={item.image.alt} style={{ display: "block", width: "100%", height: "auto" }} />
+                {item.eyebrow ? (
+                  <Text size="xs" color="secondary" style={{ textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                    {item.eyebrow}
+                  </Text>
+                ) : null}
+                {item.title ? (
+                  <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
+                    {item.title}
+                  </Text>
+                ) : null}
+              </Stack>
+            );
+            return <Fragment key={itemIndex}>{item.href ? renderLink({ href: item.href, children: content }) : content}</Fragment>;
+          })}
+        </ScrollRail>
+      );
+
+    case "email-capture":
+      return <EmailCaptureBlockView key={index} block={block} path={path} handlers={handlers} />;
 
     case "float-assistant":
       return <FloatAssistantBlockView key={index} block={block} index={index} path={path} data={data} handlers={handlers} />;

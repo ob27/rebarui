@@ -4,12 +4,12 @@
   "description": "Headless-first, intentionally low-fidelity React components, built to be re-skinned into a real design system later.",
   "type": "module",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
+  "module": "./dist/esm/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
+      "import": "./dist/esm/index.js",
       "require": "./dist/index.cjs"
     },
     "./orb-shader": {
@@ -17,7 +17,12 @@
       "import": "./dist/orb-shader/index.js",
       "require": "./dist/orb-shader/index.cjs"
     },
-    "./style.css": "./dist/style.css"
+    "./style.css": "./dist/style.css",
+    "./icon-lookup": {
+      "types": "./dist/icon-lookup.d.ts",
+      "import": "./dist/esm/components/iconLookup.js",
+      "require": "./dist/icon-lookup.cjs"
+    }
   },
   "files": [
     "dist",
@@ -27,13 +32,11 @@
     "assets/favicon.svg"
   ],
   "sideEffects": [
-    "**/*.css",
-    "./dist/index.js",
-    "./dist/index.cjs"
+    "**/*.css"
   ],
   "scripts": {
-    "build": "tsup",
-    "prepare": "tsup",
+    "build": "tsup && tsup --config tsup.esm.config.ts && node scripts/add-esm-extensions.mjs",
+    "prepare": "tsup && tsup --config tsup.esm.config.ts && node scripts/add-esm-extensions.mjs",
     "dev": "tsup --watch",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",

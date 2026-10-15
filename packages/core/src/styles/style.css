@@ -5318,19 +5318,22 @@ div.rebar-chat-message-content > *:last-child { margin-bottom: 0; }
 
 /* WaveformAudioPlayer */
 .rebar-waveform-audio-player { display: flex; flex-direction: column; gap: var(--rebar-space-sm, 8px); width: 100%; }
-.rebar-waveform-audio-player-controls { display: flex; align-items: center; gap: var(--rebar-space-sm, 8px); }
+.rebar-waveform-audio-player-controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--rebar-space-sm, 8px); }
 .rebar-waveform-audio-player-waveform {
   display: flex;
   align-items: flex-end;
   gap: 2px;
-  flex-grow: 1;
+  /* Shrinkable, and wraps onto its own row when the controls don't leave it ~10rem: a phone must not scroll sideways. */
+  flex: 1 1 10rem;
+  min-width: 0;
+  overflow: hidden;
   height: 44px;
   padding: 0 var(--rebar-space-sm, 8px);
   cursor: pointer;
   border-radius: var(--rebar-radius, 4px);
 }
 .rebar-waveform-audio-player-waveform:focus-visible { outline: 2px solid var(--rebar-color-border-focus, #0066cc); outline-offset: 2px; }
-.rebar-waveform-audio-player-bar { flex: 1 1 0; min-width: 2px; border-radius: 999px; background: var(--rebar-color-border, #e0e0e0); }
+.rebar-waveform-audio-player-bar { flex: 1 1 0; min-width: 1px; border-radius: 999px; background: var(--rebar-color-border, #e0e0e0); }
 .rebar-waveform-audio-player-bar[data-played] { background: var(--rebar-color-primary, #0066cc); }
 .rebar-waveform-audio-player-time { flex-shrink: 0; white-space: nowrap; color: var(--rebar-color-text-secondary, #757575); }
 .rebar-waveform-audio-player-error { color: var(--rebar-color-danger, #d32f2f); }
@@ -8330,4 +8333,630 @@ button.rebar-heatmap-viewer-row {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* ScrollRail — a horizontally scrolling rail of arbitrary items. Item width is set per rail through
+   --rebar-scroll-rail-item-width. */
+.rebar-scroll-rail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rebar-space-sm, 8px);
+  min-width: 0;
+}
+
+.rebar-scroll-rail-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+.rebar-scroll-rail-viewport:focus-visible {
+  outline: 2px solid var(--rebar-color-border-focus, #0066cc);
+  outline-offset: 2px;
+}
+
+.rebar-scroll-rail[data-rebar-snap="true"] .rebar-scroll-rail-viewport {
+  scroll-snap-type: x mandatory;
+}
+
+.rebar-scroll-rail-track {
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+  gap: var(--rebar-space-md, 16px);
+}
+
+.rebar-scroll-rail[data-rebar-gap="sm"] .rebar-scroll-rail-track {
+  gap: var(--rebar-space-sm, 8px);
+}
+
+.rebar-scroll-rail[data-rebar-gap="lg"] .rebar-scroll-rail-track {
+  gap: var(--rebar-space-lg, 24px);
+}
+
+.rebar-scroll-rail-item {
+  flex: 0 0 var(--rebar-scroll-rail-item-width, min(18rem, 80vw));
+  min-width: 0;
+}
+
+.rebar-scroll-rail[data-rebar-snap="true"] .rebar-scroll-rail-item {
+  scroll-snap-align: start;
+}
+
+.rebar-scroll-rail-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--rebar-space-sm, 8px);
+}
+
+/* DeviceFrame — a static bezel around arbitrary screen content. For phone and tablet the FRAME IS
+   SIZED TO THE CONTENT and the content is shown whole (never cropped or distorted): a status strip
+   sits above it and a home-indicator strip below it, both inside the rounded screen, so the app's own
+   header and tab bar clear the rounded corners. Every proportion is a share of the frame's own width
+   (container query units), so the frame scales as one piece. */
+.rebar-device-frame {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--rebar-space-sm, 8px);
+  width: 100%;
+  max-width: var(--rebar-device-frame-max-width, 100%);
+  container-type: inline-size;
+  /* Per-variant proportions (percent of frame width). Overridable through the tokens below. */
+  --rdf-bezel: var(--rebar-device-frame-bezel-width, 3.5cqw);
+  --rdf-radius: var(--rebar-device-frame-radius, 15cqw);
+  --rdf-status: var(--rebar-device-frame-status-height, 8.5cqw);
+  --rdf-home: var(--rebar-device-frame-home-height, 10cqw);
+  --rdf-punch: var(--rebar-device-frame-punch-size, 3.5cqw);
+}
+
+.rebar-device-frame[data-rebar-variant="phone"] {
+  max-width: var(--rebar-device-frame-max-width, var(--rebar-device-frame-phone-max-width, 16rem));
+}
+
+.rebar-device-frame[data-rebar-variant="tablet"] {
+  max-width: var(--rebar-device-frame-max-width, var(--rebar-device-frame-tablet-max-width, 32rem));
+  --rdf-bezel: var(--rebar-device-frame-bezel-width, 2.5cqw);
+  --rdf-radius: var(--rebar-device-frame-radius, 5cqw);
+  --rdf-status: var(--rebar-device-frame-status-height, 3cqw);
+  --rdf-home: var(--rebar-device-frame-home-height, 3.5cqw);
+}
+
+.rebar-device-frame-device {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: var(--rdf-bezel);
+}
+
+.rebar-device-frame-bezel {
+  position: absolute;
+  inset: 0;
+  background: var(--rebar-device-frame-bezel-color, #1a1a1a);
+  border-radius: var(--rdf-radius);
+  box-shadow: var(--rebar-device-frame-shadow, none);
+}
+
+.rebar-device-frame-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--rebar-color-bg-primary, #ffffff);
+  border-radius: calc(var(--rdf-radius) - var(--rdf-bezel));
+}
+
+/* The content is shown whole: an image fills the screen's width and keeps its own height. */
+.rebar-device-frame-screen > img,
+.rebar-device-frame-screen > video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.rebar-device-frame-status {
+  flex: 0 0 var(--rdf-status);
+  background: var(--rebar-device-frame-status-bg, var(--rebar-device-frame-bezel-color, #1a1a1a));
+}
+
+.rebar-device-frame-home {
+  flex: 0 0 var(--rdf-home);
+  background:
+    linear-gradient(
+      var(--rebar-device-frame-home-indicator, var(--rebar-color-border-strong, #d0d0d0)),
+      var(--rebar-device-frame-home-indicator, var(--rebar-color-border-strong, #d0d0d0))
+    )
+    center / 34% max(2px, 1cqw) no-repeat,
+    var(--rebar-device-frame-home-bg, var(--rebar-color-bg-primary, #ffffff));
+}
+
+.rebar-device-frame-notch {
+  position: absolute;
+  /* A camera hole-punch centred in the status strip. */
+  top: calc(var(--rdf-bezel) + (var(--rdf-status) - var(--rdf-punch)) / 2);
+  left: 50%;
+  z-index: 2;
+  width: var(--rdf-punch);
+  height: var(--rdf-punch);
+  transform: translateX(-50%);
+  background: var(
+    --rebar-device-frame-punch-bg,
+    color-mix(in srgb, var(--rebar-device-frame-bezel-color, #1a1a1a) 65%, var(--rebar-color-bg-primary, #ffffff))
+  );
+  border-radius: 50%;
+}
+
+/* Browser: a thin chrome, not a thick bezel. */
+.rebar-device-frame[data-rebar-variant="browser"] .rebar-device-frame-device {
+  padding: 0;
+}
+
+.rebar-device-frame[data-rebar-variant="browser"] .rebar-device-frame-screen {
+  display: block;
+}
+
+.rebar-device-frame[data-rebar-variant="browser"] .rebar-device-frame-bezel {
+  background: var(--rebar-color-bg-secondary, #f5f5f5);
+  border: var(--rebar-border-width, 1px) solid var(--rebar-color-border-strong, #d0d0d0);
+  border-radius: var(--rebar-radius, 4px);
+}
+
+.rebar-device-frame[data-rebar-variant="browser"] .rebar-device-frame-screen {
+  border-radius: 0 0 var(--rebar-radius, 4px) var(--rebar-radius, 4px);
+  margin: 0 var(--rebar-border-width, 1px) var(--rebar-border-width, 1px);
+}
+
+.rebar-device-frame-toolbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--rebar-space-sm, 8px);
+  padding: var(--rebar-space-sm, 8px) var(--rebar-space-md, 16px);
+}
+
+.rebar-device-frame-dots {
+  flex: none;
+  width: var(--rebar-space-sm, 8px);
+  height: var(--rebar-space-sm, 8px);
+  border-radius: 50%;
+  background: var(--rebar-color-border-strong, #d0d0d0);
+  box-shadow:
+    calc(var(--rebar-space-md, 16px) * 1) 0 0 var(--rebar-color-border-strong, #d0d0d0),
+    calc(var(--rebar-space-md, 16px) * 2) 0 0 var(--rebar-color-border-strong, #d0d0d0);
+  margin-right: calc(var(--rebar-space-md, 16px) * 2);
+}
+
+.rebar-device-frame-address {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: var(--rebar-space-xs, 4px) var(--rebar-space-sm, 8px);
+  font-size: var(--rebar-font-size-xs, 12px);
+  color: var(--rebar-color-text-secondary, #757575);
+  background: var(--rebar-color-bg-primary, #ffffff);
+  border-radius: var(--rebar-radius, 4px);
+}
+
+.rebar-device-frame-caption {
+  font-size: var(--rebar-font-size-sm, 14px);
+  color: var(--rebar-color-text-secondary, #757575);
+  text-align: center;
+}
+
+/* FeatureShowcase — text beside media; stacks (text first) on narrow screens. */
+.rebar-feature-showcase {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: var(--rebar-space-xl, 32px);
+  padding: var(--rebar-space-2xl, 48px) var(--rebar-space-lg, 24px);
+}
+
+.rebar-feature-showcase-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rebar-space-sm, 8px);
+  min-width: 0;
+}
+
+.rebar-feature-showcase-media {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.rebar-feature-showcase-eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: var(--rebar-font-weight-semibold, 600);
+  color: var(--rebar-color-text-secondary, #757575);
+}
+
+.rebar-feature-showcase-body {
+  color: var(--rebar-color-text-secondary, #757575);
+}
+
+.rebar-feature-showcase[data-rebar-tone="inverse"] {
+  background: var(--rebar-color-bg-inverse, #1e1e1e);
+  color: var(--rebar-color-text-inverse, #f5f5f5);
+}
+
+.rebar-feature-showcase[data-rebar-tone="inverse"] .rebar-feature-showcase-title {
+  color: var(--rebar-color-text-inverse, #f5f5f5);
+}
+
+.rebar-feature-showcase[data-rebar-tone="inverse"] .rebar-feature-showcase-eyebrow,
+.rebar-feature-showcase[data-rebar-tone="inverse"] .rebar-feature-showcase-body {
+  color: var(--rebar-color-text-inverse-secondary, #bdbdbd);
+}
+
+@media (min-width: 768px) {
+  .rebar-feature-showcase {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--rebar-space-2xl, 48px);
+  }
+
+  .rebar-feature-showcase[data-rebar-reverse="true"] .rebar-feature-showcase-media {
+    order: -1;
+  }
+}
+
+/* EmailCapture — inline email field + submit with validation and a polite status line. */
+.rebar-email-capture {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rebar-space-xs, 4px);
+  max-width: 28rem;
+}
+
+.rebar-email-capture:not([data-rebar-label-visible]) .rebar-email-capture-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.rebar-email-capture-label {
+  font-size: var(--rebar-font-size-sm, 14px);
+  font-weight: var(--rebar-font-weight-medium, 500);
+  color: var(--rebar-color-text-primary, #212121);
+}
+
+.rebar-email-capture-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rebar-space-sm, 8px);
+}
+
+.rebar-email-capture-row .rebar-input {
+  flex: 1 1 12rem;
+  width: auto;
+}
+
+.rebar-email-capture-error {
+  color: var(--rebar-color-danger, #d32f2f);
+}
+
+.rebar-email-capture .rebar-input[aria-invalid="true"] {
+  border-color: var(--rebar-color-danger, #d32f2f);
+}
+
+.rebar-email-capture-status {
+  min-height: 1.5em;
+  font-size: var(--rebar-font-size-sm, 14px);
+}
+
+.rebar-email-capture-status[data-rebar-tone="success"] {
+  color: var(--rebar-color-success, #2e7d32);
+}
+
+.rebar-email-capture-status[data-rebar-tone="error"] {
+  color: var(--rebar-color-danger, #d32f2f);
+}
+
+/* FloatCard — a small elevated card for a floating UI fragment. */
+.rebar-float-card {
+  box-sizing: border-box;
+  padding: var(--rebar-space-sm, 8px) var(--rebar-space-md, 16px);
+  font-size: var(--rebar-font-size-sm, 14px);
+  line-height: 1.35;
+  color: var(--rebar-color-text-primary, #212121);
+  background: var(--rebar-color-bg-primary, #ffffff);
+  border: var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0);
+  border-radius: var(--rebar-float-card-radius, calc(var(--rebar-radius, 4px) * 4));
+  box-shadow: var(--rebar-shadow-float, 0 18px 40px rgba(0, 0, 0, 0.18));
+}
+
+.rebar-float-card[data-rebar-tone="accent"] {
+  border-color: var(--rebar-color-primary, #0066cc);
+}
+
+.rebar-float-card-label {
+  display: block;
+  margin-bottom: var(--rebar-space-xs, 4px);
+  font-size: var(--rebar-font-size-xs, 12px);
+  font-weight: var(--rebar-font-weight-bold, 700);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rebar-color-text-secondary, #757575);
+}
+
+.rebar-float-card[data-rebar-tone="accent"] .rebar-float-card-label {
+  color: var(--rebar-color-primary, #0066cc);
+}
+
+/* DeviceStage — one device centred with up to four FloatCards around it. Its height comes from the
+   device. The floats are sized from the side gutters so they overlap the device by 15% of
+   their own width (15%), and below 480px (of the stage's own width) they become one-line chips that sit
+   just outside the device's corners, so they never cover its header. */
+.rebar-device-stage {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.rebar-device-stage[data-rebar-glow="true"] {
+  background: radial-gradient(
+    55% 60% at 50% 50%,
+    var(--rebar-device-stage-glow, var(--rebar-color-bg-secondary, #f5f5f5)),
+    transparent 72%
+  );
+}
+
+.rebar-device-stage-container {
+  container-type: inline-size;
+  width: 100%;
+}
+
+.rebar-device-stage-layout {
+  padding-block: var(--rebar-space-lg, 24px);
+}
+
+.rebar-device-stage-area {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.rebar-device-stage-device {
+  flex: 0 0 auto;
+  width: min(100%, var(--rebar-device-stage-device-width, 16rem));
+  --rebar-device-frame-max-width: 100%;
+}
+
+.rebar-device-stage-float {
+  --rds-device: min(100cqw, var(--rebar-device-stage-device-width, 16rem));
+  --rds-gutter: calc((100cqw - var(--rds-device)) / 2);
+  /* Capped so that, overlapping the device by 15% of its own width, it still fits inside the stage. */
+  --rds-width: min(var(--rebar-device-stage-float-width, 11rem), calc(var(--rds-gutter) / 0.85));
+  --rds-overlap: calc(var(--rds-width) * 0.15);
+  position: absolute;
+  z-index: 2;
+  top: var(--rebar-device-stage-float-top, 20%);
+  box-sizing: border-box;
+  width: var(--rds-width);
+  min-width: 0;
+}
+
+/* The float hugs the device: its inner edge sits 15% of its width inside the device's edge. */
+.rebar-device-stage-float[data-rebar-side="start"] {
+  inset-inline-end: calc(50% + var(--rds-device) / 2 - var(--rds-overlap));
+}
+
+.rebar-device-stage-float[data-rebar-side="end"] {
+  inset-inline-start: calc(50% + var(--rds-device) / 2 - var(--rds-overlap));
+}
+
+@container (max-width: 479.98px) {
+  .rebar-device-stage-layout {
+    padding-block: 3rem;
+  }
+
+  .rebar-device-stage-float {
+    width: auto;
+    max-width: min(9rem, 48cqw);
+  }
+
+  .rebar-device-stage-float .rebar-float-card {
+    padding: var(--rebar-space-xs, 4px) var(--rebar-space-md, 12px);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border-radius: 999px;
+    box-shadow: var(--rebar-shadow-chip, 0 6px 16px rgba(0, 0, 0, 0.16));
+  }
+
+  .rebar-device-stage-float .rebar-float-card-label {
+    display: none;
+  }
+
+  .rebar-device-stage-float .rebar-float-card-body {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rebar-device-stage-float[data-rebar-slot$="-start"] {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+  }
+
+  .rebar-device-stage-float[data-rebar-slot$="-end"] {
+    inset-inline-end: 0;
+    inset-inline-start: auto;
+  }
+
+  .rebar-device-stage-float[data-rebar-slot^="top"] {
+    top: 0;
+    bottom: auto;
+    transform: translateY(calc(-100% - var(--rebar-space-sm, 8px)));
+  }
+
+  .rebar-device-stage-float[data-rebar-slot^="bottom"] {
+    top: 100%;
+    bottom: auto;
+    transform: translateY(var(--rebar-space-sm, 8px));
+  }
+}
+
+/* BentoGrid / BentoCard — rows size to their content; nothing is clipped. */
+.rebar-bento-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rebar-space-md, 16px);
+}
+
+.rebar-bento-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--rebar-space-lg, 24px);
+  min-width: 0;
+  padding: var(--rebar-space-xl, 32px) var(--rebar-space-lg, 24px);
+  background: var(--rebar-color-bg-primary, #ffffff);
+  border: var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0);
+  border-radius: var(--rebar-bento-card-radius, calc(var(--rebar-radius, 4px) * 6));
+}
+
+.rebar-bento-card[data-rebar-tone="tint-1"] {
+  background: var(--rebar-color-tint-1, #f5f5f5);
+  border-color: transparent;
+}
+
+.rebar-bento-card[data-rebar-tone="tint-2"] {
+  background: var(--rebar-color-tint-2, #efefef);
+  border-color: transparent;
+}
+
+.rebar-bento-card[data-rebar-tone="tint-3"] {
+  background: var(--rebar-color-tint-3, #e9e9e9);
+  border-color: transparent;
+}
+
+.rebar-bento-card[data-rebar-tone="tint-4"] {
+  background: var(--rebar-color-tint-4, #e3e3e3);
+  border-color: transparent;
+}
+
+.rebar-bento-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rebar-space-sm, 8px);
+  min-width: 0;
+}
+
+.rebar-bento-card-media {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+@media (min-width: 960px) {
+  .rebar-bento-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .rebar-bento-card[data-rebar-span="2"] {
+    grid-column: span 2;
+  }
+
+  .rebar-bento-card[data-rebar-span="3"] {
+    grid-column: span 3;
+  }
+
+  .rebar-bento-card[data-rebar-span="6"] {
+    grid-column: span 6;
+  }
+
+  .rebar-bento-card[data-rebar-media-position="end"] {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .rebar-bento-card[data-rebar-media-position="end"] .rebar-bento-card-text {
+    flex: 1 1 0;
+  }
+
+  .rebar-bento-card[data-rebar-media-position="end"] .rebar-bento-card-media {
+    flex: 0 1 45%;
+  }
+}
+
+/* BackdropSection — art behind inverse-coloured content. The image and scrim layers are absolutely
+   positioned on their own class names, never through a blanket rule on the section's children, so
+   they always cover the whole section. */
+.rebar-backdrop-section {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: var(--rebar-space-3xl, 64px) var(--rebar-space-lg, 24px);
+  color: var(--rebar-color-text-inverse, #f5f5f5);
+  background: var(--rebar-color-bg-inverse, #1e1e1e);
+}
+
+.rebar-backdrop-section[data-rebar-rounded="true"] {
+  margin-inline: var(--rebar-space-md, 16px);
+  border-radius: var(--rebar-backdrop-section-radius, calc(var(--rebar-radius, 4px) * 8));
+}
+
+.rebar-backdrop-section-image {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+}
+
+.rebar-backdrop-section-scrim {
+  --rebar-scrim: var(--rebar-backdrop-scrim-color, #000000);
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.rebar-backdrop-section[data-rebar-scrim="soft"] .rebar-backdrop-section-scrim {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--rebar-scrim) 25%, transparent),
+    color-mix(in srgb, var(--rebar-scrim) 55%, transparent)
+  );
+}
+
+.rebar-backdrop-section[data-rebar-scrim="strong"] .rebar-backdrop-section-scrim {
+  background: color-mix(in srgb, var(--rebar-scrim) 70%, transparent);
+}
+
+.rebar-backdrop-section[data-rebar-scrim="start"] .rebar-backdrop-section-scrim {
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--rebar-scrim) 80%, transparent),
+    color-mix(in srgb, var(--rebar-scrim) 25%, transparent)
+  );
+}
+
+.rebar-backdrop-section-content {
+  position: relative;
+  min-width: 0;
+}
+
+.rebar-backdrop-section .rebar-heading,
+.rebar-backdrop-section .rebar-text[data-rebar-color] {
+  color: inherit;
 }

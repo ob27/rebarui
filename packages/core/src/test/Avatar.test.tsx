@@ -38,28 +38,28 @@ describe("Avatar", () => {
 
 describe("resolvePlaceholderSrc", () => {
   it("returns undefined when placeholder is unset — no behavior change for existing usage", () => {
-    expect(resolvePlaceholderSrc(undefined, "Ada Lovelace")).toBeUndefined();
-    expect(resolvePlaceholderSrc(false, "Ada Lovelace")).toBeUndefined();
+    expect(resolvePlaceholderSrc(undefined, "Ada Lovelace", AVATAR_PLACEHOLDERS)).toBeUndefined();
+    expect(resolvePlaceholderSrc(false, "Ada Lovelace", AVATAR_PLACEHOLDERS)).toBeUndefined();
   });
 
   it("picks the same portrait for the same name every time (deterministic, not random)", () => {
-    const a = resolvePlaceholderSrc(true, "Ada Lovelace");
-    const b = resolvePlaceholderSrc(true, "Ada Lovelace");
+    const a = resolvePlaceholderSrc(true, "Ada Lovelace", AVATAR_PLACEHOLDERS);
+    const b = resolvePlaceholderSrc(true, "Ada Lovelace", AVATAR_PLACEHOLDERS);
     expect(a).toBe(b);
     expect(AVATAR_PLACEHOLDERS).toContain(a);
   });
 
   it("can pick different portraits for different names", () => {
     const names = ["Ada Lovelace", "Grace Hopper", "Katherine Johnson", "Margaret Hamilton"];
-    const picks = new Set(names.map((n) => resolvePlaceholderSrc(true, n)));
+    const picks = new Set(names.map((n) => resolvePlaceholderSrc(true, n, AVATAR_PLACEHOLDERS)));
     // Not a strict requirement that all 4 differ (hash collisions are possible), but with only
     // 8 slots and 4 names, getting exactly 1 unique value would indicate the hash isn't varying.
     expect(picks.size).toBeGreaterThan(1);
   });
 
   it("a numeric placeholder picks a specific portrait by index, wrapping via modulo", () => {
-    expect(resolvePlaceholderSrc(0, "anything")).toBe(AVATAR_PLACEHOLDERS[0]);
-    expect(resolvePlaceholderSrc(AVATAR_PLACEHOLDERS.length, "anything")).toBe(AVATAR_PLACEHOLDERS[0]);
+    expect(resolvePlaceholderSrc(0, "anything", AVATAR_PLACEHOLDERS)).toBe(AVATAR_PLACEHOLDERS[0]);
+    expect(resolvePlaceholderSrc(AVATAR_PLACEHOLDERS.length, "anything", AVATAR_PLACEHOLDERS)).toBe(AVATAR_PLACEHOLDERS[0]);
   });
 });
 

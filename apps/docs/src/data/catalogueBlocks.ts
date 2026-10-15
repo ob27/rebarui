@@ -130,17 +130,60 @@ export const CATALOGUE_BLOCKS: ConstructCatalogueEntry[] = [
     tier: "synthetic",
     measured: true,
     description: "A wrapping row of small title+body pairs — no links, no images, just short feature copy.",
-    shape: `{ type: "feature-grid", items: { title: string, body: string }[] }`,
+    shape: `{ type: "feature-grid", items: { title: string, body: string, icon?: string, iconPath?: string, iconViewBox?: string }[] }`,
     blocks: [
       {
         type: "feature-grid",
         items: [
-          { title: "Headless", body: "Radix underneath." },
-          { title: "Replaceable", body: "CSS-variable theming." },
+          { title: "Headless", body: "Radix underneath.", icon: "lock" },
+          { title: "Replaceable", body: "CSS-variable theming.", icon: "settings" },
           { title: "Tested", body: "Playwright-checked on every change." },
         ],
       },
     ],
+  },
+  {
+    id: "feature-showcase",
+    tier: "synthetic",
+    measured: false,
+    description: "One feature row: eyebrow, title and body beside an image, by default inside a phone DeviceFrame. Stacks (text first) on narrow screens; reverse swaps the sides at tablet width and up.",
+    shape: `{ type: "feature-showcase", eyebrow?: string, title: string, body?: string, image: { src: string, alt: string }, device?: "phone" | "tablet" | "browser" | "none", deviceTitle?: string, reverse?: boolean, tone?: "default" | "inverse" }`,
+    blocks: [
+      {
+        type: "feature-showcase",
+        eyebrow: "Planning",
+        title: "See your whole week at a glance",
+        body: "Drag tasks between days and the plan updates everywhere.",
+        image: { src: "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='1000'%3E%3Crect width='360' height='1000' fill='%23f5f5f5'/%3E%3Crect x='20' y='30' width='320' height='56' rx='8' fill='%230066cc'/%3E%3C/svg%3E", alt: "A placeholder week view" },
+      },
+    ],
+  },
+  {
+    id: "scroll-rail",
+    tier: "synthetic",
+    measured: false,
+    description: "A horizontally scrolling rail of image cards, each a link when href is set. Optional auto-scroll (with a Pause/Play button, paused on hover and focus, off under reduced motion) and a seamless loop. Static data, so a Synthetic by the mechanical rule even though the ScrollRail component it renders is an Opinion.",
+    shape: `{ type: "scroll-rail", label: string, items: { image: { src: string, alt: string }, eyebrow?: string, title?: string, href?: string }[], autoScroll?: boolean | number, loop?: boolean, controls?: boolean, itemWidth?: string }`,
+    blocks: [
+      {
+        type: "scroll-rail",
+        label: "Example perspectives",
+        itemWidth: "12rem",
+        items: [1, 2, 3, 4, 5].map((n) => ({
+          image: { src: "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect width='400' height='300' fill='%23e0e0e0'/%3E%3C/svg%3E", alt: `Placeholder ${n}` },
+          eyebrow: "Essay",
+          title: `Perspective ${n}`,
+        })),
+      },
+    ],
+  },
+  {
+    id: "email-capture",
+    tier: "opinion",
+    measured: false,
+    description: "An email sign-up form with client-side validation and an idle/submitting/success/error state machine. onSubmit is a key into BlockRenderer's handlers prop; with no handler wired, submitting just shows the success state.",
+    shape: `{ type: "email-capture", label?: string, placeholder?: string, submitLabel?: string, successMessage?: string, helperText?: string, onSubmit?: string }`,
+    blocks: [{ type: "email-capture", helperText: "Demo: no handler wired, so submitting shows the success state." }],
   },
   {
     id: "pillar-grid",
@@ -164,7 +207,7 @@ export const CATALOGUE_BLOCKS: ConstructCatalogueEntry[] = [
     tier: "synthetic",
     measured: false,
     description: "A centered page-top hero: optional badge, title, subtitle, action buttons, and an optional code snippet. Badge and subtitle support a tiny inline markup (backtick-code, [label](href) links).",
-    shape: `{ type: "hero", badge?: string, title: string, subtitle: string, actions?: Action[], codeSnippet?: string }`,
+    shape: `{ type: "hero", badge?: string, title: string, subtitle: string, actions?: Action[], codeSnippet?: string, media?: { src: string, alt: string, device?: "phone" | "tablet" | "browser" | "none" }, backgroundSrc?: string, align?: "start" | "center" }`,
     blocks: [
       {
         type: "hero",

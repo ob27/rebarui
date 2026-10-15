@@ -132,10 +132,13 @@ as proven cheap.
 | `banner` | A colored strip: icon + one line + optional trailing action | ✓ measured |
 | `checklist` | A heading over a vertical list of checkbox rows | ✓ measured |
 | `callout` | A colored box with a bold title line and a secondary line | ✓ measured |
-| `hero` | A page's top banner: badge, title, subtitle, actions, code snippet | unmeasured |
+| `hero` | A page's top banner: badge, title, subtitle, actions, code snippet; optional `media` (device-framed image beside the text), `backgroundSrc` (full-bleed image under a scrim) and `align` | unmeasured |
 | `section-header` | A kicker + title + subtitle above a page section | unmeasured |
 | `doc-section` | A heading over prose paragraphs/code/lists (tiny inline markup only — `` `code` ``, `[label](href)`, `*emphasis*`, not full markdown) | unmeasured |
-| `feature-grid` | A row of title+body micro-feature cards | unmeasured |
+| `feature-grid` | A row of title+body micro-feature cards, each optionally with an icon (`icon` by name from core's icon sets, or an inline `iconPath`) | unmeasured |
+| `feature-showcase` | One feature row: eyebrow, title, body beside an image in a `DeviceFrame` (phone/tablet/browser/none); stacks on narrow screens | unmeasured |
+| `scroll-rail` | A horizontally scrolling rail of image cards (optional links, auto-scroll with Pause/Play, loop) | unmeasured |
+| `email-capture` | An email sign-up form with validation and a submit state machine; `onSubmit` is a `handlers` key (Opinion) | unmeasured |
 | `pillar-grid` | A grid of title+body+link cards | unmeasured |
 | `card-grid` | An open-ended wrapping grid of cards — title, optional body, link, and status tags per item | unmeasured |
 | `persona-card` | A row of avatar+name+meta identity cards | unmeasured |
@@ -148,7 +151,7 @@ as proven cheap.
 | `modal` | A real `Dialog`, forced open — for static-render/screenshot contexts only; on a live page with other content around it, a forced-open modal covers the whole page as a fixed overlay, so link to a normally-triggered `Dialog` instead | unmeasured |
 | `wizard` | A multi-step form — `Steps` for progress, one step's fields at a time, Next/Submit gated on that step's required fields (wraps the real `Wizard` component) | unmeasured |
 
-`IconName` is a small fixed set (`"close" | "info" | "refresh" | "clock"`) — not an arbitrary icon
+`feature-grid`'s `icon` is the exception: it is a free string looked up by name in `rebar-ui`'s full icon sets (`getIconByName`), with `iconPath`/`iconViewBox` for a custom mark. Elsewhere, `IconName` is a small fixed set (`"close" | "info" | "refresh" | "clock"`) — not an arbitrary icon
 library. `Tone` is `"info" | "warning" | "success" | "error"`, shared by every block that has one.
 
 ## For coding agents

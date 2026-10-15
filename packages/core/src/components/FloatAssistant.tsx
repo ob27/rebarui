@@ -10,7 +10,7 @@ import { AssistantOrb } from "./AssistantOrb";
 import { VoiceInputBar } from "./VoiceInputBar";
 import { Spin } from "./Spin";
 import { Tooltip } from "./Tooltip";
-import { AddIcon, AiAgentIcon, ArrowUpIcon, CheckIcon, CodeSSlashIcon, HistoryIcon, ScreenshotIcon } from "./icons-remix";
+import { AddIcon, AiAgentIcon, ArrowUpIcon, CheckIcon, CodeSSlashIcon, HistoryIcon, ScreenshotIcon } from "./icons";
 import { CopyIcon } from "./icons";
 import { DEFAULT_FLOAT_ASSISTANT_VOICE_GREETINGS, DEFAULT_SCREENSHOT_ACKNOWLEDGMENT } from "./FloatAssistant.constants";
 

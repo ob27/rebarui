@@ -363,3 +363,30 @@ panel shows:
 - A dedicated "survives re-skin" test: render a component tree under `theme-sketch`, snapshot its
   `data-rebar-*`/ARIA output, re-render under `theme-clean`, assert the same output — this is the
   automated proof of the core value proposition and should exist before v0.1 ships.
+
+## Packaging and tree-shaking (rebar-ui core)
+
+`rebar-ui` ships three builds, and the split exists so a consumer pays only for what it imports:
+
+- `dist/esm/**` (the `import` condition): one ES module per source file, with explicit `.js` specifiers and
+  `sideEffects: ["**/*.css"]`. A bundler can skip every component an app never imports. Measured against a
+  consuming marketing site: importing a single `Button` costs ~41 KB, where the previous single-file ESM
+  bundle cost ~3.5 MB because nothing inside one large file could be dropped.
+- `dist/index.cjs` and `dist/index.d.ts` (the `require` and `types` conditions): the original bundled build.
+- `dist/icon-lookup.*` (the `rebar-ui/icon-lookup` subpath): the name-based icon registry, which holds ~1,800
+  icons. It is its own entry so a consumer loads it on demand. Never import the registry from a component.
+
+Rules that keep this working:
+
+- Components import single icons from `components/icons.tsx` (the curated set), never from the generated
+  `icons-remix.tsx` / `icons-antd.tsx` bulk files. Those two are namespace-imported by the registry, so a
+  component importing even one icon from them would pin all ~1,800 into the consumer's main bundle. If a
+  component needs a bulk icon, add its name to `EXISTING_REMIX_NAMES` / `EXISTING_ANTD_NAMES` in
+  `scripts/generate-icons.mjs` and move it into `icons.tsx`.
+- Heavy static data (the avatar placeholder portraits, ~650 KB) is loaded with a dynamic `import()` the first
+  time it is needed, not imported at module top level.
+- `scripts/add-esm-extensions.mjs` runs after the per-file build: it adds the `.js` extensions strict ESM
+  resolvers need and marks the generated `createIcon(...)` calls `/* @__PURE__ */`, which esbuild does not do for
+  unbundled output.
+- Check the cost of a component with an esbuild bundle of a one-line entry (`import { X } from "rebar-ui"`)
+  before and after a change; a jump of hundreds of KB means something is being pinned.
