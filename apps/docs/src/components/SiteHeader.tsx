@@ -57,7 +57,7 @@ const BLOCKS: Construct[] = [
     ],
     ariaLabel: "Main",
     trailing: { kind: "text", text: "0.12.1" },
-    themeToggle: true,
+    themeToggle: { sections: ["mode", "bionic"] },
     constructSearch: { source: "constructSearchIndex", placeholder: "Search constructs..." },
   },
 ];

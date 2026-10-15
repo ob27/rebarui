@@ -1,6 +1,7 @@
-import { Heading, Image, Stack, Text } from "rebar-ui";
+import { DeviceFrame } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { GenesesHero } from "@/components/home/GenesesHero";
 
 const BLOCKS: Construct[] = [
   {
@@ -56,48 +57,73 @@ const BLOCKS: Construct[] = [
 
 export default function GenesesPage() {
   return (
-    <Stack gap="lg">
-      <Image src="/catalogue-heros/genses.jpeg" alt="Geneses hero image" style={{ width: "100%", borderRadius: "8px" }} />
-      <Heading level={1}>Geneses</Heading>
-      <Text color="secondary">
-        Seed projects grounded in the Rebar UI framework — complete, production-ready applications
-        that demonstrate the full construct-based approach in action, not individual constructs
-        themselves.
-      </Text>
-      <NextBlockRenderer blocks={BLOCKS} />
-      <Heading level={2}>First genesis: AI Hive</Heading>
-      <Text color="secondary">
-        The first genesis is <strong>AI Hive</strong>: a wall of AI agents and services, each tile showing who it is, where it is
-        working, its status and what it is doing now, with its own keyed app server and command-line client. Its screen is a
-        React app built 100% with Rebar UI (the Opinion-tier agent wall running against its own live backend). It is open
-        source under the MIT licence at{" "}
-        <a href="https://github.com/ob27/ai-hive" className="rebar-link">
-          github.com/ob27/ai-hive
-        </a>
-        . Rebar UI is not on npm yet, so the screen builds against a checkout of this repo next to it; the README has the
-        steps. More genesis projects, such as dashboards, admin panels and content sites, will follow.
-      </Text>
+    <main>
+      <GenesesHero />
+      <div className="cs-wrap" style={{ padding: "96px 32px", display: "grid", gap: 96 }}>
+        <div className="cs-showcase">
+          <div className="cs-showcase-copy">
+            <div className="cs-kicker cs-kicker--accent">First genesis</div>
+            <h2 className="cs-h2">AI Hive</h2>
+            <p className="cs-muted" style={{ fontSize: 19, margin: 0 }}>
+              A wall of AI agents and services, each tile showing who it is, where it is working, its status and what it is doing now, with its own keyed app server and command-line client. Open source under the MIT licence.
+            </p>
+            <div className="cs-cta">
+              <a className="cs-btn" style={{ background: "var(--rebar-color-primary)", color: "var(--rebar-color-primary-text)" }} href="https://github.com/ob27/ai-hive">github.com/ob27/ai-hive</a>
+            </div>
+            <p className="cs-muted" style={{ fontSize: 15, margin: 0 }}>
+              Rebar UI is not on npm yet, so the screen builds against a checkout of this repo next to it; the README has the steps.
+            </p>
+          </div>
+          <DeviceFrame variant="browser" title="AI Hive · wall">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="rebar-theme-image-light" src="/geneses/ai-hive/wall-light.png" alt="The AI Hive wall in light mode: a grid of agent and service tiles with status filters, and the Hive Chat panel on the right" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="rebar-theme-image-dark" style={{ display: "none" }} src="/geneses/ai-hive/wall-dark.png" alt="The same AI Hive wall in dark mode" />
+          </DeviceFrame>
+        </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
-        <Image
-          src="/geneses/ai-hive/wall-light.png"
-          alt="The AI Hive wall in light mode: a grid of agent and service tiles with status filters above, and the Hive Chat panel on the right."
-          style={{ width: "100%", borderRadius: "8px" }}
-        />
-        <Image
-          src="/geneses/ai-hive/wall-dark.png"
-          alt="The same AI Hive wall in dark mode."
-          style={{ width: "100%", borderRadius: "8px" }}
-        />
+        <div className="cs-three">
+          <DeviceFrame variant="browser" title="Agent selected">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/geneses/ai-hive/wall-detail-light.png" alt="AI Hive with one agent selected: a details banner shows its status, what it is working on and when it last reported" />
+          </DeviceFrame>
+          <div className="cs-card cs-card--concrete" style={{ alignContent: "center" }}>
+            <div className="cs-num">100%</div>
+            <h3 className="cs-h3">Rebar UI</h3>
+            <p>Every piece of the screen comes from the catalog, with no second component library alongside it.</p>
+          </div>
+          <div className="cs-card cs-card--pink" style={{ alignContent: "center" }}>
+            <div className="cs-num">MIT</div>
+            <h3 className="cs-h3">Open source</h3>
+            <p>Clone it, run its demo mode, and make it yours.</p>
+          </div>
+        </div>
+        <p className="cs-muted" style={{ fontSize: 14, margin: "-72px 0 0" }}>Screenshots of AI Hive&apos;s built-in demo mode: every agent, service and chat message is simulated.</p>
+
+        <div>
+          <div className="cs-sec-head">
+            <div className="cs-kicker cs-kicker--accent">Next up</div>
+            <h2 className="cs-h2">More seeds to clone</h2>
+          </div>
+          <div className="cs-three">
+            {[["Dashboard", "Charts, tables and filters, wired to live data."], ["Admin panel", "Forms, data grids and role-aware navigation."], ["Content site", "Pages, search and a docs shell."]].map(([t, d]) => (
+              <div key={t} className="cs-card cs-card--dashed">
+                <h3 className="cs-h3">{t}</h3>
+                <p>{d}</p>
+                <span className="cs-tag cs-tag--genesis">soon</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div className="cs-sec-head">
+            <div className="cs-kicker cs-kicker--accent">The idea</div>
+            <h2 className="cs-h2">How geneses work</h2>
+          </div>
+          <NextBlockRenderer blocks={BLOCKS} />
+        </div>
       </div>
-      <Image
-        src="/geneses/ai-hive/wall-detail-light.png"
-        alt="AI Hive with one agent selected: a details banner above the wall shows its status, what it is working on and when it last reported."
-        style={{ width: "100%", borderRadius: "8px" }}
-      />
-      <Text size="sm" color="secondary">
-        Screenshots of AI Hive&apos;s built-in demo mode: every agent, service and chat message is simulated.
-      </Text>
-    </Stack>
+    </main>
   );
 }

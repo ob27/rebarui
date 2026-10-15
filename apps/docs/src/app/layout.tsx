@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "rebar-ui/style.css";
 import "@rebar-ui/theme-sketch/theme.css";
 import "@rebar-ui/theme-clean/theme.css";
+import "@rebar-ui/theme-con/theme.css";
+import "@/styles/con-site.css";
 // Statically imported (unlike the JS below): a static import() chained inside next/dynamic's
 // loader broke Turbopack's dynamic-import transform ("not an ecmascript client_module"), and
 // a few KB of unused CSS in production is a much smaller concern than shipping the panel's JS
@@ -19,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" data-rebar-theme="clean">
+    <html lang="en" data-rebar-theme="con">
       <body style={{ margin: 0 }}>
         <SiteHeader />
         {children}
