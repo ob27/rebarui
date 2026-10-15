@@ -1,6 +1,4 @@
-import type { ComponentType } from "react";
 import { createIcon } from "./iconFactory";
-import type { IconProps } from "./iconFactory";
 
 export { createIcon };
 export type { IconProps, IconPathSpec } from "./iconFactory";
