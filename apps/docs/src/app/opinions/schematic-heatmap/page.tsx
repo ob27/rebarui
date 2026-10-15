@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Heading, HeatmapPainter, SchematicHeatmap, Stack, Text, framesOf } from "rebar-ui";
+import { useState } from "react";
+import { Heading, HeatmapPainter, SchematicHeatmap, Stack, Text } from "rebar-ui";
 import type { HeatmapBrush, HeatmapLayout, HeatmapRegion, HeatmapValue } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
@@ -54,14 +54,6 @@ const PAINTER_SAMPLE: HeatmapLayout = {
     { id: "hall", kind: "corridor", label: "Hall", rects: [[0, 120, 220, 160]] },
   ],
 };
-
-// A stable pseudo-value per region id, so the live plot below has something to shade.
-function demoValue(id: string): HeatmapValue | undefined {
-  let h = 0;
-  for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) | 0;
-  const done = Math.abs(h) % 11;
-  return id.includes("hall") ? undefined : { done, expected: 10 };
-}
 
 const BLOCKS: Construct[] = [
   {
@@ -240,11 +232,6 @@ const PAINTER_BLOCKS: Construct[] = [
 export default function SchematicHeatmapPage() {
   const [selected, setSelected] = useState<string | null>(null);
   const [layout, setLayout] = useState<HeatmapLayout>(PAINTER_SAMPLE);
-  const frame = useMemo(() => framesOf(layout)[0]!, [layout]);
-  const painted = useMemo(
-    () => Object.fromEntries(layout.regions.map((r) => [r.id, demoValue(r.id)])),
-    [layout.regions],
-  );
 
   return (
     <Stack gap="lg">
@@ -275,8 +262,8 @@ export default function SchematicHeatmapPage() {
           <Heading level={2}>HeatmapPainter</Heading>
           <Text color="secondary">
             The authoring tool that comes with SchematicHeatmap: an infinite canvas for painting the
-            regions it draws. Paint a few cells, name them, create the region — then watch the plot
-            below update.
+            regions it draws. Paint a few cells, name them, create the region. The dashboard built on
+            these layouts is <a href="/opinions/heatmap-viewer" className="rebar-link">HeatmapViewer</a>.
           </Text>
 
           <HeatmapPainter
@@ -285,18 +272,6 @@ export default function SchematicHeatmapPage() {
             height={520}
             idSuggestions={["room-c", "room-d", "plant", "stairs"]}
             onUploadBackground={async (file) => ({ url: URL.createObjectURL(file) })}
-          />
-
-          <Text size="sm" color="secondary">
-            The plot below is fed straight from the painter&apos;s layout (made-up values).
-          </Text>
-          <SchematicHeatmap
-            ariaLabel="Plot of the painted layout"
-            regions={layout.regions}
-            brushes={layout.brushes}
-            background={layout.background}
-            crop={frame.crop}
-            values={painted}
           />
 
           <NextBlockRenderer blocks={PAINTER_BLOCKS} />

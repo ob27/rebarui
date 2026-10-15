@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AgentTile, AgentWall, Button, Heading, Stack, Text } from "rebar-ui";
+import { AgentWall, Button, Heading, Stack, Text } from "rebar-ui";
 import type { AgentWallMember } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
@@ -122,8 +122,6 @@ const BLOCKS: Construct[] = [
 export default function AgentWallPage() {
   const [members, setMembers] = useState<AgentWallMember[]>(initialMembers);
   const [failed, setFailed] = useState(false);
-  const [mode, setMode] = useState<"hide" | "dim">("hide");
-  const [look, setLook] = useState<"orb" | "avatar">("orb");
 
   // Fake backend: every couple of seconds a few agents change what they are doing, and the service sends a heartbeat.
   useEffect(() => {
@@ -165,31 +163,16 @@ export default function AgentWallPage() {
         <Button variant="secondary" onClick={() => setFailed((f) => !f)}>
           {failed ? "Recover the service" : "Fail the service"}
         </Button>
-        <Button variant="secondary" onClick={() => setMode((m) => (m === "hide" ? "dim" : "hide"))}>
-          Filter mode: {mode}
-        </Button>
-        <Button variant="secondary" onClick={() => setLook((l) => (l === "orb" ? "avatar" : "orb"))}>
-          Look: {look}
-        </Button>
       </Stack>
 
       <div style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 12, padding: 16 }}>
         <AgentWall
           members={members}
-          filterMode={mode}
-          look={look}
+          filterMode="hide"
+          look="orb"
           title={<img src="/brand/ai-hive/ai-hive-wordmark.svg" alt="AI Hive" style={{ height: 44, display: "block" }} />}
           actions={<a href="#join">Join this Hive</a>}
         />
-      </div>
-
-      <Heading level={2}>Tiles and personas</Heading>
-      <Text color="secondary">The tile on its own, in the four situations that matter. Each wears the persona its kind and status call for.</Text>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 8, border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 12, padding: 8 }}>
-        <AgentTile name="Barry" project="Dm-Archive > Piles" status="active" activity="I'm researching what a pile wall looks like." />
-        <AgentTile name="DSL Service" kind="service" project="Dm-Archive" status="active" activity="DM-Archive DLS Worker Service" />
-        <AgentTile name="Index Worker" kind="service" project="Reports" status="failure" statusLabel="Leaking memory?" activity="Memory climbing; may be leaking." />
-        <AgentTile name="Gus" project="Reports > Salary" status="ghost" />
       </div>
 
       <NextBlockRenderer blocks={BLOCKS} />
