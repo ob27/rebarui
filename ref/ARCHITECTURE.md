@@ -84,7 +84,7 @@ a `source`/`onX` live-data-binding field (`packages/placement/src/opinions.ts`),
 compiler-checked fact, not a judgment call.
 
 A fifth, unrelated concept sits alongside these four but isn't a rung on their ladder: a **Genesis**
-is a whole, complete, production-ready application built entirely out of constructs — a seed you
+is a whole, complete, production-ready application built 100% with Rebar UI — a seed you
 clone, not a piece you import. See [`TIERS.md`](TIERS.md) and `/geneses` on the site.
 
 The evidence lives in

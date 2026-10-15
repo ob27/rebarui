@@ -45,7 +45,7 @@ const MILESTONES: TimelineItem[] = [
   {
     label: "First Genesis seed projects",
     tone: "default",
-    children: "Complete, cloneable example applications — a dashboard, an admin panel, a content site — built entirely through the Packer, demonstrating real composition discipline end to end.",
+    children: "Complete, cloneable example applications built 100% with Rebar UI, demonstrating the library working end to end in a real app. AI Hive, the wall of AI agents and services, is the first and is open source; a dashboard, an admin panel and a content site are next.",
   },
   {
     label: "Additional migration adapters",

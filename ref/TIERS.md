@@ -36,8 +36,8 @@ interactive state in `BlockRenderer.tsx` are exactly the ones that now support l
 ## Geneses are a different kind of thing, not a fifth rung
 
 Imitation/Synthetic/Opinion/Order classify individual constructs — a component or a block. A
-**Genesis** is a whole, complete, production-ready application built entirely out of those
-constructs: not a piece you import, but a seed you clone. That's why `ConstructTier` (the type
+**Genesis** is a whole, complete, production-ready application built 100% with Rebar UI
+(it need not use the Packer): not a piece you import, but a seed you clone. That's why `ConstructTier` (the type
 governing what a block is allowed to be, `apps/docs/src/data/tier.types.ts`) explicitly excludes
 Genesis, the same way it excludes Imitation — a block is always at least a fixed composition, and a
 genesis is always more than one. See `/geneses` on the site for the full framing; this doc only

@@ -55,9 +55,9 @@ Order is judged by page-structural role, not by the absence of a state machine �
   },
   {
     id: "geneses-philosophy",
-    text: `Geneses are a different kind of thing from the other four tiers, not a fifth rung above Order. Imitation, Synthetic, Opinion, and Order classify individual constructs — a component or a block. A genesis is a whole, complete, production-ready application built entirely out of those constructs: not a piece you import, but a seed you clone. That's why a genesis is never a component or a block.
+    text: `Geneses are a different kind of thing from the other four tiers, not a fifth rung above Order. Imitation, Synthetic, Opinion, and Order classify individual constructs — a component or a block. A genesis is a whole, complete, production-ready application built one hundred percent with Rebar UI: not a piece you import, but a seed you clone. That's why a genesis is never a component or a block.
 
-The point of a genesis isn't to demonstrate one construct in isolation — every other tier's own reference page already does that. It's to demonstrate the composition discipline: how a real app structures itself around the Packer, where hand-authored code is still the right call versus where it should be a printed page, and how project-specific constructs get added when the shipped catalog doesn't quite fit a particular domain.`,
+The point of a genesis isn't to demonstrate one construct in isolation — every other tier's own reference page already does that. It's to demonstrate a whole application built one hundred percent with Rebar UI: every piece of the UI comes from the catalog, with no second component library alongside it, and project-specific constructs get added, and classified by the same tiers, only when the shipped catalog doesn't quite fit that domain. How the app is composed, hand-authored code or pages printed through the Packer, is the project's own call; a genesis isn't required to use the Packer.`,
   },
   {
     id: "geneses-when-to-reach",

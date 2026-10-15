@@ -6,15 +6,14 @@ const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Philosophy",
-    narration: { src: "/narration/geneses-philosophy.mp3" },
     body: [
       {
         kind: "text",
-        text: "Geneses are a different kind of thing from the other four tiers, not a fifth rung above Order. Imitation/Synthetic/Opinion/Order classify individual constructs — a component or a block. A genesis is a whole, complete, production-ready application built entirely out of those constructs: not a piece you import, but a seed you clone. That's why a genesis is never a component or a block — `ConstructTier` (the type governing what a block is allowed to be) explicitly excludes Genesis, the same way it excludes Imitation, since a block is always at least a fixed composition and a genesis is always more than one.",
+        text: "Geneses are a different kind of thing from the other four tiers, not a fifth rung above Order. Imitation/Synthetic/Opinion/Order classify individual constructs — a component or a block. A genesis is a whole, complete, production-ready application built 100% with Rebar UI: not a piece you import, but a seed you clone. That's why a genesis is never a component or a block — `ConstructTier` (the type governing what a block is allowed to be) explicitly excludes Genesis, the same way it excludes Imitation, since a block is always at least a fixed composition and a genesis is always more than one.",
       },
       {
         kind: "text",
-        text: "The point of a genesis isn't to demonstrate one construct in isolation — every other tier's own reference page already does that. It's to demonstrate the *composition discipline*: how a real app structures itself around the Packer, where hand-authored code is still the right call versus where it should be a printed page, and how project-specific constructs get added when the shipped catalog doesn't quite fit a particular domain.",
+        text: "The point of a genesis isn't to demonstrate one construct in isolation — every other tier's own reference page already does that. It's to demonstrate a whole application built 100% with Rebar UI: every piece of the UI comes from the catalog, with no second component library alongside it, and project-specific constructs get added (and classified by the same tiers) only when the shipped catalog doesn't quite fit that domain. How the app is composed, hand-authored JSX against `rebar-ui` or pages printed through the placement layer's Packer, is the project's own call; a genesis isn't required to use the Packer.",
       },
     ],
   },
@@ -36,7 +35,7 @@ const BLOCKS: Construct[] = [
       {
         kind: "list",
         items: [
-          "Structure the app around `@rebar-ui/placement`'s Packer end to end — pages composed from `Construct[]` data, not hand-authored JSX against `packages/core`, the same discipline `apps/docs` itself is held to.",
+          "Build the whole UI from Rebar UI: reach for `rebar-ui` components (and the placement layer's Packer, if it suits the project) for everything, and don't bring in a second component library alongside it. Whether pages are hand-authored JSX or composed from `Construct[]` data is the project's call.",
           "Reach for the shipped catalog first; only add a project-specific component or block once a real requirement doesn't fit any existing tier's constructs.",
           "Keep any new project-specific construct classified honestly against the same four tiers, using the same tests described on the Imitations/Synthetics/Opinions/Orders pages — a genesis is not an excuse to skip that discipline.",
           "Document the project's own architecture decisions the way this repo documents its own (`ref/` for planning docs, a `CONTRIBUTING.md`-equivalent for anyone forking it further).",
@@ -67,12 +66,17 @@ export default function GenesesPage() {
         themselves.
       </Text>
       <NextBlockRenderer blocks={BLOCKS} />
-      <Heading level={2}>In progress</Heading>
+      <Heading level={2}>First genesis: AI Hive</Heading>
       <Text color="secondary">
         The first genesis is <strong>AI Hive</strong>: a wall of AI agents and services, each tile showing who it is, where it is
-        working, its status and what it is doing now, with its own keyed app server and command-line client in the sibling
-        ai-hive project. It is the Opinion-tier agent wall running against its own live backend. It is being built; it is not
-        ready to clone yet. More genesis projects, such as dashboards, admin panels and content sites, will follow.
+        working, its status and what it is doing now, with its own keyed app server and command-line client. Its screen is a
+        React app built 100% with Rebar UI (the Opinion-tier agent wall running against its own live backend). It is open
+        source under the MIT licence at{" "}
+        <a href="https://github.com/ob27/ai-hive" className="rebar-link">
+          github.com/ob27/ai-hive
+        </a>
+        . Rebar UI is not on npm yet, so the screen builds against a checkout of this repo next to it; the README has the
+        steps. More genesis projects, such as dashboards, admin panels and content sites, will follow.
       </Text>
     </Stack>
   );
