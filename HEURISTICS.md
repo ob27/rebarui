@@ -5,7 +5,7 @@ A portable reference for sensible UI defaults — copy this file into any projec
 coding agent has a concrete standard to build against, instead of re-deciding spacing, color, and
 interaction defaults on every screen. Framework-agnostic: everything here is guidance, not tied to
 any specific component library, though it originated as the default rules baked into Rebar UI's
-components (the `rebar-ui` npm package).
+components (the `rebar-ui` library).
 
 Two kinds of rule, kept distinct because they're sourced differently:
 
@@ -151,6 +151,6 @@ against, instead of inventing spacing/color choices per screen.
 
 ---
 
-Maintained as part of Rebar UI (the `rebar-ui` npm package) — see that project's own
+Maintained as part of Rebar UI (the `rebar-ui` library) — see that project's own
 `ref/HEURISTICS.md` for the fuller version with Rebar-specific implementation notes (CSS variable
 names, exact component behavior) if you're using the library directly.

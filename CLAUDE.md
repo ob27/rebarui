@@ -53,7 +53,7 @@ exactly these tasks: Framework Rules vs. Heuristics (a fixed, binary constraint 
 judgment-requiring design principle — don't conflate the two), the controlled/uncontrolled
 component pattern, the block-authoring conventions, the full block/component catalogs, and the
 47-item heuristics checklist condensed to one line each. It's also published live at
-`/about/agent` and ships inside the real `rebar-ui` npm tarball (see that package's `package.json`
+`/about/agent` and ships inside the `rebar-ui` package (see that package's `package.json`
 `files` list) for a consumer's own agent. Keep it in sync with `ref/HEURISTICS.md`/
 `ref/ARCHITECTURE.md` when either changes — it's a compressed derivative of those, not an
 independent source of truth.

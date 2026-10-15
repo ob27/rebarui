@@ -75,7 +75,7 @@ const VERSIONS: TimelineItem[] = [
   {
     label: "0.1.0",
     tone: "success",
-    children: "First npm publish — the core component library and the placement layer's Packer ship as separate, installable packages for the first time.",
+    children: "First public release — the core component library and the placement layer's Packer ship as separate packages in the open-source repo for the first time.",
   },
 ];
 

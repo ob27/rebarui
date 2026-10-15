@@ -16,13 +16,16 @@ codemod still works on v6, just with deprecation warnings on those two.
 ## Use
 
 ```
-npx @rebar-ui/migrate-antd src/
+# not on npm yet: build it from a rebarui checkout once
+(cd ../rebarui && pnpm install && pnpm --filter @rebar-ui/migrate-antd build)
+
+node ../rebarui/packages/adapters/antd/dist/cli.js src/
 ```
 
 Or, to preview without writing anything:
 
 ```
-npx @rebar-ui/migrate-antd --dry --print src/some-file.tsx
+node ../rebarui/packages/adapters/antd/dist/cli.js --dry --print src/some-file.tsx
 ```
 
 Runs [jscodeshift](https://github.com/facebook/jscodeshift) under the hood with the `tsx` parser

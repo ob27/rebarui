@@ -44,7 +44,12 @@ node_modules/rebar-ui/dist/index.d.ts
 ## Install
 
 ```
-npm install rebar-ui @rebar-ui/theme-clean
+# Rebar UI is not on npm yet: build it from a checkout and link it.
+git clone https://github.com/ob27/rebarui ../rebarui
+(cd ../rebarui && pnpm install && pnpm --filter rebar-ui build && pnpm --filter @rebar-ui/theme-clean build)
+# then, in your app's package.json dependencies:
+#   "rebar-ui": "link:../rebarui/packages/core",
+#   "@rebar-ui/theme-clean": "link:../rebarui/packages/theme-clean",
 ```
 
 ```tsx

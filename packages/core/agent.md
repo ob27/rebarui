@@ -133,7 +133,13 @@ Reach for the highest tier that already does the job before considering a lower 
 ## Setup
 
 ```bash
-npm install rebar-ui @rebar-ui/theme-clean @rebar-ui/placement
+# Rebar UI is not on npm yet: build it from a checkout and link it.
+git clone https://github.com/ob27/rebarui ../rebarui
+(cd ../rebarui && pnpm install && pnpm --filter rebar-ui build && pnpm --filter @rebar-ui/theme-clean build && pnpm --filter @rebar-ui/placement build)
+# then, in your app's package.json dependencies:
+#   "rebar-ui": "link:../rebarui/packages/core",
+#   "@rebar-ui/theme-clean": "link:../rebarui/packages/theme-clean",
+#   "@rebar-ui/placement": "link:../rebarui/packages/placement",
 ```
 
 ```tsx

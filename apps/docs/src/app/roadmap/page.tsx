@@ -5,9 +5,9 @@ import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 const MILESTONES: TimelineItem[] = [
   {
-    label: "v0.1 — First npm publish",
+    label: "v0.1 — First public release",
     tone: "success",
-    children: "The core component library and the placement layer's Packer ship as separate, installable packages for the first time.",
+    children: "The core component library and the placement layer's Packer ship as separate packages in the open-source repo for the first time.",
   },
   {
     label: "Four-tier construct taxonomy",
@@ -79,7 +79,7 @@ export default function RoadmapPage() {
         <Image src="/catalogue-heros/roadmap.jpeg" alt="Roadmap hero" style={{ width: "100%", borderRadius: "8px" }} />
         <Heading level={1}>Roadmap</Heading>
         <Text color="secondary">
-          Where Rebar UI has been, and where it&apos;s headed — from the first npm publish through
+          Where Rebar UI has been, and where it&apos;s headed — from the first public release through
           the current Open Beta and beyond.
         </Text>
 

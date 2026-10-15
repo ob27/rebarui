@@ -22,14 +22,14 @@ const HERO_BLOCKS: Construct[] = [
       { label: "Agent Context", href: "/about/agent", variant: "primary" },
       { label: "Design Heuristics", href: "/about/agent" },
     ],
-    codeSnippet: "npm install rebar-ui",
+    codeSnippet: "git clone https://github.com/ob27/rebarui",
   },
 ];
 
 const MICRO_FEATURES: FeatureGridItem[] = [
   {
     title: "Headless & accessible",
-    body: "Radix UI underneath every interactive component.",
+    body: "Radix UI underneath the interactive primitives.",
   },
   {
     title: "Built to be replaced",
@@ -169,7 +169,9 @@ export default function Home() {
           <Stack gap="md">
             <Heading level={2}>Get started</Heading>
             <CodeBlock
-              code={`npm install rebar-ui @rebar-ui/theme-sketch
+              code={`git clone https://github.com/ob27/rebarui   # not on npm yet: link it from the checkout
+# "rebar-ui": "link:../rebarui/packages/core"
+# "@rebar-ui/theme-sketch": "link:../rebarui/packages/theme-sketch"
 
 import "rebar-ui/style.css";
 import "@rebar-ui/theme-sketch/theme.css";
