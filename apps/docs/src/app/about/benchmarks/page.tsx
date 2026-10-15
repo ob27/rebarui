@@ -3,10 +3,6 @@ import { BenchmarkDateline } from "@/components/BenchmarkDateline";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { Image, Stack } from "rebar-ui";
 
-// No narration on this page (dropped in the 2026-09-25 rewrite — see that commit — since this
-// session has no DASHSCOPE_API_KEY to regenerate it against new copy, and shipping stale audio is
-// exactly what CLAUDE.md's narration rule forbids). Re-add once a key is available.
-
 const BLOCKS: Construct[] = [
   {
     type: "doc-section",

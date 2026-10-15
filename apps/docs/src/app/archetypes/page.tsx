@@ -7,7 +7,6 @@ const BLOCKS: Construct[] = [
     type: "doc-section",
     heading: "Where Interfaces Come From",
     level: 1,
-    narration: { src: "/narration/archetypes-where-interfaces-come-from.mp3" },
     body: [
       {
         kind: "text",
@@ -18,7 +17,6 @@ const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Why the ancestry still matters",
-    narration: { src: "/narration/archetypes-why-ancestry-matters.mp3" },
     body: [
       {
         kind: "text",

@@ -10,7 +10,6 @@ export default function SyntheticsPage() {
     {
       type: "doc-section",
       heading: "Philosophy",
-      narration: { src: "/narration/synthetics-philosophy.mp3" },
       body: [
         {
           kind: "text",
@@ -25,7 +24,6 @@ export default function SyntheticsPage() {
     {
       type: "doc-section",
       heading: "When to reach for this tier",
-      narration: { src: "/narration/synthetics-when-to-reach.mp3" },
       body: [
         {
           kind: "text",

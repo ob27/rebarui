@@ -70,7 +70,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
     type: "doc-section",
     heading: "Design heuristics, applied by the DSL Packer",
     level: 1,
-    narration: { src: "/narration/heuristics-intro.mp3" },
     body: [
       {
         kind: "text",
@@ -81,7 +80,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "recognition",
-    narration: { src: "/narration/heuristic-recognition.mp3" },
     title: "1. Recognition over recall",
     rule: "Labels above inputs, visible options over hidden menus.",
     rationale: [
@@ -116,7 +114,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "consistency",
-    narration: { src: "/narration/heuristic-consistency.mp3" },
     title: "2. Consistency and standards",
     rule: "One token set, one spacing scale, applied identically — no per-block one-off values.",
     rationale: [
@@ -149,7 +146,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "proximity",
-    narration: { src: "/narration/heuristic-proximity.mp3" },
     title: "3. Proximity, similarity, closure (Gestalt)",
     rule: "Related items read as one group; the grouping comes from spacing and repetition, not a manual border or label.",
     rationale: [
@@ -176,7 +172,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "control",
-    narration: { src: "/narration/heuristic-control.mp3" },
     title: "4. User control and freedom",
     rule: "Every modal is closable via a close button, backdrop click, and Esc — never a dead end. Every destructive action is confirmed with the specific consequence named, never silently auto-corrected.",
     rationale: [
@@ -198,7 +193,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "layers",
-    narration: { src: "/narration/heuristic-layers.mp3" },
     title: "5. Clear layer separation",
     rule: "Whenever content renders in front of other content, the two need their own distinct visual surface — not just z-index stacking.",
     rationale: [
@@ -218,7 +212,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "nav-overflow",
-    narration: { src: "/narration/heuristic-nav-overflow.mp3" },
     title: "6. Nav overflow",
     rule: 'A header\'s nav never consumes more than half the header — items that would cross that line collapse into a trailing "More" popover instead.',
     rationale: [
@@ -232,7 +225,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "minimalist",
-    narration: { src: "/narration/heuristic-minimalist.mp3" },
     title: "7. Aesthetic and minimalist design",
     rule: "Show only what's relevant by default — a bounded column set, not every possible field at once.",
     rationale: [
@@ -265,7 +257,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "space-dense",
-    narration: { src: "/narration/heuristic-space-dense.mp3" },
     title: "8. Space-dense content on a text-dominant page",
     rule: "More than ~4 non-text elements in a row goes in a space-minimizing container, not an inline grid.",
     rationale: [
@@ -278,7 +269,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "index",
-    narration: { src: "/narration/heuristic-index.mp3" },
     title: "9. Long text-dominant pages need a section index",
     rule: "More than 3 top-level headings gets an in-page index — on the right, since the left is reserved for cross-page site navigation.",
     rationale: [
@@ -291,7 +281,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "status-visible",
-    narration: { src: "/narration/heuristic-status-visible.mp3" },
     title: "10. Visibility of system status",
     rule: "Every async action shows a loading/success/error state within ~300ms of the interaction, and the user never has to guess what's active, selected, or current.",
     rationale: [
@@ -304,7 +293,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "ia-pyramid",
-    narration: { src: "/narration/heuristic-ia-pyramid.mp3" },
     title: "11. Information architecture as pyramid",
     rule: "Don't split related content onto different pages where a filter or search could reduce page count. IA should be pointy at the top, broader the further down you go.",
     rationale: [
@@ -317,7 +305,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "visual-hierarchy",
-    narration: { src: "/narration/heuristic-visual-hierarchy.mp3" },
     title: "12. Visual hierarchy in every container",
     rule: "Every dialog, panel, or card has three zones (title, content, actions) with clearly differentiated visual weight — size, weight, spacing.",
     rationale: [
@@ -330,7 +317,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "icon-labels",
-    narration: { src: "/narration/heuristic-icon-labels.mp3" },
     title: "13. Icons require labels or tooltips",
     rule: "Every icon has an adjacent text label, a tooltip, or both. Icons alone force guesswork; labels remove ambiguity.",
     rationale: [
@@ -343,7 +329,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "menu-complexity",
-    narration: { src: "/narration/heuristic-menu-complexity.mp3" },
     title: "14. Menus manage their own complexity",
     rule: "A menu with more than ~8 items auto-inserts separators or collapses into submenus. Related items are grouped; destructive actions are separated from safe ones.",
     rationale: [
@@ -356,7 +341,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "settings-organization",
-    narration: { src: "/narration/heuristic-settings-organization.mp3" },
     title: "15. Settings are categorized, searchable, and resettable",
     rule: "Any preferences or settings interface categorizes options by purpose, provides search for power users, explains what each option does, and offers reset-to-defaults.",
     rationale: [
@@ -369,7 +353,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "chart-context",
-    narration: { src: "/narration/heuristic-chart-context.mp3" },
     title: "16. Charts ship with context",
     rule: "Every chart, graph, or data display has a title (what), axis labels or legend (how to read it), and units (in what measure). A chart without context is decoration, not information.",
     rationale: [
@@ -382,7 +365,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "progressive-disclosure",
-    narration: { src: "/narration/heuristic-progressive-disclosure.mp3" },
     title: "17. Progressive disclosure: default to ≤7–9 visible options",
     rule: "Show essential options first; reveal advanced options on demand. Default state shows 5–9 visible options, respecting Miller's Law — people reliably track 7±2 items at once before missing one or losing their place.",
     rationale: [
@@ -395,7 +377,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "menu-content-separation",
-    narration: { src: "/narration/heuristic-menu-content-separation.mp3" },
     title: "18. Menus don't obscure their content",
     rule: "Dropdowns, popovers, and menus position themselves to avoid permanently obscuring the content they control. A menu that covers the document it's formatting is a failed menu.",
     rationale: [
@@ -408,7 +389,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "touch-targets",
-    narration: { src: "/narration/heuristic-touch-targets.mp3" },
     title: "19. Touch targets ≥ 44×44 px",
     rule: "Every interactive element has a hit area of at least 44×44 CSS pixels — the Apple HIG minimum — even when the visible glyph is smaller.",
     rationale: [
@@ -421,7 +401,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "all-states",
-    narration: { src: "/narration/heuristic-all-states.mp3" },
     title: "20. Design all states — loading, error, empty, disabled",
     rule: `Every component has loading, error, empty, and disabled states designed — not just the "happy path."`,
     rationale: [
@@ -434,7 +413,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "purposeful-animation",
-    narration: { src: "/narration/heuristic-purposeful-animation.mp3" },
     title: "21. Animation communicates, not decorates",
     rule: "Every animation serves a purpose: orient (where did this come from?), feedback (did my action register?), or continuity (what changed?). Purely decorative animation is removed or made optional.",
     rationale: [
@@ -447,7 +425,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "natural-mappings",
-    narration: { src: "/narration/heuristic-natural-mappings.mp3" },
     title: "22. Natural mappings",
     rule: "Controls are arranged so their spatial layout maps to what they affect — the same principle as stove burners matching their burner positions.",
     rationale: [
@@ -460,7 +437,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "platform-conventions",
-    narration: { src: "/narration/heuristic-platform-conventions.mp3" },
     title: "23. Follow platform conventions",
     rule: "Respect platform-specific patterns: iOS tab bar at bottom, Android at top; macOS menus in the menu bar, Windows in the title bar. Users bring expectations from the platform; violating them increases cognitive load.",
     rationale: [
@@ -473,7 +449,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "whitespace",
-    narration: { src: "/narration/heuristic-whitespace.mp3" },
     title: "24. Whitespace is an active design element",
     rule: "Whitespace separates, groups, and creates hierarchy — it is not wasted space. Adequate margins and padding improve legibility and scannability.",
     rationale: [
@@ -486,7 +461,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "button-hierarchy",
-    narration: { src: "/narration/heuristic-button-hierarchy.mp3" },
     title: "25. Button hierarchy is clear",
     rule: "Primary, secondary, and tertiary buttons have distinct visual weight. One primary button per container; secondary for alternatives; tertiary for low-emphasis actions.",
     rationale: [
@@ -499,7 +473,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "input-constraints",
-    narration: { src: "/narration/heuristic-input-constraints.mp3" },
     title: "26. Input constraints are visible",
     rule: "Character limits, required fields, format requirements, and valid ranges are shown before or during input — not after submission.",
     rationale: [
@@ -512,7 +485,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "multiple-input-methods",
-    narration: { src: "/narration/heuristic-multiple-input-methods.mp3" },
     title: "27. Multiple input methods",
     rule: "Forms and data entry support both browsing/selecting and direct input. Users have different preferences — some want to browse a list, others want to type.",
     rationale: [
@@ -525,7 +497,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "information-scent",
-    narration: { src: "/narration/heuristic-information-scent.mp3" },
     title: "28. Information scent in navigation",
     rule: `Navigation labels clearly indicate what's ahead — not vague or clever names. Users follow "information scent": clues that lead them to their goal.`,
     rationale: [
@@ -538,7 +509,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "card-layouts",
-    narration: { src: "/narration/heuristic-card-layouts.mp3" },
     title: "29. Cards are self-contained units",
     rule: "Card-based layouts for modular, scannable content. Each card has a clear boundary (border, shadow, background), contains related information, and is independently actionable.",
     rationale: [
@@ -551,7 +521,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "respect-intelligence",
-    narration: { src: "/narration/heuristic-respect-intelligence.mp3" },
     title: "30. Respect user intelligence",
     rule: "Treat users as capable problem-solvers, not children who need to be protected from complexity or nudged toward a choice they didn't actually intend.",
     rationale: [
@@ -564,7 +533,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "boot-sequences",
-    narration: { src: "/narration/heuristic-boot-sequences.mp3" },
     title: "31. Boot/init sequences show branded, phased progress",
     rule: "A startup sequence is itself a UI: it should communicate what phase is happening, not render a silent blank wait or an unreadable dump of raw state.",
     rationale: [
@@ -577,7 +545,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "storage-context",
-    narration: { src: "/narration/heuristic-storage-context.mp3" },
     title: "32. Storage/item-count context is always visible",
     rule: "Any view over a bounded collection shows its own size context — item count, available capacity — persistently in its own chrome, not only on demand.",
     rationale: [
@@ -590,7 +557,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "grid-and-table-views",
-    narration: { src: "/narration/heuristic-grid-and-table-views.mp3" },
     title: "33. Icon-grid and sortable-table views of the same data",
     rule: "File/data browsers offer both an icon-grid view (fast visual scanning, a small or unfamiliar set) and a sortable-column table view (a large or familiar set) of the same underlying collection.",
     rationale: [
@@ -603,7 +569,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "undisambiguated-context",
-    narration: { src: "/narration/heuristic-undisambiguated-context.mp3" },
     title: "34. Decision dialogs show complete, undisambiguated context",
     rule: "Full source and destination paths in a conflict dialog, not just filenames that might collide; an empty slot explicitly labeled, not silently omitted from a list.",
     rationale: [
@@ -616,7 +581,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "live-preview-commit",
-    narration: { src: "/narration/heuristic-live-preview-commit.mp3" },
     title: "35. Live preview before commit, commit as its own explicit action",
     rule: `A setting affecting appearance or behavior unpredictably from its label alone shows the effect live as it's adjusted, with "try it now," "keep it," and "undo everything" as three distinct actions, not one implicit commit.`,
     rationale: [
@@ -629,7 +593,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "ellipsis-convention",
-    narration: { src: "/narration/heuristic-ellipsis-convention.mp3" },
     title: "36. Ellipsis marks menu items that need further input",
     rule: `A menu item that opens a dialog before its action completes ("Rename…") is visually distinguished from one that runs immediately ("Delete") with a trailing ellipsis.`,
     rationale: [
@@ -642,7 +605,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "token-inputs",
-    narration: { src: "/narration/heuristic-token-inputs.mp3" },
     title: "37. Multi-value inputs render as removable tokens, not a raw string",
     rule: "A form field accepting multiple discrete values (tags, recipients) renders each as its own visible, individually-removable chip, rather than a single text box edited as comma-separated text.",
     rationale: [
@@ -655,7 +617,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "drag-and-drop-fallback",
-    narration: { src: "/narration/heuristic-drag-and-drop-fallback.mp3" },
     title: "38. Drag-and-drop always has a non-drag fallback",
     rule: "A file-upload or reorderable-list interaction that only works by dragging excludes anyone who can't perform a drag gesture, and gives no cue about where a drop will land until mid-drag.",
     rationale: [
@@ -668,7 +629,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "copyable-code",
-    narration: { src: "/narration/heuristic-copyable-code.mp3" },
     title: "39. Copyable code ships with a one-click copy and visible confirmation",
     rule: "Any code block, command, or copyable identifier renders with an attached copy button that gives immediate, visible feedback on click, rather than a silent clipboard write.",
     rationale: [
@@ -681,7 +641,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "internationalization",
-    narration: { src: "/narration/heuristic-internationalization.mp3" },
     title: "40. Internationalization: RTL and locale-aware formatting",
     rule: "Components support right-to-left layout mirroring and locale-aware date/number/currency formatting, not just English left-to-right.",
     rationale: [
@@ -694,7 +653,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "status-pill",
-    narration: { src: "/narration/heuristic-status-pill.mp3" },
     title: "41. Lifecycle status is a pill, never inline parenthetical text",
     rule: `An item's build/lifecycle status (planned, deprecated, unmeasured) renders as its own \`Tag\`, never appended into the name ("Avatar (planned)") or spelled out as a full sentence.`,
     rationale: [
@@ -707,7 +665,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "filter-dimensions",
-    narration: { src: "/narration/heuristic-filter-dimensions.mp3" },
     title:
       "42. Filter UI matches how many independent dimensions a list varies along, and each dimension's control matches how many values it has",
     rule: "A search box alone suffices only when every item shares one category; each further way items differ is a second, independent dimension needing its own filter — and that filter's control scales to its own size, in three real tiers, not two.",
@@ -721,7 +678,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "scroll-mist",
-    narration: { src: "/narration/heuristic-scroll-mist.mp3" },
     title: `43. A scrollable list fades into a "mist" at whichever edge still has more content`,
     rule: "A hard-cropped, especially hidden-scrollbar, edge on an overflowing list gives no signal that content continues past it — a soft fade-to-transparent gradient at that edge does, tracking real scroll position rather than rendering unconditionally.",
     rationale: [
@@ -734,7 +690,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "beacon-point",
-    narration: { src: "/narration/heuristic-beacon-point.mp3" },
     title: "44. A tracking indicator below the fold stays visible, or returns shortly after a manual override",
     rule: `A highlight showing "where you are" in a long, independently-scrollable list is a beacon — it should stay in view as it moves, and yield to (never fight) a deliberate manual scroll of that list, resuming only once the person is done with it.`,
     rationale: [
@@ -747,7 +702,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "bounded-footprint",
-    narration: { src: "/narration/heuristic-bounded-footprint.mp3" },
     title: "45. A control's own footprint stays bounded, however much data it holds",
     rule: "A component whose content depends on open-ended data (a growing selection, a long list) is pinned to a fixed size — a set width/height, or an edge of its container — rather than left to grow indefinitely and push the surrounding layout around.",
     rationale: [
@@ -760,7 +714,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "beacon-pointer-easing",
-    narration: { src: "/narration/heuristic-beacon-pointer-easing.mp3" },
     title:
       "46. A beacon out of view gets a directional hint that reacts to motion, and the scroll that follows it eases rather than snaps",
     rule: "#44 established that a beacon should stay visible or return to view — this refines how both halves actually feel: a hint reacts to scroll motion to name the direction to look while it's out of view, and the scroll that brings it back eases smoothly rather than snapping in one frame.",
@@ -774,7 +727,6 @@ const HEURISTIC_BLOCKS: Construct[] = [
   {
     type: "heuristic",
     id: "explicit-save-affordance",
-    narration: { src: "/narration/heuristic-explicit-save-affordance.mp3" },
     title: "47. Don't assume familiarity — a text field's own save gesture is shown, not assumed known",
     rule: "A lifetime of typing into other apps' text boxes doesn't teach anyone this specific field's commit gesture — show it, don't assume it's already understood.",
     rationale: [
