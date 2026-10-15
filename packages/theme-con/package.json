@@ -1,0 +1,19 @@
+{
+  "name": "@rebar-ui/theme-con",
+  "version": "0.12.1",
+  "description": "Rebar's \"Con\" theme: electric blue, concrete and ink, thick outlines and hard shadows, themed around the concrete-block mascot.",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./theme.css": "./dist/theme.css"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs",
+    "test": "echo \"no tests\"",
+    "typecheck": "echo \"no typecheck\""
+  },
+  "license": "MIT"
+}

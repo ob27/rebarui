@@ -63,6 +63,9 @@ importers:
       '@rebar-ui/theme-clean':
         specifier: workspace:*
         version: link:../../packages/theme-clean
+      '@rebar-ui/theme-con':
+        specifier: workspace:*
+        version: link:../../packages/theme-con
       '@rebar-ui/theme-sketch':
         specifier: workspace:*
         version: link:../../packages/theme-sketch
@@ -9675,6 +9678,8 @@ importers:
         version: 2.1.9(@types/node@22.20.1)(jsdom@25.0.1(supports-color@7.2.0))(supports-color@7.2.0)
 
   packages/theme-clean: {}
+
+  packages/theme-con: {}
 
   packages/theme-sketch: {}
 

@@ -19,6 +19,7 @@
     "@rebar-ui/devtools": "workspace:*",
     "@rebar-ui/placement": "workspace:*",
     "@rebar-ui/theme-clean": "workspace:*",
+    "@rebar-ui/theme-con": "workspace:*",
     "@rebar-ui/theme-sketch": "workspace:*",
     "@types/three": "^0.186.0",
     "next": "16.3.3",
