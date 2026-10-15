@@ -206,6 +206,7 @@ const COMPONENT_FILES = [
   "AgentWall.tsx",
   "SchematicHeatmap.tsx",
   "HeatmapPainter.tsx",
+  "HeatmapViewer.tsx",
   "AiChatInput.tsx",
   "ShapeGallery.tsx",
   "FileManager.tsx",

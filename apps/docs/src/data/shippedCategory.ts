@@ -50,6 +50,7 @@ const DIAGRAM: readonly string[] = [
   "CalendarHeatmap",
   "SchematicHeatmap",
   "HeatmapPainter",
+  "HeatmapViewer",
   "BulletGraph",
   "PackedBubbleChart",
   "UMAPPlot",
