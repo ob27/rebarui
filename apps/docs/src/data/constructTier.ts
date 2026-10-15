@@ -148,6 +148,7 @@ export const CONSTRUCT_TIER = {
     SchematicHeatmap: "opinion", // real hover/focus + pinned-selection state (controlled via selectedId/onSelect, or uncontrolled) that changes the readout and every region outline.
     HeatmapPainter: "opinion", // real internal state machines: tool (paint/frame), camera, in-flight drag, painted-cell draft, frame selection, space-to-pan.
     HeatmapViewer: "opinion", // real state machines over a data source: open drawing/frame, brush group + visible brushes, shade metric, snapshot date, slicers, pinned regions, chart/table, full screen, plus async loading/error/computing.
+    Puppet: "opinion", // real internal state: a poke state machine (wiggling, then settling) and the index of the line being said; all motion is CSS keyframes.
     Cascader: "opinion",
     Collapsible: "opinion",
     ColorPicker: "opinion",

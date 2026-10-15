@@ -125,6 +125,7 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   SchematicHeatmap: "/opinions/schematic-heatmap",
   HeatmapPainter: "/opinions/schematic-heatmap#painter",
   HeatmapViewer: "/opinions/heatmap-viewer",
+  Puppet: "/opinions/puppet",
   BulletGraph: "/synthetics/bullet-graph",
   PackedBubbleChart: "/opinions/packed-bubble-chart",
   UMAPPlot: "/opinions/umap-plot",

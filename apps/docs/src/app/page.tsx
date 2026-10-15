@@ -60,7 +60,7 @@ const PILLARS: PillarGridItem[] = [
   },
   {
     title: "Five Tiers",
-    body: "206 components and 45 blocks, classified by where they sit between a raw static primitive and a piece of page-level structural law — Imitations, Synthetics, Opinions, Orders, Geneses. Working toward full Ant Design v6 parity, with a real codemod, not just a prompt.",
+    body: "207 components and 45 blocks, classified by where they sit between a raw static primitive and a piece of page-level structural law — Imitations, Synthetics, Opinions, Orders, Geneses. Working toward full Ant Design v6 parity, with a real codemod, not just a prompt.",
     href: "/about/agent",
     cta: "Browse the tiers",
   },

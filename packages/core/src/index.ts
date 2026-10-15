@@ -820,3 +820,6 @@ export type { BentoCardProps } from "./components/BentoCard";
 
 export { BackdropSection } from "./components/BackdropSection";
 export type { BackdropSectionProps } from "./components/BackdropSection";
+
+export { Puppet } from "./components/Puppet";
+export type { PuppetProps, PuppetLayers, PuppetWobblePart, PuppetPose } from "./components/Puppet";

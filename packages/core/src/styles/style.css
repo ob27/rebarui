@@ -8960,3 +8960,62 @@ button.rebar-heatmap-viewer-row {
 .rebar-backdrop-section .rebar-text[data-rebar-color] {
   color: inherit;
 }
+
+/* ---- Puppet: a character as a rigid paper cut-out on an unseen stick -------------------------------------------------- */
+.rebar-puppet { position: relative; display: block; flex: none; width: var(--rebar-puppet-w, 240px); }
+.rebar-puppet-rise, .rebar-puppet-sway, .rebar-puppet-paper { position: absolute; inset: 0; display: block; }
+.rebar-puppet-layer { position: absolute; inset: 0; width: 100%; height: 100%; user-select: none; pointer-events: none; -webkit-user-drag: none; }
+/* weight: a light paper book swings big and springs up; a heavy concrete block barely swings and lands with a thud */
+.rebar-puppet[data-rebar-weight="light"] { --rebar-puppet-swing: 3.5deg; --rebar-puppet-flop: 2.4deg; --rebar-puppet-sway-s: 3.8s; --rebar-puppet-flop-s: 2.6s; --rebar-puppet-rise-ms: 720ms; }
+.rebar-puppet[data-rebar-weight="heavy"] { --rebar-puppet-swing: 1.5deg; --rebar-puppet-flop: 0.8deg; --rebar-puppet-sway-s: 5.6s; --rebar-puppet-flop-s: 3.7s; --rebar-puppet-rise-ms: 1100ms; }
+.rebar-puppet-rise { transform-origin: 50% 100%; animation: rebar-puppet-rise-light var(--rebar-puppet-rise-ms) cubic-bezier(.34, 1.56, .64, 1) both; }
+.rebar-puppet[data-rebar-weight="heavy"] .rebar-puppet-rise { animation-name: rebar-puppet-rise-heavy; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
+.rebar-puppet-sway { transform-origin: 50% calc(100% + var(--rebar-puppet-pivot, 0px)); }
+.rebar-puppet[data-rebar-motion="idle"] .rebar-puppet-sway { animation: rebar-puppet-sway var(--rebar-puppet-sway-s) ease-in-out calc(var(--rebar-puppet-rise-ms) + var(--rebar-puppet-phase, 0s)) infinite; }
+.rebar-puppet[data-rebar-motion="hop"] .rebar-puppet-sway { animation: rebar-puppet-hop 520ms ease-out var(--rebar-puppet-rise-ms) 3, rebar-puppet-sway var(--rebar-puppet-sway-s) ease-in-out calc(var(--rebar-puppet-rise-ms) + 1.6s) infinite; }
+.rebar-puppet-paper { transform-origin: 50% 92%; }
+.rebar-puppet:not([data-rebar-motion="still"]) .rebar-puppet-paper { animation: rebar-puppet-flop var(--rebar-puppet-flop-s) ease-in-out calc(var(--rebar-puppet-rise-ms) + var(--rebar-puppet-phase, 0s)) infinite; }
+.rebar-puppet:hover .rebar-puppet-sway, .rebar-puppet[data-rebar-poked] .rebar-puppet-sway { animation: rebar-puppet-wiggle 640ms ease-in-out 1; }
+/* parts that wobble: a beat behind the body, springing when the puppet is poked */
+.rebar-puppet-wobble { transform-origin: var(--rebar-puppet-ox, 50%) var(--rebar-puppet-oy, 50%); }
+.rebar-puppet:not([data-rebar-motion="still"]) .rebar-puppet-wobble { animation: rebar-puppet-wobble var(--rebar-puppet-sway-s) ease-in-out calc(var(--rebar-puppet-rise-ms) + var(--rebar-puppet-wobble-delay, .34s) + var(--rebar-puppet-phase, 0s)) infinite; }
+.rebar-puppet:hover .rebar-puppet-wobble, .rebar-puppet[data-rebar-poked] .rebar-puppet-wobble { animation: rebar-puppet-spring 900ms ease-out 1; }
+/* eyes: pupils glance (and roll their eyes once per loop), lids blink slowly; both clipped to the eye mask */
+.rebar-puppet-eyes { position: absolute; inset: 0; z-index: 2; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+.rebar-puppet-pupils { animation: rebar-puppet-look 8s cubic-bezier(.5, 0, .2, 1) calc(var(--rebar-puppet-rise-ms) + var(--rebar-puppet-phase, 0s)) infinite; }
+.rebar-puppet-lids { transform-origin: 50% var(--rebar-puppet-lid-line, 35%); transform: scaleY(0); animation: rebar-puppet-blink 8s ease-in-out calc(var(--rebar-puppet-rise-ms) + var(--rebar-puppet-phase, 0s)) infinite; }
+/* held expressions: no motion at all */
+.rebar-puppet[data-rebar-pose] .rebar-puppet-rise, .rebar-puppet[data-rebar-pose] .rebar-puppet-sway, .rebar-puppet[data-rebar-pose] .rebar-puppet-paper,
+.rebar-puppet[data-rebar-pose] .rebar-puppet-wobble, .rebar-puppet[data-rebar-pose] .rebar-puppet-pupils, .rebar-puppet[data-rebar-pose] .rebar-puppet-lids { animation: none; }
+.rebar-puppet[data-rebar-pose="glance-left"] .rebar-puppet-pupils { transform: translate(calc(var(--rebar-puppet-look) * -1), 0); }
+.rebar-puppet[data-rebar-pose="glance-right"] .rebar-puppet-pupils { transform: translate(var(--rebar-puppet-look), calc(var(--rebar-puppet-look) * -.18)); }
+.rebar-puppet[data-rebar-pose="eye-roll"] .rebar-puppet-pupils { transform: translate(calc(var(--rebar-puppet-look) * .9), calc(var(--rebar-puppet-look) * -.3)); }
+.rebar-puppet[data-rebar-pose="blink"] .rebar-puppet-lids { transform: scaleY(1); }
+.rebar-puppet[data-rebar-pose="half-blink"] .rebar-puppet-lids { transform: scaleY(.55); }
+.rebar-puppet[data-rebar-pose="wobble"] .rebar-puppet-wobble { transform: rotate(calc(var(--rebar-puppet-wobble, 3.2deg) * -2.6)); }
+/* speech bubble: comic, pops in each time the line changes */
+.rebar-puppet-bubble { position: absolute; z-index: 5; top: -3%; width: max-content; max-width: 60%; padding: 10px 18px; border: 2px solid var(--rebar-puppet-bubble-border, #0b0b14); border-radius: 20px; background: var(--rebar-puppet-bubble-bg, #ffffff); color: var(--rebar-puppet-bubble-text, #0b0b14);
+  font-weight: 700; font-size: 1rem; line-height: 1.15; box-shadow: 4px 4px 0 var(--rebar-puppet-bubble-border, #0b0b14); animation: rebar-puppet-pop 260ms cubic-bezier(.34, 1.56, .64, 1) both; }
+.rebar-puppet-bubble[data-rebar-side="start"] { right: 58%; } .rebar-puppet-bubble[data-rebar-side="end"] { left: 58%; }
+.rebar-puppet-bubble::after { content: ""; position: absolute; bottom: -10px; width: 16px; height: 16px; background: var(--rebar-puppet-bubble-bg, #ffffff); border-right: 2px solid var(--rebar-puppet-bubble-border, #0b0b14); border-bottom: 2px solid var(--rebar-puppet-bubble-border, #0b0b14); transform: rotate(45deg); }
+.rebar-puppet-bubble[data-rebar-side="start"]::after { right: 28px; } .rebar-puppet-bubble[data-rebar-side="end"]::after { left: 28px; }
+@keyframes rebar-puppet-rise-light { from { transform: translateY(70%) rotate(-10deg); opacity: 0; } 55% { opacity: 1; } to { transform: none; opacity: 1; } }
+@keyframes rebar-puppet-rise-heavy { 0% { transform: translateY(115%); opacity: 0; } 55% { transform: translateY(-3.5%); opacity: 1; } 72% { transform: translateY(1.4%); } 86% { transform: translateY(-.4%); } 100% { transform: none; opacity: 1; } }
+@keyframes rebar-puppet-sway { 0%, 100% { transform: rotate(calc(var(--rebar-puppet-swing) * -1)); } 50% { transform: rotate(var(--rebar-puppet-swing)); } }
+@keyframes rebar-puppet-flop { 0%, 100% { transform: rotate(calc(var(--rebar-puppet-flop) * -.8)); } 50% { transform: rotate(var(--rebar-puppet-flop)); } }
+@keyframes rebar-puppet-hop { 0% { transform: translateY(0) rotate(0); } 45% { transform: translateY(-16%) rotate(6deg); } 100% { transform: translateY(0) rotate(0); } }
+@keyframes rebar-puppet-wiggle { 0%, 100% { transform: rotate(0); } 18% { transform: rotate(-3.6deg); } 42% { transform: rotate(3deg); } 66% { transform: rotate(-1.8deg); } 85% { transform: rotate(.8deg); } }
+@keyframes rebar-puppet-wobble { 0%, 100% { transform: rotate(var(--rebar-puppet-wobble, 3.2deg)); } 50% { transform: rotate(calc(var(--rebar-puppet-wobble, 3.2deg) * -1)); } }
+@keyframes rebar-puppet-spring { 0% { transform: rotate(0); } 20% { transform: rotate(-9deg); } 45% { transform: rotate(6deg); } 70% { transform: rotate(-3deg); } 100% { transform: rotate(0); } }
+@keyframes rebar-puppet-look {
+  0%, 8% { transform: none; } 14%, 28% { transform: translate(calc(var(--rebar-puppet-look, 1.7%) * -1), 0); } 34%, 44% { transform: none; }
+  50%, 60% { transform: translate(var(--rebar-puppet-look, 1.7%), -.3%); } 64%, 70% { transform: none; }
+  74% { transform: translate(0, -.7%); } 78% { transform: translate(calc(var(--rebar-puppet-look, 1.7%) * .9), -.2%); } 82% { transform: translate(calc(var(--rebar-puppet-look, 1.7%) * .7), .5%); }
+  86% { transform: translate(calc(var(--rebar-puppet-look, 1.7%) * -.8), .5%); } 90% { transform: translate(calc(var(--rebar-puppet-look, 1.7%) * -1), -.2%); } 94%, 100% { transform: none; }
+}
+@keyframes rebar-puppet-blink { 0%, 38% { transform: scaleY(0); } 42% { transform: scaleY(1); } 46% { transform: scaleY(0); } 70%, 72% { transform: scaleY(0); } 76% { transform: scaleY(1); } 80% { transform: scaleY(0); } 100% { transform: scaleY(0); } }
+@keyframes rebar-puppet-pop { from { transform: scale(.7); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .rebar-puppet-rise, .rebar-puppet-sway, .rebar-puppet-paper, .rebar-puppet-wobble, .rebar-puppet-pupils, .rebar-puppet-bubble { animation: none !important; }
+  .rebar-puppet-lids { animation-duration: 12s !important; }
+}
