@@ -132,3 +132,33 @@
 [data-rebar-theme="con"][data-theme="dark"] .rebar-button:active:not(:disabled) {
   box-shadow: 1px 1px 0 #000000;
 }
+
+/* code blocks and tables: outlined, with the same hard shadow as buttons and cards */
+[data-rebar-theme="con"] .rebar-code-block {
+  border: 2px solid var(--rebar-color-border);
+  border-radius: 14px;
+  box-shadow: 5px 5px 0 var(--rebar-color-border);
+  overflow: hidden;
+}
+[data-rebar-theme="con"] table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 2px solid var(--rebar-color-border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+[data-rebar-theme="con"] th {
+  background: var(--rebar-color-tint-1);
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+}
+[data-rebar-theme="con"] td {
+  border-top: 1px solid var(--rebar-color-border);
+}
+[data-rebar-theme="con"][data-theme="dark"] .rebar-code-block {
+  box-shadow: 5px 5px 0 #000000;
+}
