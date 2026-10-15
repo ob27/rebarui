@@ -78,6 +78,27 @@ export default function GenesesPage() {
         . Rebar UI is not on npm yet, so the screen builds against a checkout of this repo next to it; the README has the
         steps. More genesis projects, such as dashboards, admin panels and content sites, will follow.
       </Text>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
+        <Image
+          src="/geneses/ai-hive/wall-light.png"
+          alt="The AI Hive wall in light mode: a grid of agent and service tiles with status filters above, and the Hive Chat panel on the right."
+          style={{ width: "100%", borderRadius: "8px" }}
+        />
+        <Image
+          src="/geneses/ai-hive/wall-dark.png"
+          alt="The same AI Hive wall in dark mode."
+          style={{ width: "100%", borderRadius: "8px" }}
+        />
+      </div>
+      <Image
+        src="/geneses/ai-hive/wall-detail-light.png"
+        alt="AI Hive with one agent selected: a details banner above the wall shows its status, what it is working on and when it last reported."
+        style={{ width: "100%", borderRadius: "8px" }}
+      />
+      <Text size="sm" color="secondary">
+        Screenshots of AI Hive&apos;s built-in demo mode: every agent, service and chat message is simulated.
+      </Text>
     </Stack>
   );
 }
