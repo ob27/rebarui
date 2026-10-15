@@ -126,4 +126,29 @@ describe("ThemeToggle", () => {
     expect(document.documentElement).toHaveAttribute("data-theme", "dark");
     expect(document.documentElement).toHaveAttribute("data-rebar-bionic", "true");
   });
+
+  it("leaves a theme it does not offer alone on mount (a custom brand theme must not be overwritten with sketch)", () => {
+    document.documentElement.setAttribute("data-rebar-theme", "con");
+    render(<ThemeToggle />);
+    expect(document.documentElement).toHaveAttribute("data-rebar-theme", "con");
+  });
+
+  it("still lets the visitor switch away from a custom theme with the style control", async () => {
+    const user = userEvent.setup();
+    document.documentElement.setAttribute("data-rebar-theme", "con");
+    render(<ThemeToggle />);
+    await user.click(screen.getByRole("button", { name: "Theme" }));
+    await user.click(screen.getByRole("radio", { name: "Simple" }));
+    expect(document.documentElement).toHaveAttribute("data-rebar-theme", "clean");
+  });
+
+  it("never touches the theme when the style control is not shown, and mode still works", async () => {
+    const user = userEvent.setup();
+    document.documentElement.setAttribute("data-rebar-theme", "con");
+    render(<ThemeToggle sections={["mode", "bionic"]} />);
+    await user.click(screen.getByRole("button", { name: "Theme" }));
+    await user.click(screen.getByRole("radio", { name: "Dark" }));
+    expect(document.documentElement).toHaveAttribute("data-theme", "dark");
+    expect(document.documentElement).toHaveAttribute("data-rebar-theme", "con");
+  });
 });

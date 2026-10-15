@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./Button";
 import { Popover } from "./Popover";
 import { SegmentedControl } from "./SegmentedControl";
@@ -75,11 +75,13 @@ function SunIcon() {
  * since nothing on screen indicates the missing half. See `ref/HEURISTICS.md` #50.
  */
 export function ThemeToggle({ label = "Theme", size = "sm", sections = ALL_SECTIONS, hideLabel = false, className }: ThemeToggleProps) {
-  const [style, setStyle] = useState<"sketch" | "clean">(() =>
-    typeof document !== "undefined" && document.documentElement.getAttribute("data-rebar-theme") === "clean"
-      ? "clean"
-      : "sketch",
+  // The page's own theme is read, never assumed: a host that uses a theme this toggle does not offer (a custom brand theme) must not be
+  // overwritten with "sketch" just because the toggle mounted. The attribute is written only when the page had none (so there is always a
+  // style to switch from) or after the visitor changes the style control.
+  const [style, setStyle] = useState<string>(
+    () => (typeof document !== "undefined" ? document.documentElement.getAttribute("data-rebar-theme") : null) || "sketch",
   );
+  const writeStyle = useRef<boolean>(typeof document === "undefined" || !document.documentElement.hasAttribute("data-rebar-theme"));
   const [mode, setMode] = useState<"light" | "dark">(() =>
     typeof document !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark"
       ? "dark"
@@ -90,7 +92,7 @@ export function ThemeToggle({ label = "Theme", size = "sm", sections = ALL_SECTI
   );
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-rebar-theme", style);
+    if (writeStyle.current) document.documentElement.setAttribute("data-rebar-theme", style);
   }, [style]);
 
   useEffect(() => {
@@ -119,7 +121,10 @@ export function ThemeToggle({ label = "Theme", size = "sm", sections = ALL_SECTI
           { value: "clean", label: "Simple" },
         ]}
         value={style}
-        onValueChange={(v) => setStyle(v as "sketch" | "clean")}
+        onValueChange={(v) => {
+          writeStyle.current = true;
+          setStyle(v);
+        }}
       />
     </Stack>
   );
