@@ -198,6 +198,44 @@ textarea.rebar-input {
    a "kicker" is 600 small caps in the secondary ink; focus is a 3px ring of the primary at 45%.
    ------------------------------------------------------------------------------------------------ */
 
+/* TreeSelect trigger: the same pill field as Select */
+.rebar-date-picker-trigger[data-rebar-component="tree-select"] {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 18px;
+  border: 1.5px solid var(--rebar-color-border-strong);
+  border-radius: 999px;
+  background: var(--rebar-color-bg-raised);
+  color: var(--rebar-color-text-primary);
+  font-family: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.rebar-date-picker-trigger[data-rebar-component="tree-select"]::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin-left: auto;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  opacity: 0.7;
+}
+.rebar-date-picker-trigger[data-rebar-component="tree-select"][aria-expanded="true"] {
+  border-color: var(--rebar-color-primary);
+}
+.rebar-date-picker-trigger[data-rebar-component="tree-select"]:focus-visible {
+  outline: none;
+  border-color: var(--rebar-color-primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--rebar-color-primary) 18%, transparent);
+}
+.rebar-date-picker-trigger[data-rebar-component="tree-select"]:disabled {
+  opacity: 0.5;
+}
+
 /* Select and MultiSelect trigger: the same pill as Input */
 .rebar-select-trigger {
   min-height: 46px;
@@ -1289,6 +1327,14 @@ textarea.rebar-input {
 /* Avatar and AvatarGroup: tinted discs with the primary ink */
 .rebar-avatar {
   background: var(--rebar-color-tint-3);
+  /* A raised ring keeps the disc readable on bg-secondary panels too. */
+  box-shadow: 0 0 0 2px var(--rebar-color-bg-raised);
+}
+.rebar-avatar[data-rebar-size="sm"] {
+  background: var(--rebar-color-tint-1);
+}
+.rebar-avatar[data-rebar-size="lg"] {
+  background: var(--rebar-color-tint-2);
 }
 .rebar-avatar-fallback {
   color: var(--rebar-color-text-primary);
@@ -2236,19 +2282,37 @@ textarea.rebar-input {
   border-radius: 8px;
   background: var(--rebar-color-primary);
 }
+.rebar-index-bar-rail {
+  width: 22px;
+  gap: 2px;
+}
 .rebar-index-bar-rail-letter {
+  width: 18px;
+  height: 18px;
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  place-items: center;
   border-radius: 999px;
+  font-size: 0.62rem;
+  line-height: 1;
   font-weight: var(--rebar-font-weight-semibold);
   color: var(--rebar-color-primary);
 }
 .rebar-index-bar-rail-letter[data-rebar-active] {
   background: var(--rebar-color-primary);
   color: var(--rebar-color-primary-text);
+  transform: scale(1.15);
 }
 .rebar-index-bar-bubble {
+  width: 52px;
+  height: 52px;
   background: var(--rebar-color-bg-emphasis);
   color: var(--rebar-color-text-emphasis);
   border-radius: 16px;
+  box-shadow: var(--rebar-shadow);
+  font-family: var(--rebar-font-family-display);
+  font-size: 1.5rem;
 }
 .rebar-index-bar-group-header {
   font-size: 0.72rem;
@@ -2299,6 +2363,15 @@ textarea.rebar-input {
   border-radius: 0 999px 999px 0;
 }
 .rebar-divider {
+  background: var(--rebar-color-border-strong);
+}
+/* With a label the root is a flex row of two hairlines flanking the text: it must not fill itself. */
+.rebar-divider-with-text {
+  background: none;
+  height: auto;
+  gap: 14px;
+}
+.rebar-divider-with-text .rebar-divider-line {
   background: var(--rebar-color-border-strong);
 }
 .rebar-divider-text {
