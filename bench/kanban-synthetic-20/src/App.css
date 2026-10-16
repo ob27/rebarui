@@ -45,7 +45,7 @@
 }
 
 .sprint-column-count[data-at-cap="true"] {
-  color: var(--rebar-color-danger-text, #a33);
+  color: var(--rebar-color-danger, #a33);
   border-color: var(--rebar-color-danger, #a33);
 }
 
