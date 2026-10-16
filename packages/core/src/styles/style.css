@@ -385,6 +385,31 @@ body {
   background: var(--rebar-color-bg-primary, #ffffff);
 }
 
+/* container set (rendered inside a DeviceFrame/stage rather than the viewport): lay out within it. */
+.rebar-dialog-overlay[data-rebar-contained="true"],
+.rebar-dialog-content[data-rebar-contained="true"],
+.rebar-drawer-content[data-rebar-contained="true"] {
+  position: absolute;
+}
+.rebar-dialog-content[data-rebar-contained="true"] {
+  width: calc(100% - var(--rebar-space-xl, 32px) * 2);
+  max-height: calc(100% - var(--rebar-space-xl, 32px) * 2);
+}
+.rebar-dialog-content-fullscreen[data-rebar-contained="true"] {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+}
+.rebar-drawer-content-bottom[data-rebar-contained="true"],
+.rebar-drawer-content-top[data-rebar-contained="true"] {
+  max-height: 100%;
+}
+.rebar-drawer-content-left[data-rebar-contained="true"],
+.rebar-drawer-content-right[data-rebar-contained="true"] {
+  max-width: 100%;
+}
+
 .rebar-dialog-header {
   display: flex;
   align-items: flex-start;

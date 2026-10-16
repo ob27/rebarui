@@ -24,6 +24,11 @@ export interface DrawerProps {
   side?: DrawerSide;
   /** The panel's width in px for left/right, height in px for top/bottom. Defaults to 360. */
   size?: number;
+  /** Renders the overlay and panel inside this element (forwarded to the Radix portal) instead of
+   * `document.body` -- e.g. a `DeviceFrame` screen, so the sheet stays within the frame. The
+   * element should be positioned (`position: relative`); the overlay and panel then lay out
+   * `position: absolute` within it (`data-rebar-contained="true"`). */
+  container?: HTMLElement | null;
 }
 
 /**
@@ -74,6 +79,7 @@ export function DrawerPanel({
   dataComponent,
   handle,
   dragToDismiss,
+  container,
 }: DrawerPanelProps) {
   // Same controlled/uncontrolled pattern as Dialog: internally managed regardless of whether the
   // caller passes `open`, so every consumer (a plain uncontrolled trigger, or ActionSheet forcing
@@ -136,12 +142,17 @@ export function DrawerPanel({
   return (
     <RadixDialog.Root open={currentOpen} onOpenChange={handleOpenChange}>
       {trigger ? <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger> : null}
-      <RadixDialog.Portal>
-        <RadixDialog.Overlay className="rebar-dialog-overlay" data-rebar-part="overlay" />
+      <RadixDialog.Portal container={container ?? undefined}>
+        <RadixDialog.Overlay
+          className="rebar-dialog-overlay"
+          data-rebar-part="overlay"
+          data-rebar-contained={container ? "true" : undefined}
+        />
         <RadixDialog.Content
           className={clsx("rebar-drawer-content", `rebar-drawer-content-${side}`, className)}
           data-rebar-component={dataComponent}
           data-rebar-side={side}
+          data-rebar-contained={container ? "true" : undefined}
           style={{ ...sizeStyle, ...dragStyle }}
           aria-modal="true"
         >

@@ -18,6 +18,8 @@ export interface ActionSheetProps {
   actions: ActionSheetAction[];
   /** Label for the separate, visually-distinct dismiss button. Defaults to "Cancel". */
   cancelLabel?: string;
+  /** Renders the sheet inside this (positioned) element instead of `document.body`, e.g. a `DeviceFrame` screen. See `DrawerProps.container`. */
+  container?: HTMLElement | null;
 }
 
 /**
@@ -37,6 +39,7 @@ export function ActionSheet({
   title,
   actions,
   cancelLabel = "Cancel",
+  container,
 }: ActionSheetProps) {
   const isControlled = open !== undefined;
   const [internalOpen, setInternalOpen] = useState(defaultOpen ?? false);
@@ -58,6 +61,7 @@ export function ActionSheet({
       onOpenChange={handleOpenChange}
       trigger={trigger}
       title={title}
+      container={container}
       side="bottom"
       dataComponent="action-sheet"
       dragToDismiss

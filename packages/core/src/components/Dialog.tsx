@@ -30,6 +30,11 @@ export interface DialogProps {
    * left to show one in. For a modal that genuinely needs the whole screen (an image viewer, a
    * focused editing flow), not the default "centered card over a dimmed page" shape. */
   fullscreen?: boolean;
+  /** Renders the overlay and panel inside this element (forwarded to the Radix portal) instead of
+   * `document.body` -- e.g. a `DeviceFrame` screen, so the sheet stays within the frame. The
+   * element should be positioned (`position: relative`); the overlay and panel then lay out
+   * `position: absolute` within it (`data-rebar-contained="true"`). */
+  container?: HTMLElement | null;
 }
 
 export function Dialog({
@@ -47,6 +52,7 @@ export function Dialog({
   activeBorder,
   autoDismiss,
   fullscreen,
+  container,
 }: DialogProps) {
   const descriptionContent = useBionicChildren(description, bionic, bionicOptions);
   // Managed internally regardless of controlled/uncontrolled usage, so autoDismiss has a real
@@ -71,10 +77,11 @@ export function Dialog({
   return (
     <RadixDialog.Root open={currentOpen} onOpenChange={handleOpenChange}>
       {trigger ? <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger> : null}
-      <RadixDialog.Portal>
+      <RadixDialog.Portal container={container ?? undefined}>
         <RadixDialog.Overlay
           className={clsx("rebar-dialog-overlay", fullscreen && "rebar-dialog-overlay-fullscreen")}
           data-rebar-part="overlay"
+          data-rebar-contained={container ? "true" : undefined}
         />
         <RadixDialog.Content
           className={clsx(
@@ -84,6 +91,7 @@ export function Dialog({
             className,
           )}
           data-rebar-component="dialog"
+          data-rebar-contained={container ? "true" : undefined}
           aria-modal="true"
         >
           <div className="rebar-dialog-header">
