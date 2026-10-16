@@ -73,3 +73,15 @@ describe("Steps", () => {
     expect(icons[1]).toHaveClass("rebar-active-border");
   });
 });
+
+describe("Steps connector", () => {
+  it("draws connectors by default (no opt-out attribute)", () => {
+    const { container } = render(<Steps items={items} current={1} />);
+    expect(container.querySelector("ol")).not.toHaveAttribute("data-rebar-connector");
+  });
+
+  it("connector={false} sets data-rebar-connector=false", () => {
+    const { container } = render(<Steps items={items} current={1} connector={false} />);
+    expect(container.querySelector("ol")).toHaveAttribute("data-rebar-connector", "false");
+  });
+});

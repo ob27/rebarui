@@ -34,6 +34,9 @@ export interface StepsProps {
    * long step list down to a visible slice) — omit for the original, purely presentational
    * behavior. */
   onItemClick?: (index: number) => void;
+  /** Draws a rail between consecutive steps (filled once the step before it is finished). Default true.
+   * Rendered purely in CSS from `data-rebar-status`; `false` sets `data-rebar-connector="false"` to turn it off. */
+  connector?: boolean;
 }
 
 function resolveStatus(item: StepItem, index: number, current: number): StepStatus {
@@ -44,7 +47,7 @@ function resolveStatus(item: StepItem, index: number, current: number): StepStat
 }
 
 export const Steps = forwardRef<HTMLOListElement, StepsProps>(function Steps(
-  { items, current = 0, direction = "horizontal", className, bionic, bionicOptions, onItemClick },
+  { items, current = 0, direction = "horizontal", className, bionic, bionicOptions, onItemClick, connector = true },
   ref,
 ) {
   const ambient = useAmbientBionic();
@@ -56,6 +59,7 @@ export const Steps = forwardRef<HTMLOListElement, StepsProps>(function Steps(
       className={clsx("rebar-steps", `rebar-steps-${direction}`, onItemClick && "rebar-steps-clickable", className)}
       data-rebar-component="steps"
       data-rebar-direction={direction}
+      data-rebar-connector={connector ? undefined : "false"}
     >
       {items.map((item, index) => {
         const status = resolveStatus(item, index, current);

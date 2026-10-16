@@ -1969,13 +1969,48 @@ body {
   flex: 1;
 }
 
+/* Connector rails between steps (turned off by data-rebar-connector="false"). Horizontal: a line
+   that fills the space after each item's content. Vertical: a line dropping from under the icon. */
+.rebar-steps {
+  --rebar-steps-icon-size: 28px;
+  --rebar-steps-rail-width: 2px;
+}
+.rebar-steps:not([data-rebar-connector="false"]) .rebar-steps-item:not(:last-child)::after {
+  content: "";
+  background: var(--rebar-color-border, #e0e0e0);
+  border-radius: 999px;
+}
+.rebar-steps:not([data-rebar-connector="false"]) .rebar-steps-item[data-rebar-status="finish"]:not(:last-child)::after {
+  background: var(--rebar-color-primary, #0066cc);
+}
+.rebar-steps-horizontal:not([data-rebar-connector="false"]) .rebar-steps-item:not(:last-child)::after {
+  flex: 1 1 0;
+  min-width: var(--rebar-space-md, 16px);
+  height: var(--rebar-steps-rail-width);
+  margin: calc(var(--rebar-steps-icon-size) / 2 - var(--rebar-steps-rail-width) / 2) var(--rebar-space-xs, 4px) 0;
+}
+.rebar-steps-horizontal:not([data-rebar-connector="false"]) .rebar-steps-item-button {
+  width: auto;
+  flex: 0 1 auto;
+}
+.rebar-steps-vertical:not([data-rebar-connector="false"]) .rebar-steps-item {
+  position: relative;
+}
+.rebar-steps-vertical:not([data-rebar-connector="false"]) .rebar-steps-item:not(:last-child)::after {
+  position: absolute;
+  left: calc(var(--rebar-steps-icon-size) / 2 - var(--rebar-steps-rail-width) / 2);
+  top: calc(var(--rebar-steps-icon-size) + 4px);
+  bottom: calc(4px - var(--rebar-space-md, 16px));
+  width: var(--rebar-steps-rail-width);
+}
+
 .rebar-steps-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  width: var(--rebar-steps-icon-size, 28px);
+  height: var(--rebar-steps-icon-size, 28px);
   border-radius: 50%;
   border: var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0);
   color: var(--rebar-color-text-secondary, #757575);

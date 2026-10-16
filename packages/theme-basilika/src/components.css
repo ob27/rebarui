@@ -1303,6 +1303,9 @@ textarea.rebar-input {
 }
 
 /* Steps: 32px discs, done in the primary, the current one ringed */
+.rebar-steps {
+  --rebar-steps-icon-size: 32px;
+}
 .rebar-steps-icon {
   width: 32px;
   height: 32px;
@@ -1312,9 +1315,9 @@ textarea.rebar-input {
   font-weight: var(--rebar-font-weight-bold);
 }
 .rebar-steps-item[data-rebar-status="process"] .rebar-steps-icon {
-  background: var(--rebar-color-bg-raised);
+  background: var(--rebar-color-tint-1);
   border-color: var(--rebar-color-primary);
-  color: var(--rebar-color-text-primary);
+  color: var(--rebar-color-primary);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--rebar-color-primary) 20%, transparent);
 }
 .rebar-steps-item[data-rebar-status="finish"] .rebar-steps-icon {
