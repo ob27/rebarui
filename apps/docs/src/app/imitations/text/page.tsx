@@ -1,28 +1,18 @@
-import { Heading, Stack, Text } from "rebar-ui";
+"use client";
+
+import { Button, Card, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { person, project } from "@/fixtures/tideline";
+
+const CODE = `<Text size="md">Identity, site and launch kit.</Text>
+<Text size="sm" color="secondary">Owned by Maya Chen.</Text>
+<Text size="xs" color="secondary" as="span">Updated 17 Oct</Text>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      { kind: "code", code: '<Text size="sm" color="secondary" as="span">Helper text</Text>' },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Text"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "The default prose element",
-    body: [
-      {
-        kind: "text",
-        text: 'Renders a real `<p>` by default (`as` swaps it for any tag — `span`, `label`, `li`) with two independent scales: `size` (`xs`/`sm`/`md`) and `color` (`primary`/`secondary`). Bionic-reading wired the same way as every other text-bearing component: `bionic`/`bionicOptions` override the ambient `data-rebar-bionic` setting per instance.',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -46,25 +36,36 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function TextPage() {
+  const harbour = project("harbour");
+  const mobile = project("mobile");
   return (
     <Stack gap="lg">
       <Heading level={1}>Text</Heading>
-      <Text color="secondary">
-        The default prose element — a real <code>&lt;p&gt;</code> by default, with a size and color
-        scale.
-      </Text>
+      <Text color="secondary">The default paragraph, with a size and a colour scale.</Text>
 
-      <LivePreview>
+      <DemoStage title="Sizes and colours" caption="Default, helper text, and an inline span" code={CODE} widths={false}
+        states={[
+          { label: "As a span", node: <Text as="span" size="sm">Due <Text as="span" size="sm" color="secondary">24 Oct</Text></Text> },
+          { label: "Long text", node: <Text size="sm" style={{ maxWidth: 260 }}>Offline sync keeps tasks readable on the ferry, then catches up with the server as soon as the crew reaches the quay.</Text> },
+        ]}
+      >
         <Stack gap="xs">
-          <Text size="md">Default size, primary color.</Text>
-          <Text size="sm" color="secondary">
-            Small, secondary — the common helper-text look.
-          </Text>
-          <Text size="xs" color="secondary" as="span">
-            Extra-small, rendered as a real span instead of a paragraph.
-          </Text>
+          <Text size="md">{harbour.summary}</Text>
+          <Text size="sm" color="secondary">Owned by {person(harbour.owner).name}. Due {harbour.due}.</Text>
+          <Text size="xs" color="secondary" as="span">Updated 17 Oct, rendered as a span.</Text>
         </Stack>
-      </LivePreview>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Project summary" caption="Body, helper text and a muted footer in one card" widths={false}>
+        <Card style={{ maxWidth: 440, margin: "0 auto" }} title={mobile.name} actions={[<Button key="open">Open project</Button>]}>
+          <Stack gap="xs">
+            <Text>{mobile.summary}</Text>
+            <Text size="sm" color="secondary">{mobile.done}% complete, {mobile.status.toLowerCase()}.</Text>
+            <Text size="xs" color="secondary">Next milestone: {mobile.due}</Text>
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

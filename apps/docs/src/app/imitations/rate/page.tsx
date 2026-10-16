@@ -1,23 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import { Heading, Rate, Stack, Text } from "rebar-ui";
+import { Avatar, Button, Card, Heading, Rate, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { avatarOf } from "@/fixtures/tideline";
+import { useState } from "react";
+
+const CODE = `const [value, setValue] = useState(3);
+<Rate value={value} onChange={setValue} aria-label="Interview rating" />`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Rate defaultValue={3} aria-label="Rate this product" />\n\n// controlled\nconst [value, setValue] = useState(0);\n<Rate value={value} onChange={setValue} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Rate"] ?? [] },
   {
     type: "doc-section",
@@ -52,28 +46,35 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function RatePage() {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(3);
 
   return (
     <Stack gap="lg">
       <Heading level={1}>Rate</Heading>
-      <Text color="secondary">
-        A star rating input — click or use the arrow keys. No half-star support in this first
-        pass, a stated limitation, not an oversight.
-      </Text>
+      <Text color="secondary">A star rating input.</Text>
 
-      <LivePreview>
-        <Stack gap="md">
-          <Rate defaultValue={3} aria-label="Uncontrolled example" />
-          <Stack direction="row" gap="sm" align="center">
-            <Rate value={value} onChange={setValue} aria-label="Controlled example" />
-            <Text size="sm" color="secondary">
-              {value} / 5
-            </Text>
-          </Stack>
-          <Rate defaultValue={2} disabled aria-label="Disabled example" />
+      <DemoStage title="Interview rating" caption="Click a star or use the arrow keys" code={CODE} widths={false}
+        states={[
+          { label: "Unrated", node: <Rate defaultValue={0} aria-label="Unrated" /> },
+          { label: "Disabled", node: <Rate defaultValue={2} disabled aria-label="Disabled rating" /> },
+          { label: "Ten stars", node: <Rate defaultValue={7} count={10} aria-label="Out of ten" /> },
+        ]}
+      >
+        <Stack direction="row" gap="sm" align="center">
+          <Rate value={value} onChange={setValue} aria-label="Interview rating" />
+          <Text size="sm" color="secondary">{value} / 5</Text>
         </Stack>
-      </LivePreview>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Interview debrief" caption="Priya scores call 11 before she files the notes" widths={false}>
+        <Card style={{ maxWidth: 440, margin: "0 auto" }} title="Crew interview 11" subtitle="21 Oct, 11:30" avatar={<Avatar {...avatarOf("priya")} />} actions={[<Button key="file">File notes</Button>, <Button key="skip" variant="tertiary">Later</Button>]}>
+          <Stack gap="sm">
+            <Text size="sm" color="secondary">How useful was this conversation?</Text>
+            <Rate defaultValue={4} aria-label="Usefulness" />
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

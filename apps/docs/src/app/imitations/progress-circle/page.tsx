@@ -1,22 +1,16 @@
 "use client";
 
-import { Heading, ProgressCircle, Stack, Text } from "rebar-ui";
+import { Card, Heading, ProgressCircle, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PROJECTS, STATUS_TONE, person } from "@/fixtures/tideline";
+
+const CODE = `<ProgressCircle percent={84}>84%</ProgressCircle>
+<ProgressCircle percent={100} color="var(--rebar-color-success)">Done</ProgressCircle>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<ProgressCircle percent={72}>72%</ProgressCircle>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["ProgressCircle"] ?? [] },
   {
     type: "doc-section",
@@ -54,20 +48,43 @@ export default function ProgressCirclePage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>ProgressCircle</Heading>
-      <Text color="secondary">
-        A plain circular progress ring — a lighter-weight alternative to <code>GaugeChart</code>{" "}
-        for a single, bare percentage.
-      </Text>
+      <Text color="secondary">A circular ring showing how far along something is.</Text>
 
-      <LivePreview>
-        <Stack direction="row" gap="lg" style={{ alignItems: "center" }}>
-          <ProgressCircle percent={25}>25%</ProgressCircle>
-          <ProgressCircle percent={72}>72%</ProgressCircle>
-          <ProgressCircle percent={100} color="var(--rebar-color-success)">
-            Done
-          </ProgressCircle>
+      <DemoStage title="Project progress" caption="One ring per project, percent in the middle" code={CODE} widths={false}
+        states={[
+          { label: "Empty", node: <ProgressCircle percent={0}>0%</ProgressCircle> },
+          { label: "Done", node: <ProgressCircle percent={100} color="var(--rebar-color-success)">Done</ProgressCircle> },
+          { label: "Small", node: <ProgressCircle percent={61} size={56} strokeWidth={5}>61%</ProgressCircle> },
+          { label: "Late", node: <ProgressCircle percent={33} color="var(--rebar-color-error)">33%</ProgressCircle> },
+        ]}
+      >
+        <Stack direction="row" gap="xl" align="center" style={{ flexWrap: "wrap" }}>
+          {PROJECTS.slice(0, 3).map((p) => (
+            <Stack key={p.id} gap="xs" align="center">
+              <ProgressCircle percent={p.done} ariaLabel={`${p.name} ${p.done}% done`}>{p.done}%</ProgressCircle>
+              <Text size="sm" color="secondary">{p.name}</Text>
+            </Stack>
+          ))}
         </Stack>
-      </LivePreview>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Projects" caption="A ring beside each project, status as a tag" widths={false}>
+        <Card style={{ maxWidth: 520, margin: "0 auto" }} title="This quarter">
+          <Stack gap="md">
+            {PROJECTS.map((p) => (
+              <Stack key={p.id} direction="row" gap="md" align="center">
+                <ProgressCircle percent={p.done} size={52} strokeWidth={5} ariaLabel={`${p.name} ${p.done}% done`}>{p.done}</ProgressCircle>
+                <Stack gap="xs" style={{ flex: 1 }}>
+                  <Text>{p.name}</Text>
+                  <Text size="sm" color="secondary">{person(p.owner).name}, due {p.due}</Text>
+                </Stack>
+                <Tag tone={STATUS_TONE[p.status]}>{p.status}</Tag>
+              </Stack>
+            ))}
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

@@ -1,37 +1,26 @@
-import { Heading, SegmentedControl, Stack, Text } from "rebar-ui";
+"use client";
+
+import { Avatar, Card, Heading, SegmentedControl, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { HOURS_BY_PERSON, PROJECTS, avatarOf, person } from "@/fixtures/tideline";
+import { useState } from "react";
 
 const OPTIONS = [
   { value: "day", label: "Day" },
   { value: "week", label: "Week" },
   { value: "month", label: "Month" },
 ];
+const VIEWS = [
+  { value: "me", label: "Me" },
+  { value: "team", label: "Team" },
+];
+const CODE = `<SegmentedControl options={[{ value: "day", label: "Day" }, { value: "week", label: "Week" }, { value: "month", label: "Month" }]} defaultValue="week" aria-label="Calendar range" />`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<SegmentedControl options={[{ value: "day", label: "Day" }, { value: "week", label: "Week" }]} defaultValue="week" aria-label="Range" />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["SegmentedControl"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "vs. RadioGroup",
-    body: [
-      {
-        kind: "text",
-        text: "Same underlying choice (`role=\"radiogroup\"`, exactly one selected) as `RadioGroup` — this is a visual variant for when a compact row of labeled segments reads better than a stacked list of radio buttons (a view toggle, a time-range picker), not a different interaction model.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "Accessibility",
@@ -62,17 +51,40 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function SegmentedControlPage() {
+  const [range, setRange] = useState("week");
+  const [view, setView] = useState("me");
+
   return (
     <Stack gap="lg">
       <Heading level={1}>SegmentedControl</Heading>
-      <Text color="secondary">
-        A pill-style single-select button group — a real ARIA radio group underneath, visually
-        distinct from <code>RadioGroup</code> for the same single-choice interaction.
-      </Text>
+      <Text color="secondary">A compact row of segments where exactly one is selected.</Text>
 
-      <LivePreview>
-        <SegmentedControl options={OPTIONS} defaultValue="week" aria-label="Range" />
-      </LivePreview>
+      <DemoStage title="Calendar range" caption="Arrow keys move the selection, Home and End jump" code={CODE} widths={false}
+        states={[
+          { label: "Disabled", node: <SegmentedControl options={OPTIONS} defaultValue="week" disabled aria-label="Range, disabled" /> },
+          { label: "Two options", node: <SegmentedControl options={OPTIONS.slice(0, 2)} defaultValue="day" aria-label="Day or week" /> },
+          { label: "Long labels", node: <SegmentedControl options={PROJECTS.slice(0, 3).map((p) => ({ value: p.id, label: p.name }))} defaultValue="mobile" aria-label="Project" /> },
+        ]}
+      >
+        <SegmentedControl options={OPTIONS} value={range} onValueChange={setRange} aria-label="Calendar range" />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Hours" caption="Switch the card between this week and the whole team" widths={false}>
+        <Card style={{ maxWidth: 440, margin: "0 auto" }} title="Hours logged" extra={<SegmentedControl options={VIEWS} value={view} onValueChange={setView} aria-label="Whose hours" />}>
+          <Stack gap="sm">
+            {HOURS_BY_PERSON.filter((h) => view === "team" || h.person === "maya").map((h) => (
+              <Stack key={h.person} direction="row" gap="sm" align="center" justify="between">
+                <Stack direction="row" gap="sm" align="center">
+                  <Avatar size="sm" {...avatarOf(h.person)} />
+                  <Text size="sm">{person(h.person).name}</Text>
+                </Stack>
+                <Text size="sm" color="secondary">{h.hours} h</Text>
+              </Stack>
+            ))}
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

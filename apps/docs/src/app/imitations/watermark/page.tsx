@@ -1,30 +1,18 @@
-import { AspectRatio, Box, Card, Heading, Stack, Text, Watermark } from "rebar-ui";
+"use client";
+
+import { Button, Card, Heading, Stack, Text, Watermark } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { gbp, project } from "@/fixtures/tideline";
+
+const CODE = `<Watermark text="CONFIDENTIAL">
+  <Card title="Harbour rebrand">...</Card>
+</Watermark>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Watermark text="CONFIDENTIAL">\n  <Card title="Q3 roadmap">...</Card>\n</Watermark>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Watermark"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "CSS, not canvas",
-    body: [
-      {
-        kind: "text",
-        text: "Built from a plain inline SVG data URI tiled via CSS `background-repeat`, not a canvas-rendered image. Stays crisp at any size (SVG scales natively) and renders correctly during SSR with no `useEffect`/ref measurement pass — the overlay is present in the very first render, not added a frame later.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "Also available as a prop",
@@ -58,24 +46,33 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function WatermarkPage() {
+  const harbour = project("harbour");
   return (
     <Stack gap="lg">
       <Heading level={1}>Watermark</Heading>
-      <Text color="secondary">
-        A repeating diagonal watermark overlaid on its children — real content protection or
-        attribution, not decoration.
-      </Text>
+      <Text color="secondary">A repeating diagonal mark laid over its children.</Text>
 
-      <Stack direction="row" gap="lg" style={{ flexWrap: "wrap" }}>
-        <Box style={{ width: 280 }}>
+      <DemoStage title="Draft proof" caption="The overlay never blocks clicks or text selection" code={CODE} widths={false}
+        states={[
+          { label: "Sparse and steep", node: <div style={{ width: 200 }}><Watermark text="DRAFT" gap={[120, 90]} rotate={-35}><div style={{ height: 110, background: "var(--rebar-color-tint-3)", borderRadius: 6 }} /></Watermark></div> },
+          { label: "Subtle", node: <div style={{ width: 200 }}><Watermark text="Tideline" opacity={0.08}><div style={{ height: 110, background: "var(--rebar-color-tint-3)", borderRadius: 6 }} /></Watermark></div> },
+        ]}
+      >
+        <div style={{ maxWidth: 360 }}>
           <Watermark text="CONFIDENTIAL">
-            <Card title="Q3 roadmap">Internal planning notes — not for distribution.</Card>
+            <Card title={harbour.name} subtitle="Launch plan">
+              <Text size="sm" color="secondary">Budget {gbp(harbour.budget)}. Not for distribution before {harbour.due}.</Text>
+            </Card>
           </Watermark>
-        </Box>
-        <Box style={{ width: 200 }}>
-          <AspectRatio ratio={4 / 3} placeholder watermark="© Rebar UI" />
-        </Box>
-      </Stack>
+        </div>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Signage proof" caption="Sent to the printer with a mark until it is approved" widths={false}>
+        <Card style={{ maxWidth: 420, margin: "0 auto" }} title="depot-fascia-final.pdf" subtitle="Depot signage, 1.4 MB" watermark="PROOF" actions={[<Button key="ok">Approve</Button>, <Button key="chg" variant="secondary">Request changes</Button>]}>
+          <div className="cs-grain" style={{ height: 160, borderRadius: 6 }} />
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

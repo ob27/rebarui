@@ -1,32 +1,18 @@
 "use client";
 
-import { Box, BoxPlot, Heading, Stack, Text } from "rebar-ui";
+import { BoxPlot, Card, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { CYCLE_DAYS, person } from "@/fixtures/tideline";
+
+const GROUPS = CYCLE_DAYS.map(({ person: id, ...five }) => ({ label: person(id).name, ...five }));
+const days = (v: number) => `${Math.round(v)}d`;
+const CODE = `<BoxPlot title="Days to finish a task, by person" groups={[{ label: "Maya Chen", min: 1, q1: 2, median: 3, q3: 5, max: 9 }, { label: "Jonas Weber", min: 2, q1: 4, median: 6, q3: 9, max: 15 }]} />`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<BoxPlot title="API response time (ms)" groups={[{ label: "Platform", min: 80, q1: 120, median: 150, q3: 190, max: 260 }, { label: "Billing", min: 95, q1: 140, median: 175, q3: 230, max: 340 }, { label: "Search", min: 60, q1: 90, median: 110, q3: 140, max: 210 }]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["BoxPlot"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "What it's for",
-    body: [
-      {
-        kind: "text",
-        text: "A statistical distribution chart — each group drawn as a vertical box-and-whisker from a pre-computed five-number summary (min/q1/median/q3/max), side by side on a shared numeric y-scale. Built for comparing the spread of several groups' worth of a measured value at a glance, without plotting every raw sample. This component draws the box/whiskers from the summary you supply — it doesn't compute quartiles from raw sample data. `title` renders as a real, visible caption per [Design Heuristics](/about/agent) #16 (charts ship with context, not just an accessible name); colors default to a small built-in palette, cycled by group index, when a group omits its own.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -53,28 +39,26 @@ export default function BoxPlotPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>BoxPlot</Heading>
-      <Text color="secondary">
-        Each group drawn as a vertical box-and-whisker from a pre-computed five-number summary,
-        side by side on a shared numeric y-scale.
-      </Text>
+      <Text color="secondary">Box-and-whisker groups from a five-number summary.</Text>
 
-      <Box
-        style={{
-          border: "1px solid var(--rebar-color-border, #e0e0e0)",
-          borderRadius: 4,
-          padding: "var(--rebar-space-lg)",
-        }}
+      <DemoStage title="Cycle time" caption="Days from start to done, by person" code={CODE} widths={false}
+        states={[
+          { label: "Two groups", node: <div style={{ width: 280 }}><BoxPlot title="Design and ops" height={170} yFormat={days} groups={GROUPS.filter((g) => g.label === "Maya Chen" || g.label === "Leo Santos")} /></div> },
+          { label: "One group", node: <div style={{ width: 200 }}><BoxPlot title="Jonas only" height={170} yFormat={days} groups={GROUPS.filter((g) => g.label === "Jonas Weber")} /></div> },
+        ]}
       >
-        <BoxPlot
-          title="API response time (ms), by team"
-          yFormat={(v) => `${Math.round(v)}ms`}
-          groups={[
-            { label: "Platform", min: 80, q1: 120, median: 150, q3: 190, max: 260 },
-            { label: "Billing", min: 95, q1: 140, median: 175, q3: 230, max: 340 },
-            { label: "Search", min: 60, q1: 90, median: 110, q3: 140, max: 210 },
-          ]}
-        />
-      </Box>
+        <BoxPlot title="Days to finish a task, by person" yFormat={days} groups={GROUPS} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Delivery review" caption="The spread behind the average, with a note on the slow end" widths={false}>
+        <Card title="Cycle time" subtitle="Last 12 weeks" extra={<Tag tone="info">Median 4 days</Tag>}>
+          <Stack gap="md">
+            <BoxPlot title="Days to finish a task" yFormat={days} groups={GROUPS} height={220} />
+            <Text size="sm" color="secondary">Jonas&apos;s long tail is mostly the offline sync work, still in review.</Text>
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
