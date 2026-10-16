@@ -3,6 +3,11 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { RebarDevTools } from "../RebarDevTools";
 
+const STYLES = [
+  { value: "sketch", label: "Sketch" },
+  { value: "clean", label: "Clean" },
+];
+
 afterEach(() => {
   document.documentElement.removeAttribute("data-rebar-theme");
   document.documentElement.removeAttribute("data-theme");
@@ -51,14 +56,24 @@ describe("RebarDevTools", () => {
     expect(screen.queryByText(/^v\d/)).not.toBeInTheDocument();
   });
 
-  it("doesn't clobber the page's real theme on mount — reads it instead of hardcoding sketch", async () => {
+  it("offers no theme control and never writes data-rebar-theme when the host lists no styles (Rebar ships one look)", async () => {
+    const user = userEvent.setup();
+    render(<RebarDevTools forceEnabled />);
+    await user.click(screen.getByRole("button", { name: "Rebar DevTools" }));
+    expect(screen.queryByRole("radio")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("checkbox", { name: "Dark mode" }));
+    expect(document.documentElement).toHaveAttribute("data-theme", "dark");
+    expect(document.documentElement).not.toHaveAttribute("data-rebar-theme");
+  });
+
+  it("doesn't clobber the page's real theme on mount — reads it instead of hardcoding one", async () => {
     // Regression test: this used to hardcode its initial state to "sketch" and write that
     // straight to <html> on mount, silently overriding a consuming app's real configured theme
     // (e.g. a layout that sets data-rebar-theme="clean") the instant DevTools mounted, before
     // anyone touched the panel.
     document.documentElement.setAttribute("data-rebar-theme", "clean");
     const user = userEvent.setup();
-    render(<RebarDevTools forceEnabled />);
+    render(<RebarDevTools forceEnabled styles={STYLES} />);
     await user.click(screen.getByRole("button", { name: "Rebar DevTools" }));
 
     expect(document.documentElement).toHaveAttribute("data-rebar-theme", "clean");
@@ -67,7 +82,7 @@ describe("RebarDevTools", () => {
 
   it("writes data-rebar-theme and data-theme on the document root when toggled", async () => {
     const user = userEvent.setup();
-    render(<RebarDevTools forceEnabled />);
+    render(<RebarDevTools forceEnabled styles={STYLES} />);
     await user.click(screen.getByRole("button", { name: "Rebar DevTools" }));
 
     await user.click(screen.getByRole("radio", { name: "Sketch theme" }));
@@ -89,7 +104,7 @@ describe("RebarDevTools", () => {
     // DOM attribute" trick only helped across a client-side navigation within the same document,
     // never a real hard refresh (which serves fresh HTML with none of these attributes baked in).
     const user = userEvent.setup();
-    const { unmount } = render(<RebarDevTools forceEnabled />);
+    const { unmount } = render(<RebarDevTools forceEnabled styles={STYLES} />);
     await user.click(screen.getByRole("button", { name: "Rebar DevTools" }));
 
     await user.click(screen.getByRole("radio", { name: "Sketch theme" }));
@@ -104,7 +119,7 @@ describe("RebarDevTools", () => {
     document.documentElement.removeAttribute("data-theme");
     document.documentElement.removeAttribute("data-rebar-bionic");
 
-    render(<RebarDevTools forceEnabled />);
+    render(<RebarDevTools forceEnabled styles={STYLES} />);
     await user.click(screen.getByRole("button", { name: "Rebar DevTools" }));
 
     expect(document.documentElement).toHaveAttribute("data-rebar-theme", "sketch");

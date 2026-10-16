@@ -3,6 +3,12 @@ import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ThemeToggle } from "../components/ThemeToggle";
 
+// Two looks a host might offer; Rebar itself ships one (basilika), so the style control only exists when a host passes these.
+const STYLES = [
+  { value: "sketch", label: "Sketch" },
+  { value: "clean", label: "Simple" },
+];
+
 afterEach(() => {
   cleanup();
   document.documentElement.removeAttribute("data-rebar-theme");
@@ -31,10 +37,27 @@ describe("ThemeToggle", () => {
     expect(container.querySelector('[data-rebar-size="sm"]')).not.toBeInTheDocument();
   });
 
-  it("toggles data-rebar-theme between sketch and clean", async () => {
+  it("shows no style control at all unless the host offers at least two styles", async () => {
+    const user = userEvent.setup();
+    render(<ThemeToggle />);
+    await user.click(screen.getByRole("button", { name: "Theme" }));
+    expect(screen.queryByText("Style")).not.toBeInTheDocument();
+    expect(screen.getByText("Mode")).toBeInTheDocument();
+    cleanup();
+    render(<ThemeToggle styles={[{ value: "basilika", label: "Basilika" }]} />);
+    await user.click(screen.getByRole("button", { name: "Theme" }));
+    expect(screen.queryByText("Style")).not.toBeInTheDocument();
+  });
+
+  it("renders nothing when the only named section is style and there is nothing to switch", () => {
+    const { container } = render(<ThemeToggle sections={["style"]} />);
+    expect(container.querySelector('[data-rebar-component="theme-toggle"]')).not.toBeInTheDocument();
+  });
+
+  it("toggles data-rebar-theme between the host's styles", async () => {
     const user = userEvent.setup();
     document.documentElement.removeAttribute("data-rebar-theme");
-    render(<ThemeToggle />);
+    render(<ThemeToggle styles={STYLES} />);
     await user.click(screen.getByRole("button", { name: "Theme" }));
 
     await user.click(screen.getByRole("radio", { name: "Simple" }));
@@ -89,7 +112,7 @@ describe("ThemeToggle", () => {
   it("sections=['style'] renders a direct SegmentedControl with no popover trigger", async () => {
     const user = userEvent.setup();
     document.documentElement.removeAttribute("data-rebar-theme");
-    const { container } = render(<ThemeToggle sections={["style"]} />);
+    const { container } = render(<ThemeToggle sections={["style"]} styles={STYLES} />);
     expect(container.querySelector('[data-rebar-variant="style-only"]')).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Theme" })).not.toBeInTheDocument();
 
@@ -110,7 +133,7 @@ describe("ThemeToggle", () => {
 
   it("sections=['style','bionic'] keeps the popover but hides Mode", async () => {
     const user = userEvent.setup();
-    render(<ThemeToggle sections={["style", "bionic"]} />);
+    render(<ThemeToggle sections={["style", "bionic"]} styles={STYLES} />);
     await user.click(screen.getByRole("button", { name: "Theme" }));
     expect(screen.getByText("Style")).toBeInTheDocument();
     expect(screen.getByText("Bionic reading")).toBeInTheDocument();
@@ -127,25 +150,33 @@ describe("ThemeToggle", () => {
     expect(document.documentElement).toHaveAttribute("data-rebar-bionic", "true");
   });
 
-  it("leaves a theme it does not offer alone on mount (a custom brand theme must not be overwritten with sketch)", () => {
+  it("leaves a theme it does not offer alone on mount (a custom brand theme must not be overwritten)", () => {
     document.documentElement.setAttribute("data-rebar-theme", "con");
-    render(<ThemeToggle />);
+    render(<ThemeToggle styles={STYLES} />);
     expect(document.documentElement).toHaveAttribute("data-rebar-theme", "con");
   });
 
   it("still lets the visitor switch away from a custom theme with the style control", async () => {
     const user = userEvent.setup();
     document.documentElement.setAttribute("data-rebar-theme", "con");
-    render(<ThemeToggle />);
+    render(<ThemeToggle styles={STYLES} />);
     await user.click(screen.getByRole("button", { name: "Theme" }));
     await user.click(screen.getByRole("radio", { name: "Simple" }));
     expect(document.documentElement).toHaveAttribute("data-rebar-theme", "clean");
   });
 
+  it("never writes data-rebar-theme on a page that has none (the default look needs no attribute)", async () => {
+    const user = userEvent.setup();
+    render(<ThemeToggle />);
+    await user.click(screen.getByRole("button", { name: "Theme" }));
+    await user.click(screen.getByRole("radio", { name: "Dark" }));
+    expect(document.documentElement).not.toHaveAttribute("data-rebar-theme");
+  });
+
   it("never touches the theme when the style control is not shown, and mode still works", async () => {
     const user = userEvent.setup();
     document.documentElement.setAttribute("data-rebar-theme", "con");
-    render(<ThemeToggle sections={["mode", "bionic"]} />);
+    render(<ThemeToggle sections={["mode", "bionic"]} styles={STYLES} />);
     await user.click(screen.getByRole("button", { name: "Theme" }));
     await user.click(screen.getByRole("radio", { name: "Dark" }));
     expect(document.documentElement).toHaveAttribute("data-theme", "dark");

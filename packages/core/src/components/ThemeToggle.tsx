@@ -8,6 +8,12 @@ import { Text } from "./Text";
 
 export type ThemeToggleSection = "style" | "mode" | "bionic";
 
+/** One selectable look: the value written to `data-rebar-theme` and the label shown for it. */
+export interface ThemeStyle {
+  value: string;
+  label: string;
+}
+
 const ALL_SECTIONS: ThemeToggleSection[] = ["style", "mode", "bionic"];
 
 export interface ThemeToggleProps {
@@ -20,15 +26,21 @@ export interface ThemeToggleProps {
    * buttons rather than leaving the two visibly mismatched). Ignored when `sections` names
    * exactly one control, for the same reason as `label` above. */
   size?: "sm" | "md" | "lg";
-  /** Which controls to expose: `"style"` (sketch/simple), `"mode"` (light/dark), `"bionic"`
-   * (bionic reading). Defaults to all three, together behind one popover trigger — the original
-   * shape. Naming exactly **one** collapses this to that single control rendered directly, with
+  /** Which controls to expose: `"style"` (switch between the looks in `styles`), `"mode"`
+   * (light/dark), `"bionic"` (bionic reading). Defaults to all three, together behind one popover
+   * trigger. Naming exactly **one** collapses this to that single control rendered directly, with
    * no popover or trigger button at all: `["mode"]` alone renders as a classic, icon-in-thumb
    * light/dark switch with a state-matching label (`"Light Mode"`/`"Dark Mode"`); `["style"]` or
    * `["bionic"]` alone render as one inline `SegmentedControl`/labeled `Switch`. Naming **two**
-   * keeps the popover (there's still more than one control to hide behind a trigger) but only
-   * shows the named ones inside it. */
+   * keeps the popover but only shows the named ones inside it. `"style"` is only shown when
+   * `styles` offers at least two looks; with fewer it is quietly left out, so a site with one
+   * theme (the default) can keep `sections` as is. */
   sections?: ThemeToggleSection[];
+  /** The looks a visitor can switch between. Each needs its own theme stylesheet loaded by the
+   * host; this toggle only writes `data-rebar-theme`. Empty by default: Rebar ships one look
+   * (basilika, applied with no attribute at all), so there is nothing to switch unless the host
+   * adds its own themes. */
+  styles?: ThemeStyle[];
   /** Drops the state-matching `"Light Mode"`/`"Dark Mode"` text next to the switch when
    * `sections` names exactly `["mode"]` — the bare switch alone, for a spot (a compact header)
    * where the label reads as redundant. The `Switch`'s own `aria-label="Dark mode"` still names
@@ -59,7 +71,7 @@ function SunIcon() {
 
 /**
  * A visitor-facing popover onto the exact same DOM attributes `RebarDevTools`' dev-only panel
- * already writes (`data-rebar-theme="sketch"|"clean"`, `data-theme="dark"`/absent for light, and
+ * already writes (`data-rebar-theme` for the look, `data-theme="dark"`/absent for light, and
  * `data-rebar-bionic="true"`/absent for bionic reading), not a second, competing mechanism. Each
  * toggle lazily reads the *current* attribute on mount (so it reflects whatever the host page
  * already configured, the same "don't clobber" precedent `RebarDevTools` itself follows) rather
@@ -67,21 +79,18 @@ function SunIcon() {
  * be reused anywhere a site wants to give visitors this same control (`site-header`'s
  * `themeToggle` flag renders this directly).
  *
- * **Using this component means both theme packages must be installed and imported** —
- * `@rebar-ui/theme-clean` AND `@rebar-ui/theme-sketch`'s CSS, not just whichever one is the
- * build's own default. This toggle only flips the `data-rebar-theme` attribute; it does not load
- * either stylesheet for you. Offering the switch without both themes present means the "sketch"
- * (or "clean") state silently has nothing to switch to — indistinguishable from a broken control,
- * since nothing on screen indicates the missing half. See `ref/HEURISTICS.md` #50.
+ * The style control exists only when the host passes two or more `styles`, and **every style
+ * offered must have its stylesheet loaded** — this toggle flips `data-rebar-theme`, it does not
+ * load CSS. Offering a look whose CSS is absent is indistinguishable from a broken control. See
+ * `ref/HEURISTICS.md` #50.
  */
-export function ThemeToggle({ label = "Theme", size = "sm", sections = ALL_SECTIONS, hideLabel = false, className }: ThemeToggleProps) {
-  // The page's own theme is read, never assumed: a host that uses a theme this toggle does not offer (a custom brand theme) must not be
-  // overwritten with "sketch" just because the toggle mounted. The attribute is written only when the page had none (so there is always a
-  // style to switch from) or after the visitor changes the style control.
+export function ThemeToggle({ label = "Theme", size = "sm", sections = ALL_SECTIONS, styles = [], hideLabel = false, className }: ThemeToggleProps) {
+  // The page's own theme is read, never assumed: a host whose theme this toggle does not offer must not be overwritten just because
+  // the toggle mounted. The attribute is written only after the visitor changes the style control.
   const [style, setStyle] = useState<string>(
-    () => (typeof document !== "undefined" ? document.documentElement.getAttribute("data-rebar-theme") : null) || "sketch",
+    () => (typeof document !== "undefined" ? document.documentElement.getAttribute("data-rebar-theme") : null) || styles[0]?.value || "",
   );
-  const writeStyle = useRef<boolean>(typeof document === "undefined" || !document.documentElement.hasAttribute("data-rebar-theme"));
+  const writeStyle = useRef(false);
   const [mode, setMode] = useState<"light" | "dark">(() =>
     typeof document !== "undefined" && document.documentElement.getAttribute("data-theme") === "dark"
       ? "dark"
@@ -92,7 +101,7 @@ export function ThemeToggle({ label = "Theme", size = "sm", sections = ALL_SECTI
   );
 
   useEffect(() => {
-    if (writeStyle.current) document.documentElement.setAttribute("data-rebar-theme", style);
+    if (writeStyle.current && style) document.documentElement.setAttribute("data-rebar-theme", style);
   }, [style]);
 
   useEffect(() => {
@@ -105,9 +114,10 @@ export function ThemeToggle({ label = "Theme", size = "sm", sections = ALL_SECTI
     else document.documentElement.removeAttribute("data-rebar-bionic");
   }, [bionic]);
 
-  const showStyle = sections.includes("style");
+  const showStyle = sections.includes("style") && styles.length >= 2;
   const showMode = sections.includes("mode");
   const showBionic = sections.includes("bionic");
+  const shown = [showStyle, showMode, showBionic].filter(Boolean).length;
 
   const styleControl = (
     <Stack gap="xs">
@@ -116,10 +126,7 @@ export function ThemeToggle({ label = "Theme", size = "sm", sections = ALL_SECTI
       </Text>
       <SegmentedControl
         aria-label="Style"
-        options={[
-          { value: "sketch", label: "Sketch" },
-          { value: "clean", label: "Simple" },
-        ]}
+        options={styles}
         value={style}
         onValueChange={(v) => {
           writeStyle.current = true;
@@ -158,8 +165,10 @@ export function ThemeToggle({ label = "Theme", size = "sm", sections = ALL_SECTI
     </Stack>
   );
 
-  // A single named section renders directly — no popover to hide one lone control behind.
-  if (sections.length === 1) {
+  if (shown === 0) return null;
+
+  // A single control renders directly — no popover to hide one lone control behind.
+  if (shown === 1) {
     if (showMode) {
       return (
         <span className={className} style={{ flexShrink: 0 }} data-rebar-component="theme-toggle" data-rebar-variant="mode-only">

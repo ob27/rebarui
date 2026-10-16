@@ -13,6 +13,12 @@ export interface RebarDevToolsProps {
    * in application code, or the panel ships to production.
    */
   forceEnabled?: boolean;
+  /**
+   * The looks the panel can switch `data-rebar-theme` between, each needing its own stylesheet
+   * loaded by the host. Rebar ships one look (basilika, applied with no attribute), so by default
+   * there is no theme control at all; a host with extra themes lists them here.
+   */
+  styles?: { value: string; label: string }[];
 }
 
 // Not exposed as a panel control — it was confusing without the methodology page's context
@@ -62,10 +68,10 @@ const STORAGE_KEYS = {
   bionic: "rebar-devtools-bionic",
 } as const;
 
-function readStoredTheme(): "sketch" | "clean" | null {
+function readStoredTheme(allowed: string[]): string | null {
   try {
     const stored = localStorage.getItem(STORAGE_KEYS.theme);
-    return stored === "sketch" || stored === "clean" ? stored : null;
+    return stored && allowed.includes(stored) ? stored : null;
   } catch {
     return null;
   }
@@ -89,28 +95,28 @@ function writeStored(key: string, value: string) {
   }
 }
 
-export function RebarDevTools({ forceEnabled }: RebarDevToolsProps) {
+export function RebarDevTools({ forceEnabled, styles = [] }: RebarDevToolsProps) {
   const isDev = forceEnabled ?? process.env.NODE_ENV === "development";
+  const styleValues = styles.map((s) => s.value);
 
   const [isOpen, setIsOpen] = useState(false);
   // Prefer the persisted choice; fall back to the page's actual current theme attribute (helps
-  // across a client-side navigation within the same document) rather than hardcoding "sketch" —
+  // across a client-side navigation within the same document) rather than hardcoding one —
   // a hardcoded default would otherwise silently clobber whatever the consuming app really
-  // configured (e.g. layout.tsx's "clean") the instant DevTools mounts, before anyone touches the
-  // panel, and before either of those, there's nothing stored or set at all.
-  const [theme, setThemeState] = useState<"sketch" | "clean">(() => {
-    const stored = readStoredTheme();
+  // configured the instant DevTools mounts. With no `styles` offered there is nothing to pick
+  // and the attribute is never written.
+  const [theme, setThemeState] = useState<string | null>(() => {
+    const stored = readStoredTheme(styleValues);
     if (stored) return stored;
-    return typeof document !== "undefined" && document.documentElement.getAttribute("data-rebar-theme") === "sketch"
-      ? "sketch"
-      : "clean";
+    const current = typeof document !== "undefined" ? document.documentElement.getAttribute("data-rebar-theme") : null;
+    return current && styleValues.includes(current) ? current : null;
   });
   const [dark, setDarkState] = useState(() => readStoredBoolean(STORAGE_KEYS.dark) ?? false);
   const [bionic, setBionicState] = useState(() => readStoredBoolean(STORAGE_KEYS.bionic) ?? false);
   const [showGrid, setShowGrid] = useState(false);
   const [showInspector, setShowInspector] = useState(false);
 
-  const setTheme = (next: "sketch" | "clean") => {
+  const setTheme = (next: string) => {
     setThemeState(next);
     writeStored(STORAGE_KEYS.theme, next);
   };
@@ -128,7 +134,7 @@ export function RebarDevTools({ forceEnabled }: RebarDevToolsProps) {
   const tokenEstimate = estimateTokenCost(counts, ASSUMED_LOGIC_ITERATIONS);
 
   useEffect(() => {
-    if (!isDev) return;
+    if (!isDev || !theme) return;
     document.documentElement.setAttribute("data-rebar-theme", theme);
   }, [isDev, theme]);
 
@@ -247,24 +253,14 @@ export function RebarDevTools({ forceEnabled }: RebarDevToolsProps) {
             </div>
 
             <div className="rebar-devtools-section rebar-devtools-toggles">
-              <label>
-                <input
-                  type="radio"
-                  name="rebar-devtools-theme"
-                  checked={theme === "sketch"}
-                  onChange={() => setTheme("sketch")}
-                />
-                Sketch theme
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="rebar-devtools-theme"
-                  checked={theme === "clean"}
-                  onChange={() => setTheme("clean")}
-                />
-                Clean theme
-              </label>
+              {styles.length >= 2
+                ? styles.map((s) => (
+                    <label key={s.value}>
+                      <input type="radio" name="rebar-devtools-theme" checked={theme === s.value} onChange={() => setTheme(s.value)} />
+                      {s.label} theme
+                    </label>
+                  ))
+                : null}
               <label>
                 <input
                   type="checkbox"
