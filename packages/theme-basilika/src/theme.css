@@ -74,6 +74,9 @@
   --rebar-color-bg-inverse: #1d2040;
   --rebar-color-text-inverse: #fbf6ee;
   --rebar-color-text-inverse-secondary: #c2c4d2;
+  /* Emphasis surface: toasts, tooltips, the asker's chat bubble. Navy in light, the deep blue tint in dark. */
+  --rebar-color-bg-emphasis: #1d2040;
+  --rebar-color-text-emphasis: #fbf6ee;
 
   /* Soft warm tints for panels, bento cards and callouts */
   --rebar-color-tint-1: #f7ddd2;
@@ -126,6 +129,8 @@
   --rebar-color-bg-inverse: #080918;
   --rebar-color-text-inverse: #f3ede2;
   --rebar-color-text-inverse-secondary: #aeb2cc;
+  --rebar-color-bg-emphasis: #232b55;
+  --rebar-color-text-emphasis: #f3ede2;
 
   --rebar-color-tint-1: #3b2630;
   --rebar-color-tint-2: #35301f;
