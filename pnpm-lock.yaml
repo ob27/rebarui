@@ -60,6 +60,9 @@ importers:
       '@rebar-ui/placement':
         specifier: workspace:*
         version: link:../../packages/placement
+      '@rebar-ui/theme-basilika':
+        specifier: workspace:*
+        version: link:../../packages/theme-basilika
       '@rebar-ui/theme-clean':
         specifier: workspace:*
         version: link:../../packages/theme-clean
@@ -9676,6 +9679,8 @@ importers:
       vitest:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.1)(jsdom@25.0.1(supports-color@7.2.0))(supports-color@7.2.0)
+
+  packages/theme-basilika: {}
 
   packages/theme-clean: {}
 

@@ -18,6 +18,7 @@
   "dependencies": {
     "@rebar-ui/devtools": "workspace:*",
     "@rebar-ui/placement": "workspace:*",
+    "@rebar-ui/theme-basilika": "workspace:*",
     "@rebar-ui/theme-clean": "workspace:*",
     "@rebar-ui/theme-con": "workspace:*",
     "@rebar-ui/theme-sketch": "workspace:*",

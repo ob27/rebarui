@@ -1,0 +1,165 @@
+/*
+  basilika, component layer. Dresses the core constructs in the Athic primitives (pill controls, hairline
+  surfaces, tinted callouts, small-caps labels) using only the theme tokens, so it follows light and dark.
+  Same specificity as core's rules and loaded after them, so it wins without !important.
+*/
+
+/* Display type on the Heading construct */
+.rebar-heading {
+  font-family: var(--rebar-font-family-display);
+  font-weight: var(--rebar-font-weight-semibold);
+  font-variation-settings: "SOFT" 100;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+/* Button: a pill, with the outlined secondary and danger of the Athic app */
+.rebar-button {
+  border-width: 1.5px;
+  border-radius: 999px;
+  font-weight: var(--rebar-font-weight-semibold);
+  padding: 0 22px;
+  transition: background-color 0.15s, border-color 0.15s, filter 0.15s;
+}
+.rebar-button[data-rebar-size="sm"] {
+  min-height: 34px;
+  padding: 0 15px;
+}
+.rebar-button[data-rebar-size="lg"] {
+  min-height: 52px;
+  padding: 0 30px;
+  font-size: var(--rebar-font-size-md);
+}
+.rebar-button[data-rebar-variant="primary"]:hover:not(:disabled) {
+  background: var(--rebar-color-primary-hover);
+  border-color: var(--rebar-color-primary-hover);
+}
+.rebar-button[data-rebar-variant="secondary"] {
+  color: var(--rebar-color-text-primary);
+  border-color: var(--rebar-color-border-strong);
+}
+.rebar-button[data-rebar-variant="secondary"]:hover:not(:disabled) {
+  background: var(--rebar-color-bg-secondary);
+}
+.rebar-button[data-rebar-variant="tertiary"] {
+  color: var(--rebar-color-text-primary);
+}
+.rebar-button[data-rebar-variant="tertiary"]:hover:not(:disabled) {
+  background: var(--rebar-color-bg-secondary);
+}
+.rebar-button[data-rebar-variant="destructive"] {
+  background: transparent;
+  color: var(--rebar-color-danger);
+  border-color: color-mix(in srgb, var(--rebar-color-danger) 55%, transparent);
+}
+.rebar-button[data-rebar-variant="destructive"]:hover:not(:disabled) {
+  background: var(--rebar-color-danger-bg);
+}
+.rebar-button:focus-visible,
+.rebar-input:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--rebar-color-primary) 45%, transparent);
+  outline-offset: 2px;
+}
+
+/* Input: a pill field on the raised surface */
+.rebar-input {
+  min-height: 46px;
+  padding: 0 18px;
+  border-width: 1.5px;
+  border-radius: 999px;
+  background: var(--rebar-color-bg-raised, var(--rebar-color-bg-primary));
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.rebar-input[data-rebar-size="sm"] {
+  min-height: 36px;
+}
+.rebar-input[data-rebar-size="lg"] {
+  min-height: 54px;
+}
+textarea.rebar-input {
+  border-radius: var(--rebar-radius);
+  padding: 12px 18px;
+  white-space: normal;
+}
+.rebar-input:focus {
+  border-color: var(--rebar-color-primary);
+}
+.rebar-input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--rebar-color-primary) 18%, transparent);
+}
+.rebar-input::placeholder {
+  color: var(--rebar-color-text-secondary);
+}
+
+/* Card: a raised surface with a hairline, no hard outline */
+.rebar-card {
+  background: var(--rebar-color-bg-raised, var(--rebar-color-bg-primary));
+  border-color: var(--rebar-color-border);
+  border-radius: var(--rebar-radius);
+}
+
+/* Tag: a tinted pill, text stays the primary ink so every tone passes AA */
+.rebar-tag {
+  border-color: transparent;
+  border-radius: 999px;
+  padding: 2px 12px;
+  background: var(--rebar-color-tint-2);
+  color: var(--rebar-color-text-primary);
+  font-size: var(--rebar-font-size-xs);
+  font-weight: var(--rebar-font-weight-semibold);
+}
+.rebar-tag[data-rebar-tone="info"] {
+  background: var(--rebar-color-tint-3);
+  border-color: transparent;
+  color: var(--rebar-color-text-primary);
+}
+.rebar-tag[data-rebar-tone="success"] {
+  background: var(--rebar-color-tint-4);
+  border-color: transparent;
+  color: var(--rebar-color-text-primary);
+}
+.rebar-tag[data-rebar-tone="warning"] {
+  background: var(--rebar-color-tint-2);
+  border-color: transparent;
+  color: var(--rebar-color-text-primary);
+}
+.rebar-tag[data-rebar-tone="error"] {
+  background: var(--rebar-color-tint-1);
+  border-color: transparent;
+  color: var(--rebar-color-text-primary);
+}
+
+/* Alert: a tinted panel with a small-caps label, no outline */
+.rebar-alert {
+  border-color: transparent;
+  border-radius: var(--rebar-radius);
+  padding: 18px 20px;
+}
+.rebar-alert[data-rebar-type="info"] {
+  background: var(--rebar-color-tint-3);
+  border-color: transparent;
+  color: var(--rebar-color-text-primary);
+}
+.rebar-alert[data-rebar-type="success"] {
+  background: var(--rebar-color-tint-4);
+  border-color: transparent;
+  color: var(--rebar-color-text-primary);
+}
+.rebar-alert[data-rebar-type="warning"] {
+  background: var(--rebar-color-tint-2);
+  border-color: transparent;
+  color: var(--rebar-color-text-primary);
+}
+.rebar-alert[data-rebar-type="error"] {
+  background: var(--rebar-color-tint-1);
+  border-color: transparent;
+  color: var(--rebar-color-text-primary);
+}
+.rebar-alert-title {
+  font-size: 0.72rem;
+  font-weight: var(--rebar-font-weight-semibold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rebar-color-text-secondary);
+}
