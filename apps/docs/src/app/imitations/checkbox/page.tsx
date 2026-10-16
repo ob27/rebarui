@@ -1,37 +1,39 @@
-import { Checkbox, Heading, Stack, Text } from "rebar-ui";
+import { Card, Checkbox, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TASKS, project } from "@/fixtures/tideline";
+
+const CODE = `<Checkbox defaultChecked>Include archived projects</Checkbox>
+<Checkbox>Notify the team</Checkbox>
+<Checkbox checked="indeterminate">Select all tasks</Checkbox>`;
+
+const harbour = project("harbour");
+const harbourTasks = TASKS.filter((t) => t.project === harbour.id);
+const done = TASKS.filter((t) => t.column === "done").length;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [{ kind: "code", code: "<Checkbox>Email me updates</Checkbox>" }],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Checkbox"] ?? [] },
   {
     type: "doc-section",
-    heading: "A real Radix checkbox, label included",
+    heading: "Accessibility",
     body: [
       {
         kind: "text",
-        text: "`children` renders as the real, clickable `<label>` wrapping the control — the whole row toggles, not just the small box, matching this project's own real-touch-target discipline. Supports Radix's own `checked`/`defaultChecked`/`onCheckedChange` (including the tri-state `\"indeterminate\"` value, used by `Table`'s own \"select all\" header checkbox) and `disabled`.",
+        text: 'A real Radix checkbox (`role="checkbox"`, Space toggles, a visible focus ring) inside a real `<label>`, so the whole row is the target. `checked="indeterminate"` is announced as mixed. Pass `aria-label` when there is no visible label.',
       },
     ],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [{ kind: "text", text: '`data-rebar-component="checkbox"` on the control; `data-rebar-part="indicator"` on the checkmark.' }],
+    body: [{ kind: "text", text: '`data-rebar-component="checkbox"` on the control; `data-rebar-part="indicator"` on the mark, `"label"` on the text; Radix sets `data-state`.' }],
   },
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      { kind: "text", text: "AntD's `Checkbox` takes the same `checked`/`onChange` shape (event-based, not value-based) and `children` as its label — a close, low-risk rename." },
-    ],
+    body: [{ kind: "text", text: "AntD's `Checkbox` takes the same `checked`/`onChange` shape (event-based) and `children` as its label: a close, low-risk rename." }],
   },
 ];
 
@@ -39,18 +41,76 @@ export default function CheckboxPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Checkbox</Heading>
-      <Text color="secondary">
-        A real Radix checkbox with the entire row, not just the box, as the clickable target.
-      </Text>
+      <Text color="secondary">Check, clear or mixed.</Text>
 
-      <LivePreview>
-        <Stack gap="sm">
-          <Checkbox defaultChecked>Email me updates</Checkbox>
-          <Checkbox>Unchecked</Checkbox>
-          <Checkbox checked="indeterminate">Indeterminate (partial selection)</Checkbox>
-          <Checkbox disabled>Disabled</Checkbox>
+      <DemoStage
+        title="Checkbox"
+        caption="Check, clear, mixed"
+        code={CODE}
+        states={[
+          {
+            label: "Error",
+            node: (
+              <Stack gap="xs">
+                <Checkbox aria-invalid="true" style={{ borderColor: "var(--rebar-color-danger)" }}>
+                  Accept the terms
+                </Checkbox>
+                <Text size="xs" style={{ color: "var(--rebar-color-danger)" }}>
+                  Required to continue.
+                </Text>
+              </Stack>
+            ),
+          },
+          { label: "Disabled", node: <Checkbox disabled>Locked by admin</Checkbox> },
+          {
+            label: "Disabled on",
+            node: (
+              <Checkbox disabled defaultChecked>
+                Required
+              </Checkbox>
+            ),
+          },
+          { label: "Long label", node: <Checkbox>Email me when someone mentions me in a {harbour.name} thread</Checkbox> },
+        ]}
+      >
+        <Stack gap="md" style={{ maxWidth: 420, margin: "0 auto" }}>
+          <Checkbox defaultChecked>Include archived projects</Checkbox>
+          <Checkbox>Notify the team</Checkbox>
+          <Checkbox checked="indeterminate">
+            <Stack gap="xs">
+              <span>Select all tasks</span>
+              <Text as="span" size="xs" color="secondary">
+                {done} of {TASKS.length} selected
+              </Text>
+            </Stack>
+          </Checkbox>
         </Stack>
-      </LivePreview>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Task checklist" caption="A mixed parent over its tasks">
+        <Card
+          style={{ maxWidth: 480, margin: "0 auto" }}
+          title={
+            <Checkbox checked="indeterminate">
+              <Stack gap="xs">
+                <span>{harbour.name}</span>
+                <Text as="span" size="xs" color="secondary">
+                  {harbourTasks.length} tasks
+                </Text>
+              </Stack>
+            </Checkbox>
+          }
+        >
+          <Stack gap="md" style={{ paddingLeft: 28 }}>
+            {harbourTasks.map((t) => (
+              <Checkbox key={t.id} defaultChecked={t.column === "done"}>
+                {t.title}
+              </Checkbox>
+            ))}
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

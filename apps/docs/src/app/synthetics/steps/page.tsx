@@ -1,41 +1,61 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Heading, Stack, Steps, Text } from "rebar-ui";
+import type { CSSProperties, ReactNode } from "react";
+import { DeviceFrame, Heading, Stack, Steps, Text } from "rebar-ui";
+import type { StepItem } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { EVENTS, person } from "@/fixtures/tideline";
+
+const launch = EVENTS[0]!;
+
+const RELEASE: StepItem[] = [
+  { title: "Brief", description: person("maya").name },
+  { title: "Design", description: launch.date },
+  { title: "Review", description: person("priya").name },
+  { title: "Ship", description: "25 Oct" },
+];
+
+const CODE = `<Steps
+  current={1}
+  items={[
+    { title: "Brief", description: "Maya Chen" },
+    { title: "Design", description: "24 Oct" },
+    { title: "Review", description: "Priya Nair" },
+    { title: "Ship", description: "25 Oct" },
+  ]}
+/>`;
+
+const PHONE_STYLE = {
+  margin: "0 auto",
+  "--rebar-device-frame-max-width": "300px",
+  "--rebar-device-frame-bezel-color": "var(--rebar-color-bg-inverse)",
+  "--rebar-device-frame-status-bg": "var(--rebar-color-bg-inverse)",
+} as CSSProperties;
+
+function Phone({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <DeviceFrame variant="phone" style={PHONE_STYLE}>
+      <div style={{ display: "flex", flexDirection: "column", minHeight: 460, background: "var(--rebar-color-bg-primary)" }}>
+        <div style={{ background: "var(--rebar-color-bg-inverse)", color: "var(--rebar-color-text-inverse)", padding: "8px 18px 14px", fontFamily: "var(--rebar-font-family-display)", fontWeight: "var(--rebar-font-weight-semibold)", fontSize: "1.1rem" }}>{title}</div>
+        <div style={{ flex: 1, padding: 18 }}>{children}</div>
+      </div>
+    </DeviceFrame>
+  );
+}
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Steps\n  current={1}\n  items={[\n    { title: "Team" },\n    { title: "Details", description: "Fill in employee info" },\n    { title: "Review" },\n  ]}\n/>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Steps"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Free navigation with onItemClick",
-    body: [
-      {
-        kind: "text",
-        text: 'Off by default — a plain `Steps` is purely presentational, deriving status from `current` alone. Pass `onItemClick` to let someone jump directly to any step instead of only moving one at a time via your own Back/Next controls — useful for a long or non-linear checklist where the steps aren\'t a strictly ordered wizard. The current step also gets a real focus ring (the same "traveling beam" `.rebar-active-border` treatment `Kanban`\'s own active drop targets use, not a new animation) so "you are here" reads clearly even when nothing else marks it.',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "Accessibility",
     body: [
       {
         kind: "text",
-        text: '`current` (an index) derives each step\'s status automatically — before it is "finish" (✓), at it is "process", after it is "wait" — the active step is marked `aria-current="step"`. Any item can set its own `status` (including `"error"`) to override the derived value.',
+        text: '`current` (an index) derives each step\'s status: before it "finish" (✓), at it "process", after it "wait"; the active step is marked `aria-current="step"`. Any item can set its own `status` (including `"error"`). With `onItemClick` every step is a real button.',
       },
     ],
   },
@@ -53,118 +73,54 @@ const BLOCKS: Construct[] = [
     type: "doc-section",
     heading: "Migrating to Ant Design",
     body: [
-      {
-        kind: "text",
-        text: "AntD's `Steps` takes the same `items`/`current`/`direction` shape almost verbatim — one of the closest matches on this page, not yet codemod-covered.",
-      },
+      { kind: "text", text: "AntD's `Steps` takes the same `items`/`current`/`direction` shape almost verbatim. Not yet codemod-covered." },
     ],
   },
 ];
 
-const HORIZONTAL_ITEMS = [
-  { title: "Team" },
-  { title: "Details", description: "Fill in employee info" },
-  { title: "Review" },
-];
-
-function HorizontalDemo() {
+function Clickable() {
   const [current, setCurrent] = useState(1);
-
-  return (
-    <Stack gap="sm">
-      <Steps current={current} items={HORIZONTAL_ITEMS} />
-      <Stack direction="row" gap="sm" align="center">
-        <Button
-          variant="secondary"
-          onClick={() => setCurrent((c) => Math.max(0, c - 1))}
-          disabled={current === 0}
-        >
-          Back
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => setCurrent((c) => Math.min(HORIZONTAL_ITEMS.length - 1, c + 1))}
-          disabled={current === HORIZONTAL_ITEMS.length - 1}
-        >
-          Next
-        </Button>
-        <Text size="sm" color="secondary">
-          current = {current} — click Back/Next to watch each step's status flip between finish
-          (✓), process, and wait as it moves.
-        </Text>
-      </Stack>
-    </Stack>
-  );
-}
-
-const CHECKLIST_ITEMS = [
-  { title: "Company info" },
-  { title: "Tax details" },
-  { title: "Bank account" },
-  { title: "Review" },
-];
-
-function OnItemClickDemo() {
-  const [current, setCurrent] = useState(0);
-
-  return (
-    <Stack gap="sm">
-      <Steps current={current} items={CHECKLIST_ITEMS} onItemClick={setCurrent} />
-      <Text size="sm" color="secondary">
-        current = {current} — click any step directly, in any order (not just Back/Next). The
-        current step also carries a real focus-ring highlight.
-      </Text>
-    </Stack>
-  );
+  return <Steps current={current} direction="vertical" items={RELEASE.slice(0, 3)} onItemClick={setCurrent} />;
 }
 
 export default function StepsPage() {
+  const errored: StepItem[] = [RELEASE[0]!, { ...RELEASE[1]!, status: "error" }, RELEASE[2]!];
   return (
     <Stack gap="lg">
       <Heading level={1}>Steps</Heading>
-      <Text color="secondary">
-        A numbered progress indicator for a multi-stage flow. Pass <code>current</code> and every
-        step&apos;s finish/process/wait state is derived automatically.
-      </Text>
+      <Text color="secondary">Where you are in a sequence.</Text>
 
-      <Stack gap="sm">
-        <Text size="sm" color="secondary">
-          Horizontal, with a description on the middle step — <code>current</code> is interactive
-          here, so you can see the derived status change live.
-        </Text>
-        <LivePreview>
-          <HorizontalDemo />
-        </LivePreview>
-      </Stack>
+      <DemoStage
+        title="Release path"
+        caption="Horizontal and vertical"
+        code={CODE}
+        states={[
+          { label: "Error", node: <Steps current={1} direction="vertical" items={errored} /> },
+          { label: "Complete", node: <Steps current={3} direction="vertical" items={RELEASE.slice(0, 3)} /> },
+          { label: "Clickable", node: <Clickable /> },
+        ]}
+      >
+        <Stack direction="row" gap="xl" align="start" style={{ flexWrap: "wrap" }}>
+          <div style={{ flex: "1 1 360px", minWidth: 0 }}>
+            <Steps current={1} items={RELEASE} />
+          </div>
+          <div style={{ flex: "0 0 auto" }}>
+            <Steps current={2} direction="vertical" items={RELEASE} />
+          </div>
+        </Stack>
+      </DemoStage>
 
-      <Stack gap="sm">
-        <Text size="sm" color="secondary">
-          Vertical, with the middle step&apos;s status manually overridden to{" "}
-          <code>&quot;error&quot;</code> — an explicit <code>status</code> always wins over the
-          derived one, so a failed step doesn&apos;t block the rest of the flow from reading
-          correctly.
-        </Text>
-        <LivePreview>
-          <Steps
-            direction="vertical"
-            current={1}
-            items={[
-              { title: "Order placed" },
-              { title: "Payment failed", status: "error" },
-              { title: "Shipped" },
-            ]}
-          />
-        </LivePreview>
-      </Stack>
-
-      <Stack gap="sm">
-        <Text size="sm" color="secondary">
-          <code>onItemClick</code> — free navigation to any step, not just one at a time.
-        </Text>
-        <LivePreview>
-          <OnItemClickDemo />
-        </LivePreview>
-      </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="New project" caption="A wizard's progress on a phone" padding="none" widths={false}>
+        <div className="cs-grain" style={{ padding: 32, borderRadius: 0 }}>
+          <Phone title="New project">
+            <Stack gap="md">
+              <Heading level={3}>Step 2 of 4</Heading>
+              <Steps current={1} direction="vertical" items={[{ title: "Name" }, { title: "Crew" }, { title: "Dates" }, { title: "Review" }]} />
+            </Stack>
+          </Phone>
+        </div>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

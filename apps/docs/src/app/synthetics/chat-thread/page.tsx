@@ -1,63 +1,86 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Button, ChatThread, Heading, Stack, Text } from "rebar-ui";
+import type { CSSProperties, ReactNode } from "react";
+import { AiChatInput, ChatThread, DeviceFrame, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { ChatMessage } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { CHAT, EVENTS, person } from "@/fixtures/tideline";
 
-const INITIAL: ChatMessage[] = [
-  { id: "1", role: "user", content: "Can you summarize this quarter's numbers, and show the query?", status: "sent", avatarFallback: "JD" },
+const CODE = `<ChatThread
+  messages={messages}
+  onRetry={(m) => resend(m.id)}
+  emptyMessage="Try “What is due this week?”"
+/>
+<AiChatInput placeholder="Ask about Tideline" onSend={ask} />`;
+
+/** The Tideline chat fixture as ChatThread messages: people get their initials and portrait, the assistant is "TL". */
+function toMessages(): ChatMessage[] {
+  return CHAT.map((m) => {
+    const user = m.from !== "assistant";
+    return {
+      id: m.id,
+      role: user ? "user" : "assistant",
+      content: m.text,
+      status: "sent",
+      timestamp: m.time,
+      avatarFallback: user ? person(m.from).initials : "TL",
+      avatarPlaceholder: user,
+      actions: m.citations ? (
+        <Stack direction="row" gap="xs" style={{ flexWrap: "wrap" }}>
+          {m.citations.map((c) => (
+            <Tag key={c}>{c}</Tag>
+          ))}
+        </Stack>
+      ) : undefined,
+    };
+  });
+}
+
+const MESSAGES = toMessages();
+const ASK = CHAT[0]!;
+const launch = EVENTS[0]!;
+
+const PHONE_MESSAGES: ChatMessage[] = [
+  { id: "p1", role: "user", content: `What is due on ${launch.date}?`, status: "sent" },
   {
-    id: "2",
+    id: "p2",
     role: "assistant",
-    content:
-      "**Revenue is up 12%** quarter over quarter, driven mostly by the new enterprise tier:\n\n- Enterprise: +18%\n- Self-serve: +4%\n\n```sql\nSELECT sum(revenue) FROM orders WHERE tier = 'enterprise';\n```",
+    content: `${launch.title} at ${launch.time}. The launch checklist is still open.`,
     status: "sent",
-    avatarFallback: "AI",
+    actions: <Tag>Event · {launch.title}</Tag>,
   },
 ];
 
+const PHONE_STYLE = {
+  margin: "0 auto",
+  "--rebar-device-frame-max-width": "300px",
+  "--rebar-device-frame-bezel-color": "var(--rebar-color-bg-inverse)",
+  "--rebar-device-frame-status-bg": "var(--rebar-color-bg-inverse)",
+} as CSSProperties;
+
+function Phone({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <DeviceFrame variant="phone" style={PHONE_STYLE}>
+      <div style={{ display: "flex", flexDirection: "column", minHeight: 460, background: "var(--rebar-color-bg-primary)" }}>
+        <div style={{ background: "var(--rebar-color-bg-inverse)", color: "var(--rebar-color-text-inverse)", padding: "8px 18px 14px", fontFamily: "var(--rebar-font-family-display)", fontWeight: "var(--rebar-font-weight-semibold)", fontSize: "1.1rem" }}>{title}</div>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>{children}</div>
+      </div>
+    </DeviceFrame>
+  );
+}
+
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<ChatThread\n  messages={messages}\n  isTyping={isTyping}\n  onRetry={(m) => resend(m.id)}\n/>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["ChatThread"] ?? [] },
   {
     type: "doc-section",
-    heading: "Presentational — the caller owns streaming",
+    heading: "Accessibility",
     body: [
       {
         kind: "text",
-        text: "This component performs no networking itself, the same convention `FileUpload` follows for uploads — the caller updates a message's `content` in place as chunks arrive and this re-renders. Only auto-scrolls to new content when the reader is already at the bottom; scrolled-up readers get a floating \"new messages\" button instead of being yanked back down. A per-message `avatarFallback` (plus `avatarSrc`/`avatarPlaceholder`, matching `Avatar`'s own props exactly) renders a real `Avatar` beside the bubble — omitted entirely, no layout change at all, on any message that doesn't set it.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Multi-speaker chats (all additive)",
-    body: [
-      {
-        kind: "text",
-        text: "For a group chat with many named people/agents: `role: \"system\"` renders a muted, italic, unbubbled single line (no avatar, no retry); `sender` shows a bold name with the timestamp above the bubble (\"Ada · 14:02\"); `header` renders a node above the bubble's content (e.g. a quoted reply) and `actions` a node in the meta row (e.g. a Reply button); `tone: \"highlight\"` tints a bubble; and the thread prop `align=\"start\"` (default `\"sides\"`) left-aligns every message into one column. When any of these is used the transcript becomes a labelled `role=\"list\"` of `listitem`s so a screen reader reads each sender in order; without them the markup is unchanged.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Markdown by default — real LLM responses aren't plain text",
-    body: [
-      {
-        kind: "text",
-        text: "`content` renders as styled Markdown by default (headings, lists, blockquotes, inline bold/italic/code/links) — real assistant responses from Claude, Qwen, and most other models default to Markdown prose, so this is the common case, not an opt-in extra. A fenced code block renders as a real, embedded `CodeBlock` — its own copy button and language label included, not a bare `<pre>` — see the assistant message above. Set `markdown={false}` for a transcript that's genuinely plain text, where literal `*`/`#`/backtick characters in the content shouldn't be interpreted as markup.",
+        text: 'The transcript auto-scrolls only while the reader is already at the bottom; otherwise a "new messages" button appears instead of yanking them down. With `sender`, `role: "system"` or `align="start"` the thread becomes a labelled `role="list"` so a screen reader hears each speaker in order. The retry affordance on an errored message is a real button.',
       },
     ],
   },
@@ -67,7 +90,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: '`data-rebar-component="chat-thread"`; each message carries `data-rebar-role` and `data-rebar-status` (and `data-rebar-tone="highlight"` when tinted); the thread carries `data-rebar-align="start"` when set; parts include `byline`, `sender`, `header` and `actions`.',
+        text: '`data-rebar-component="chat-thread"`; each message carries `data-rebar-role` and `data-rebar-status` (and `data-rebar-tone="highlight"` when tinted); the thread carries `data-rebar-align="start"` when set; parts include `bubble`, `meta`, `byline`, `sender`, `header`, `actions`, `retry-button` and `typing-indicator`.',
       },
     ],
   },
@@ -77,50 +100,64 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Not codemod-covered — AntD ships no chat-transcript component of its own; a migration typically composes `List` + `Avatar` + `Spin` directly, or adopts a dedicated chat-UI library.",
+        text: "Not codemod-covered: AntD ships no chat transcript. A migration composes `List` + `Avatar` + `Spin`, or adopts Ant Design X.",
       },
     ],
   },
 ];
 
-const DEMO_REPLIES = [
-  "Got it — anything else you'd like broken down?",
-  "New enterprise signups are the biggest driver this quarter.",
-  "Churn ticked down slightly too, so retention's trending the right way.",
-];
+function Thread({ messages, height = 220, ...rest }: { messages: ChatMessage[]; height?: number; align?: "sides" | "start"; emptyMessage?: string; onRetry?: (m: ChatMessage) => void }) {
+  return (
+    <div style={{ height }}>
+      <ChatThread messages={messages} {...rest} />
+    </div>
+  );
+}
 
 export default function ChatThreadPage() {
-  const [messages, setMessages] = useState<ChatMessage[]>(INITIAL);
-  const nextId = useRef(messages.length + 1);
-  const nextReply = useRef(0);
-
-  const addMessage = () => {
-    const id = String(nextId.current++);
-    const lastRole = messages[messages.length - 1]?.role;
-    if (lastRole === "assistant" || lastRole === undefined) {
-      setMessages((prev) => [
-        ...prev,
-        { id, role: "user", content: "What's driving that?", status: "sent", avatarFallback: "JD" },
-      ]);
-    } else {
-      const content = DEMO_REPLIES[nextReply.current++ % DEMO_REPLIES.length]!;
-      setMessages((prev) => [...prev, { id, role: "assistant", content, status: "sent", avatarFallback: "AI" }]);
-    }
-  };
-
   return (
     <Stack gap="lg">
       <Heading level={1}>ChatThread</Heading>
-      <Text color="secondary">
-        A chat-bubble message thread with a typing indicator and a scroll-to-bottom affordance.
-      </Text>
+      <Text color="secondary">A conversation with citations.</Text>
 
-      <div style={{ height: 320, border: "1px solid var(--rebar-color-border)", borderRadius: 4 }}>
-        <ChatThread messages={messages} />
-      </div>
-      <Button type="button" variant="secondary" onClick={addMessage} style={{ alignSelf: "flex-start" }}>
-        + Add message
-      </Button>
+      <DemoStage
+        title="Project assistant"
+        caption="Streaming, citations, composer"
+        code={CODE}
+        states={[
+          {
+            label: "Streaming",
+            node: <Thread align="start" messages={[{ id: "s1", role: "assistant", content: "Drafting a note for the crew", status: "streaming" }]} />,
+          },
+          {
+            label: "Empty",
+            node: <Thread align="start" messages={[]} emptyMessage="Try “What is due this week?”" />,
+          },
+          {
+            label: "Error",
+            node: <Thread align="start" messages={[{ id: "e1", role: "user", content: ASK.text, status: "error" }]} onRetry={() => undefined} />,
+          },
+        ]}
+      >
+        <Stack gap="md">
+          <Thread messages={MESSAGES} height={340} />
+          <AiChatInput placeholder="Ask about Tideline" aria-label="Ask about Tideline" />
+        </Stack>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Assistant on a phone" caption="Thread above, composer pinned below" padding="none" widths={false}>
+        <div className="cs-grain" style={{ padding: 32, borderRadius: 0 }}>
+          <Phone title="Assistant">
+            <div style={{ flex: 1, minHeight: 0 }}>
+              <ChatThread messages={PHONE_MESSAGES} />
+            </div>
+            <div style={{ padding: 12 }}>
+              <AiChatInput placeholder="Ask about Tideline" aria-label="Ask about Tideline" />
+            </div>
+          </Phone>
+        </div>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
