@@ -1,79 +1,69 @@
-import { AspectRatio, Carousel, Heading, Stack, Text } from "rebar-ui";
+import { AspectRatio, Card, Carousel, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { FILES, project } from "@/fixtures/tideline";
 
-const SLIDE_COUNT = 4;
-const EXAMPLE_RATIO = 4 / 3;
+const CODE = `<Carousel aria-label="Harbour rebrand photos">
+  <AspectRatio ratio={4 / 3} placeholder={0} />
+  <AspectRatio ratio={4 / 3} placeholder={1} />
+  <AspectRatio ratio={4 / 3} placeholder={2} />
+</Carousel>
+
+// controlled
+<Carousel index={index} onIndexChange={setIndex}>{slides}</Carousel>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: `<Carousel aria-label="Example photos">\n  <img src="/one.jpg" alt="" />\n  <img src="/two.jpg" alt="" />\n  <img src="/three.jpg" alt="" />\n</Carousel>\n\n// controlled\n<Carousel index={index} onIndexChange={setIndex}>\n  {slides}\n</Carousel>`,
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Carousel"] ?? [] },
   {
     type: "doc-section",
     heading: "Accessibility",
-    body: [
-      {
-        kind: "text",
-        text: 'Root carries `role="region"` and `aria-roledescription="carousel"`; each slide is a `role="group"` labeled "N of M" and hidden from assistive tech while off-screen. Left/right arrow keys navigate when the carousel has focus; the position text is an `aria-live="polite"` region so a screen reader announces the change without needing to re-enter the carousel.',
-      },
-    ],
+    body: [{ kind: "text", text: 'Root is `role="region"` with `aria-roledescription="carousel"`; each slide is a `role="group"` labelled "N of M" and hidden while off-screen. Left and right arrows navigate when focused; the position text is `aria-live="polite"`.' }],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="carousel"` on the root; `data-rebar-part` values `viewport`, `track`, `slide`, `controls`, and `dots` on their respective elements.',
-      },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-component="carousel"` on the root; `data-rebar-part` values `viewport`, `track`, `slide`, `controls` and `dots`.' }],
   },
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      {
-        kind: "text",
-        text: "Not codemod-covered — AntD has no direct `Carousel` equivalent in core (it ships one in a separate package with a different API, slide-count-driven rather than children-driven), so this is a structural rewrite at migration time, not a mechanical rename.",
-      },
-    ],
+    body: [{ kind: "text", text: "Not codemod-covered. AntD's carousel is slide-count driven rather than children driven, so this is a structural rewrite." }],
   },
 ];
 
+const slides = (n: number) => Array.from({ length: n }, (_, i) => <AspectRatio key={i} ratio={4 / 3} placeholder={i} />);
+const harbourFiles = FILES.filter((f) => f.project === "harbour");
+
 export default function CarouselPage() {
+  const harbour = project("harbour");
   return (
     <Stack gap="lg">
       <Heading level={1}>Carousel</Heading>
-      <Text color="secondary">
-        A single-slide-at-a-time viewport with prev/next buttons, dot indicators, and a visible
-        &quot;N of M&quot; position — for compressing a run of non-text content (images, cards)
-        that would otherwise sprawl into a distracting grid on a text-dominant page. No new
-        dependency: plain state, no animation library.
-      </Text>
-      <Text size="sm" color="secondary">
-        Every slide in a carousel should share one aspect ratio — mixing portrait and landscape
-        content makes the container jump size between slides. Portrait and landscape photos to
-        show side by side belong in two separate carousels, not one mixed one.
-      </Text>
+      <Text color="secondary">One slide at a time, with arrows, dots and an N of M count. Keep every slide the same shape.</Text>
 
-      <LivePreview>
-        <Carousel aria-label="Example photos">
-          {Array.from({ length: SLIDE_COUNT }, (_, i) => (
-            <AspectRatio key={i} ratio={EXAMPLE_RATIO} placeholder={i} />
-          ))}
-        </Carousel>
-      </LivePreview>
+      <DemoStage
+        title="Harbour rebrand photos"
+        caption="Four slides at one aspect ratio"
+        code={CODE}
+        states={[
+          { label: "Two slides", node: <Carousel aria-label="Two photos">{slides(2)}</Carousel> },
+          { label: "Single slide", node: <Carousel aria-label="One photo">{slides(1)}</Carousel> },
+        ]}
+      >
+        <Carousel aria-label="Harbour rebrand photos">{slides(4)}</Carousel>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Project gallery" caption="Photos from the project, with the file list beside them" widths={false}>
+        <Card title={harbour.name} style={{ maxWidth: 560, margin: "0 auto" }}>
+          <Stack gap="sm">
+            <Carousel aria-label="Project photos">{slides(3)}</Carousel>
+            <Text size="sm" color="secondary">{harbourFiles.map((f) => f.name).join(", ")}</Text>
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
