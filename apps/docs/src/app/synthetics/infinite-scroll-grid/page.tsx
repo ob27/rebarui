@@ -4,40 +4,25 @@ import { useState } from "react";
 import { Card, Heading, InfiniteScrollGrid, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { CREW, FILES, PROJECTS, STATUS_TONE, gbp, person } from "@/fixtures/tideline";
+import type { CrewMember } from "@/fixtures/tideline";
 
-interface Person {
-  id: string;
-  name: string;
-}
+const CODE = `<InfiniteScrollGrid
+  items={crew}
+  keyExtractor={(m) => m.id}
+  renderItem={(m) => <Card title={m.name} subtitle={m.role} />}
+  hasMore={hasMore}
+  isLoading={isLoading}
+  onLoadMore={loadNextPage}
+  columns={3}
+/>`;
 
-const ALL_PEOPLE: Person[] = Array.from({ length: 60 }, (_, i) => ({
-  id: `p${i}`,
-  name: `Person ${i + 1}`,
-}));
+const SCROLL: React.CSSProperties = { maxHeight: 340, overflowY: "auto", border: "1px solid var(--rebar-color-border)", borderRadius: 8, padding: 16 };
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<InfiniteScrollGrid\n  items={items}\n  renderItem={(item) => <Card>{item.name}</Card>}\n  keyExtractor={(item) => item.id}\n  hasMore={hasMore}\n  isLoading={isLoading}\n  onLoadMore={loadNextPage}\n/>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["InfiniteScrollGrid"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "A real IntersectionObserver, not scroll-position math",
-    body: [
-      {
-        kind: "text",
-        text: "A sentinel element near the bottom triggers `onLoadMore` via IntersectionObserver — the caller owns all data fetching, this component performs no networking itself. Shows real `Skeleton` placeholders while loading, and collapses to fewer columns automatically on a narrow viewport.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -60,43 +45,84 @@ const BLOCKS: Construct[] = [
   },
 ];
 
-export default function InfiniteScrollGridPage() {
-  const [visibleCount, setVisibleCount] = useState(9);
-  const [isLoading, setIsLoading] = useState(false);
-  const items = ALL_PEOPLE.slice(0, visibleCount);
-  const hasMore = visibleCount < ALL_PEOPLE.length;
-
-  const loadMore = () => {
+function useDrip<T>(all: T[], first: number, step: number) {
+  const [count, setCount] = useState(first);
+  const [isLoading, setLoading] = useState(false);
+  const hasMore = count < all.length;
+  const onLoadMore = () => {
     if (isLoading || !hasMore) return;
-    setIsLoading(true);
+    setLoading(true);
     setTimeout(() => {
-      setVisibleCount((v) => Math.min(v + 9, ALL_PEOPLE.length));
-      setIsLoading(false);
+      setCount((c) => Math.min(c + step, all.length));
+      setLoading(false);
     }, 600);
   };
+  return { items: all.slice(0, count), hasMore, isLoading, onLoadMore };
+}
 
+const CREW_ALL: CrewMember[] = [...CREW, ...CREW.map((m) => ({ ...m, id: `${m.id}-2`, interviewed: "Follow-up" }))];
+
+export default function InfiniteScrollGridPage() {
+  const crew = useDrip(CREW_ALL, 6, 6);
+  const files = useDrip(FILES, 3, 3);
   return (
     <Stack gap="lg">
       <Heading level={1}>InfiniteScrollGrid</Heading>
-      <Text color="secondary">
-        A card grid that loads more via real scroll-position detection, not page numbers.
-      </Text>
+      <Text color="secondary">A card grid that loads the next batch when you scroll to the bottom.</Text>
 
-      <div style={{ maxHeight: 360, overflowY: "auto", border: "1px solid var(--rebar-color-border)", borderRadius: 4, padding: 16 }}>
-        <InfiniteScrollGrid
-          items={items}
-          renderItem={(item) => (
-            <Card>
-              <Text>{item.name}</Text>
-            </Card>
-          )}
-          keyExtractor={(item) => item.id}
-          hasMore={hasMore}
-          isLoading={isLoading}
-          onLoadMore={loadMore}
-          columns={3}
-        />
-      </div>
+      <DemoStage
+        title="Crew directory"
+        caption="Scroll the panel: six more load each time"
+        code={CODE}
+        states={[
+          { label: "Loading", node: <InfiniteScrollGrid items={[]} renderItem={() => null} keyExtractor={(x: never) => String(x)} hasMore isLoading onLoadMore={() => {}} columns={3} skeletonCount={3} /> },
+          { label: "Empty", node: <InfiniteScrollGrid items={[]} renderItem={() => null} keyExtractor={(x: never) => String(x)} hasMore={false} isLoading={false} onLoadMore={() => {}} emptyMessage="No crew interviewed yet" /> },
+          {
+            label: "Everything loaded",
+            node: (
+              <InfiniteScrollGrid
+                items={CREW.slice(0, 2)}
+                keyExtractor={(m) => m.id}
+                renderItem={(m) => <Card title={m.name} subtitle={m.role} />}
+                hasMore={false}
+                isLoading={false}
+                onLoadMore={() => {}}
+                columns={1}
+              />
+            ),
+          },
+        ]}
+      >
+        <div style={SCROLL}>
+          <InfiniteScrollGrid
+            {...crew}
+            keyExtractor={(m) => m.id}
+            renderItem={(m) => (
+              <Card title={m.name} subtitle={m.role} footer={<Text size="xs" color="secondary">Interviewed {m.interviewed}</Text>} />
+            )}
+            columns={3}
+          />
+        </div>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Project files" caption="Files load as you scroll" widths={false}>
+        <Card title="Files" subtitle="All projects">
+          <div style={{ ...SCROLL, maxHeight: 260 }}>
+            <InfiniteScrollGrid
+              {...files}
+              keyExtractor={(f) => f.id}
+              renderItem={(f) => {
+                const p = PROJECTS.find((x) => x.id === f.project)!;
+                return (
+                  <Card title={f.name} subtitle={f.size} labels={[{ label: p.name, tone: STATUS_TONE[p.status] }]} footer={<Text size="xs" color="secondary">{person(p.owner).name} · {gbp(p.budget)}</Text>} />
+                );
+              }}
+              columns={2}
+            />
+          </div>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
