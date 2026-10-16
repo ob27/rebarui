@@ -3038,7 +3038,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--rebar-space-sm, 8px);
-  flex: 0 0 260px;
+  /* Override per board with --rebar-kanban-column-width. */
+  flex: 0 0 var(--rebar-kanban-column-width, 260px);
   background: var(--rebar-color-bg-secondary, #f5f5f5);
   border: var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0);
   border-radius: var(--rebar-radius, 4px);

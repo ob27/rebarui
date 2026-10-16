@@ -687,6 +687,15 @@ textarea.rebar-input {
   border-radius: 12px;
   box-shadow: none;
 }
+.rebar-kanban [data-rebar-part="card"][data-rebar-dragging="true"] {
+  transform: rotate(2deg);
+  border-color: var(--rebar-color-primary);
+  box-shadow: var(--rebar-shadow-md, 0 12px 28px rgba(0, 0, 0, 0.16));
+  opacity: 0.95;
+}
+.rebar-kanban-column[data-rebar-drop-target="true"] {
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--rebar-color-primary) 45%, transparent);
+}
 .rebar-kanban-add-button {
   min-height: 44px;
   padding: 8px 12px;

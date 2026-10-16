@@ -72,6 +72,8 @@ export interface KanbanCardRenderContext {
   /** Mirrors the board's own `cardVariant === "sticky"` — lets one `renderCard` branch its output
    * per variant without the caller re-deriving it from props. */
   sticky: boolean;
+  /** True while this card is the one being dragged (mirrors `data-rebar-dragging` on the built-in card faces). */
+  dragging: boolean;
   dragHandlers: {
     draggable: boolean;
     onDragStart: () => void;
@@ -469,6 +471,8 @@ export function Kanban({
             // Touch drag hit-testing (elementFromPoint + closest) reads this back; mouse drag uses
             // the native dragover/drop events on this same element instead and never needs it.
             data-column-id={column.id}
+            // "true" while a dragged card is over one of this column's sections that would accept it.
+            data-rebar-drop-target={dragOverSection?.columnId === column.id ? "true" : undefined}
             // True when a column already holds more cards than its own configured `limit` -- set
             // (say) before the limit was lowered, or before it existed. This never happens through
             // this component's own drag/add paths (both reject a drop/add past the limit already);
@@ -657,6 +661,8 @@ export function Kanban({
                         {visibleIds.map((cardId) => {
                           const card = cards[cardId];
                           if (!card) return null;
+                          const draggingThis = dragCard?.cardId === cardId;
+                          const draggingAttr = draggingThis ? "true" : undefined;
                           const dragHandlers = {
                             draggable: true,
                             onDragStart: () => {
@@ -802,6 +808,7 @@ export function Kanban({
                                   columnId: column.id,
                                   sectionId: section.id,
                                   sticky,
+                                  dragging: draggingThis,
                                   dragHandlers,
                                   touchHandlers,
                                 })}
@@ -819,6 +826,7 @@ export function Kanban({
                                 key={cardId}
                                 ref={attachNonPassiveTouchMove}
                                 data-rebar-part="card"
+                                data-rebar-dragging={draggingAttr}
                                 title={card.title}
                                 editable
                                 onTitleChange={(value) => emit(columns, { ...cards, [cardId]: { ...card, title: value } })}
@@ -838,6 +846,7 @@ export function Kanban({
                             <Sticky
                               key={cardId}
                               data-rebar-part="card"
+                              data-rebar-dragging={draggingAttr}
                               title={card.title}
                               tags={card.tags}
                               color={card.color}

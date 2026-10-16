@@ -479,3 +479,40 @@ describe("Kanban", () => {
     });
   });
 });
+
+describe("Kanban drag state attributes", () => {
+  it("sets data-rebar-dragging on the dragged card and data-rebar-drop-target on the column under it", () => {
+    const { container } = render(<Kanban columns={COLUMNS} cards={CARDS} />);
+    const card = screen.getByText("Write spec").closest('[data-rebar-part="card"]')!;
+    const other = screen.getByText("Build UI").closest('[data-rebar-part="card"]')!;
+    const reviewSection = container.querySelectorAll('[data-rebar-part="section-cards"]')[1]!;
+    const reviewColumn = container.querySelectorAll('[data-rebar-part="column"]')[1]!;
+
+    expect(card).not.toHaveAttribute("data-rebar-dragging");
+    fireEvent.dragStart(card);
+    expect(card).toHaveAttribute("data-rebar-dragging", "true");
+    expect(other).not.toHaveAttribute("data-rebar-dragging");
+    fireEvent.dragEnter(reviewSection);
+    expect(reviewColumn).toHaveAttribute("data-rebar-drop-target", "true");
+    expect(container.querySelectorAll('[data-rebar-part="column"]')[0]).not.toHaveAttribute("data-rebar-drop-target");
+
+    fireEvent.dragEnd(card);
+    expect(card).not.toHaveAttribute("data-rebar-dragging");
+    expect(reviewColumn).not.toHaveAttribute("data-rebar-drop-target");
+  });
+
+  it("exposes dragging to renderCard", () => {
+    render(
+      <Kanban
+        columns={COLUMNS}
+        cards={CARDS}
+        renderCard={(card, ctx) => (
+          <div data-testid={`rc-${card.id}`} data-dragging={String(ctx.dragging)} {...ctx.dragHandlers}>{card.title}</div>
+        )}
+      />,
+    );
+    fireEvent.dragStart(screen.getByTestId("rc-a"));
+    expect(screen.getByTestId("rc-a")).toHaveAttribute("data-dragging", "true");
+    expect(screen.getByTestId("rc-b")).toHaveAttribute("data-dragging", "false");
+  });
+});
