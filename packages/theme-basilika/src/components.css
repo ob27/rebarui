@@ -978,6 +978,9 @@ textarea.rebar-input {
   color: var(--rebar-color-primary);
   font-weight: var(--rebar-font-weight-bold);
 }
+.rebar-mobile-tab-bar-badge {
+  box-shadow: 0 0 0 2px var(--rebar-color-bg-raised);
+}
 
 /* SidePanel: raised with a hairline, a kicker-style header */
 .rebar-side-panel {

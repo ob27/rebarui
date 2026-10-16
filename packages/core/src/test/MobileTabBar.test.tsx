@@ -111,3 +111,38 @@ describe("MobileTabBar", () => {
     expect(screen.getByTestId("custom-link")).toHaveAttribute("href", "/profile");
   });
 });
+
+describe("MobileTabBar position, badge and disabled", () => {
+  it("is fixed by default and static on request", () => {
+    const { rerender } = render(<MobileTabBar items={ITEMS} />);
+    expect(screen.getByRole("navigation")).not.toHaveAttribute("data-rebar-position");
+    rerender(<MobileTabBar items={ITEMS} position="static" />);
+    expect(screen.getByRole("navigation")).toHaveAttribute("data-rebar-position", "static");
+  });
+
+  it("renders a badge, and a bare dot for an empty-string badge", () => {
+    const { container } = render(
+      <MobileTabBar items={[{ label: "Inbox", badge: 3 }, { label: "Alerts", badge: "" }, { label: "Plain" }]} />,
+    );
+    const badges = container.querySelectorAll('[data-rebar-part="badge"]');
+    expect(badges).toHaveLength(2);
+    expect(badges[0]).toHaveTextContent("3");
+    expect(badges[1]).toHaveAttribute("data-rebar-dot", "true");
+  });
+
+  it("disabled items are disabled buttons that do not select (even with an href)", async () => {
+    const onActiveChange = vi.fn();
+    render(
+      <MobileTabBar
+        onActiveChange={onActiveChange}
+        items={[{ label: "Home" }, { label: "Locked", disabled: true }, { label: "Away", href: "/a", disabled: true }]}
+      />,
+    );
+    const locked = screen.getByRole("button", { name: /Locked/ });
+    expect(locked).toBeDisabled();
+    await userEvent.click(locked);
+    expect(onActiveChange).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: /Away/ })).toBeDisabled();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  });
+});

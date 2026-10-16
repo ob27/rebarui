@@ -3672,7 +3672,13 @@ body {
   display: flex;
 }
 
+.rebar-mobile-tab-bar[data-rebar-position="static"] {
+  position: static;
+  z-index: auto;
+}
+
 .rebar-mobile-tab-bar-item {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -3707,6 +3713,34 @@ body {
   justify-content: center;
   width: 20px;
   height: 20px;
+}
+
+.rebar-mobile-tab-bar-item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.rebar-mobile-tab-bar-badge {
+  position: absolute;
+  top: 2px;
+  left: calc(50% + 6px);
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: var(--rebar-color-danger, #d32f2f);
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+.rebar-mobile-tab-bar-badge[data-rebar-dot="true"] {
+  min-width: 8px;
+  width: 8px;
+  height: 8px;
+  padding: 0;
 }
 
 .rebar-mobile-tab-bar-label {

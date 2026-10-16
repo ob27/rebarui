@@ -11,6 +11,10 @@ export interface MobileTabBarItem {
   icon?: ReactNode;
   href?: string;
   onSelect?: () => void;
+  /** A small count/dot pill on the item (e.g. `3`, `"9+"`, or `""` for a bare dot). Omit, `null` or `false` for none. */
+  badge?: ReactNode;
+  /** Not selectable: renders a disabled `<button>` (even when `href` is set, so it can't navigate). */
+  disabled?: boolean;
 }
 
 export interface MobileTabBarProps extends Omit<ComponentPropsWithoutRef<"nav">, "className"> {
@@ -31,6 +35,9 @@ export interface MobileTabBarProps extends Omit<ComponentPropsWithoutRef<"nav">,
     "aria-current"?: "page";
   }) => ReactNode;
   className?: string;
+  /** `"fixed"` (default) pins the bar to the bottom of the viewport; `"static"` lays it out in
+   * normal flow so it can live inside a frame (e.g. a `DeviceFrame` screen). */
+  position?: "fixed" | "static";
   "aria-label"?: string;
   /** Force bionic reading on/off for item labels, overriding the ambient data-rebar-bionic setting. */
   bionic?: boolean;
@@ -75,6 +82,7 @@ export function MobileTabBar({
   bionic,
   bionicOptions,
   className,
+  position = "fixed",
   "aria-label": ariaLabel = "Primary",
   ...props
 }: MobileTabBarProps) {
@@ -95,6 +103,7 @@ export function MobileTabBar({
       aria-label={ariaLabel}
       className={clsx("rebar-mobile-tab-bar", className)}
       data-rebar-component="mobile-tab-bar"
+      data-rebar-position={position === "static" ? "static" : undefined}
     >
       {items.map((item, i) => {
         const isActive = i === currentActive;
@@ -112,6 +121,15 @@ export function MobileTabBar({
             <span className="rebar-mobile-tab-bar-label">
               {renderBionicChildren(item.label, bionicEnabled, bionicOptions)}
             </span>
+            {item.badge !== undefined && item.badge !== null && item.badge !== false ? (
+              <span
+                className="rebar-mobile-tab-bar-badge"
+                data-rebar-part="badge"
+                data-rebar-dot={item.badge === "" ? "true" : undefined}
+              >
+                {item.badge}
+              </span>
+            ) : null}
           </>
         );
         const handleClick = () => {
@@ -125,7 +143,7 @@ export function MobileTabBar({
             data-rebar-part="item"
             className="rebar-mobile-tab-bar-item-wrapper"
           >
-            {item.href ? (
+            {item.href && !item.disabled ? (
               renderLink({
                 href: item.href,
                 children: content,
@@ -138,6 +156,7 @@ export function MobileTabBar({
                 type="button"
                 className={itemClassName}
                 onClick={handleClick}
+                disabled={item.disabled}
                 aria-current={isActive ? "page" : undefined}
               >
                 {content}
