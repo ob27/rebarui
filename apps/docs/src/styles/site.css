@@ -125,7 +125,8 @@
 .cs-filters > :first-child { flex: 1; min-width: 240px; }
 .cs-pill { border: 1.5px solid var(--rebar-color-border-strong); border-radius: 999px; min-height: 36px; padding: 0 15px; font: var(--rebar-font-weight-semibold) 0.85rem/1 var(--rebar-font-family-sans); background: transparent; color: var(--rebar-color-text-primary); cursor: pointer; }
 .cs-pill[aria-pressed="true"] { background: var(--rebar-color-text-primary); color: var(--rebar-color-bg-primary); border-color: transparent; }
-.cs-featured { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 8px; }
+.cs-featured { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 8px; }
+.cs-featured-card:first-child { grid-column: 1 / 3; }
 .cs-featured-card { background: var(--rebar-color-bg-secondary); border: 1px solid var(--rebar-color-border); border-radius: var(--rebar-radius-lg); padding: 14px 18px 18px; display: grid; gap: 12px; align-content: start; min-width: 0; }
 .cs-featured-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .cs-featured-head a { font-size: 0.82rem; color: var(--rebar-color-text-secondary); text-decoration: none; } .cs-featured-head a:hover { color: var(--rebar-color-text-primary); }
@@ -147,7 +148,7 @@ a.cs-list-row:hover { background: var(--rebar-color-bg-secondary); }
 .cs-404 { min-height: 62vh; display: grid; place-items: center; text-align: center; }
 .cs-404 > div { display: grid; gap: 16px; justify-items: center; }
 
-@media (max-width: 1180px) { .cs-docs { grid-template-columns: 220px minmax(0, 1fr); } .cs-toc, .cs-toc-slot { display: none; } .cs-featured { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 1180px) { .cs-docs { grid-template-columns: 220px minmax(0, 1fr); } .cs-toc, .cs-toc-slot { display: none; } }
 @media (max-width: 900px) { .cs-header-desktop { display: none; } .cs-mobile-header { display: block; } .cs-tiers { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cs-hero { grid-template-columns: 1fr; padding: 40px 24px; min-height: 0; } .cs-collage { grid-template-columns: 1fr; } .cs-collage .cs-wide { grid-column: auto; } .cs-gen { grid-template-columns: 1fr; } }
 @media (max-width: 760px) {
   :root { --cs-sec: 56px; --cs-gut: 18px; }
@@ -156,7 +157,7 @@ a.cs-list-row:hover { background: var(--rebar-color-bg-secondary); }
   .cs-docs-navtoggle { display: block; justify-self: start; border: 1.5px solid var(--rebar-color-border-strong); border-radius: 999px; min-height: 40px; padding: 0 18px; font: var(--rebar-font-weight-semibold) 0.9rem/1 var(--rebar-font-family-sans); background: transparent; color: var(--rebar-color-text-primary); cursor: pointer; }
   .cs-docs-nav { display: none; position: static; max-height: none; } .cs-docs-nav[data-open="true"] { display: block; }
   .cs-list { column-count: 1; } .cs-list li:nth-child(odd) .cs-list-row { border-right: 0; }
-  .cs-featured { grid-template-columns: 1fr; }
+  .cs-featured { grid-template-columns: 1fr; } .cs-featured-card:first-child { grid-column: auto; }
   .cs-sec-h { flex-wrap: wrap; }
   .cs-docs-main .rebar-stack[data-rebar-direction="row"] { flex-wrap: wrap; }
 }

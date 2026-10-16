@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Alert, Avatar, AvatarGroup, Breadcrumb, Button, Card, Checkbox, Combobox, Input, Kanban, MobileTabBar, Sparkline, Steps, Switch, Table, Tag } from "rebar-ui";
+import { Alert, Avatar, AvatarGroup, Breadcrumb, Button, Card, Checkbox, Combobox, Input, Kanban, Sparkline, Steps, Switch, Table, Tag } from "rebar-ui";
 import type { KanbanState } from "rebar-ui";
 import type { Tier } from "@/data/tier.types";
 import { PEOPLE_OPTIONS, PROJECTS, STATUS_TONE, WEEKLY_DONE, avatarOf, avatarsOf, gbp, kanbanBoard, project } from "@/fixtures/tideline";
@@ -16,7 +16,7 @@ interface Featured {
 
 function KanbanPreview() {
   const [board, setBoard] = useState<KanbanState>(kanbanBoard);
-  return <Kanban columns={board.columns.slice(1)} cards={board.cards} onChange={setBoard} />;
+  return <Kanban columns={board.columns} cards={board.cards} onChange={setBoard} />;
 }
 
 function SwitchPreview() {
@@ -77,10 +77,9 @@ const FEATURED: Record<Tier, Featured[]> = {
           rowKey="id"
           columns={[
             { key: "name", header: "Project" },
-            { key: "status", header: "Status" },
             { key: "budget", header: "Budget", align: "right" },
           ]}
-          data={PROJECTS.slice(0, 3).map((p) => ({ id: p.id, name: p.name, status: p.status, budget: gbp(p.budget) }))}
+          data={PROJECTS.slice(0, 3).map((p) => ({ id: p.id, name: p.name, budget: gbp(p.budget) }))}
         />
       ),
     },
@@ -92,9 +91,15 @@ const FEATURED: Record<Tier, Featured[]> = {
       node: <Breadcrumb items={[{ label: "Projects", href: "#" }, { label: "Harbour rebrand", href: "#" }, { label: "Board" }]} />,
     },
     {
-      name: "MobileTabBar",
-      href: "/orders/mobile-tab-bar",
-      node: <MobileTabBar aria-label="Tideline" items={[{ label: "Inbox" }, { label: "Projects" }, { label: "Calendar" }, { label: "You" }]} defaultActiveIndex={1} />,
+      name: "Grid",
+      href: "/orders/row",
+      node: (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+          {["tint-1", "tint-3", "tint-4"].map((t, k) => (
+            <div key={t} style={{ height: 64, borderRadius: 10, background: `var(--rebar-color-${t})`, display: "grid", placeItems: "center", fontSize: 12 }}>{`col ${k + 1}`}</div>
+          ))}
+        </div>
+      ),
     },
     {
       name: "AppShell",
