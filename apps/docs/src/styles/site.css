@@ -125,22 +125,29 @@
 .cs-filters > :first-child { flex: 1; min-width: 240px; }
 .cs-pill { border: 1.5px solid var(--rebar-color-border-strong); border-radius: 999px; min-height: 36px; padding: 0 15px; font: var(--rebar-font-weight-semibold) 0.85rem/1 var(--rebar-font-family-sans); background: transparent; color: var(--rebar-color-text-primary); cursor: pointer; }
 .cs-pill[aria-pressed="true"] { background: var(--rebar-color-text-primary); color: var(--rebar-color-bg-primary); border-color: transparent; }
-.cs-grid { list-style: none; margin: 0 0 48px; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
-.cs-grid li { display: grid; }
-.cs-ccard { display: grid; gap: 10px; padding: 12px; align-self: stretch; align-content: start; border: 1px solid var(--rebar-color-border); border-radius: var(--rebar-radius); background: var(--rebar-color-bg-raised, var(--rebar-color-bg-primary)); color: var(--rebar-color-text-primary); text-decoration: none; transition: transform 0.14s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.14s; }
-a.cs-ccard:hover { transform: translateY(-2px); box-shadow: var(--rebar-shadow); }
-.cs-ccard--static { opacity: 0.7; border-style: dashed; }
-.cs-ccard b { font: var(--rebar-font-weight-semibold) 1.05rem/1.15 var(--rebar-font-family-display); font-variation-settings: "SOFT" 100; overflow-wrap: anywhere; }
-.cs-ccard-meta { display: flex; gap: 6px; flex-wrap: wrap; }
-.cs-tile { height: 84px; border-radius: 10px; display: grid; place-items: center; font: var(--rebar-font-weight-semibold) 2.2rem var(--rebar-font-family-display); font-variation-settings: "SOFT" 100; color: var(--rebar-color-text-primary); }
-.cs-tile--1 { background: var(--rebar-color-tint-1); } .cs-tile--2 { background: var(--rebar-color-tint-3); } .cs-tile--3 { background: var(--rebar-color-tint-2); } .cs-tile--4 { background: var(--rebar-color-tint-4); } .cs-tile--5 { background: var(--rebar-color-bg-secondary); }
+.cs-featured { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 8px; }
+.cs-featured-card { background: var(--rebar-color-bg-secondary); border: 1px solid var(--rebar-color-border); border-radius: var(--rebar-radius-lg); padding: 14px 18px 18px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.cs-featured-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.cs-featured-head a { font-size: 0.82rem; color: var(--rebar-color-text-secondary); text-decoration: none; } .cs-featured-head a:hover { color: var(--rebar-color-text-primary); }
+.cs-featured-body { min-width: 0; overflow: hidden; }
+.cs-featured-body .rebar-kanban { --rebar-kanban-column-width: 100%; }
+.cs-sec-h--tight { margin-top: 48px; margin-bottom: 18px; }
+.cs-list { list-style: none; margin: 0 0 48px; padding: 0; background: var(--rebar-color-bg-raised, var(--rebar-color-bg-primary)); border: 1px solid var(--rebar-color-border); border-radius: var(--rebar-radius); overflow: hidden; column-count: 2; column-gap: 0; }
+.cs-list li { break-inside: avoid; display: block; }
+.cs-list-row { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--rebar-color-border); color: var(--rebar-color-text-primary); text-decoration: none; min-height: 48px; }
+.cs-list li:nth-child(odd) .cs-list-row { border-right: 1px solid var(--rebar-color-border); }
+a.cs-list-row:hover { background: var(--rebar-color-bg-secondary); }
+.cs-list-row b { font-weight: var(--rebar-font-weight-semibold); overflow-wrap: anywhere; }
+.cs-list-row--static { opacity: 0.6; }
+.cs-list-meta { margin-left: auto; display: inline-flex; align-items: center; gap: 10px; color: var(--rebar-color-text-secondary); font-size: 0.82rem; white-space: nowrap; }
+.cs-chev { width: 8px; height: 8px; border-right: 2px solid var(--rebar-color-text-secondary); border-top: 2px solid var(--rebar-color-text-secondary); transform: rotate(45deg); }
 .cs-empty { display: grid; gap: 12px; justify-items: start; border: 1px dashed var(--rebar-color-border-strong); border-radius: var(--rebar-radius-lg); padding: 32px; margin-bottom: 48px; }
 
 /* ---- 404 ----------------------------------------------------------------------------------------------------------------- */
 .cs-404 { min-height: 62vh; display: grid; place-items: center; text-align: center; }
 .cs-404 > div { display: grid; gap: 16px; justify-items: center; }
 
-@media (max-width: 1180px) { .cs-docs { grid-template-columns: 220px minmax(0, 1fr); } .cs-toc, .cs-toc-slot { display: none; } }
+@media (max-width: 1180px) { .cs-docs { grid-template-columns: 220px minmax(0, 1fr); } .cs-toc, .cs-toc-slot { display: none; } .cs-featured { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 900px) { .cs-header-desktop { display: none; } .cs-mobile-header { display: block; } .cs-tiers { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cs-hero { grid-template-columns: 1fr; padding: 40px 24px; min-height: 0; } .cs-collage { grid-template-columns: 1fr; } .cs-collage .cs-wide { grid-column: auto; } .cs-gen { grid-template-columns: 1fr; } }
 @media (max-width: 760px) {
   :root { --cs-sec: 56px; --cs-gut: 18px; }
@@ -148,7 +155,8 @@ a.cs-ccard:hover { transform: translateY(-2px); box-shadow: var(--rebar-shadow);
   .cs-docs { grid-template-columns: 1fr; padding: 20px var(--cs-gut) 64px; gap: 20px; }
   .cs-docs-navtoggle { display: block; justify-self: start; border: 1.5px solid var(--rebar-color-border-strong); border-radius: 999px; min-height: 40px; padding: 0 18px; font: var(--rebar-font-weight-semibold) 0.9rem/1 var(--rebar-font-family-sans); background: transparent; color: var(--rebar-color-text-primary); cursor: pointer; }
   .cs-docs-nav { display: none; position: static; max-height: none; } .cs-docs-nav[data-open="true"] { display: block; }
-  .cs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .cs-list { column-count: 1; } .cs-list li:nth-child(odd) .cs-list-row { border-right: 0; }
+  .cs-featured { grid-template-columns: 1fr; }
   .cs-sec-h { flex-wrap: wrap; }
   .cs-docs-main .rebar-stack[data-rebar-direction="row"] { flex-wrap: wrap; }
 }
