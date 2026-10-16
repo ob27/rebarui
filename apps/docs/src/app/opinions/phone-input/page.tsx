@@ -1,44 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Heading, PhoneInput, Stack, Text } from "rebar-ui";
+import { Button, Card, Heading, Input, PhoneInput, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { CREW } from "@/fixtures/tideline";
+
+const CODE = `const [phone, setPhone] = useState("");
+
+<PhoneInput value={phone} onValueChange={setPhone} aria-label="Phone number" />`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<PhoneInput value={phone} onValueChange={setPhone} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["PhoneInput"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Not the same gap Input's mask prop already closed",
-    body: [
-      {
-        kind: "text",
-        text: '`Input` already ships a `mask` prop for exactly "a formatted phone/card-number field" — a single fixed format. This is a different gap: real branching state, where the *selected country* changes both the format mask and (in a real app) the validation rule behind one field. Try switching the country below and watch the number field\'s format change with it.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "A small built-in list, not a validation library",
-    body: [
-      {
-        kind: "text",
-        text: "Ships 10 common countries with a format mask for the ones with a short, common national format — not a `libphonenumber`-equivalent. Pass your own `countries` list to replace or extend it; real production use should still validate the final number server-side.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -63,20 +38,37 @@ const BLOCKS: Construct[] = [
 
 export default function PhoneInputPage() {
   const [phone, setPhone] = useState("");
-
   return (
     <Stack gap="lg">
       <Heading level={1}>PhoneInput</Heading>
-      <Text color="secondary">
-        A country-code select paired with a national-number field whose format changes with the
-        country.
-      </Text>
+      <Text color="secondary">A country-code select paired with a phone-number field that formats itself for the chosen country.</Text>
 
-      <LivePreview>
+      <DemoStage
+        title="Phone number"
+        caption="Pick a country, and the number field takes its format"
+        code={CODE}
+        states={[
+          { label: "Prefilled", node: <PhoneInput defaultValue="+44 7700 900142" aria-label="Phone number" /> },
+          { label: "Disabled", node: <PhoneInput defaultValue="+44 7700 900142" disabled aria-label="Phone number" /> },
+        ]}
+      >
         <div style={{ maxWidth: 400 }}>
-          <PhoneInput value={phone} onValueChange={setPhone} />
+          <PhoneInput value={phone} onValueChange={setPhone} aria-label="Phone number" />
         </div>
-      </LivePreview>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Crew contact" caption="Adding a crew member to the interview list" widths={false}>
+        <Card style={{ maxWidth: 440, margin: "0 auto" }} title="Add crew contact" subtitle="Crew interviews" actions={[<Button key="cancel" variant="secondary">Cancel</Button>, <Button key="save">Save contact</Button>]}>
+          <Stack gap="sm">
+            <Text size="sm" color="secondary">Name</Text>
+            <Input defaultValue={CREW[2].name} aria-label="Name" />
+            <Text size="sm" color="secondary">Mobile</Text>
+            <PhoneInput defaultValue="+44 7700 900318" aria-label="Mobile" />
+            <Text size="sm" color="secondary">{CREW[2].role}, interviewed {CREW[2].interviewed}</Text>
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

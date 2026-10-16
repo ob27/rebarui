@@ -1,51 +1,62 @@
 "use client";
 
 import { useState } from "react";
-import { Heading, HeatmapPainter, SchematicHeatmap, Stack, Text } from "rebar-ui";
+import { Card, Heading, HeatmapPainter, SchematicHeatmap, Stack, Tag, Text } from "rebar-ui";
 import type { HeatmapBrush, HeatmapLayout, HeatmapRegion, HeatmapValue } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { project } from "@/fixtures/tideline";
 
-// Made-up data: a fictional campus site plan. Each region is a union of rects in the plan's own
-// units; "East Hall" is an L-shape drawn from two rects and "Courtyard" is a ring (a hole in the
-// middle), to show that a multi-rect region is ONE shape with one outline.
+// The northern depot site plan. Each region is a union of rects in the plan's own units; "East shed" is an L-shape
+// drawn from two rects and "Quay yard" is a ring (a hole in the middle), so a multi-rect region is ONE shape with one outline.
 const BRUSHES: HeatmapBrush[] = [
-  { id: "building", label: "Building", color: "#0066cc" },
-  { id: "outdoor", label: "Outdoor", color: "#2e7d32", showLabel: true },
-  { id: "service", label: "Service", color: "#757575", showLabel: false },
+  { id: "building", label: "Building", color: "var(--rebar-color-primary)" },
+  { id: "outdoor", label: "Outdoor", color: "var(--rebar-color-success)", showLabel: true },
+  { id: "service", label: "Service", color: "var(--rebar-color-text-secondary)", showLabel: false },
 ];
 
 const REGIONS: HeatmapRegion[] = [
-  { id: "north-block", kind: "building", label: "North Block", rects: [[0, 0, 220, 90]] },
-  { id: "east-hall", kind: "building", label: "East Hall", rects: [[230, 0, 380, 90], [290, 90, 380, 190]] },
-  { id: "library", kind: "building", label: "Library", rects: [[0, 100, 120, 190]] },
+  { id: "north-shed", kind: "building", label: "North shed", rects: [[0, 0, 220, 90]] },
+  { id: "east-shed", kind: "building", label: "East shed", rects: [[230, 0, 380, 90], [290, 90, 380, 190]] },
+  { id: "office", kind: "building", label: "Depot office", rects: [[0, 100, 120, 190]] },
   {
-    id: "courtyard",
+    id: "quay-yard",
     kind: "outdoor",
-    label: "Courtyard",
+    label: "Quay yard",
     rects: [[130, 100, 280, 120], [130, 170, 280, 190], [130, 120, 150, 170], [260, 120, 280, 170]],
   },
-  { id: "car-park", kind: "outdoor", label: "Car park", rects: [[0, 200, 280, 260]] },
-  { id: "plant-room", kind: "service", label: "Plant", rects: [[290, 200, 380, 260]] },
+  { id: "van-park", kind: "outdoor", label: "Van park", rects: [[0, 200, 280, 260]] },
+  { id: "generator", kind: "service", label: "Generator", rects: [[290, 200, 380, 260]] },
   { id: "pump-house", kind: "service", label: "Pump house", rects: [[390, 0, 430, 40]] },
 ];
 
+// Signage installed per area: done of expected panels.
 const VALUES: Record<string, HeatmapValue> = {
-  "north-block": { done: 182, expected: 200 },
-  "east-hall": { done: 96, expected: 210 },
-  library: { done: 12, expected: 140 },
-  courtyard: 0.55,
-  "car-park": { done: 40, expected: 40 },
-  // plant-room and pump-house deliberately have no entry — "no data", not 0%.
+  "north-shed": { done: 182, expected: 200 },
+  "east-shed": { done: 96, expected: 210 },
+  office: { done: 12, expected: 140 },
+  "quay-yard": 0.55,
+  "van-park": { done: 40, expected: 40 },
+  // generator and pump-house deliberately have no entry: "no data", not 0%.
 };
+
+const CODE = `<SchematicHeatmap
+  ariaLabel="Signage installed by area, northern depot"
+  regions={[{ id: "north-shed", kind: "building", label: "North shed", rects: [[0, 0, 220, 90]] }, /* ... */]}
+  values={{ "north-shed": { done: 182, expected: 200 }, "quay-yard": 0.55 }}
+  crop={[-10, -10, 440, 270]}
+  selectedId={selected}
+  onSelect={setSelected}
+/>`;
 
 // Starting layout for the HeatmapPainter demo below.
 const PAINTER_SAMPLE: HeatmapLayout = {
   cellSize: 20,
   brushes: [
-    { id: "room", label: "Room", color: "#0066cc" },
-    { id: "corridor", label: "Corridor", color: "#2e7d32", showLabel: false },
+    { id: "room", label: "Room", color: "var(--rebar-color-primary)" },
+    { id: "corridor", label: "Corridor", color: "var(--rebar-color-success)", showLabel: false },
   ],
   frames: [{ id: "frame-1", title: "Frame 1", crop: [-20, -20, 360, 260] }],
   regions: [
@@ -56,71 +67,7 @@ const PAINTER_SAMPLE: HeatmapLayout = {
 };
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<SchematicHeatmap\n  ariaLabel="Handover progress by zone"\n  regions={[{ id: "north-block", kind: "building", label: "North Block", rects: [[0, 0, 220, 90]] }, /* ... */]}\n  values={{ "north-block": { done: 182, expected: 200 }, courtyard: 0.55 }}\n  crop={[-10, -10, 440, 270]}\n  selectedId={selected}\n  onSelect={setSelected}\n/>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["SchematicHeatmap"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "What it's for",
-    body: [
-      {
-        kind: "text",
-        text: "Heatmap is a row-by-column matrix and GeoChart projects a map; neither can draw a floor plan, a site layout or a long thin strip of intervals *where the source drawing has them*. SchematicHeatmap draws arbitrary rectangle-union regions at their own coordinates and shades each by how complete it is, optionally over a tracing image of the original drawing. Nothing in it knows what the numbers mean — the host supplies `values` keyed by region id, and brings its own filters and table view alongside.",
-      },
-      {
-        kind: "text",
-        text: "`HeatmapPainter` (the last section of this page) is its authoring counterpart and ships with it: paint the regions on a canvas, and the layout it produces (`HeatmapLayout`) feeds straight into this component's `regions`, `brushes`, `background` and a frame's `crop`.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "One region, one shape",
-    body: [
-      {
-        kind: "text",
-        text: 'A region painted as several rectangles is drawn with one fill per rect but a single closed outline around the whole union — computed by the exported pure helper `outlinePath(rects)`, which traces the outer boundary and any holes (the Courtyard above is a ring). That is why East Hall reads as one L-shaped block with no seam line where its two rects meet. The outline is a closed path, so `stroke-linejoin` rounds its corners.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "No data is not zero",
-    body: [
-      {
-        kind: "text",
-        text: "A region with no entry in `values`, a non-finite number, or `expected <= 0` is drawn as a neutral diagonal hatch, never as the lightest shade. \"Nothing was collected here\" and \"0% complete\" are different claims. `values` accepts either `{ done, expected }` (shaded by `done / expected`) or a ready-made 0..1 share. The default `colorScale` is eight steps of `--rebar-color-primary` blended into the page background; pass your own `colorScale` to change it, and `labels`/`formatValue` to change the wording.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Selection and keyboard",
-    body: [
-      {
-        kind: "text",
-        text: "Each region is a focusable `role=\"button\"` with an accessible name carrying its value. Hover or focus shows its numbers in the readout; click, Enter or Space pins it (`aria-pressed`), Escape un-pins. Selection is controlled via `selectedId`/`onSelect` (where `null` means \"none\") or uncontrolled via `defaultSelectedId`.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Exported helpers",
-    body: [
-      {
-        kind: "text",
-        text: "Pure functions, importable from `rebar-ui`: `outlinePath`, `regionBounds`, `contentBounds`, `framesOf`, `brushesOf`, `brushesInFrame`, `regionsInFrame`, `defaultVisibleBrushes`, `shareOf`, `labelLayout`. A host builds its own brush filter chips and frame picker from `brushesInFrame`/`regionsInFrame`/`framesOf` and passes the filtered `regions` and the chosen frame's `crop` in.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -237,23 +184,44 @@ export default function SchematicHeatmapPage() {
     <Stack gap="lg">
       <Heading level={1}>SchematicHeatmap</Heading>
       <Text color="secondary">
-        Regions drawn at their own coordinates over a site plan, each shaded by how complete it is —
-        hatched where there is no data. Hover, focus or click a region.
+        Regions drawn at their own coordinates over a site plan, each shaded by how complete it is, hatched where there is no data.
       </Text>
 
-      <SchematicHeatmap
-        ariaLabel="Handover progress by zone, fictional campus"
-        regions={REGIONS}
-        brushes={BRUSHES}
-        values={VALUES}
-        crop={[-10, -10, 440, 270]}
-        selectedId={selected}
-        onSelect={setSelected}
-      />
-      <Text size="sm" color="secondary">
-        {selected ? `Pinned: ${selected} (controlled by this page's own state).` : "Nothing pinned."} The
-        data here is made up.
-      </Text>
+      <DemoStage
+        title="Signage installed"
+        caption="Northern depot: hover, focus or click an area"
+        code={CODE}
+        states={[
+          { label: "No data", node: <SchematicHeatmap ariaLabel="No data yet" regions={REGIONS.slice(0, 3)} brushes={BRUSHES} crop={[-10, -10, 390, 200]} /> },
+          { label: "Pinned", node: <SchematicHeatmap ariaLabel="Pinned area" regions={REGIONS.slice(0, 3)} brushes={BRUSHES} values={VALUES} crop={[-10, -10, 390, 200]} defaultSelectedId="east-shed" /> },
+          { label: "No legend", node: <SchematicHeatmap ariaLabel="Without legend" regions={REGIONS.slice(0, 3)} brushes={BRUSHES} values={VALUES} crop={[-10, -10, 390, 200]} hideLegend /> },
+        ]}
+      >
+        <SchematicHeatmap
+          ariaLabel="Signage installed by area, northern depot"
+          regions={REGIONS}
+          brushes={BRUSHES}
+          values={VALUES}
+          crop={[-10, -10, 440, 270]}
+          selectedId={selected}
+          onSelect={setSelected}
+        />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Depot signage" caption="The plan beside the project summary" widths={false}>
+        <Stack direction="row" gap="md" align="start" style={{ flexWrap: "wrap" }}>
+          <Card style={{ flex: "1 1 220px" }} title={project("signage").name} subtitle={project("signage").summary} extra={<Tag tone="info">{project("signage").status}</Tag>}>
+            <Stack gap="xs">
+              <Text size="sm">{project("signage").done}% done, due {project("signage").due}</Text>
+              <Text size="sm" color="secondary">{selected ? `Pinned: ${REGIONS.find((r) => r.id === selected)?.label}` : "Pin an area on the plan to see its numbers."}</Text>
+            </Stack>
+          </Card>
+          <div style={{ flex: "3 1 380px" }}>
+            <SchematicHeatmap ariaLabel="Signage installed by area" regions={REGIONS} brushes={BRUSHES} values={VALUES} crop={[-10, -10, 440, 270]} selectedId={selected} onSelect={setSelected} />
+          </div>
+        </Stack>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
 

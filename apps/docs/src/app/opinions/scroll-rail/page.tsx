@@ -1,34 +1,32 @@
-import { AspectRatio, Heading, ScrollRail, Stack, Text } from "rebar-ui";
+"use client";
+
+import { Card, Heading, ScrollRail, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { FILES, PROJECTS, STATUS_TONE, project } from "@/fixtures/tideline";
 
-const CARD_COUNT = 8;
-const EXAMPLE_RATIO = 4 / 3;
+const RAIL = { "--rebar-scroll-rail-item-width": "15rem" } as React.CSSProperties;
+
+const CODE = `<ScrollRail aria-label="Projects">
+  {PROJECTS.map((p) => (
+    <Card key={p.id} title={p.name} subtitle={p.kicker} />
+  ))}
+</ScrollRail>`;
+
+const projectCards = PROJECTS.map((p) => (
+  <Card
+    key={p.id}
+    cover={<div className="cs-grain" style={{ height: 72 }} />}
+    title={p.name}
+    subtitle={`${p.kicker}, due ${p.due}`}
+    extra={<Tag tone={STATUS_TONE[p.status]}>{p.status}</Tag>}
+  />
+));
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: `// Manual rail: prev/next buttons, scroll-snap, one item width per step\n<ScrollRail aria-label="Perspectives" style={{ "--rebar-scroll-rail-item-width": "16rem" }}>\n  {cards}\n</ScrollRail>\n\n// Auto-scrolling strip with a seamless loop (40 px/s). Pause/Play appears automatically.\n<ScrollRail aria-label="Screenshots" autoScroll loop gap="lg">\n  {shots}\n</ScrollRail>\n\n// Custom speed, no snap\n<ScrollRail aria-label="Logos" autoScroll={60} snap={false}>\n  {logos}\n</ScrollRail>`,
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["ScrollRail"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "How it differs from Carousel",
-    body: [
-      {
-        kind: "text",
-        text: "`Carousel` shows one translated slide at a time with dots and a position readout. `ScrollRail` is a native horizontal scroller: many items visible at once, real scroll position, optional scroll-snap, and optional continuous auto-scroll. Set the width of one item with the `--rebar-scroll-rail-item-width` custom property on the rail (default `min(18rem, 80vw)`).",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "Accessibility",
@@ -69,32 +67,33 @@ export default function ScrollRailPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>ScrollRail</Heading>
-      <Text color="secondary">
-        A horizontally scrolling rail of cards or images, for a strip that would otherwise wrap
-        into a grid. Native scrolling with optional scroll-snap, prev/next buttons that move one
-        item, and optional auto-scroll that stops whenever a person might be reading, interacting,
-        or has asked their system for reduced motion.
-      </Text>
+      <Text color="secondary">A horizontal strip of cards that scrolls instead of wrapping.</Text>
 
-      <LivePreview>
-        <Stack gap="lg">
-          <ScrollRail aria-label="Example perspectives" style={{ "--rebar-scroll-rail-item-width": "14rem" } as React.CSSProperties}>
-            {Array.from({ length: CARD_COUNT }, (_, i) => (
-              <AspectRatio key={i} ratio={EXAMPLE_RATIO} placeholder={i} />
-            ))}
-          </ScrollRail>
-          <ScrollRail
-            aria-label="Example auto-scrolling strip"
-            autoScroll
-            loop
-            style={{ "--rebar-scroll-rail-item-width": "10rem" } as React.CSSProperties}
-          >
-            {Array.from({ length: CARD_COUNT }, (_, i) => (
-              <AspectRatio key={i} ratio={EXAMPLE_RATIO} placeholder={i + 2} />
+      <DemoStage
+        title="Projects"
+        caption="Scroll, or use the buttons to move one card"
+        code={CODE}
+        states={[
+          { label: "No buttons", node: <ScrollRail aria-label="Projects, no buttons" controls={false} style={RAIL}>{projectCards}</ScrollRail> },
+          { label: "Auto-scroll", node: <ScrollRail aria-label="Projects, auto-scroll" autoScroll loop style={RAIL}>{projectCards}</ScrollRail> },
+          { label: "Few items", node: <ScrollRail aria-label="Two projects" style={RAIL}>{projectCards.slice(0, 2)}</ScrollRail> },
+        ]}
+      >
+        <ScrollRail aria-label="Projects" style={RAIL}>{projectCards}</ScrollRail>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Home" caption="Recent files under the greeting" widths={false}>
+        <Stack gap="md" style={{ maxWidth: 640, margin: "0 auto" }}>
+          <Heading level={3}>Good morning, Maya</Heading>
+          <Text size="sm" color="secondary">Harbour launch is on 24 Oct. Pick up where you left off.</Text>
+          <ScrollRail aria-label="Recent files" style={{ "--rebar-scroll-rail-item-width": "11rem" } as React.CSSProperties}>
+            {FILES.map((f) => (
+              <Card key={f.id} cover={<div style={{ height: 64, background: "var(--rebar-color-tint-3)" }} />} title={f.name} titleLines={1} subtitle={`${f.size}, ${project(f.project).name}`} />
             ))}
           </ScrollRail>
         </Stack>
-      </LivePreview>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

@@ -1,30 +1,31 @@
-import { Box, Heading, RadarChart, Stack, Text } from "rebar-ui";
+"use client";
+
+import { Avatar, Card, Heading, RadarChart, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { avatarOf } from "@/fixtures/tideline";
+
+const AREAS = ["Design", "Eng", "Research", "Ops", "Review"];
+const SERIES = [
+  { label: "Maya Chen", values: [30, 6, 8, 4, 14] },
+  { label: "Jonas Weber", values: [5, 34, 6, 8, 10] },
+  { label: "Priya Nair", values: [8, 6, 28, 5, 9] },
+];
+
+const CODE = `<RadarChart
+  title="Hours by area"
+  axes={["Design", "Eng", "Research", "Ops", "Review"]}
+  series={[
+    { label: "Maya Chen", values: [30, 6, 8, 4, 14] },
+    { label: "Jonas Weber", values: [5, 34, 6, 8, 10] },
+  ]}
+  filterable
+/>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<RadarChart axes={["Speed", "Power", "Range", "Price", "Support"]} series={[{ label: "Standard", values: [60, 55, 50, 80, 65] }, { label: "Pro", values: [90, 85, 75, 40, 90] }]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["RadarChart"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "What it's for",
-    body: [
-      {
-        kind: "text",
-        text: "A multi-axis polygon comparison chart (\"radar\"/\"spider\" chart) — one filled polygon per series, each vertex scaled along its own axis from a shared center. Built for comparing several items across the same small set of dimensions (e.g. a product/spec comparison) at a glance. `title` renders as a real, visible caption per [Design Heuristics](/about/agent) #16 (charts ship with context, not just an accessible name); colors default to a small built-in palette, cycled by series index, when a series omits its own — see [StackedBarChart](/opinions/stacked-bar-chart)'s own page for the exact default-palette order every chart in this library shares.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -51,63 +52,27 @@ export default function RadarChartPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>RadarChart</Heading>
-      <Text color="secondary">
-        One filled polygon per series, each vertex scaled along its own axis from a shared
-        center — for comparing several items across the same dimensions at a glance.
-      </Text>
-      <Text size="sm" color="secondary">
-        Set <code>filterable</code> to make each legend item a real toggle button — click one to
-        hide/show its own series (try it below). The axis scale stays fixed to the full dataset
-        either way, so the remaining series don&apos;t jump to a new scale.
-      </Text>
+      <Text color="secondary">A filled polygon per series across shared axes, for comparing a few items on the same dimensions.</Text>
 
-      <Box
-        style={{
-          border: "1px solid var(--rebar-color-border, #e0e0e0)",
-          borderRadius: 4,
-          padding: "var(--rebar-space-lg)",
-        }}
+      <DemoStage
+        title="Hours by area"
+        caption="Where each person's week went, 19 Oct"
+        code={CODE}
+        states={[
+          { label: "Three axes", node: <RadarChart title="Leo's week" axes={["Ops", "Review", "Research"]} series={[{ label: "Leo Santos", values: [30, 12, 6] }]} /> },
+          { label: "Eight axes", node: <RadarChart title="Harbour tasks" axes={["Brief", "Logo", "Palette", "Type", "Site", "Livery", "Signage", "Launch"]} series={[{ label: "Done", values: [100, 100, 100, 80, 60, 70, 40, 20] }]} /> },
+          { label: "Single series", node: <RadarChart title="Priya's week" axes={AREAS} series={[SERIES[2]]} /> },
+        ]}
       >
-        <RadarChart
-          title="Product tier comparison"
-          axes={["Speed", "Power", "Range", "Price", "Support"]}
-          series={[
-            { label: "Standard", values: [60, 55, 50, 80, 65] },
-            { label: "Pro", values: [90, 85, 75, 40, 90] },
-          ]}
-          filterable
-        />
-      </Box>
+        <RadarChart title="Hours by area" axes={AREAS} series={SERIES} filterable />
+      </DemoStage>
 
-      <Stack direction="row" gap="lg" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
-        <Stack gap="xs">
-          <Text size="sm" color="secondary">
-            3 axes (a triangle)
-          </Text>
-          <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-lg)" }}>
-            <RadarChart
-              title="Skill triangle"
-              axes={["Attack", "Defense", "Speed"]}
-              series={[{ label: "Hero", values: [70, 55, 85] }]}
-            />
-          </Box>
-        </Stack>
-        <Stack gap="xs">
-          <Text size="sm" color="secondary">
-            8 axes (an octagon)
-          </Text>
-          <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-lg)" }}>
-            <RadarChart
-              title="Full skill spread"
-              axes={["STR", "DEX", "CON", "INT", "WIS", "CHA", "LCK", "SPD"]}
-              series={[
-                { label: "Character A", values: [80, 60, 70, 50, 40, 65, 55, 75] },
-                { label: "Character B", values: [45, 85, 50, 70, 60, 40, 80, 55] },
-              ]}
-            />
-          </Box>
-        </Stack>
-      </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Team balance" caption="A card on the team page" widths={false}>
+        <Card style={{ maxWidth: 520, margin: "0 auto" }} title="Where the hours went" subtitle="Week of 19 Oct" avatar={<Avatar {...avatarOf("maya")} />}>
+          <RadarChart ariaLabel="Hours by area for Maya and Jonas" axes={AREAS} series={SERIES.slice(0, 2)} />
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

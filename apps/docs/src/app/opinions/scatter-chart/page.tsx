@@ -1,58 +1,57 @@
-import { Heading, Stack, Text } from "rebar-ui";
+"use client";
+
+import { Card, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+
+const CYCLE = [
+  { label: "Maya Chen", values: [1.5, 2, 3, 2.5, 1, 4, 2] },
+  { label: "Jonas Weber", values: [3, 5, 4, 6, 2.5, 7, 4.5] },
+  { label: "Priya Nair", values: [2, 2.5, 6, 3, 2, 8, 3.5] },
+];
+
+const CODE = `{
+  type: "scatter-chart",
+  title: "Days from start to done",
+  series: [
+    { label: "Maya Chen", values: [1.5, 2, 3, 2.5, 1, 4, 2] },
+    { label: "Jonas Weber", values: [3, 5, 4, 6, 2.5, 7, 4.5] },
+  ],
+}`;
+
+const mainBlock = (series: typeof CYCLE, title: string): Construct => ({ type: "scatter-chart", title, series });
 
 const BLOCKS: Construct[] = [
   { type: "props-table", heading: "Props", rows: componentProps["ScatterChart"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Overview",
-    body: [{ kind: "text", text: "A distribution scatter plot — each series' individual values plotted as a jittered column of points, with a dashed line marking that series' mean. Wraps the real ScatterChart component with a filter footer (one toggle button per series, click to hide/show it) — never a bare 1:1 pass-through, omitted entirely when there's only one series. Promoted from one-off SVG helpers this project's own /benchmarks pages used to keep locally — see it at real scale there. title renders as a real visible caption per Design Heuristics #16 (charts ship with context); colors default to a small built-in palette when a series omits its own." }],
-  },
-  {
-    type: "doc-section",
-    heading: "Shape",
-    body: [{ kind: "code", code: `{ type: "scatter-chart", title?: string, ariaLabel?: string, height?: number, series: { label: string, color?: string, values: number[] }[] }` }],
-  },
-  {
-    type: "doc-section",
-    heading: "Example",
-    body: [{ kind: "text", text: "A live example of the scatter-chart block:" }],
-  },
-  {
-      type: "scatter-chart",
-      title: "Token cost, antd vs. rebar-ui",
-      series: [
-        {
-          label: "antd",
-          values: [
-            31231,
-            31131,
-            30891,
-            31921,
-            30950,
-          ],
-        },
-        {
-          label: "rebar-ui",
-          values: [
-            30211,
-            30212,
-            30149,
-            30253,
-            30180,
-          ],
-        },
-      ],
-    },
 ];
 
 export default function ScatterChartPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Scatter Chart</Heading>
-      <Text color="secondary">{"A distribution scatter plot — each series' individual values plotted as a jittered column of points, with a dashed line marking that series' mean. Wraps the real ScatterChart component with a filter footer (one toggle button per series, click to hide/show it) — never a bare 1:1 pass-through, omitted entirely when there's only one series. Promoted from one-off SVG helpers this project's own /benchmarks pages used to keep locally — see it at real scale there. title renders as a real visible caption per Design Heuristics #16 (charts ship with context); colors default to a small built-in palette when a series omits its own."}</Text>
+      <Text color="secondary">Each series as a column of points with a dashed mean line, for comparing spreads.</Text>
+
+      <DemoStage
+        title="Days from start to done"
+        caption="Every task closed since 1 Oct, by person"
+        code={CODE}
+        states={[
+          { label: "One series", node: <NextBlockRenderer blocks={[mainBlock(CYCLE.slice(0, 1), "Maya's tasks")]} /> },
+          { label: "Tight spread", node: <NextBlockRenderer blocks={[mainBlock([{ label: "Leo Santos", values: [2, 2, 2.5, 2, 2, 3] }], "Rota export")]} /> },
+        ]}
+      >
+        <NextBlockRenderer blocks={[mainBlock(CYCLE, "Days from start to done")]} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Cycle time" caption="A card on the delivery dashboard" widths={false}>
+        <Card style={{ maxWidth: 560, margin: "0 auto" }} title="How long tasks take" subtitle="Dashed line is the mean" extra={<Tag tone="info">Last 3 weeks</Tag>}>
+          <NextBlockRenderer blocks={[mainBlock(CYCLE.slice(1), "Jonas and Priya")]} />
+        </Card>
+      </DemoStage>
+
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

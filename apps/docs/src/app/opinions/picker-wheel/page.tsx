@@ -1,45 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { Heading, PickerWheel, Stack, Text } from "rebar-ui";
+import { Button, Card, Heading, PickerWheel, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PhoneSheet, TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
+import { EVENTS, project } from "@/fixtures/tideline";
 
 const HOURS = Array.from({ length: 12 }, (_, i) => String(i + 1));
+const MINUTES = ["00", "15", "30", "45"];
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+const CODE = `const [hour, setHour] = useState("9");
+
+<PickerWheel options={HOURS} value={hour} onValueChange={setHour} aria-label="Hour" />`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: `const [value, setValue] = useState("1");\n\n<PickerWheel options={["1","2","3", /* ... */]} value={value} onValueChange={setValue} />`,
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["PickerWheel"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Distinct from Calendar's grid or TimePicker's list",
-    body: [
-      {
-        kind: "text",
-        text: "This is the iOS `UIPickerView` interaction specifically — one option centered in a fixed viewport, drag or mouse-wheel to spin the list, snapping the nearest option to center on release. `Calendar` is a grid, `TimePicker` is a scrollable button list — different shapes for different jobs.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Three real input paths, not just drag",
-    body: [
-      {
-        kind: "text",
-        text: "Plain pointer-drag, a real mouse-wheel listener, and — the genuine non-drag fallback (ref/HEURISTICS.md #38) — every option is its own always-clickable real button; clicking one not currently centered scrolls it to center and selects it, exactly like clicking any other control.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -63,21 +42,59 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function PickerWheelPage() {
-  const [value, setValue] = useState("6");
-
+  const [value, setValue] = useState("9");
   return (
     <Stack gap="lg">
       <Heading level={1}>PickerWheel</Heading>
-      <Text color="secondary">
-        A spinning-wheel value selector — drag, scroll, or click any visible option directly.
-      </Text>
+      <Text color="secondary">A spinning-wheel value selector. Drag, scroll, or click any visible option.</Text>
 
-      <Stack gap="sm" style={{ maxWidth: 200 }}>
-        <PickerWheel options={HOURS} value={value} onValueChange={setValue} aria-label="Hour" />
-        <Text size="sm" color="secondary">
-          Selected: {value}
-        </Text>
-      </Stack>
+      <DemoStage
+        title="Hour"
+        caption="Spin to 9 for the harbour launch"
+        code={CODE}
+        widths={false}
+        states={[
+          { label: "Minutes", node: <div style={{ width: 120 }}><PickerWheel options={MINUTES} defaultValue="30" aria-label="Minutes" /></div> },
+          { label: "Days", node: <div style={{ width: 120 }}><PickerWheel options={DAYS} defaultValue="Fri" aria-label="Day" /></div> },
+          { label: "Three rows", node: <div style={{ width: 120 }}><PickerWheel options={HOURS} defaultValue="4" visibleCount={3} aria-label="Hour" /></div> },
+        ]}
+      >
+        <Stack gap="sm" style={{ maxWidth: 200 }}>
+          <PickerWheel options={HOURS} value={value} onValueChange={setValue} aria-label="Hour" />
+          <Text size="sm" color="secondary">Selected: {value}</Text>
+        </Stack>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Reminder time" caption="Setting a reminder for the launch, on a phone" widths={false} padding="none">
+        <Stack direction="row" gap="lg" align="start" justify="center" style={{ flexWrap: "wrap", padding: 24 }}>
+          <TidelinePhone title="Calendar" tabs={2} height={470}>
+            <Stack gap="sm">
+              {EVENTS.map((e) => (
+                <Card key={e.id} title={e.title} subtitle={`${e.date}${e.time ? `, ${e.time}` : ""}`} extra={<Tag>{project(e.project).name}</Tag>} />
+              ))}
+            </Stack>
+          </TidelinePhone>
+          <TidelinePhone
+            title="Calendar"
+            tabs={2}
+            height={470}
+            dim
+            overlay={
+              <PhoneSheet title="Remind me at" footer={<Button style={{ width: "100%" }}>Set reminder</Button>}>
+                <Stack direction="row" gap="sm" justify="center">
+                  <div style={{ width: 90 }}><PickerWheel options={HOURS} defaultValue="8" aria-label="Hour" /></div>
+                  <div style={{ width: 90 }}><PickerWheel options={MINUTES} defaultValue="30" aria-label="Minutes" /></div>
+                </Stack>
+              </PhoneSheet>
+            }
+          >
+            <Stack gap="sm">
+              <Card title={EVENTS[0].title} subtitle={`${EVENTS[0].date}, ${EVENTS[0].time}`} />
+            </Stack>
+          </TidelinePhone>
+        </Stack>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

@@ -1,63 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { Heading, RichTextEditor, Stack, Text } from "rebar-ui";
+import { Avatar, Button, Card, Heading, RichTextEditor, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { avatarOf } from "@/fixtures/tideline";
+
+const NOTE = "<p><b>Harbour launch is on for 24 Oct.</b> Fascia artwork is signed off and the van livery photos are in the shared folder.</p><ul><li>Maya: homepage copy to review</li><li>Leo: payroll cut-off is 28 Oct</li></ul>";
+
+const CODE = `const [html, setHtml] = useState("<p>Harbour launch is on for 24 Oct.</p>");
+
+<RichTextEditor value={html} onValueChange={setHtml} />`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: `const [html, setHtml] = useState("<p>Hello</p>");\n\n<RichTextEditor value={html} onValueChange={setHtml} />`,
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["RichTextEditor"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "A deliberately minimal editor, not a ProseMirror competitor",
-    body: [
-      {
-        kind: "text",
-        text: "A real `contentEditable` region with a small formatting toolbar (bold/italic/underline/lists/link) — not a full rich-text engine. That's a deliberate scope call matching this project's low-fidelity philosophy (see [Design Heuristics](/about/agent)): ship the real, correct *shape* of the interaction rather than compete with a dedicated editor library on polish, the same reasoning that kept `CodeBlock` free of syntax highlighting. Formatting uses the browser's `document.execCommand` — formally deprecated by spec, but still universally supported for exactly these basic commands in every current browser.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Real HTML in, real HTML out",
-    body: [
-      {
-        kind: "text",
-        text: "`value` is a plain HTML string, matching what a server-rendered rich-text field or a `dangerouslySetInnerHTML` consumer already expects. The controlled sync only overwrites the live DOM when `value` genuinely differs from the editor's own current content, so typing never fights the cursor position mid-edit.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Images: paste, drag-drop, or the toolbar — try it in the editor above",
-    body: [
-      {
-        kind: "text",
-        text: "An image inserts as an embedded base64 data URL directly inside the saved HTML — no upload endpoint needed, so it works the moment you drop `RichTextEditor` in with nothing else wired up. Three ways in: paste an image from the clipboard, drag one onto the editor, or use the toolbar's image button to pick a file. `maxImageBytes` (default a few MB) caps how large a single embedded image can be, since a data URL grows the saved HTML by roughly 4/3 the image's own size — an oversized file is rejected with a plain alert rather than silently bloating `value`.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "No bionic reading here — checked, not skipped",
-    body: [
-      {
-        kind: "text",
-        text: 'Every other bionic-wired component splits a *display-only* text prop that\'s separate from any value the caller relies on verbatim. Here the editable region\'s rendered DOM *is* the real `value` — injecting `<span class="rebar-bionic-fixation">` wrappers into it would mean handing a caller\'s `dangerouslySetInnerHTML` consumer or server-side field a document mixed with presentation markup it never asked for, not the same content back. The empty-state placeholder has a related but distinct problem: it\'s pure CSS generated content (`content: attr(data-placeholder)`), which can\'t carry per-word span markup without injecting real DOM nodes into the otherwise-`:empty` region the CSS selector itself depends on.',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -81,17 +39,30 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function RichTextEditorPage() {
-  const [html, setHtml] = useState("<p>Start typing to try the toolbar above.</p>");
-
+  const [html, setHtml] = useState(NOTE);
   return (
     <Stack gap="lg">
       <Heading level={1}>RichTextEditor</Heading>
-      <Text color="secondary">
-        A minimal, honest WYSIWYG editor — a real formatting toolbar over a real{" "}
-        <code>contentEditable</code> region.
-      </Text>
+      <Text color="secondary">A formatting toolbar over an editable region, with HTML in and out.</Text>
 
-      <RichTextEditor value={html} onValueChange={setHtml} />
+      <DemoStage
+        title="Project update"
+        caption="Bold, lists and links, saved as HTML"
+        code={CODE}
+        states={[
+          { label: "Empty", node: <RichTextEditor placeholder="Write an update for the crew…" minHeight={80} /> },
+          { label: "Short", node: <RichTextEditor defaultValue="<p>Icon audit is done.</p>" minHeight={60} /> },
+        ]}
+      >
+        <RichTextEditor value={html} onValueChange={setHtml} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Post an update" caption="Writing to the Harbour rebrand channel" widths={false}>
+        <Card style={{ maxWidth: 620, margin: "0 auto" }} title="Harbour rebrand" subtitle="New update" avatar={<Avatar {...avatarOf("maya")} />} actions={[<Button key="draft" variant="secondary">Save draft</Button>, <Button key="post">Post update</Button>]}>
+          <RichTextEditor defaultValue={NOTE} minHeight={140} />
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

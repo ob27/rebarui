@@ -1,60 +1,59 @@
-import { Heading, Stack, Text } from "rebar-ui";
+"use client";
+
+import { Card, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+
+const COST = [
+  { label: "Harbour rebrand", segments: [{ label: "Design", value: 21000 }, { label: "Print", value: 14200 }, { label: "Contractors", value: 8000 }] },
+  { label: "Tideline mobile", segments: [{ label: "Design", value: 9000 }, { label: "Print", value: 0 }, { label: "Contractors", value: 41000 }] },
+  { label: "Depot signage", segments: [{ label: "Design", value: 4200 }, { label: "Print", value: 9800 }, { label: "Contractors", value: 5100 }] },
+];
+
+const CODE = `{
+  type: "stacked-bar-chart",
+  title: "Spend so far",
+  bars: [
+    { label: "Harbour rebrand", segments: [
+      { label: "Design", value: 21000 },
+      { label: "Print", value: 14200 },
+    ] },
+  ],
+}`;
+
+const block = (bars: typeof COST, title: string): Construct => ({ type: "stacked-bar-chart", title, bars });
 
 const BLOCKS: Construct[] = [
   { type: "props-table", heading: "Props", rows: componentProps["StackedBarChart"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Overview",
-    body: [{ kind: "text", text: "A stacked bar chart — each bar broken into labeled cost/quantity segments, with the bar's own total shown above it. Wraps the real StackedBarChart component with a filter footer toggling one distinct segment label across every bar at once (the 'series' here is the repeated category, not one specific bar). Promoted from this project's own /benchmarks 'vibe coding vs. hiring developers' scenario." }],
-  },
-  {
-    type: "doc-section",
-    heading: "Shape",
-    body: [{ kind: "code", code: `{ type: "stacked-bar-chart", title?: string, ariaLabel?: string, height?: number, bars: { label: string, segments: { label: string, value: number, color?: string }[] }[] }` }],
-  },
-  {
-    type: "doc-section",
-    heading: "Example",
-    body: [{ kind: "text", text: "A live example of the stacked-bar-chart block:" }],
-  },
-  {
-      type: "stacked-bar-chart",
-      title: "Cost composition",
-      bars: [
-        {
-          label: "Hire developers",
-          segments: [
-            {
-              label: "Build",
-              value: 16800,
-            },
-            {
-              label: "Revisions",
-              value: 16800,
-            },
-          ],
-        },
-        {
-          label: "AI-assisted",
-          segments: [
-            {
-              label: "Oversight",
-              value: 3500,
-            },
-          ],
-        },
-      ],
-    },
 ];
 
 export default function StackedBarChartPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Stacked Bar Chart</Heading>
-      <Text color="secondary">{"A stacked bar chart — each bar broken into labeled cost/quantity segments, with the bar's own total shown above it. Wraps the real StackedBarChart component with a filter footer toggling one distinct segment label across every bar at once (the 'series' here is the repeated category, not one specific bar). Promoted from this project's own /benchmarks 'vibe coding vs. hiring developers' scenario."}</Text>
+      <Text color="secondary">Each bar split into labelled segments, with its total above it.</Text>
+
+      <DemoStage
+        title="Spend so far"
+        caption="Cost per project, split by kind (GBP)"
+        code={CODE}
+        states={[
+          { label: "One bar", node: <NextBlockRenderer blocks={[block(COST.slice(0, 1), "Harbour rebrand")]} /> },
+          { label: "Two segments", node: <NextBlockRenderer blocks={[block(COST.slice(1).map((b) => ({ ...b, segments: b.segments.filter((s) => s.label !== "Print") })), "No print")]} /> },
+        ]}
+      >
+        <NextBlockRenderer blocks={[block(COST, "Spend so far")]} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Budget view" caption="A card on the finance page" widths={false}>
+        <Card style={{ maxWidth: 600, margin: "0 auto" }} title="Spend by project" subtitle="Budgets: £48,200, £72,900, £21,800" extra={<Tag tone="info">Oct</Tag>}>
+          <NextBlockRenderer blocks={[block(COST, "Spend so far")]} />
+        </Card>
+      </DemoStage>
+
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );
