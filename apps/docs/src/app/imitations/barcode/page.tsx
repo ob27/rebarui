@@ -1,85 +1,64 @@
-import { Barcode, Box, Heading, Stack, Text } from "rebar-ui";
+import { Barcode, Card, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { INVOICES, INVOICE_TONE, gbpPence, project } from "@/fixtures/tideline";
+
+const CODE = `<Barcode value="INV-1042" showText />`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Barcode value="SKU-48213" showText />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Barcode"] ?? [] },
   {
     type: "doc-section",
-    heading: "A real, scannable Code 128 barcode",
-    body: [
-      {
-        kind: "text",
-        text: 'Encoded via the `code-128-encoder` package — deps: none, and purpose-built as "an encoder, not a renderer," exactly the shape needed here (the component owns its own SVG rendering, rather than delegating to a library that draws directly into the DOM itself). Code 128 was chosen over older, narrower symbologies (Code 39, etc.) because it covers the full printable ASCII range through automatic code-set switching — hand-rolling that switching logic and the checksum risks a code that *looks* right but doesn\'t scan, the same "small, correctness-critical dependency" tradeoff `QRCode`\'s own `qrcode` dependency already made. Cross-checked directly against a second, independent encoder (`jsbarcode`) during development — both produced the identical bar pattern for the same input.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Width scales with content, not squeezed to fit",
-    body: [
-      {
-        kind: "text",
-        text: "`barWidth` sets the narrowest bar's width in px; the code's total width scales with content length at that fixed unit, the way a real barcode has to — squishing an arbitrary total width to fit would break the module-width ratios a scanner relies on to read it. `quietZone` (default 10× `barWidth`) adds the blank margin a scanner needs to reliably find the code's edges.",
-      },
-    ],
+    heading: "Width",
+    body: [{ kind: "text", text: "A real Code 128 barcode. `barWidth` sets the narrowest bar in px and the total width scales with the value, as a scanner needs; `quietZone` adds the blank margin around it." }],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="barcode"` on the root `<svg>`; each bar carries `data-rebar-part="bar"`, the human-readable text (when `showText` is on) carries `data-rebar-part="text"`.',
-      },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-component="barcode"` on the root `<svg>`; each bar is `data-rebar-part="bar"`, the text (with `showText`) is `data-rebar-part="text"`.' }],
   },
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      {
-        kind: "text",
-        text: "AntD ships no barcode component of its own — a migration typically reaches for `jsbarcode` or `react-barcode` directly, or keeps this component's own encoding logic and only swaps the rendering shell.",
-      },
-    ],
+    body: [{ kind: "text", text: "AntD ships no barcode component; use `jsbarcode` or `react-barcode`, or keep this encoder and swap the shell." }],
   },
 ];
 
 export default function BarcodePage() {
+  const inv = INVOICES[1]!;
   return (
     <Stack gap="lg">
       <Heading level={1}>Barcode</Heading>
-      <Text color="secondary">
-        A real, scannable Code 128 linear barcode, rendered as SVG — with the encoded value shown
-        beneath it by default.
-      </Text>
+      <Text color="secondary">A scannable Code 128 barcode as SVG, with the value shown underneath.</Text>
 
-      <Box
-        style={{
-          border: "1px solid var(--rebar-color-border, #e0e0e0)",
-          borderRadius: 4,
-          padding: "var(--rebar-space-lg)",
-          display: "flex",
-          gap: "var(--rebar-space-lg)",
-          flexWrap: "wrap",
-          alignItems: "center",
-        }}
+      <DemoStage
+        title="Invoice reference"
+        caption="Code 128, value printed below"
+        code={CODE}
+        states={[
+          { label: "No text", node: <Barcode value="INV-1042" showText={false} /> },
+          { label: "Short", node: <Barcode value="A1" /> },
+          { label: "Long value", node: <Barcode value="HARBOUR-REBRAND-24-OCT-0001" barWidth={1} /> },
+        ]}
       >
-        <Barcode value="SKU-48213" />
-        <Barcode value="ORDER-99120" showText={false} barWidth={3} color="#0066cc" />
-      </Box>
+        <Barcode value={inv.id} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Invoice slip" caption="The barcode on a printable supplier invoice" widths={false}>
+        <Card title={`Invoice ${inv.id}`} style={{ maxWidth: 420, margin: "0 auto" }}>
+          <Stack gap="sm">
+            <Stack direction="row" gap="sm" align="center">
+              <Text size="sm">{inv.supplier}</Text>
+              <Tag tone={INVOICE_TONE[inv.status]}>{inv.status}</Tag>
+            </Stack>
+            <Text size="sm" color="secondary">{project(inv.project).name}, {inv.date}. Total {gbpPence(inv.amount)}.</Text>
+            <Barcode value={inv.id} />
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

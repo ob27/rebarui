@@ -1,55 +1,33 @@
 import { BackdropSection, Button, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { BACKDROP_ART } from "@/data/placeholderScreens";
+import { project } from "@/fixtures/tideline";
+
+const CODE = `<BackdropSection image={{ src: "/art/harbour-1600.jpg" }} scrim="start" rounded>
+  <Heading level={2}>Harbour rebrand</Heading>
+  <Text>Identity, site and launch kit for the harbour trust.</Text>
+  <Button variant="secondary">View the plan</Button>
+</BackdropSection>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: `<BackdropSection image={{ src: "/art/harvest-1600.jpg" }} scrim="start" rounded>\n  <Heading level={2}>Every answer, chapter and verse.</Heading>\n  <Text>Open any citation to see the paragraph it rests on.</Text>\n</BackdropSection>`,
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["BackdropSection"] ?? [] },
   {
     type: "doc-section",
-    heading: "Layers",
-    body: [
-      {
-        kind: "text",
-        text: "The image and the scrim are absolutely positioned on their own class names and always cover the whole section (`inset: 0`); the content sits in a separate relatively positioned part. Scrims: `soft` (a light top-to-bottom darkening), `strong`, `start` (darker on the text side, fading across) and `none`. The scrim colour is `--rebar-backdrop-scrim-color` (default black, mixed to transparency). `rounded` makes an inset rounded panel (`--rebar-backdrop-section-radius`); otherwise the section is full-bleed. Text uses `--rebar-color-text-inverse`.",
-      },
-      {
-        kind: "text",
-        text: "Use backdrop art at least as wide as the section: a 640px image stretched across a 1360px section looks pixelated. 1600px wide covers most layouts.",
-      },
-    ],
+    heading: "Scrims",
+    body: [{ kind: "text", text: "`soft` darkens lightly top to bottom, `strong` more, `start` is darker on the text side, `none` leaves the art alone. Set the colour with `--rebar-backdrop-scrim-color`; `rounded` gives an inset panel (`--rebar-backdrop-section-radius`). Use art at least as wide as the section." }],
   },
   {
     type: "doc-section",
     heading: "Accessibility",
-    body: [
-      {
-        kind: "text",
-        text: "The image is decorative by default (`alt=\"\"` and `aria-hidden`); pass `image.alt` only if the art carries information. The scrim is `aria-hidden`. Text contrast depends on the art plus the scrim: check it against the darkest scrim you can afford, not the average pixel.",
-      },
-    ],
+    body: [{ kind: "text", text: "The image is decorative by default (`alt=\"\"`, `aria-hidden`); pass `image.alt` only if it carries information. Check text contrast against the darkest scrim you can afford, not the average pixel." }],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="backdrop-section"`, `data-rebar-scrim` and `data-rebar-rounded` on the root; `data-rebar-part` values `image`, `scrim` and `content`.',
-      },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-component="backdrop-section"`, `data-rebar-scrim` and `data-rebar-rounded` on the root; `data-rebar-part` values `image`, `scrim` and `content`.' }],
   },
   {
     type: "doc-section",
@@ -59,33 +37,48 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function BackdropSectionPage() {
+  const harbour = project("harbour");
   return (
     <Stack gap="lg">
       <Heading level={1}>BackdropSection</Heading>
-      <Text color="secondary">
-        A section with art behind it and inverse-coloured content on top, full-bleed or as a rounded
-        inset panel.
-      </Text>
-      <LivePreview>
-        <Stack gap="lg">
-          <div id="backdrop-demo-1">
-            <BackdropSection image={{ src: BACKDROP_ART }} scrim="start" rounded>
-              <Stack gap="sm" style={{ maxWidth: "32rem" }}>
-                <Heading level={2}>Every answer, chapter and verse.</Heading>
-                <Text>Open any citation to see the exact paragraph a reply rests on.</Text>
-                <div>
-                  <Button variant="secondary">Try one question</Button>
-                </div>
-              </Stack>
-            </BackdropSection>
-          </div>
-          <div id="backdrop-demo-2">
-            <BackdropSection image={{ src: BACKDROP_ART }} scrim="strong">
-              <Heading level={2}>Full-bleed, strong scrim</Heading>
-            </BackdropSection>
-          </div>
+      <Text color="secondary">A section with art behind it and light text on top.</Text>
+
+      <DemoStage
+        title="Project hero"
+        caption="Rounded panel with a start-side scrim"
+        code={CODE}
+        states={[
+          { label: "Soft scrim", node: <BackdropSection image={{ src: BACKDROP_ART }} scrim="soft" rounded><Text>Soft</Text></BackdropSection> },
+          { label: "Strong scrim", node: <BackdropSection image={{ src: BACKDROP_ART }} scrim="strong" rounded><Text>Strong</Text></BackdropSection> },
+          { label: "No scrim", node: <BackdropSection image={{ src: BACKDROP_ART }} scrim="none" rounded><Text>None</Text></BackdropSection> },
+          { label: "Full-bleed", node: <BackdropSection image={{ src: BACKDROP_ART }} scrim="soft"><Text>Square corners</Text></BackdropSection> },
+        ]}
+      >
+        <BackdropSection image={{ src: BACKDROP_ART }} scrim="start" rounded>
+          <Stack gap="sm" style={{ maxWidth: "32rem" }}>
+            <Heading level={2}>{harbour.name}</Heading>
+            <Text>{harbour.summary}</Text>
+            <div>
+              <Button variant="secondary">View the plan</Button>
+            </div>
+          </Stack>
+        </BackdropSection>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Launch page" caption="A strong-scrim band between two plain sections" widths={false}>
+        <Stack gap="md" style={{ maxWidth: 680, margin: "0 auto" }}>
+          <Text color="secondary">Launch is {harbour.due}. Here is where it stands.</Text>
+          <BackdropSection image={{ src: BACKDROP_ART }} scrim="strong">
+            <Stack gap="xs">
+              <Heading level={2}>{harbour.done}% done</Heading>
+              <Text>Identity and site are in review; the launch kit ships next week.</Text>
+            </Stack>
+          </BackdropSection>
+          <Text size="sm" color="secondary">Owner: Maya Chen.</Text>
         </Stack>
-      </LivePreview>
+      </DemoStage>
+
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );
