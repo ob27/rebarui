@@ -1,52 +1,23 @@
-import { Box, Heading, PackedBubbleChart, Stack, Text } from "rebar-ui";
+"use client";
+
+import { Avatar, Card, Heading, PackedBubbleChart, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PROJECTS, avatarOf, gbp } from "@/fixtures/tideline";
 
-const FLAT = [
-  { label: "PDF", value: 420 },
-  { label: "DOCX", value: 210 },
-  { label: "Markdown", value: 340 },
-  { label: "HTML", value: 90 },
-  { label: "CSV", value: 60 },
-  { label: "TXT", value: 150 },
-];
+const CODE = `<PackedBubbleChart
+  title="Budget by project"
+  valueFormat={(v) => "£" + v.toLocaleString("en-GB")}
+  items={[{ label: "Tideline mobile", value: 72900, group: "Product" }, { label: "Harbour rebrand", value: 48200, group: "Brand" } /* ... */]}
+/>`;
 
-const GROUPED = [
-  { label: "PDF", value: 420, group: "Documents" },
-  { label: "DOCX", value: 210, group: "Documents" },
-  { label: "Markdown", value: 340, group: "Code" },
-  { label: "HTML", value: 90, group: "Code" },
-  { label: "CSV", value: 60, group: "Data" },
-  { label: "JSON", value: 130, group: "Data" },
-];
+const FLAT = PROJECTS.map((p) => ({ label: p.name, value: p.budget }));
+const GROUPED = PROJECTS.map((p) => ({ label: p.name, value: p.budget, group: p.kicker }));
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<PackedBubbleChart title="Chunks by file type" items={[{ label: "PDF", value: 420 }, { label: "Markdown", value: 340 }, /* ... */]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["PackedBubbleChart"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "What it's for",
-    body: [
-      {
-        kind: "text",
-        text: "Each item is a circle sized by `value` (area, not radius, so a reader compares them the way they actually perceive size), packed tightly with a real circle-packing algorithm — no overlaps. Distinct from `BubbleChart` (a real x/y scatter plot with size as a third encoded dimension on real axes): this has no axes at all — position only expresses \"fits densely here,\" never a measured x/y value.",
-      },
-      {
-        kind: "text",
-        text: "`grouped` (auto-detected the moment any item sets `group`) packs same-group items into their own cluster first, then packs the clusters together — a real two-level hierarchical packing, shown below with a faint dashed boundary per cluster.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -66,27 +37,43 @@ const BLOCKS: Construct[] = [
   },
 ];
 
+
 export default function PackedBubbleChartPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>PackedBubbleChart</Heading>
-      <Text color="secondary">
-        Each item is a circle sized by value, packed tightly with no overlaps — optionally grouped
-        into clusters.
-      </Text>
+      <Text color="secondary">Circles sized by value and packed together with no overlaps, optionally in groups.</Text>
 
-      <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-lg)" }}>
-        <PackedBubbleChart title="Chunks by file type" items={FLAT} />
-      </Box>
+      <DemoStage
+        title="Budget by project"
+        caption="Area is the budget; hover for the figure"
+        code={CODE}
+        states={[
+          { label: "Grouped", node: <PackedBubbleChart title="By kind of work" height={190} items={GROUPED} valueFormat={gbp} /> },
+          { label: "One bubble", node: <PackedBubbleChart title="One project" height={190} items={[FLAT[0]!]} valueFormat={gbp} /> },
+          { label: "Long label", node: <PackedBubbleChart title="Long label" height={190} items={[{ label: "Wayfinding for the three northern depots", value: 21800 }, { label: "Rota", value: 6150 }]} valueFormat={gbp} /> },
+        ]}
+      >
+        <PackedBubbleChart title="Budget by project" items={FLAT} valueFormat={gbp} />
+      </DemoStage>
 
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          Grouped — same-<code>group</code> items pack into their own cluster first.
-        </Text>
-        <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-lg)" }}>
-          <PackedBubbleChart title="Chunks by file type, grouped" items={GROUPED} />
-        </Box>
-      </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Budget overview" caption="Where the money sits, and who owns it" widths={false}>
+        <Card title="Where the budget sits" subtitle="Five projects, October" style={{ maxWidth: 620, margin: "0 auto" }}>
+          <Stack gap="md">
+            <PackedBubbleChart title="Budget by kind of work" height={240} items={GROUPED} valueFormat={gbp} />
+            <Stack gap="xs">
+              {PROJECTS.map((p) => (
+                <Stack key={p.id} direction="row" gap="sm" align="center">
+                  <Avatar {...avatarOf(p.owner)} size="sm" />
+                  <Text size="sm" style={{ flex: 1 }}>{p.name}</Text>
+                  <Text size="sm" color="secondary">{gbp(p.budget)}</Text>
+                </Stack>
+              ))}
+            </Stack>
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

@@ -1,32 +1,23 @@
 "use client";
 
-import { Heading, Menubar, Stack, Text } from "rebar-ui";
+import { useState } from "react";
+import { Card, Heading, Menubar, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PROJECTS, STATUS_TONE } from "@/fixtures/tideline";
+
+const CODE = `<Menubar
+  items={[
+    { label: "File", items: [{ key: "new", label: "New project", onSelect: newProject }, { key: "export", label: "Export rota", onSelect: exportRota }] },
+    { label: "Edit", items: [{ key: "copy", label: "Copy link", onSelect: copyLink }] },
+    { label: "View", items: [{ key: "board", label: "Board", onSelect: showBoard }] },
+  ]}
+/>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Menubar\n  items={[\n    { label: "File", items: [{ key: "new", label: "New", onSelect: () => {} }] },\n    { label: "Edit", items: [{ key: "cut", label: "Cut", onSelect: () => {} }] },\n  ]}\n/>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Menubar"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "A row of Dropdowns, plus roving tabindex and adjacent switching",
-    body: [
-      {
-        kind: "text",
-        text: "Each top-level menu uses the same item vocabulary as Dropdown/ContextMenu. What Menubar adds: only one trigger is ever in the natural Tab order (ArrowLeft/ArrowRight move which one that is), only one menu is ever open at a time, and hovering or arrow-keying to an adjacent trigger while a menu is open switches directly to it instead of needing a close-then-open.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -49,39 +40,67 @@ const BLOCKS: Construct[] = [
   },
 ];
 
+
 export default function MenubarPage() {
+  const [last, setLast] = useState("nothing yet");
+  const pick = (what: string) => () => setLast(what);
+  const items = [
+    {
+      label: "File",
+      items: [
+        { key: "new", label: "New project", onSelect: pick("New project") },
+        { key: "open", label: "Open recent", onSelect: pick("Open recent") },
+        { key: "export", label: "Export rota", onSelect: pick("Export rota") },
+        { key: "sep-1", separator: true },
+        { key: "archive", label: "Archive project", disabled: true, onSelect: pick("Archive") },
+      ],
+    },
+    {
+      label: "Edit",
+      items: [
+        { key: "copy", label: "Copy link", onSelect: pick("Copy link") },
+        { key: "rename", label: "Rename", onSelect: pick("Rename") },
+      ],
+    },
+    {
+      label: "View",
+      items: [
+        { key: "board", label: "Board", onSelect: pick("Board") },
+        { key: "list", label: "List", onSelect: pick("List") },
+      ],
+    },
+  ];
+
   return (
     <Stack gap="lg">
       <Heading level={1}>Menubar</Heading>
-      <Text color="secondary">
-        A horizontal row of top-level menu triggers — the classic desktop-app File/Edit/View menu
-        bar.
-      </Text>
+      <Text color="secondary">A row of File, Edit and View style menus, like a desktop app.</Text>
 
-      <Menubar
-        items={[
-          {
-            label: "File",
-            items: [
-              { key: "new", label: "New", onSelect: () => {} },
-              { key: "open", label: "Open", onSelect: () => {} },
-              { key: "sep-1", separator: true },
-              { key: "exit", label: "Exit", disabled: true, onSelect: () => {} },
-            ],
-          },
-          {
-            label: "Edit",
-            items: [
-              { key: "cut", label: "Cut", onSelect: () => {} },
-              { key: "copy", label: "Copy", onSelect: () => {} },
-            ],
-          },
-          {
-            label: "View",
-            items: [{ key: "zoom", label: "Zoom", onSelect: () => {} }],
-          },
+      <DemoStage
+        title="Tideline menus"
+        caption={`Last choice: ${last}`}
+        code={CODE}
+        states={[
+          { label: "One menu", node: <Menubar items={[items[0]!]} /> },
+          { label: "Long labels", node: <Menubar items={[{ label: "Harbour rebrand", items: [{ key: "a", label: "Share with the harbour trust", onSelect: pick("Share") }] }, { label: "Depot signage", items: [{ key: "b", label: "Send fascia proofs to Northern Print Co.", onSelect: pick("Send") }] }]} /> },
         ]}
-      />
+      >
+        <Menubar items={items} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Desktop window" caption="The menu bar above the project list" widths={false}>
+        <div style={{ maxWidth: 560, margin: "0 auto", border: "1px solid var(--rebar-color-border)", borderRadius: "var(--rebar-radius-lg)", background: "var(--rebar-color-bg-raised, var(--rebar-color-bg-primary))", overflow: "hidden" }}>
+          <div style={{ borderBottom: "1px solid var(--rebar-color-border)", padding: "2px 6px" }}>
+            <Menubar items={items} />
+          </div>
+          <Stack gap="xs" style={{ padding: 14 }}>
+            {PROJECTS.slice(0, 4).map((p) => (
+              <Card key={p.id} title={p.name} subtitle={`${p.kicker}, due ${p.due}`} extra={<Tag tone={STATUS_TONE[p.status]}>{p.status}</Tag>} />
+            ))}
+          </Stack>
+        </div>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

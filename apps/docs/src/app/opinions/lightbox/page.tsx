@@ -1,44 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import { Heading, Lightbox, Stack, Text } from "rebar-ui";
+import { Button, Card, Heading, Lightbox, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { FILES, project } from "@/fixtures/tideline";
+
+const CODE = `<Lightbox
+  src="/art/grain-dawn.svg"
+  alt="Harbour van livery"
+  onCopy={copyLink}
+  onDownload={download}
+  onDelete={remove}
+  moreActions={[{ key: "report", label: "Report image", onSelect: report }]}
+/>`;
+
+const PHOTOS = [
+  { src: "/art/grain-dawn.svg", alt: "Harbour van livery, rear doors" },
+  { src: "/art/grain-sand.svg", alt: "Harbour van livery, side panel" },
+  { src: "/art/grain-dusk.svg", alt: "Depot fascia at dusk" },
+  { src: "/art/grain-periwinkle.svg", alt: "Mark, stacked, on periwinkle" },
+];
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Lightbox src="/photo-full.jpg" alt="A mountain lake at sunrise" />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Lightbox"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Built on Dialog, not reimplemented",
-    body: [
-      {
-        kind: "text",
-        text: 'Composes the real `Dialog` component directly with its `fullscreen` flag — no reimplemented modal/focus-trap logic, and `Dialog`\'s own close button is the only close button. Pinch-zoom/pan is deliberately out of scope, the same reasoning `BottomSheet`\'s drag handle used to skip real drag-to-dismiss physics: gesture physics (momentum, multi-touch scale/rotate) is a separate, harder problem than the "fullscreen preview + close" shape this component actually covers.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Action buttons",
-    body: [
-      {
-        kind: "text",
-        text: '`onCopy`/`onDelete`/`onMove`/`onDownload` each show their own icon button in the fullscreen footer, only when the corresponding callback is actually supplied — no separate boolean flag + callback pair. `moreActions` (an array of the same `DropdownItem` shape `Dropdown` itself uses) adds an overflow "more actions" button for anything that doesn\'t warrant its own dedicated icon, opening a real `Dropdown` menu rather than a bespoke one.',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -61,65 +48,46 @@ const BLOCKS: Construct[] = [
   },
 ];
 
-export default function LightboxPage() {
-  const [lastAction, setLastAction] = useState("none yet");
 
+export default function LightboxPage() {
+  const harbour = project("harbour");
+  const [last, setLast] = useState("none yet");
   return (
     <Stack gap="lg">
       <Heading level={1}>Lightbox</Heading>
-      <Text color="secondary">
-        Click an image to open a fullscreen preview — built on <code>Dialog</code>'s{" "}
-        <code>fullscreen</code> flag.
-      </Text>
+      <Text color="secondary">A thumbnail that opens a full-screen preview, with optional action buttons.</Text>
 
-      <LivePreview>
+      <DemoStage
+        title="Van livery photos"
+        caption={`Last action: ${last}`}
+        code={CODE}
+        states={[
+          { label: "No actions", node: <Lightbox src={PHOTOS[2]!.src} alt={PHOTOS[2]!.alt} /> },
+          { label: "Copy and download", node: <Lightbox src={PHOTOS[1]!.src} alt={PHOTOS[1]!.alt} onCopy={() => setLast("copy")} onDownload={() => setLast("download")} /> },
+          { label: "Own trigger", node: <Lightbox src={PHOTOS[3]!.src} alt={PHOTOS[3]!.alt} trigger={<Button variant="secondary">Preview mark</Button>} /> },
+        ]}
+      >
         <Lightbox
-          src="https://picsum.photos/id/29/1200/800"
-          alt="A random full-size placeholder photo"
+          src={PHOTOS[0]!.src}
+          alt={PHOTOS[0]!.alt}
+          onCopy={() => setLast("copy")}
+          onDownload={() => setLast("download")}
+          onMove={() => setLast("move")}
+          onDelete={() => setLast("delete")}
+          moreActions={[{ key: "report", label: "Report image", onSelect: () => setLast("report") }]}
         />
-      </LivePreview>
+      </DemoStage>
 
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          Last action fired: <strong>{lastAction}</strong>
-        </Text>
-        <Stack direction="row" gap="lg" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
-          <Stack gap="xs">
-            <Text size="sm" color="secondary">
-              Full action set
-            </Text>
-            <Lightbox
-              src="https://picsum.photos/id/48/1200/800"
-              alt="A random full-size placeholder photo, second example"
-              onCopy={() => setLastAction("copy")}
-              onDownload={() => setLastAction("download")}
-              onMove={() => setLastAction("move")}
-              onDelete={() => setLastAction("delete")}
-              moreActions={[{ key: "report", label: "Report image", onSelect: () => setLastAction("report") }]}
-            />
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="File gallery" caption={`${FILES[1]!.name}, ${FILES[1]!.size}`} widths={false}>
+        <Card title={harbour.name} subtitle="Van livery photos" style={{ maxWidth: 560, margin: "0 auto" }}>
+          <Stack direction="row" gap="sm" style={{ flexWrap: "wrap" }}>
+            {PHOTOS.map((p) => (
+              <Lightbox key={p.src} src={p.src} alt={p.alt} onDownload={() => setLast("download")} />
+            ))}
           </Stack>
-          <Stack gap="xs">
-            <Text size="sm" color="secondary">
-              Minimal set (copy + download only)
-            </Text>
-            <Lightbox
-              src="https://picsum.photos/id/65/1200/800"
-              alt="A random full-size placeholder photo, third example"
-              onCopy={() => setLastAction("copy")}
-              onDownload={() => setLastAction("download")}
-            />
-          </Stack>
-          <Stack gap="xs">
-            <Text size="sm" color="secondary">
-              No actions (default)
-            </Text>
-            <Lightbox
-              src="https://picsum.photos/id/76/1200/800"
-              alt="A random full-size placeholder photo, fourth example"
-            />
-          </Stack>
-        </Stack>
-      </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

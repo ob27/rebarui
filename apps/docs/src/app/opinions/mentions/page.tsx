@@ -1,49 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { Heading, Mentions, Stack, Text } from "rebar-ui";
+import { Avatar, Button, Card, Heading, Mentions, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { CHAT, PEOPLE, avatarOf, person } from "@/fixtures/tideline";
 
-const OPTIONS = [
-  { id: "priya", label: "Priya Shah" },
-  { id: "marcus", label: "Marcus Webb" },
-  { id: "jordan", label: "Jordan Lee" },
-];
+const CODE = `<Mentions
+  value={value}
+  onValueChange={setValue}
+  options={[{ id: "maya", label: "Maya Chen" }, { id: "jonas", label: "Jonas Weber" } /* ... */]}
+  placeholder="Type @ to mention someone"
+/>`;
+
+const OPTIONS = PEOPLE.map((p) => ({ id: p.id, label: p.name }));
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Mentions value={value} onValueChange={setValue} options={[{ id: "priya", label: "Priya Shah" }, /* ... */]} placeholder="Type @ to mention someone" />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Mentions"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Plain text in, plain text out",
-    body: [
-      {
-        kind: "text",
-        text: "`value` is the full textarea content as plain text — a mention is written inline as `@name`, there's no separate structured \"list of mentioned ids\" the caller has to keep in sync. Filtering as you type after `@` reuses the same substring-match approach `Combobox` already uses, for consistency.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "A stated caret-position simplification",
-    body: [
-      {
-        kind: "text",
-        text: "The suggestion dropdown is anchored just below the textarea itself, not at the real pixel position of the text caret — real caret-coordinate tracking in a plain `<textarea>` needs mirroring its content into a hidden, identically-styled element, a genuinely harder problem this component deliberately doesn't take on.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -66,23 +41,51 @@ const BLOCKS: Construct[] = [
   },
 ];
 
+
 export default function MentionsPage() {
   const [value, setValue] = useState("");
+  const [reply, setReply] = useState("");
+  const first = CHAT[0]!;
 
   return (
     <Stack gap="lg">
       <Heading level={1}>Mentions</Heading>
-      <Text color="secondary">
-        An @-mention autocomplete inside a real textarea — type <code>@</code> to see it in
-        action.
-      </Text>
+      <Text color="secondary">A textarea that suggests people as you type @.</Text>
 
-      <Mentions
-        value={value}
-        onValueChange={setValue}
-        options={OPTIONS}
-        placeholder="Type @ to mention someone"
-      />
+      <DemoStage
+        title="Comment box"
+        caption="Type @ and pick a name"
+        code={CODE}
+        widths={false}
+        states={[
+          { label: "With a mention", node: <Mentions options={OPTIONS} defaultValue="Thanks @Maya Chen, the palette is perfect." /> },
+          { label: "Two rows", node: <Mentions options={OPTIONS} placeholder="Add a note" rows={2} /> },
+          { label: "No people", node: <Mentions options={[]} placeholder="Nobody to mention" rows={2} /> },
+        ]}
+      >
+        <div style={{ maxWidth: 440 }}>
+          <Mentions value={value} onValueChange={setValue} options={OPTIONS} placeholder="Type @ to mention someone" />
+        </div>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Task comments" caption="Replying on Offline sync for tasks" widths={false}>
+        <Card title="Offline sync for tasks" subtitle="Tideline mobile" style={{ maxWidth: 520, margin: "0 auto" }}>
+          <Stack gap="md">
+            <Stack direction="row" gap="sm" align="start">
+              <Avatar {...avatarOf(first.from)} size="sm" />
+              <Stack gap="xs">
+                <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>{person(first.from).name} <Text as="span" size="xs" color="secondary">{first.time}</Text></Text>
+                <Text size="sm">{first.text}</Text>
+              </Stack>
+            </Stack>
+            <Mentions value={reply} onValueChange={setReply} options={OPTIONS} placeholder="Reply, or @ someone in" rows={2} />
+            <Stack direction="row" style={{ justifyContent: "flex-end" }}>
+              <Button disabled={!reply.trim()}>Post reply</Button>
+            </Stack>
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
