@@ -110,3 +110,38 @@ describe("NavBar", () => {
     expect(container.querySelector(".rebar-bionic-fixation")).toBeInTheDocument();
   });
 });
+
+describe("NavBar current item", () => {
+  it("marks a current link with aria-current=page and data-rebar-state=current", () => {
+    render(<NavBar items={[{ label: "Docs", href: "/docs", current: true }, { label: "About", href: "/about" }]} />);
+    const docs = screen.getByRole("link", { name: "Docs" });
+    expect(docs).toHaveAttribute("aria-current", "page");
+    expect(docs).toHaveAttribute("data-rebar-state", "current");
+    const about = screen.getByRole("link", { name: "About" });
+    expect(about).not.toHaveAttribute("aria-current");
+    expect(about).not.toHaveAttribute("data-rebar-state");
+  });
+
+  it("marks a current mega-menu trigger", () => {
+    render(
+      <NavBar
+        items={[{ label: "Products", href: "#", current: true, megaMenu: { columns: [{ heading: "A", items: [{ label: "X", href: "/x" }] }] } }]}
+      />,
+    );
+    const trigger = screen.getByRole("button", { name: /Products/ });
+    expect(trigger).toHaveAttribute("aria-current", "page");
+    expect(trigger).toHaveAttribute("data-rebar-state", "current");
+  });
+
+  it("forwards current to a custom renderLink", () => {
+    render(
+      <NavBar
+        items={[{ label: "Docs", href: "/docs", current: true }]}
+        renderLink={({ href, children, className, ...rest }) => (
+          <a href={href} className={className} data-custom aria-current={rest["aria-current"]}>{children}</a>
+        )}
+      />,
+    );
+    expect(screen.getByRole("link", { name: "Docs" })).toHaveAttribute("aria-current", "page");
+  });
+});

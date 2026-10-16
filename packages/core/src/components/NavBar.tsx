@@ -10,6 +10,9 @@ import type { BionicOptions } from "../bionic";
 export interface NavBarItem {
   label: string;
   href: string;
+  /** Marks this item as the current page: the link (or mega-menu trigger) gets
+   * `aria-current="page"` and `data-rebar-state="current"`. */
+  current?: boolean;
   /** When set, this item renders as a dropdown trigger instead of a plain link.
    * The mega-menu panel renders inside a Popover. */
   megaMenu?: {
@@ -24,7 +27,16 @@ export interface NavBarItem {
 export interface NavBarProps extends Omit<ComponentPropsWithoutRef<"div">, "className"> {
   items: NavBarItem[];
   /** Renders a link — defaults to a plain `<a href>`. Pass your framework's Link (e.g. Next.js's) for client-side routing, same convention as `@rebar-ui/placement`'s `renderLink`. */
-  renderLink?: (props: { href: string; children: ReactNode; className?: string; onClick?: () => void }) => ReactNode;
+  renderLink?: (props: {
+    href: string;
+    children: ReactNode;
+    className?: string;
+    onClick?: () => void;
+    /** Set to `"page"` for an item marked `current`; a custom renderer should forward it to its element. */
+    "aria-current"?: "page";
+    /** `"current"` for an item marked `current`; forward it as `data-rebar-state`. */
+    "data-rebar-state"?: "current";
+  }) => ReactNode;
   /** Resolves a mega-menu item's `icon` (a plain string name, e.g. `"orders"`) to a real element.
    * `NavBar` itself owns no icon registry — a consuming app (or `@rebar-ui/placement`'s
    * `BlockRenderer`, which resolves it against its own `ICONS` map) supplies this the same way
@@ -40,16 +52,15 @@ export interface NavBarProps extends Omit<ComponentPropsWithoutRef<"div">, "clas
   bionicOptions?: BionicOptions;
 }
 
-const defaultRenderLink = ({
+const defaultRenderLink: NonNullable<NavBarProps["renderLink"]> = ({
   href,
   children,
   className,
-}: {
-  href: string;
-  children: ReactNode;
-  className?: string;
+  onClick,
+  "aria-current": ariaCurrent,
+  "data-rebar-state": state,
 }) => (
-  <a href={href} className={className}>
+  <a href={href} className={className} onClick={onClick} aria-current={ariaCurrent} data-rebar-state={state}>
     {children}
   </a>
 );
@@ -79,6 +90,8 @@ function MegaMenuTrigger({
           type="button"
           className="rebar-navbar-link"
           data-rebar-part="mega-trigger"
+          aria-current={item.current ? "page" : undefined}
+          data-rebar-state={item.current ? "current" : undefined}
           style={{
             background: "none",
             border: "none",
@@ -297,7 +310,12 @@ export function NavBar({
             />
           ) : (
             <span key={`${item.label}-${i}`}>
-              {renderLink({ href: item.href, children: renderLabel(item.label), className: "rebar-navbar-link" })}
+              {renderLink({
+                href: item.href,
+                children: renderLabel(item.label),
+                className: "rebar-navbar-link",
+                ...(item.current ? { "aria-current": "page" as const, "data-rebar-state": "current" as const } : {}),
+              })}
             </span>
           ),
         )}
