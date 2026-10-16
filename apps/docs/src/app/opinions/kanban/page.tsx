@@ -1,152 +1,37 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Heading, Input, Kanban, Stack, Text } from "rebar-ui";
-import type { KanbanCard, KanbanColumn, KanbanState } from "rebar-ui";
+import { Avatar, AvatarGroup, Button, Card, DeviceFrame, Heading, Kanban, MobileTabBar, SegmentedControl, Stack, Tag, Text } from "rebar-ui";
+import type { KanbanCard, KanbanState } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TASKS, avatarOf, avatarsOf, kanbanBoard, person, project } from "@/fixtures/tideline";
 
-const INITIAL_CARDS: Record<string, KanbanCard> = {
-  spec: { id: "spec", title: "Write spec", tags: ["docs"] },
-  ui: { id: "ui", title: "Build the board UI", description: "Columns, cards, drag reorder" },
-  review: { id: "review", title: "Design review" },
-  bug: { id: "bug", title: "Fix drag-drop on Firefox", tags: ["bug"] },
-  ship: { id: "ship", title: "Ship it" },
-};
+const CODE = `const [board, setBoard] = useState(kanbanBoard());
 
-const INITIAL_COLUMNS: KanbanColumn[] = [
-  { id: "todo", title: "To do", sections: [{ id: "todo-main", cardIds: ["spec", "ui"] }] },
-  {
-    id: "in-progress",
-    title: "In progress",
-    sections: [
-      { id: "in-progress-blocked", label: "Blocked", cardIds: ["bug"], limit: 3 },
-      { id: "in-progress-active", label: "Active", cardIds: ["review"] },
-    ],
-    limit: 4,
-  },
-  { id: "done", title: "Done", sections: [{ id: "done-main", cardIds: ["ship"], limit: 1 }] },
-];
+<Kanban columns={board.columns} cards={board.cards} onChange={setBoard} />`;
+
+/** The Tideline tasks as a board, each card carrying its owner's initials and a WIP limit of 3 on "In progress". */
+function projectBoard(): KanbanState {
+  const { columns, cards } = kanbanBoard();
+  for (const t of TASKS) cards[t.id] = { ...cards[t.id], assignee: person(t.assignee).initials, tags: t.due ? [t.tag, `Due ${t.due}`] : [t.tag] };
+  return { columns: columns.map((c) => (c.id === "doing" ? { ...c, limit: 3 } : c)), cards };
+}
+
+const sync: KanbanCard = { id: "sync", title: "Offline sync for tasks", tags: ["Eng", "Due 26 Oct"], assignee: "JW" };
+const home: KanbanCard = { id: "home", title: "Harbour homepage", tags: ["Design"], assignee: "MC" };
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Kanban columns={columns} cards={cards} search={search} onChange={setBoard} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Kanban"] ?? [] },
   {
     type: "doc-section",
-    heading: "Uncontrolled, like TreeView",
+    heading: "Accessibility",
     body: [
       {
         kind: "text",
-        text: "`Kanban` owns no state of its own for `columns`/`cards` — every drag, sort, or add-card calls `onChange` with the updated structure, and the caller re-renders with it. The same \"you own the array\" contract as `TreeView`'s `onSelect`, not a new pattern.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Limits and dividers",
-    body: [
-      {
-        kind: "text",
-        text: "A column's optional `limit` caps its total card count across all its sections; a section's own `limit` caps just that section. A drop past either limit is rejected outright, not just visually hinted — try dragging a card into the \"Done\" column above, or into \"Blocked\", both already at their limit. A section's optional `label` renders as a horizontal divider within its column, splitting one column into named sub-groups (see \"In progress\" above).",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Sticky variant",
-    body: [
-      {
-        kind: "text",
-        text: '`cardVariant="sticky"` mutates the same component into a postit board — a hard 3-per-column cap (an explicit `limit` above 3 is clamped down to it), procedurally varied rotation/shadow per card, and click (not drag) opens an edit form for title/description/tags/color instead of a `card-kanban`-style caller-supplied modal. Try clicking a sticky above, then dragging one — the two are resolved so a drag never also opens the edit form.',
-      },
-      { kind: "code", code: '<Kanban columns={columns} cards={cards} cardVariant="sticky" onChange={setBoard} />' },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Real touch support, not mouse-only",
-    body: [
-      {
-        kind: "text",
-        text: "Every board above is draggable on a touchscreen too — cards and columns both — parallel to the native HTML5 drag-and-drop path, not a replacement for it. `onCardLongPress` is the real touch equivalent of `onDoubleClick` (a touch device never fires a real double-click at all): pass it alongside `renderCard` to open whatever your own custom card face should open on a long-press, the same way the built-in `Card`/`Sticky` rendering already does for its own edit dialog.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Hiding a column without losing its cards",
-    body: [
-      {
-        kind: "text",
-        text: 'Every column header above has an eye icon — click it to collapse that column into a tray showing just its card count, without touching the underlying `columns`/`cards` state at all. Type a search term that matches a card inside a collapsed column and it still surfaces as a faded "ghost" card in the tray, so collapsing a column never makes a search look like it silently missed something.',
-      },
-      {
-        kind: "text",
-        text: "Collapse state is uncontrolled by default — Kanban tracks it itself, resetting on remount, the right choice for a purely personal view preference. Pass `collapsedColumnIds` (together with `onColumnCollapsedChange`, required alongside it) when a caller wants collapse state to survive a reload or be the same for every viewer — e.g. persisted as real board data — the same controlled/uncontrolled split `cardVariant` already has at the board level, just per-column.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "filterCard: a caller-defined filter that composes with search",
-    body: [
-      {
-        kind: "text",
-        text: '`filterCard` is an additional visibility predicate, composed with `search` — a card must pass both. For a filter that doesn\'t fit a single substring match (e.g. "only this tag," "only this assignee"). Same visibility-only guarantee as `search`: it only ever hides a card from view — the real per-section `cardIds` array a drag/reorder\'s own `onChange` reads from is untouched either way, so filtering never risks silently dropping a card from its column\'s real data.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "addPosition: where a new card lands",
-    body: [
-      {
-        kind: "text",
-        text: 'The built-in "+ Add card" control always appended to the end of its section until this prop existed — kept as the default (`"end"`) so an existing caller\'s card order never silently changes underneath it. Pass `addPosition="start"` for a "newest first" board. This only affects the add-card control; a drag-and-drop always lands exactly where it was dropped, regardless of this setting.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Full ownership of the card face and column title",
-    body: [
-      {
-        kind: "text",
-        text: '`renderCard` replaces the built-in `Card`/`Sticky` rendering (and its click/double-click behavior) entirely — the caller owns the card\'s whole face and whatever click/double-click/long-press should do, while `Kanban` still owns layout, drag-and-drop, limits, sort, and search filtering underneath it. `renderColumnTitle` does the same for just the title text inside a column header, e.g. for click-to-rename. The demo below renders each card with inline, always-editable tag chips and a clickable column title — try editing a tag or a column name directly, then drag a card between columns to confirm layout/DnD still work exactly as before.',
-      },
-      {
-        kind: "code",
-        code: '<Kanban\n  columns={board.columns}\n  cards={board.cards}\n  onChange={setBoard}\n  renderCard={(card, ctx) => (\n    // spread ctx.dragHandlers / ctx.touchHandlers onto your root element to keep dragging\n    <MyCard card={card} ctx={ctx} />\n  )}\n  renderColumnTitle={(column) => <Editable value={column.title} onChange={(t) => rename(column.id, t)} />}\n/>',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "stickyDefaultLimit: false means genuinely unlimited",
-    body: [
-      {
-        kind: "text",
-        text: 'Sticky mode\'s default 3-per-column cap only applies to a column with no explicit `limit` of its own. Pass `stickyDefaultLimit={false}` when your own app lets users configure every column\'s real limit (including a genuinely unlimited one, i.e. `limit: undefined`) and sticky mode should respect that exactly like the default variant does — not silently substitute 3 for a column that was deliberately left uncapped.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Known gap: mouse/touch only",
-    body: [
-      {
-        kind: "text",
-        text: "Drag-and-drop uses the native HTML5 Drag and Drop API (plus a parallel touch implementation, see above) — no keyboard-operable equivalent yet. A documented, honest gap rather than a silently missing one.",
+        text: "Cards and columns drag with the mouse (native HTML5 drag and drop) and with touch (a long-press lifts a card). There is no keyboard-operable move yet; a documented gap. Each card title is a real `Editable`, so renaming works from the keyboard.",
       },
     ],
   },
@@ -156,7 +41,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: '`data-rebar-component="kanban"`; each column/section/card carries `data-rebar-part="column"`/`"section"`/`"card"` respectively.',
+        text: '`data-rebar-component="kanban"`; each column, section and card carries `data-rebar-part="column"`, `"section"` or `"card"`.',
       },
     ],
   },
@@ -166,43 +51,110 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Not codemod-covered — AntD has no built-in Kanban/board component; a migration reimplements the board on top of a drag-and-drop library of the consuming team's choice.",
+        text: "Not codemod-covered. AntD has no board component; a migration reimplements the board on top of a drag-and-drop library of the consuming team's choice.",
       },
     ],
   },
 ];
 
+function PhoneBoard() {
+  const harbour = project("harbour");
+  const doing = TASKS.filter((t) => t.column === "doing");
+  return (
+    <div style={{ display: "flex", flexDirection: "column", minHeight: 520, background: "var(--rebar-color-bg-primary)" }}>
+      <div style={{ background: "var(--rebar-color-bg-inverse)", color: "var(--rebar-color-text-inverse)", padding: "14px 18px" }}>
+        <Heading level={3} style={{ color: "inherit", fontSize: "1.1rem" }}>
+          {harbour.name}
+        </Heading>
+      </div>
+      <Stack gap="sm" style={{ padding: 14, flex: 1 }}>
+        <Stack direction="row" gap="xs" style={{ flexWrap: "wrap" }}>
+          <Tag>To do 3</Tag>
+          <Tag tone="info">In progress 2</Tag>
+          <Tag>Done</Tag>
+        </Stack>
+        {doing.map((t) => (
+          <Card key={t.id} title={t.title} labels={[{ label: t.tag }]} avatar={<Avatar size="sm" {...avatarOf(t.assignee)} />} />
+        ))}
+      </Stack>
+      <MobileTabBar
+        aria-label="Tideline"
+        style={{ position: "static" }}
+        items={[{ label: "Inbox" }, { label: "Projects" }, { label: "Calendar" }, { label: "You" }]}
+        defaultActiveIndex={1}
+      />
+    </div>
+  );
+}
+
 export default function KanbanPage() {
-  const [board, setBoard] = useState<KanbanState>({ columns: INITIAL_COLUMNS, cards: INITIAL_CARDS });
-  const [search, setSearch] = useState("");
+  const [board, setBoard] = useState<KanbanState>(projectBoard);
+  const [scene, setScene] = useState<KanbanState>(projectBoard);
+  const [wip, setWip] = useState<KanbanState>({
+    columns: [{ id: "doing", title: "In progress", limit: 2, sections: [{ id: "doing-main", cardIds: ["sync", "home"] }] }],
+    cards: { sync, home },
+  });
+  const harbour = project("harbour");
 
   return (
     <Stack gap="lg">
       <Heading level={1}>Kanban</Heading>
-      <Text color="secondary">
-        A drag-and-drop card board — arbitrary columns, optional dividers within a column, cards
-        draggable within/across sections and columns, columns themselves draggable to reorder, and
-        optional per-column/per-section card limits.
-      </Text>
+      <Text color="secondary">Columns, cards, drag.</Text>
 
-      <Stack gap="xs">
-        <Input
-          aria-label="Search demo cards"
-          placeholder="Search cards..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <Box
-          style={{
-            border: "1px solid var(--rebar-color-border, #e0e0e0)",
-            borderRadius: 4,
-            padding: "var(--rebar-space-lg)",
-            overflowX: "auto",
-          }}
-        >
-          <Kanban columns={board.columns} cards={board.cards} search={search} onChange={setBoard} />
-        </Box>
-      </Stack>
+      <DemoStage
+        title="Project board"
+        caption="Drag, drop, touch; WIP limit on In progress"
+        code={CODE}
+        states={[
+          {
+            label: "Empty column",
+            node: <Kanban columns={[{ id: "blocked", title: "Blocked", sections: [{ id: "blocked-main", cardIds: [] }] }]} cards={{}} />,
+          },
+          { label: "At WIP limit", node: <Kanban columns={wip.columns} cards={wip.cards} onChange={setWip} /> },
+        ]}
+      >
+        <Kanban columns={board.columns} cards={board.cards} onChange={setBoard} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Project screen" caption="The board inside a project page, and the same board on a phone">
+        <Stack gap="lg">
+          <Card>
+            <Stack gap="md">
+              <Stack direction="row" gap="sm" align="center" style={{ flexWrap: "wrap" }}>
+                <Heading level={3}>{harbour.name}</Heading>
+                <Text size="sm" color="secondary">
+                  9 of 14 done · launch {harbour.due}
+                </Text>
+              </Stack>
+              <Stack direction="row" gap="sm" align="center" style={{ flexWrap: "wrap" }}>
+                <SegmentedControl
+                  aria-label="View"
+                  options={[
+                    { value: "board", label: "Board" },
+                    { value: "list", label: "List" },
+                  ]}
+                  defaultValue="board"
+                />
+                <span style={{ flex: 1 }} />
+                <AvatarGroup avatars={avatarsOf(["maya", "jonas", "priya", "leo"])} size="sm" />
+                <Tag>Design</Tag>
+                <Tag>Ops</Tag>
+                <Button variant="secondary" size="sm">
+                  Filter
+                </Button>
+                <Button size="sm">Add task</Button>
+              </Stack>
+              <Kanban columns={scene.columns} cards={scene.cards} onChange={setScene} />
+            </Stack>
+          </Card>
+          <div className="cs-grain" style={{ padding: "32px 16px", display: "flex", justifyContent: "center" }}>
+            <DeviceFrame variant="phone" style={{ maxWidth: 320 }}>
+              <PhoneBoard />
+            </DeviceFrame>
+          </div>
+        </Stack>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

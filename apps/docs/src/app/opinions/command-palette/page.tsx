@@ -1,88 +1,120 @@
 "use client";
 
 import { useState } from "react";
-import { Button, CommandPalette, Heading, Stack, Text } from "rebar-ui";
+import { Badge, Button, Card, CommandPalette, Heading, Kbd, Stack, Text } from "rebar-ui";
+import type { CommandPaletteCommand } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PEOPLE, PROJECTS, TASKS } from "@/fixtures/tideline";
+
+const CODE = `const [open, setOpen] = useState(false);
+
+<Button variant="secondary" onClick={() => setOpen(true)}>Jump to… <Kbd>⌘K</Kbd></Button>
+<CommandPalette
+  open={open}
+  onOpenChange={setOpen}
+  placeholder="Projects, tasks, people"
+  commands={[
+    ...PROJECTS.map((p) => ({ id: p.id, label: p.name, group: "Projects", onSelect: () => go(p) })),
+    ...TASKS.map((t) => ({ id: t.id, label: t.title, group: "Tasks", onSelect: () => go(t) })),
+    { id: "new", label: "New task", group: "Actions", shortcut: "N", onSelect: newTask },
+  ]}
+/>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: `<CommandPalette\n  open={open}\n  onOpenChange={setOpen}\n  commands={[\n    { id: "new", label: "New document", group: "File", shortcut: "⌘N", onSelect: () => {} },\n    { id: "open", label: "Open...", group: "File", shortcut: "⌘O", onSelect: () => {} },\n    { id: "theme", label: "Toggle theme", group: "View", onSelect: () => {} },\n  ]}\n/>`,
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["CommandPalette"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "No global keyboard shortcut — by design",
-    body: [
-      {
-        kind: "text",
-        text: "This component does not attach a `document`-level Cmd+K listener on mount — which key combo opens it, and on which pages, is an app-level decision, not something a `packages/core` component should silently own. Drive it via `open`/`onOpenChange` the same way every other rebar-ui overlay works, and wire your own keyboard listener at the app level.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "Accessibility",
     body: [
       {
         kind: "text",
-        text: "Built directly on Radix Dialog (focus trap, Esc-to-close, backdrop click) — not on the real `Dialog` component, since `Dialog` always renders a visible title/close-button header, which is exactly the chrome a command palette doesn't want. The search input drives keyboard navigation via `aria-activedescendant` rather than moving real focus between rows (ArrowUp/ArrowDown/Enter), matching `Combobox`'s own pattern.",
+        text: "Built on Radix Dialog (focus trap, Esc to close, backdrop click). The search input drives keyboard navigation through `aria-activedescendant` rather than moving focus between rows: ArrowUp and ArrowDown move, Enter runs the highlighted command. No global shortcut is registered for you; bind ⌘K in the app.",
       },
     ],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="command-palette"`; `data-rebar-part="overlay"|"search-input"|"list"|"group-label"|"item"`, with `data-rebar-active` on the currently-highlighted item.',
-      },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-component="command-palette"`; `data-rebar-part="overlay"|"search-input"|"list"|"group-label"|"item"`, with `data-rebar-active` on the highlighted item.' }],
   },
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      {
-        kind: "text",
-        text: "AntD has no built-in command-palette primitive of its own — a migration typically composes AntD's `Modal` + `AutoComplete`/`Select` by hand, or reaches for a small dedicated library (e.g. `kbar` or `cmdk`).",
-      },
-    ],
+    body: [{ kind: "text", text: "AntD has no command palette. A migration composes `Modal` with `AutoComplete`, or reaches for a small library such as `cmdk`." }],
   },
 ];
 
 export default function CommandPalettePage() {
   const [open, setOpen] = useState(false);
+  const [sceneOpen, setSceneOpen] = useState(false);
+  const [fewOpen, setFewOpen] = useState(false);
+  const [picked, setPicked] = useState<string | null>(null);
+
+  const commands: CommandPaletteCommand[] = [
+    ...PROJECTS.map((p) => ({ id: p.id, label: p.name, group: "Projects", onSelect: () => setPicked(p.name) })),
+    ...TASKS.slice(0, 4).map((t) => ({ id: t.id, label: t.title, group: "Tasks", onSelect: () => setPicked(t.title) })),
+    ...PEOPLE.map((p) => ({ id: p.id, label: p.name, group: "People", onSelect: () => setPicked(p.name) })),
+    { id: "new-task", label: "New task", group: "Actions", shortcut: "N", onSelect: () => setPicked("New task") },
+    { id: "theme", label: "Toggle theme", group: "Actions", shortcut: "T", onSelect: () => setPicked("Toggle theme") },
+  ];
 
   return (
     <Stack gap="lg">
       <Heading level={1}>CommandPalette</Heading>
-      <Text color="secondary">
-        A Cmd+K-style searchable, keyboard-navigable command list in a forced-open modal shell.
-      </Text>
+      <Text color="secondary">Search every action and project from one box.</Text>
 
-      <Stack gap="sm">
-        <Button onClick={() => setOpen(true)}>Open command palette</Button>
-        <CommandPalette
-          open={open}
-          onOpenChange={setOpen}
-          commands={[
-            { id: "new", label: "New document", group: "File", shortcut: "⌘N", onSelect: () => {} },
-            { id: "open", label: "Open...", group: "File", shortcut: "⌘O", onSelect: () => {} },
-            { id: "theme", label: "Toggle theme", group: "View", onSelect: () => {} },
-            { id: "settings", label: "Open settings", group: "View", onSelect: () => {} },
-          ]}
-        />
-      </Stack>
+      <DemoStage
+        title="Palette"
+        caption="Substring match, grouped results, arrows and Enter"
+        code={CODE}
+        states={[
+          {
+            label: "Few commands",
+            node: (
+              <>
+                <Button variant="secondary" size="sm" onClick={() => setFewOpen(true)}>
+                  Open
+                </Button>
+                <CommandPalette open={fewOpen} onOpenChange={setFewOpen} placeholder="Type a command" commands={commands.filter((c) => c.group === "Actions")} />
+              </>
+            ),
+          },
+          {
+            label: "Picked",
+            node: (
+              <Text size="sm" color="secondary">
+                {picked ? `Last pick: ${picked}` : "Nothing picked yet"}
+              </Text>
+            ),
+          },
+        ]}
+      >
+        <div className="cs-grain" style={{ padding: "48px 16px", display: "flex", justifyContent: "center" }}>
+          <Button variant="secondary" onClick={() => setOpen(true)}>
+            Jump to… <Kbd>⌘K</Kbd>
+          </Button>
+          <CommandPalette open={open} onOpenChange={setOpen} placeholder="Projects, tasks, people" commands={commands} />
+        </div>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Projects header" caption="The palette behind a search button" widths={false}>
+        <Card style={{ maxWidth: 520, margin: "0 auto" }}>
+          <Stack direction="row" gap="sm" align="center" style={{ flexWrap: "wrap" }}>
+            <Heading level={3}>Projects</Heading>
+            <Badge count={PROJECTS.length} />
+            <span style={{ flex: 1 }} />
+            <Button variant="secondary" size="sm" onClick={() => setSceneOpen(true)}>
+              Jump to… <Kbd>⌘K</Kbd>
+            </Button>
+            <Button size="sm">New</Button>
+          </Stack>
+          <CommandPalette open={sceneOpen} onOpenChange={setSceneOpen} placeholder="Jump to a project or task" commands={commands.filter((c) => c.group !== "People")} />
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
