@@ -468,8 +468,8 @@ describe("ChatThread citations", () => {
     const bubble = container.querySelector('[data-rebar-part="bubble"]')!;
     const pills = bubble.querySelectorAll('[data-rebar-part="citation"]');
     expect(pills).toHaveLength(2);
-    expect(pills[0]).toHaveAttribute("href", "/docs");
-    expect(pills[1].tagName).toBe("SPAN");
+    expect(pills[0]!).toHaveAttribute("href", "/docs");
+    expect(pills[1]!.tagName).toBe("SPAN");
     expect(pills[1]).toHaveTextContent("Spec");
   });
 

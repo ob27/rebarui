@@ -10,8 +10,6 @@ export interface MultiSelectOption {
   value: string;
   label: string;
   disabled?: boolean;
-  /** Marks the field as failing validation: sets `aria-invalid="true"` and `data-rebar-invalid` on the trigger. */
-  invalid?: boolean;
 }
 
 export interface MultiSelectProps extends Omit<ComponentPropsWithoutRef<"button">, "onChange" | "defaultValue"> {
@@ -21,6 +19,8 @@ export interface MultiSelectProps extends Omit<ComponentPropsWithoutRef<"button"
   onValuesChange?: (values: string[]) => void;
   placeholder?: string;
   disabled?: boolean;
+  /** Marks the field as failing validation: sets `aria-invalid="true"` and `data-rebar-invalid` on the trigger. */
+  invalid?: boolean;
   /** Force bionic reading on/off for the trigger summary and option labels, overriding the ambient
    * data-rebar-bionic setting. */
   bionic?: boolean;
