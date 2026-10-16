@@ -51,8 +51,8 @@
   --rebar-font-weight-semibold: 600;
   --rebar-font-weight-bold: 700;
 
-  --rebar-color-primary: #c4402a;
-  --rebar-color-primary-hover: #a8341f;
+  --rebar-color-primary: #b53824;
+  --rebar-color-primary-hover: #99301d;
   --rebar-color-primary-text: #ffffff;
   --rebar-color-danger: #b3261e;
   --rebar-color-danger-text: #ffffff;
@@ -70,7 +70,7 @@
   --rebar-color-bg-raised: #fffdf9;
   --rebar-color-border: rgba(18, 20, 43, 0.12);
   --rebar-color-border-strong: rgba(18, 20, 43, 0.24);
-  --rebar-color-border-focus: #c4402a;
+  --rebar-color-border-focus: #b53824;
   --rebar-color-bg-inverse: #1d2040;
   --rebar-color-text-inverse: #fbf6ee;
   --rebar-color-text-inverse-secondary: #c2c4d2;

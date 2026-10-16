@@ -4419,7 +4419,7 @@ body {
 
 .rebar-file-upload-row-error {
   font-size: var(--rebar-font-size-xs, 12px);
-  color: var(--rebar-color-danger-text, #b00020);
+  color: var(--rebar-color-danger, #b00020);
 }
 
 .rebar-file-upload-row-success {
@@ -4447,7 +4447,7 @@ body {
 }
 
 .rebar-file-upload-remove:hover {
-  color: var(--rebar-color-danger-text, #b00020);
+  color: var(--rebar-color-danger, #b00020);
 }
 
 .rebar-file-upload-remove:focus-visible {
@@ -5579,7 +5579,7 @@ div.rebar-chat-message-content > *:last-child { margin-bottom: 0; }
 .rebar-tts-bar-voice, .rebar-tts-bar-speed { display: flex; flex-direction: column; gap: var(--rebar-space-xs, 4px); min-width: 160px; }
 .rebar-tts-bar-label { font-size: var(--rebar-font-size-xs, 12px); color: var(--rebar-color-text-secondary, #666666); }
 .rebar-tts-bar-progress { width: 100%; }
-.rebar-tts-bar-error { margin: 0; font-size: var(--rebar-font-size-sm, 13px); color: var(--rebar-color-danger-text, #b00020); }
+.rebar-tts-bar-error { margin: 0; font-size: var(--rebar-font-size-sm, 13px); color: var(--rebar-color-danger, #b00020); }
 .rebar-tts-bar-status { font-size: var(--rebar-font-size-xs, 12px); color: var(--rebar-color-text-secondary, #666666); }
 
 /* FloatingSelectionToolbar */
@@ -6224,7 +6224,7 @@ div.rebar-chat-message-content > *:last-child { margin-bottom: 0; }
 
 /* Ellipsis */
 .rebar-ellipsis {
-  display: inline;
+  display: block;
 }
 .rebar-ellipsis-measurer {
   pointer-events: none;

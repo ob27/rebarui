@@ -2281,3 +2281,6 @@ textarea.rebar-input {
 .rebar-chart-filter-button-inactive {
   opacity: 0.55;
 }
+
+/* WaybackSlider "Latest" badge: primary-on-tint text sits just under AA; ink on the tint always passes */
+.rebar-wayback-slider-latest { color: var(--rebar-color-text-primary); font-weight: var(--rebar-font-weight-semibold); }

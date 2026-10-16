@@ -182,3 +182,12 @@ a.cs-list-row:hover { background: var(--rebar-color-bg-secondary); }
 .cs-stage-states figure { margin: 0; display: grid; gap: 10px; align-content: start; min-width: 0; }
 .cs-stage-states figcaption { font: var(--rebar-font-weight-semibold) 0.68rem/1 var(--rebar-font-family-sans); letter-spacing: 0.12em; text-transform: uppercase; color: var(--rebar-color-text-secondary); }
 @media (max-width: 760px) { .cs-stage-body { padding: 18px; } .cs-stage-states { padding: 18px; } .cs-seg { display: none; } }
+
+/* Long titles and wide tables never push the page sideways on a phone (the /about, /archetypes and benchmark pages are plain Stack pages with no shell). */
+main h1, main h2, main h3 { overflow-wrap: anywhere; }
+main { min-width: 0; }
+@media (max-width: 760px) {
+  main .rebar-table { display: block; max-width: 100%; overflow-x: auto; }
+  main code, main .rebar-text, main .rebar-link { overflow-wrap: anywhere; }
+  main .rebar-stack[data-rebar-direction="row"] { flex-wrap: wrap; }
+}
