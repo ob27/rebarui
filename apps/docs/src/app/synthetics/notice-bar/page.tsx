@@ -1,15 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Heading, NoticeBar, Stack, Text } from "rebar-ui";
+import { Button, Card, Heading, NoticeBar, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
+import { project } from "@/fixtures/tideline";
 
-// rebar-ui's icon set (packages/core/src/components/icons.tsx) is an internal implementation
-// detail, not part of the public API — a consuming app supplies its own icon, the same
-// recommendation packages/core/README.md gives for exactly this case.
+const CODE = `<NoticeBar
+  tone="warning"
+  icon={<WarningIcon />}
+  content="Payroll cut-off is 28 Oct. Send the rota export by then."
+  closable
+  onClose={dismiss}
+/>`;
+
+// rebar-ui's icon set is internal; a consuming app supplies its own icon.
 function WarningIcon() {
   return (
     <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -18,28 +26,11 @@ function WarningIcon() {
   );
 }
 
+const PAYROLL = "Payroll cut-off is 28 Oct. Send the rota export by then.";
+const LONG = "Harbour launch moved to 24 Oct 09:00. Everyone on the Harbour rebrand: check your tasks, confirm the launch checklist and tell Maya about anything still open.";
+
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<NoticeBar tone="warning" icon={<WarningIcon />} content="Scheduled maintenance begins in 10 minutes." closable onClose={dismiss} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["NoticeBar"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Distinct from Alert and Toast",
-    body: [
-      {
-        kind: "text",
-        text: "`Alert` is a boxed message inline in content; `Toast` is an ephemeral overlay that clears itself. `NoticeBar` sits pinned at the top of a view and stays until dismissed or the underlying condition clears — a maintenance notice, a stale-data warning, an offline banner. Single-line content too long to fit auto-scrolls as a marquee, measured against the real rendered width (not guessed from character count); pass `wrap` for static multi-line content instead.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -64,31 +55,50 @@ const BLOCKS: Construct[] = [
 
 export default function NoticeBarPage() {
   const [visible, setVisible] = useState(true);
-
+  const mobile = project("mobile");
   return (
     <Stack gap="lg">
       <Heading level={1}>NoticeBar</Heading>
-      <Text color="secondary">
-        A persistent, full-width announcement strip — pinned at the top of a view until dismissed,
-        with an auto-scrolling marquee for single-line content too long to fit.
-      </Text>
+      <Text color="secondary">A full-width strip at the top of a view that stays until dismissed, scrolling if the text is too long.</Text>
 
-      <LivePreview>
-        <Stack gap="md">
-          {visible ? (
-            <NoticeBar
-              tone="warning"
-              icon={<WarningIcon />}
-              content="Scheduled maintenance begins in 10 minutes — save your work before then."
-              closable
-              onClose={() => setVisible(false)}
-            />
-          ) : (
-            <Button onClick={() => setVisible(true)}>Show notice again</Button>
-          )}
-          <NoticeBar tone="info" content="Wrapped, multi-line content stays static instead of scrolling." wrap />
+      <DemoStage
+        title="Payroll notice"
+        caption="Dismiss it, then bring it back"
+        code={CODE}
+        states={[
+          { label: "Info", node: <NoticeBar tone="info" content="Mobile design review is on 22 Oct, 14:00." /> },
+          { label: "Error", node: <NoticeBar tone="error" icon={<WarningIcon />} content="Offline: changes will sync when you reconnect." /> },
+          { label: "Scrolling", node: <NoticeBar tone="warning" content={LONG} /> },
+          { label: "Wrapped", node: <NoticeBar tone="info" content={LONG} wrap /> },
+          { label: "With action", node: <NoticeBar tone="warning" content="Crew interviews are late." action={<Button size="sm" variant="secondary">Open</Button>} /> },
+        ]}
+      >
+        {visible ? (
+          <NoticeBar tone="warning" icon={<WarningIcon />} content={PAYROLL} closable onClose={() => setVisible(false)} />
+        ) : (
+          <Button variant="secondary" onClick={() => setVisible(true)}>Show the notice again</Button>
+        )}
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Pinned to a screen" caption="Under the app bar, above the content" padding="none" widths={false}>
+        <Stack direction="row" gap="lg" style={{ flexWrap: "wrap", justifyContent: "center", padding: 24 }}>
+          <TidelinePhone title="Projects" tabs={1} height={420}>
+            <Stack gap="sm">
+              <NoticeBar tone="warning" icon={<WarningIcon />} content="Payroll cut-off is 28 Oct." closable wrap />
+              <Card title={mobile.name} subtitle={`Due ${mobile.due}`}>
+                <Text size="sm" color="secondary">{mobile.summary}</Text>
+              </Card>
+            </Stack>
+          </TidelinePhone>
+          <TidelinePhone title="Inbox" tabs={0} height={420}>
+            <Stack gap="sm">
+              <NoticeBar tone="error" icon={<WarningIcon />} content="You are offline. Changes sync when you reconnect." wrap />
+              <Text size="sm" color="secondary">3 changes waiting to sync.</Text>
+            </Stack>
+          </TidelinePhone>
         </Stack>
-      </LivePreview>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

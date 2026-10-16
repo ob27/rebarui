@@ -1,30 +1,21 @@
-import { Box, Heading, Sparkline, Stack, Text } from "rebar-ui";
+import { Card, Heading, Sparkline, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { KPIS, WEEKLY_DONE } from "@/fixtures/tideline";
+
+const CODE = `<Text>
+  Tasks done per week{" "}
+  <Sparkline ariaLabel="Tasks done per week, last 12 weeks" values={[14, 19, 16, 22, 20, 25, 23, 28, 25, 31, 29, 33]} />
+</Text>`;
+
+// Same twelve weeks, other series for the rows below.
+const OPEN = [58, 55, 57, 52, 53, 49, 50, 47, 48, 46, 45, 42];
+const DUE_SOON = [4, 6, 5, 8, 6, 9, 7, 6, 8, 5, 7, 7];
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Sparkline ariaLabel="Stock price, last 8 quarters" values={[42, 44, 41, 47, 52, 49, 55, 61]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Sparkline"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "What it's for",
-    body: [
-      {
-        kind: "text",
-        text: "A tiny, axis-less trend line — no ticks, no x labels, no legend, just the line itself, meant to sit inline (a table cell, a stat card). Reuses `LineChart`'s scaling math, stripped down to a single series and no chrome. `ariaLabel` is required, not optional — unlike the other charts, a sparkline has no visible caption of its own to fall back on for its accessible name.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -51,26 +42,45 @@ export default function SparklinePage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Sparkline</Heading>
-      <Text color="secondary">
-        A tiny, axis-less trend line meant to sit inline — a table cell, a stat card — with no
-        ticks, labels, or legend.
-      </Text>
+      <Text color="secondary">A tiny trend line with no axes, made to sit inside a sentence, a table cell or a stat card.</Text>
 
-      <Box
-        style={{
-          border: "1px solid var(--rebar-color-border, #e0e0e0)",
-          borderRadius: 4,
-          padding: "var(--rebar-space-lg)",
-        }}
+      <DemoStage
+        title="Weekly throughput"
+        caption="Tasks done per week, 3 Aug to 19 Oct"
+        code={CODE}
+        states={[
+          { label: "Short", node: <Sparkline ariaLabel="Last four weeks" values={WEEKLY_DONE.slice(-4)} /> },
+          { label: "Flat", node: <Sparkline ariaLabel="Flat" values={[20, 20, 20, 20, 20, 20]} /> },
+          { label: "Larger", node: <Sparkline ariaLabel="Larger" values={WEEKLY_DONE} width={160} height={48} /> },
+          { label: "Falling", node: <Sparkline ariaLabel="Open tasks" values={OPEN} /> },
+        ]}
       >
         <Text>
-          Stock price (last 8 quarters):{" "}
-          <Sparkline
-            ariaLabel="Stock price, last 8 quarters"
-            values={[42, 44, 41, 47, 52, 49, 55, 61]}
-          />
+          Tasks done per week <Sparkline ariaLabel="Tasks done per week, last 12 weeks" values={WEEKLY_DONE} />
         </Text>
-      </Box>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Stat rows" caption="One line per measure, trend on the right" widths={false}>
+        <Card title="This week" subtitle="12-week trend">
+          <Stack gap="sm">
+            {[
+              { ...KPIS[0]!, values: OPEN },
+              { ...KPIS[1]!, values: DUE_SOON },
+              { label: "Done", value: WEEKLY_DONE[WEEKLY_DONE.length - 1]!, delta: "↑ 4 vs last week", values: WEEKLY_DONE },
+            ].map((k) => (
+              <Stack key={k.label} direction="row" gap="md" align="center" justify="between">
+                <Stack gap="xs">
+                  <Text size="sm" color="secondary">{k.label}</Text>
+                  <Text style={{ fontFamily: "var(--rebar-font-family-display)", fontSize: 24 }}>{k.value}</Text>
+                </Stack>
+                <Text size="xs" color="secondary">{k.delta}</Text>
+                <Sparkline ariaLabel={`${k.label}, last 12 weeks`} values={k.values} width={120} height={32} />
+              </Stack>
+            ))}
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

@@ -1,32 +1,25 @@
 "use client";
 
-import { Box, GaugeChart, Heading, Stack, Text } from "rebar-ui";
+import { Avatar, Card, GaugeChart, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PROJECTS, STATUS_TONE, avatarOf, project } from "@/fixtures/tideline";
+
+const CODE = `<GaugeChart
+  title="Harbour rebrand"
+  label="complete"
+  value={84}
+  min={0}
+  max={100}
+  valueFormat={(v) => \`\${v}%\`}
+/>`;
+
+const pct = (v: number) => `${v}%`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<GaugeChart title="Q3 goal progress" label="of target" value={72} min={0} max={100} valueFormat={(v) => `${v}%`} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["GaugeChart"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "What it's for",
-    body: [
-      {
-        kind: "text",
-        text: "A single-value radial dial — a half-circle track plus a filled arc showing where `value` sits between `min` and `max`, with the number itself printed in the center. Built for a single at-a-glance metric (a load %, a score) rather than a series over time. An overshoot past `max` still pegs the arc at full, but the raw, unclamped value is what's printed in the center — an overshoot is visible as a number, not silently hidden.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -50,30 +43,41 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function GaugeChartPage() {
+  const harbour = project("harbour");
   return (
     <Stack gap="lg">
       <Heading level={1}>GaugeChart</Heading>
-      <Text color="secondary">
-        A single-value radial dial — a half-circle track plus a filled arc showing where a value
-        sits between a min and max.
-      </Text>
+      <Text color="secondary">A half-circle dial showing one value between a minimum and a maximum.</Text>
 
-      <Box
-        style={{
-          border: "1px solid var(--rebar-color-border, #e0e0e0)",
-          borderRadius: 4,
-          padding: "var(--rebar-space-lg)",
-        }}
+      <DemoStage
+        title="Project progress"
+        caption="Harbour rebrand, 84% complete"
+        code={CODE}
+        states={[
+          { label: "Late", node: <GaugeChart title="Crew interviews" label="complete" value={33} valueFormat={pct} size={200} /> },
+          { label: "Overshoot", node: <GaugeChart title="Hours this week" label="of 30 planned" value={36} min={0} max={30} size={200} /> },
+          { label: "Custom range", node: <GaugeChart title="Open tasks" label="of 60" value={42} min={0} max={60} size={200} /> },
+        ]}
       >
-        <GaugeChart
-          title="Q3 goal progress"
-          label="of target"
-          value={72}
-          min={0}
-          max={100}
-          valueFormat={(v) => `${v}%`}
-        />
-      </Box>
+        <GaugeChart title="Harbour rebrand" label="complete" value={harbour.done} min={0} max={100} valueFormat={pct} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Project health" caption="One dial per project, owner underneath" widths={false}>
+        <Stack direction="row" gap="md" style={{ flexWrap: "wrap" }}>
+          {PROJECTS.slice(0, 4).map((p) => (
+            <Card key={p.id} style={{ flex: "1 1 200px" }} title={p.name} subtitle={`Due ${p.due}`} extra={<Tag tone={STATUS_TONE[p.status]}>{p.status}</Tag>}>
+              <Stack gap="sm" align="center">
+                <GaugeChart ariaLabel={`${p.name}, ${p.done}% complete`} value={p.done} valueFormat={pct} size={180} />
+                <Stack direction="row" gap="xs" align="center">
+                  <Avatar size="sm" {...avatarOf(p.owner)} />
+                  <Text size="sm" color="secondary">{avatarOf(p.owner).alt}</Text>
+                </Stack>
+              </Stack>
+            </Card>
+          ))}
+        </Stack>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

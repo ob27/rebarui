@@ -1,54 +1,93 @@
 import { Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
-const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Overview",
-    body: [{ kind: "text", text: "One entry of a heuristics/design-principles page: a heading, a bolded one-line rule, doc-section-style rationale prose (same tiny inline markup), and an optional code sample and/or a real nested live Block[] example. Carries its own stable id rather than slugifying one from title, since existing cross-references or a page-index block's own sections list may already point at a specific hand-picked id. Added to convert this project's own /docs/heuristics off hand-authored JSX — 44 of its 47 entries fit this shape exactly." }],
-  },
+const SHAPE: Construct[] = [
   {
     type: "doc-section",
     heading: "Shape",
-    body: [{ kind: "code", code: `{ type: "heuristic", id: string, title: string, rule: string, rationale: ProseNode[], code?: string, exampleBlocks?: Block[] }` }],
+    body: [
+      {
+        kind: "code",
+        code: `{ type: "heuristic", id: string, title: string, rule: string, rationale: ProseNode[], code?: string, exampleBlocks?: Block[] }`,
+      },
+    ],
   },
-  {
-    type: "doc-section",
-    heading: "Example",
-    body: [{ kind: "text", text: "A live example of the heuristic block:" }],
-  },
-  {
-      type: "heuristic",
-      id: "example-heuristic",
-      title: "Example heuristic",
-      rule: "State the rule in one bolded sentence.",
-      rationale: [
-        {
-          kind: "text",
-          text: "Then explain *why*, with `inline code` and a [link](/docs/heuristics) where useful.",
-        },
-      ],
-      exampleBlocks: [
-        {
-          type: "checklist",
-          heading: "Applied here",
-          items: [
-            "The rule",
-            "The rationale",
-            "A live example",
-          ],
-        },
-      ],
-    },
 ];
+
+const CODE = `{
+  type: "heuristic",
+  id: "one-primary-action",
+  title: "One primary action",
+  rule: "Give each screen one primary button.",
+  rationale: [{ kind: "text", text: "Two filled buttons make the crew stop and choose." }],
+  exampleBlocks: [{ type: "checklist", heading: "Applied here", items: ["Save changes is filled", "Cancel is outlined"] }],
+}`;
 
 export default function HeuristicPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Heuristic</Heading>
-      <Text color="secondary">{"One entry of a heuristics/design-principles page: a heading, a bolded one-line rule, doc-section-style rationale prose (same tiny inline markup), and an optional code sample and/or a real nested live Block[] example. Carries its own stable id rather than slugifying one from title, since existing cross-references or a page-index block's own sections list may already point at a specific hand-picked id. Added to convert this project's own /docs/heuristics off hand-authored JSX — 44 of its 47 entries fit this shape exactly."}</Text>
-      <NextBlockRenderer blocks={BLOCKS} />
+      <Text color="secondary">One design rule: a heading, a bold one-line rule, the reasoning, and optional code or a live example.</Text>
+
+      <DemoStage
+        title="One primary action"
+        caption="Rule, rationale, and a live checklist"
+        code={CODE}
+        states={[
+          {
+            label: "Rule only",
+            node: (
+              <NextBlockRenderer
+                blocks={[{ type: "heuristic", id: "short-labels", title: "Short labels", rule: "Name the button for what it does.", rationale: [{ kind: "text", text: "“Save changes” beats “Submit”." }] }]}
+              />
+            ),
+          },
+          {
+            label: "With code",
+            node: (
+              <NextBlockRenderer
+                blocks={[
+                  {
+                    type: "heuristic",
+                    id: "confirm-destructive",
+                    title: "Confirm deletes",
+                    rule: "Say what is lost before it goes.",
+                    rationale: [{ kind: "text", text: "Name the project and what goes with it." }],
+                    code: `<Button variant="destructive">Delete</Button>`,
+                  },
+                ]}
+              />
+            ),
+          },
+        ]}
+      >
+        <NextBlockRenderer
+          blocks={[
+            {
+              type: "heuristic",
+              id: "one-primary-action",
+              title: "One primary action",
+              rule: "Give each screen one primary button.",
+              rationale: [{ kind: "text", text: "Two filled buttons make the crew stop and *choose*. Keep the rest `secondary` or `tertiary`." }],
+              exampleBlocks: [{ type: "checklist", heading: "Applied here", items: ["Save changes is filled", "Cancel is outlined", "Delete project is destructive and last"] }],
+            },
+          ]}
+        />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Design principles page" caption="Heuristics stacked, as on a guidelines page" widths={false}>
+        <NextBlockRenderer
+          blocks={[
+            { type: "heuristic", id: "plain-dates", title: "Plain dates", rule: "Write “24 Oct”, not “2026-10-24”.", rationale: [{ kind: "text", text: "People read dates; machines get the ISO form in the markup." }] },
+            { type: "heuristic", id: "name-the-owner", title: "Name the owner", rule: "Every task shows who has it.", rationale: [{ kind: "text", text: "An avatar and a first name answer “who do I ask?” without opening the task." }] },
+          ]}
+        />
+      </DemoStage>
+
+      <NextBlockRenderer blocks={SHAPE} />
     </Stack>
   );
 }

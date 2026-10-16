@@ -1,32 +1,34 @@
 import { Card, Heading, Masonry, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PROJECTS } from "@/fixtures/tideline";
 
-const HEIGHTS = [120, 200, 90, 160, 240, 110, 180, 140, 260];
+const CODE = `<Masonry columns={3} gap={16}>
+  {projects.map((p) => (
+    <Card key={p.id} title={p.name} subtitle={p.kicker}>{p.summary}</Card>
+  ))}
+</Masonry>`;
+
+const TINTS = [1, 2, 3, 4, 1] as const;
+const COVERS = [96, 150, 70, 120, 170];
+
+function ProjectCard({ index }: { index: number }) {
+  const p = PROJECTS[index % PROJECTS.length]!;
+  return (
+    <Card
+      title={p.name}
+      subtitle={`${p.kicker} · ${p.status}`}
+      cover={<div style={{ height: COVERS[index % COVERS.length], background: `var(--rebar-color-tint-${TINTS[index % TINTS.length]})` }} />}
+    >
+      <Text size="sm" color="secondary">{p.summary}</Text>
+    </Card>
+  );
+}
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Masonry columns={3} gap={16}>\n  <Card style={{ height: 120 }}>Item 1</Card>\n  <Card style={{ height: 200 }}>Item 2</Card>\n  {/* ... */}\n</Masonry>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Masonry"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "CSS columns, not a JS-measured layout",
-    body: [
-      {
-        kind: "text",
-        text: "Pure `column-count`/`column-gap` with `break-inside: avoid` on each item — no `ResizeObserver`, correct on first paint including SSR. The one honest tradeoff: CSS columns fills top-to-bottom before wrapping to the next column, so item order reads top-to-bottom-then-left-to-right, not a shortest-column-next true masonry algorithm — for most galleries/feeds this reads the same to a viewer.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -53,17 +55,33 @@ export default function MasonryPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Masonry</Heading>
-      <Text color="secondary">
-        A Pinterest-style waterfall grid — items of varying height packed into balanced columns.
-      </Text>
+      <Text color="secondary">Items of different heights packed into balanced columns.</Text>
 
-      <Masonry columns={3} gap={16}>
-        {HEIGHTS.map((height, i) => (
-          <Card key={i} style={{ height }}>
-            <Text>Item {i + 1}</Text>
-          </Card>
-        ))}
-      </Masonry>
+      <DemoStage
+        title="Project gallery"
+        caption="Three columns; items fill top to bottom, then across"
+        code={CODE}
+        states={[
+          { label: "Two columns", node: <Masonry columns={2} gap={12}>{[0, 1, 2, 3].map((i) => <ProjectCard key={i} index={i} />)}</Masonry> },
+          { label: "One item", node: <Masonry columns={2} gap={12}><ProjectCard index={0} /></Masonry> },
+          { label: "Tight gap", node: <Masonry columns={3} gap={4}>{[2, 3, 4].map((i) => <ProjectCard key={i} index={i} />)}</Masonry> },
+        ]}
+      >
+        <Masonry columns={3} gap={16}>
+          {[0, 1, 2, 3, 4, 2, 0, 3, 1].map((n, i) => <ProjectCard key={i} index={n} />)}
+        </Masonry>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Moodboard" caption="Brand references for the harbour rebrand" widths={false}>
+        <Card title="Harbour rebrand: moodboard" subtitle="Maya Chen, 9 references">
+          <Masonry columns={4} gap={10}>
+            {[110, 170, 80, 140, 100, 190, 120, 90, 150].map((h, i) => (
+              <div key={i} aria-hidden="true" className={i % 3 === 0 ? "cs-grain" : undefined} style={{ height: h, borderRadius: 10, background: `var(--rebar-color-tint-${(i % 4) + 1})` }} />
+            ))}
+          </Masonry>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

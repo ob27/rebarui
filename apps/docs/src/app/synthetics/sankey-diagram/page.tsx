@@ -1,30 +1,30 @@
-import { Heading, SankeyDiagram, Stack, Text } from "rebar-ui";
+import { Card, Heading, SankeyDiagram, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PROJECTS, gbp } from "@/fixtures/tideline";
+
+const CODE = `<SankeyDiagram
+  title="Where the budget goes"
+  nodes={[{ id: "all", label: "Studio budget" }, { id: "Brand", label: "Brand" }, { id: "harbour", label: "Harbour rebrand" } /* ... */]}
+  links={[{ source: "all", target: "Brand", value: 70000 }, { source: "Brand", target: "harbour", value: 48200 } /* ... */]}
+/>`;
+
+const TEAMS = [...new Set(PROJECTS.map((p) => p.kicker))];
+const NODES = [
+  { id: "all", label: "Studio budget" },
+  ...TEAMS.map((t) => ({ id: t, label: t })),
+  ...PROJECTS.map((p) => ({ id: p.id, label: p.name })),
+];
+const LINKS = [
+  ...TEAMS.map((t) => ({ source: "all", target: t, value: PROJECTS.filter((p) => p.kicker === t).reduce((n, p) => n + p.budget, 0) })),
+  ...PROJECTS.map((p) => ({ source: p.kicker, target: p.id, value: p.budget })),
+];
+const TOTAL = PROJECTS.reduce((n, p) => n + p.budget, 0);
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<SankeyDiagram title="Signup funnel" nodes={[{ id: "visit", label: "Visit" }, { id: "signup", label: "Signup" }, { id: "paid", label: "Paid" }]} links={[{ source: "visit", target: "signup", value: 400 }, { source: "signup", target: "paid", value: 120 }]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["SankeyDiagram"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Curved links, not filled ribbons",
-    body: [
-      {
-        kind: "text",
-        text: "Links render as semi-transparent stroked cubic-bezier curves between each node's own vertical center, thickness proportional to `value` — a simpler, honest stand-in for the filled, proportional-width ribbon paths a full Sankey library would draw. Node columns (depth) are computed from link direction — a node with no incoming links lands in column 0 — via a bounded-pass propagation that terminates even on a cyclic graph, rather than requiring the input to form a strict DAG.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -51,26 +51,39 @@ export default function SankeyDiagramPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>SankeyDiagram</Heading>
-      <Text color="secondary">
-        A flow/volume-between-nodes diagram — link thickness proportional to value.
-      </Text>
+      <Text color="secondary">A flow diagram where each link is as thick as the amount that moves along it.</Text>
 
-      <SankeyDiagram
-        title="Signup funnel"
-        nodes={[
-          { id: "visit", label: "Visit" },
-          { id: "signup", label: "Signup" },
-          { id: "trial", label: "Trial" },
-          { id: "paid", label: "Paid" },
-          { id: "churn", label: "Churned" },
+      <DemoStage
+        title="Where the budget goes"
+        caption="Studio budget to teams to projects"
+        code={CODE}
+        states={[
+          {
+            label: "Two nodes",
+            node: <SankeyDiagram title="Rota" nodes={[{ id: "a", label: "Operations" }, { id: "b", label: "Rota export" }]} links={[{ source: "a", target: "b", value: 6150 }]} height={120} />,
+          },
+          {
+            label: "Split",
+            node: (
+              <SankeyDiagram
+                title="Brand split"
+                nodes={[{ id: "a", label: "Brand" }, { id: "b", label: "Harbour rebrand" }, { id: "c", label: "Depot signage" }]}
+                links={[{ source: "a", target: "b", value: 48200 }, { source: "a", target: "c", value: 21800 }]}
+                height={160}
+              />
+            ),
+          },
         ]}
-        links={[
-          { source: "visit", target: "signup", value: 400 },
-          { source: "signup", target: "trial", value: 260 },
-          { source: "trial", target: "paid", value: 90 },
-          { source: "trial", target: "churn", value: 170 },
-        ]}
-      />
+      >
+        <SankeyDiagram title="Where the budget goes" nodes={NODES} links={LINKS} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Budget review" caption={`${gbp(TOTAL)} across the studio`} widths={false}>
+        <Card title="Budget flow" subtitle="October">
+          <SankeyDiagram title="Budget by team and project" nodes={NODES} links={LINKS} />
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

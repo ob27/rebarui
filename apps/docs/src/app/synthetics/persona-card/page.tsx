@@ -1,46 +1,58 @@
-import { Heading, Stack, Text } from "rebar-ui";
+import { Card, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PEOPLE, project } from "@/fixtures/tideline";
 
-const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Overview",
-    body: [{ kind: "text", text: "A row of identity cards — avatar + name + optional meta line. Catalogued as \"Persona / User Card\" and flagged at catalogue time as \"arguably an Avatar+Text composition, not a new primitive\" — exactly the case for a block: no new component needed, just a fixed layout of two that already ship." }],
-  },
+const SHAPE: Construct[] = [
   {
     type: "doc-section",
     heading: "Shape",
     body: [{ kind: "code", code: `{ type: "persona-card", items: { name: string, meta?: string, avatarSrc?: string, avatarPlaceholder?: boolean }[] }` }],
   },
-  {
-    type: "doc-section",
-    heading: "Example",
-    body: [{ kind: "text", text: "A live example of the persona-card block:" }],
-  },
-  {
-      type: "persona-card",
-      items: [
-        {
-          name: "Priya Shah",
-          meta: "Engineering lead",
-          avatarPlaceholder: true,
-        },
-        {
-          name: "Marcus Webb",
-          meta: "Design",
-          avatarPlaceholder: true,
-        },
-      ],
-    },
 ];
 
+const CODE = `{
+  type: "persona-card",
+  items: [
+    { name: "Maya Chen", meta: "Design", avatarPlaceholder: true },
+    { name: "Jonas Weber", meta: "Engineering", avatarPlaceholder: true },
+  ],
+}`;
+
+const ITEMS = PEOPLE.map((p) => ({ name: p.name, meta: p.role, avatarPlaceholder: true }));
+
 export default function PersonaCardPage() {
+  const mobile = project("mobile");
   return (
     <Stack gap="lg">
       <Heading level={1}>Persona Card</Heading>
-      <Text color="secondary">{"A row of identity cards — avatar + name + optional meta line. Catalogued as \"Persona / User Card\" and flagged at catalogue time as \"arguably an Avatar+Text composition, not a new primitive\" — exactly the case for a block: no new component needed, just a fixed layout of two that already ship."}</Text>
-      <NextBlockRenderer blocks={BLOCKS} />
+      <Text color="secondary">A row of people: avatar, name and an optional line underneath.</Text>
+
+      <DemoStage
+        title="The team"
+        caption="Four people from the studio"
+        code={CODE}
+        states={[
+          { label: "One person", node: <NextBlockRenderer blocks={[{ type: "persona-card", items: ITEMS.slice(0, 1) }]} /> },
+          { label: "No meta line", node: <NextBlockRenderer blocks={[{ type: "persona-card", items: ITEMS.slice(0, 2).map(({ name, avatarPlaceholder }) => ({ name, avatarPlaceholder })) }]} /> },
+          { label: "Initials only", node: <NextBlockRenderer blocks={[{ type: "persona-card", items: [{ name: "Leo Santos", meta: "Operations" }] }]} /> },
+        ]}
+      >
+        <NextBlockRenderer blocks={[{ type: "persona-card", items: ITEMS }]} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Project team" caption="Who is on Tideline mobile" widths={false}>
+        <Card title={mobile.name} subtitle={`Due ${mobile.due}`}>
+          <Stack gap="sm">
+            <Text size="sm" color="secondary">{mobile.summary}</Text>
+            <NextBlockRenderer blocks={[{ type: "persona-card", items: ITEMS.filter((_, i) => i < 2) }]} />
+          </Stack>
+        </Card>
+      </DemoStage>
+
+      <NextBlockRenderer blocks={SHAPE} />
     </Stack>
   );
 }

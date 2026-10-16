@@ -1,59 +1,30 @@
-import type { ReactNode } from "react";
-import { Box, Heading, PieChart, Stack, Text } from "rebar-ui";
+import { Card, Heading, PieChart, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PROJECTS, STATUS_TONE, gbp, person } from "@/fixtures/tideline";
 
-const BROWSER_SLICES = [
-  { label: "Chrome", value: 65 },
-  { label: "Safari", value: 18 },
-  { label: "Edge", value: 8 },
-  { label: "Firefox", value: 5 },
-  { label: "Other", value: 4 },
+const CODE = `<PieChart
+  title="Budget by project"
+  slices={[
+    { label: "Tideline mobile", value: 72900 },
+    { label: "Harbour rebrand", value: 48200 },
+    { label: "Depot signage", value: 21800 },
+    { label: "Other", value: 15550 },
+  ]}
+/>`;
+
+const SLICES = [
+  { label: "Tideline mobile", value: 72900 },
+  { label: "Harbour rebrand", value: 48200 },
+  { label: "Depot signage", value: 21800 },
+  { label: "Other", value: 15550 },
 ];
+const TOTAL = PROJECTS.reduce((n, p) => n + p.budget, 0);
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<PieChart title="Browser market share" slices={[{ label: "Chrome", value: 65 }, { label: "Safari", value: 18 }, { label: "Edge", value: 8 }, { label: "Firefox", value: 5 }, { label: "Other", value: 4 }]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["PieChart"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "What it's for",
-    body: [
-      {
-        kind: "text",
-        text: "A proportional slice chart — pie by default, donut via `innerRadiusRatio` — for showing how a small number of parts make up a whole. Colors default to a small built-in palette, cycled by slice index, when a slice omits its own.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Label position",
-    body: [
-      {
-        kind: "text",
-        text: '`labelPosition` controls where each slice\'s label/percentage appears: `"legend"` (default) — a swatch + label + percentage row below the arcs, unchanged from before. `"inside"` — the percentage centered inside each slice wide enough to hold it legibly (a sliver under ~6% of the total stays unlabeled rather than overflowing). `"outside"` — label + percentage placed just past the arc with a short leader line, the standard convention for a pie with several small slices where "inside" text would be illegible. The legend row is omitted for `"inside"`/`"outside"`, since the per-slice labels already carry the same information — showing both would be redundant.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Exploded slices",
-    body: [
-      {
-        kind: "text",
-        text: 'A per-slice `exploded?: boolean` flag pushes that slice outward from the center — the standard "exploded pie" convention for calling attention to one or more slices, independent of `labelPosition`.',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -76,55 +47,44 @@ const BLOCKS: Construct[] = [
   },
 ];
 
-function Mutation({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <Stack gap="xs">
-      <Text size="sm" color="secondary">
-        {label}
-      </Text>
-      <Box
-        style={{
-          border: "1px solid var(--rebar-color-border, #e0e0e0)",
-          borderRadius: 4,
-          padding: "var(--rebar-space-lg)",
-        }}
-      >
-        {children}
-      </Box>
-    </Stack>
-  );
-}
-
 export default function PieChartPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>PieChart</Heading>
-      <Text color="secondary">
-        A proportional slice chart — pie by default, donut via <code>innerRadiusRatio</code> — with
-        a legend row below the arcs by default.
-      </Text>
+      <Text color="secondary">A pie or donut showing how a few parts make up a whole.</Text>
 
-      <Mutation label="Default (legend)">
-        <PieChart title="Browser market share" slices={BROWSER_SLICES} />
-      </Mutation>
+      <DemoStage
+        title="Budget by project"
+        caption="Legend below the pie; four parts at most"
+        code={CODE}
+        states={[
+          { label: "Donut", node: <PieChart title="Budget by project" slices={SLICES} innerRadiusRatio={0.6} /> },
+          { label: "Labels inside", node: <PieChart title="Budget by project" slices={SLICES} labelPosition="inside" /> },
+          { label: "Labels outside", node: <PieChart title="Budget by project" slices={SLICES} labelPosition="outside" /> },
+          { label: "Exploded", node: <PieChart title="Budget by project" slices={SLICES.map((s, i) => (i === 0 ? { ...s, exploded: true } : s))} /> },
+          { label: "One slice", node: <PieChart title="Rota export" slices={[{ label: "Rota export", value: 6150 }]} /> },
+        ]}
+      >
+        <PieChart title="Budget by project" slices={SLICES} />
+      </DemoStage>
 
-      <Stack direction="row" gap="lg" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
-        <Mutation label='labelPosition="inside"'>
-          <PieChart title="Browser market share" slices={BROWSER_SLICES} labelPosition="inside" />
-        </Mutation>
-        <Mutation label='labelPosition="outside"'>
-          <PieChart title="Browser market share" slices={BROWSER_SLICES} labelPosition="outside" />
-        </Mutation>
-        <Mutation label="Donut mode (innerRadiusRatio)">
-          <PieChart title="Browser market share" slices={BROWSER_SLICES} innerRadiusRatio={0.6} />
-        </Mutation>
-        <Mutation label="Exploded slice">
-          <PieChart
-            title="Browser market share"
-            slices={BROWSER_SLICES.map((s, i) => (i === 0 ? { ...s, exploded: true } : s))}
-          />
-        </Mutation>
-      </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Budget card" caption={`A donut beside the figures, ${gbp(TOTAL)} in all`} widths={false}>
+        <Card title="Budget" subtitle="All five projects" extra={<Tag>{gbp(TOTAL)}</Tag>}>
+          <Stack direction="row" gap="lg" align="center" style={{ flexWrap: "wrap" }}>
+            <PieChart title="Budget by project" slices={SLICES} innerRadiusRatio={0.6} />
+            <Stack gap="sm">
+              {PROJECTS.slice(0, 3).map((p) => (
+                <Stack key={p.id} direction="row" gap="sm" align="center">
+                  <Tag tone={STATUS_TONE[p.status]}>{p.status}</Tag>
+                  <Text size="sm">{p.name}</Text>
+                  <Text size="sm" color="secondary">{gbp(p.budget)} · {person(p.owner).name}</Text>
+                </Stack>
+              ))}
+            </Stack>
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
