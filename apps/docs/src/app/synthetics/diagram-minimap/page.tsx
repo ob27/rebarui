@@ -1,95 +1,80 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Dialog, DiagramMinimap, Heading, NodeLinkGraph, Stack, Text } from "rebar-ui";
+import { Card, DiagramMinimap, Heading, NodeLinkGraph, Stack, Text } from "rebar-ui";
 import type { NodeLinkGraphEdge, NodeLinkGraphNode } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PEOPLE, PROJECTS, TASKS } from "@/fixtures/tideline";
 
-// A small, static pairing for the always-visible example below — illustrates the shape without
-// needing the dialog.
-const WORKFLOW_NODES: NodeLinkGraphNode[] = [
-  { id: "kickoff", label: "Kickoff", x: 280, y: 30 },
-  { id: "design", label: "Design", x: 140, y: 140 },
-  { id: "dev", label: "Development", x: 420, y: 140 },
-  { id: "wireframes", label: "Wireframes", x: 70, y: 250 },
-  { id: "visual-qa", label: "Visual QA", x: 210, y: 250 },
-  { id: "backend", label: "Backend", x: 350, y: 250 },
-  { id: "frontend", label: "Frontend", x: 490, y: 250 },
-  { id: "launch", label: "Launch", x: 280, y: 350 },
+// A small manual layout: the launch flow of the Harbour rebrand.
+const FLOW_NODES: NodeLinkGraphNode[] = [
+  { id: "brief", label: "Brief", x: 280, y: 30 },
+  { id: "palette", label: "Brand palette", x: 140, y: 140 },
+  { id: "home", label: "Homepage", x: 420, y: 140 },
+  { id: "icons", label: "Icon audit", x: 70, y: 250 },
+  { id: "livery", label: "Van livery", x: 210, y: 250 },
+  { id: "copy", label: "Copy", x: 350, y: 250 },
+  { id: "build", label: "Build", x: 490, y: 250 },
+  { id: "launch", label: "Launch, 24 Oct", x: 280, y: 350 },
 ];
-
-const WORKFLOW_EDGES: NodeLinkGraphEdge[] = [
-  { source: "kickoff", target: "design" },
-  { source: "kickoff", target: "dev" },
-  { source: "design", target: "wireframes" },
-  { source: "design", target: "visual-qa" },
-  { source: "dev", target: "backend" },
-  { source: "dev", target: "frontend" },
-  { source: "wireframes", target: "launch" },
-  { source: "visual-qa", target: "launch", label: "approved" },
-  { source: "backend", target: "launch" },
-  { source: "frontend", target: "launch", label: "shipped" },
+const FLOW_EDGES: NodeLinkGraphEdge[] = [
+  { source: "brief", target: "palette" },
+  { source: "brief", target: "home" },
+  { source: "palette", target: "icons" },
+  { source: "palette", target: "livery" },
+  { source: "home", target: "copy" },
+  { source: "home", target: "build" },
+  { source: "icons", target: "launch" },
+  { source: "livery", target: "launch", label: "approved" },
+  { source: "copy", target: "launch" },
+  { source: "build", target: "launch", label: "shipped" },
 ];
+const FLOW_VIEWPORT = { x: 20, y: 0, width: 520, height: 210 };
 
-const ILLUSTRATIVE_VIEWPORT = { x: 20, y: 0, width: 520, height: 210 };
-
-// A genuinely large org tree — 4 levels deep, ~30 people — that doesn't fit in one small
-// NodeLinkGraph viewport without panning/zooming, so the minimap actually has a real job to do
-// (summarizing content the viewer can't see all of at once), not just a handful of dots that
-// would fit in the visible area anyway.
-function buildLargeOrg(): { nodes: NodeLinkGraphNode[]; edges: NodeLinkGraphEdge[] } {
-  const nodes: NodeLinkGraphNode[] = [{ id: "ceo", label: "CEO" }];
+// The whole studio: Tideline, its four people, their projects and tasks. Too big to see at once in a small viewport.
+function studio(): { nodes: NodeLinkGraphNode[]; edges: NodeLinkGraphEdge[] } {
+  const nodes: NodeLinkGraphNode[] = [{ id: "studio", label: "Tideline" }];
   const edges: NodeLinkGraphEdge[] = [];
-  const depts = ["Engineering", "Design", "Sales", "Marketing", "Support"];
-  depts.forEach((dept, i) => {
-    const vpId = `vp-${i}`;
-    nodes.push({ id: vpId, label: `VP ${dept}`, parentId: "ceo" });
-    edges.push({ source: "ceo", target: vpId });
-    for (let j = 0; j < 5; j++) {
-      const mgrId = `${vpId}-mgr-${j}`;
-      nodes.push({ id: mgrId, label: `${dept} Mgr ${j + 1}`, parentId: vpId });
-      edges.push({ source: vpId, target: mgrId });
+  for (const p of PEOPLE) {
+    nodes.push({ id: p.id, label: p.name, parentId: "studio" });
+    edges.push({ source: "studio", target: p.id });
+    for (const pr of PROJECTS.filter((x) => x.owner === p.id)) {
+      nodes.push({ id: pr.id, label: pr.name, parentId: p.id });
+      edges.push({ source: p.id, target: pr.id });
+      for (const t of TASKS.filter((x) => x.project === pr.id)) {
+        nodes.push({ id: `${pr.id}-${t.id}`, label: t.title, parentId: pr.id });
+        edges.push({ source: pr.id, target: `${pr.id}-${t.id}` });
+      }
     }
-  });
+  }
   return { nodes, edges };
 }
+const { nodes: STUDIO_NODES, edges: STUDIO_EDGES } = studio();
 
-const { nodes: LARGE_ORG_NODES, edges: LARGE_ORG_EDGES } = buildLargeOrg();
+const CODE = `const [view, setView] = useState<{ nodes: { id: string; x: number; y: number }[]; viewportBounds: Rect }>();
+
+<NodeLinkGraph nodes={nodes} edges={edges} onViewportChange={setView} />
+<DiagramMinimap nodes={view?.nodes ?? []} viewportBounds={view?.viewportBounds} />`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: 'const [view, setView] = useState<{ nodes: {id,x,y}[]; viewportBounds: {...} }>();\n\n<NodeLinkGraph\n  nodes={nodes}\n  edges={edges}\n  onViewportChange={setView}\n/>\n<DiagramMinimap nodes={view?.nodes ?? []} viewportBounds={view?.viewportBounds} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["DiagramMinimap"] ?? [] },
   {
     type: "doc-section",
-    heading: "Designed to pair with NodeLinkGraph, not built on it",
+    heading: "Pairing with NodeLinkGraph",
     body: [
       {
         kind: "text",
-        text: "This is a genuinely standalone, static component — it runs no layout or interaction logic of its own, just draws a dot per already-resolved node position, scaled into a small frame. It's *designed* to pair with a `NodeLinkGraph` (or any similar pannable canvas) elsewhere on the page by sharing the same coordinate data — the caller feeds it the same node positions and current viewport rect the real canvas is using — not because it wraps one internally. `NodeLinkGraph`'s own `onViewportChange` prop is the supported way to get that data live: it fires with every resolved node's position plus the currently-visible region (derived by inverting the live pan/zoom transform), both in the same coordinate space `DiagramMinimap` expects.",
+        text: "`DiagramMinimap` is static: it draws a dot per resolved node position, scaled into a small frame, and runs no layout of its own. Feed it the same coordinates as the canvas. `NodeLinkGraph`'s `onViewportChange` fires with every node's position plus the currently visible region, both in the coordinate space the minimap expects.",
       },
     ],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="diagram-minimap"` on the root `<figure>`.',
-      },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-component="diagram-minimap"` on the root `<figure>`.' }],
   },
   {
     type: "doc-section",
@@ -97,7 +82,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Not codemod-covered — AntD ships no diagramming components of its own; a minimap/overview navigator typically migrates as part of whichever dedicated canvas library (React Flow, AntV X6) the paired main diagram uses.",
+        text: "Not codemod-covered. AntD ships no diagramming components; a minimap typically migrates with whichever canvas library (React Flow, AntV X6) the main diagram uses.",
       },
     ],
   },
@@ -109,91 +94,45 @@ interface LiveView {
 }
 
 export default function DiagramMinimapPage() {
-  const [open, setOpen] = useState(false);
   const [view, setView] = useState<LiveView | null>(null);
+  const flowDots = FLOW_NODES.map(({ id, x, y }) => ({ id, x: x ?? 0, y: y ?? 0 }));
 
   return (
     <Stack gap="lg">
       <Heading level={1}>DiagramMinimap</Heading>
-      <Text color="secondary">
-        A small, static thumbnail overview of a large pannable canvas — a dot per node, an
-        optional viewport highlight.
-      </Text>
+      <Text color="secondary">A small thumbnail map of a large canvas: a dot per node and a viewport box.</Text>
 
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          A real, functional pairing: a ~30-person org tree too large to see all at once, panned
-          and zoomed via <code>NodeLinkGraph</code>'s own controls, with the minimap's highlighted
-          rectangle live-synced to whatever&apos;s actually visible — not an illustrative fixed
-          rect.
-        </Text>
-        <Button variant="primary" onClick={() => setOpen(true)} style={{ maxWidth: 220 }}>
-          Open live demo
-        </Button>
-      </Stack>
-
-      <Dialog
-        open={open}
-        onOpenChange={setOpen}
-        title="NodeLinkGraph + DiagramMinimap, live-synced"
-        fullscreen
+      <DemoStage
+        title="Launch flow"
+        caption="The Harbour rebrand flow and its minimap"
+        code={CODE}
+        widths={false}
+        states={[
+          { label: "Whole diagram in view", node: <DiagramMinimap title="Whole diagram" width={200} height={140} nodes={flowDots} viewportBounds={{ x: 0, y: 0, width: 560, height: 380 }} /> },
+          { label: "Zoomed in", node: <DiagramMinimap title="Zoomed in" width={200} height={140} nodes={flowDots} viewportBounds={{ x: 200, y: 100, width: 200, height: 140 }} /> },
+          { label: "Empty", node: <DiagramMinimap title="Empty" width={200} height={140} nodes={[]} /> },
+        ]}
       >
-        <Stack direction="row" gap="lg" style={{ height: "100%" }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <NodeLinkGraph
-              title="Company org chart (30 people)"
-              layout="hierarchical"
-              width={900}
-              height={600}
-              nodes={LARGE_ORG_NODES}
-              edges={LARGE_ORG_EDGES}
-              onViewportChange={setView}
-            />
-          </div>
-          <Stack gap="xs" style={{ width: 220 }}>
-            <DiagramMinimap
-              title="Minimap"
-              width={200}
-              height={150}
-              nodes={view?.nodes ?? []}
-              viewportBounds={view?.viewportBounds}
-            />
-            <Text size="xs" color="secondary">
-              Pan (drag) or zoom (+/− buttons, scroll) the diagram at left — the highlighted
-              rectangle above tracks exactly what&apos;s currently visible.
-            </Text>
-          </Stack>
-        </Stack>
-      </Dialog>
-
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          A smaller static pairing, for reference — same coordinate data fed to both components,
-          viewport shown as an illustrative fixed rect (not live, unlike the demo above).
-        </Text>
         <Stack direction="row" gap="lg" align="start" style={{ flexWrap: "wrap" }}>
-          <LivePreview>
-            <NodeLinkGraph
-              layout="manual"
-              title="Project workflow"
-              width={560}
-              height={380}
-              nodes={WORKFLOW_NODES}
-              edges={WORKFLOW_EDGES}
-            />
-          </LivePreview>
-
-          <Stack gap="xs" style={{ width: 200 }}>
-            <DiagramMinimap
-              title="Minimap of the diagram at left"
-              width={200}
-              height={140}
-              nodes={WORKFLOW_NODES.map(({ id, x, y }) => ({ id, x: x ?? 0, y: y ?? 0 }))}
-              viewportBounds={ILLUSTRATIVE_VIEWPORT}
-            />
-          </Stack>
+          <NodeLinkGraph layout="manual" title="Harbour launch flow" width={560} height={380} nodes={FLOW_NODES} edges={FLOW_EDGES} />
+          <DiagramMinimap title="Minimap of the launch flow" width={200} height={140} nodes={flowDots} viewportBounds={FLOW_VIEWPORT} />
         </Stack>
-      </Stack>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Studio map" caption="Pan or zoom the graph; the minimap box follows what is visible" widths={false}>
+        <Stack direction="row" gap="md" align="start" style={{ flexWrap: "wrap" }}>
+          <div style={{ flex: "1 1 420px", minWidth: 0 }}>
+            <NodeLinkGraph title="Tideline: people, projects and tasks" layout="hierarchical" width={1000} height={420} nodes={STUDIO_NODES} edges={STUDIO_EDGES} onViewportChange={setView} />
+          </div>
+          <Card title="Minimap" style={{ width: 232 }}>
+            <Stack gap="xs">
+              <DiagramMinimap title="Studio minimap" width={200} height={150} nodes={view?.nodes ?? []} viewportBounds={view?.viewportBounds} />
+              <Text size="xs" color="secondary">Drag or zoom the graph; the highlighted box tracks what is visible.</Text>
+            </Stack>
+          </Card>
+        </Stack>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

@@ -1,13 +1,24 @@
 import { Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
-const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Overview",
-    body: [{ kind: "text", text: "A wrapping row of small title+body pairs — no links, no images, just short feature copy." }],
-  },
+const CODE = `{
+  type: "feature-grid",
+  items: [
+    { title: "Offline first", body: "Tasks keep working below deck.", icon: "lock" },
+    { title: "A quiet inbox", body: "One digest a day, not forty pings.", icon: "mail" },
+    { title: "Rota to payroll", body: "Shifts export without the spreadsheet.", icon: "calendar" },
+  ],
+}`;
+
+const ITEMS = [
+  { title: "Offline first", body: "Tasks keep working below deck.", icon: "lock" },
+  { title: "A quiet inbox", body: "One digest a day, not forty pings.", icon: "mail" },
+  { title: "Rota to payroll", body: "Shifts export without the spreadsheet.", icon: "calendar" },
+];
+
+const SHAPE: Construct[] = [
   {
     type: "doc-section",
     heading: "Shape",
@@ -19,47 +30,45 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "`icon` is looked up by name in the icon sets `rebar-ui` ships (RemixIcon and Ant Design Outlined, 1,800+ icons, browse them on [/imitations/icon](/imitations/icon)). Use the exact export name (`CalendarIcon`, `EnterOutlined`) or a short form that ignores case, dashes, underscores and the `Icon`/`Outlined` suffix: `calendar`, `chat`, `lock`, `book`, `heart`, `user`, `home`, `search`, `folder`, `star`, `mail`, `shield`, `home-heart`. RemixIcon wins when a short name exists in both sets. An unknown name renders no icon and logs a warning in development; it never throws.",
+        text: "`icon` is looked up by name in the icon sets `rebar-ui` ships (browse them on [/imitations/icon](/imitations/icon)). Use the exact export name (`CalendarIcon`, `EnterOutlined`) or a short form that ignores case, dashes, underscores and the `Icon`/`Outlined` suffix: `calendar`, `chat`, `lock`, `mail`. An unknown name renders no icon and logs a warning in development; it never throws.",
       },
       {
         kind: "text",
-        text: "For a mark the sets do not have, pass `iconPath` (an SVG path `d` string, drawn with `fill=\"currentColor\"`) and, if it is not on a 24 by 24 grid, `iconViewBox`. `iconPath` takes priority over `icon`, the same convention as `site-header`'s `logo.iconPath`. The icon is decorative (`aria-hidden`).",
+        text: "For a mark the sets do not have, pass `iconPath` (an SVG path `d` string, drawn with `fill=\"currentColor\"`) and, if it is not on a 24 by 24 grid, `iconViewBox`. `iconPath` takes priority over `icon`. The icon is decorative (`aria-hidden`).",
       },
     ],
   },
-  {
-    type: "doc-section",
-    heading: "Example",
-    body: [{ kind: "text", text: "A live example of the feature-grid block:" }],
-  },
-  {
-      type: "feature-grid",
-      items: [
-        {
-          title: "Headless",
-          body: "Radix underneath.",
-          icon: "lock",
-        },
-        {
-          title: "Replaceable",
-          body: "CSS-variable theming.",
-          icon: "settings",
-        },
-        {
-          title: "Tested",
-          body: "Playwright-checked on every change.",
-          iconPath: "M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z",
-        },
-      ],
-    },
 ];
 
 export default function FeatureGridPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Feature Grid</Heading>
-      <Text color="secondary">{"A wrapping row of small title+body pairs — no links, no images, just short feature copy."}</Text>
-      <NextBlockRenderer blocks={BLOCKS} />
+      <Text color="secondary">A wrapping row of short title and body pairs, each with an optional icon.</Text>
+
+      <DemoStage
+        title="Tideline features"
+        caption="Three short callouts with icons"
+        code={CODE}
+        states={[
+          { label: "No icon", node: <NextBlockRenderer blocks={[{ type: "feature-grid", items: [{ title: "Quiet inbox", body: "One digest a day." }] }]} /> },
+          { label: "Custom path", node: <NextBlockRenderer blocks={[{ type: "feature-grid", items: [{ title: "Checked", body: "Reviewed before launch.", iconPath: "M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z" }] }]} /> },
+          { label: "Long body", node: <NextBlockRenderer blocks={[{ type: "feature-grid", items: [{ title: "Rota to payroll", body: "Shifts for every harbour depot export in one pass, ready for the 28 Oct payroll cut-off.", icon: "calendar" }] }]} /> },
+        ]}
+      >
+        <NextBlockRenderer blocks={[{ type: "feature-grid", items: ITEMS }]} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Landing page" caption="Under the Tideline mobile headline" widths={false}>
+        <Stack gap="md" align="center">
+          <Heading level={2}>Tideline mobile</Heading>
+          <Text color="secondary">Offline tasks and a quiet inbox for the crew.</Text>
+          <NextBlockRenderer blocks={[{ type: "feature-grid", items: ITEMS }]} />
+        </Stack>
+      </DemoStage>
+
+      <NextBlockRenderer blocks={SHAPE} />
     </Stack>
   );
 }
