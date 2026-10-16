@@ -85,3 +85,25 @@ describe("DataGrid", () => {
     expect(screen.getByText("Beta")).toBeInTheDocument();
   });
 });
+
+describe("DataGrid column align", () => {
+  const alignedColumns: TableColumn<Row>[] = [
+    { key: "name", header: "Name", align: "right" },
+    { key: "team", header: "Team", align: "center" },
+  ];
+
+  it("applies column align to header and cells", () => {
+    render(<DataGrid columns={alignedColumns} data={rows} rowKey="id" />);
+    expect(screen.getByRole("columnheader", { name: "Name" })).toHaveStyle({ textAlign: "right" });
+    expect(screen.getByRole("columnheader", { name: "Team" })).toHaveStyle({ textAlign: "center" });
+    expect(screen.getByText("Alpha").closest("td")).toHaveStyle({ textAlign: "right" });
+    expect(screen.getAllByText("Red", { selector: "td" })[0]).toHaveStyle({ textAlign: "center" });
+  });
+
+  it("keeps editable cell content on the aligned side", () => {
+    const { container } = render(<DataGrid columns={alignedColumns} data={rows} rowKey="id" editable />);
+    const cells = container.querySelectorAll('[data-rebar-part="editable-cell"]');
+    expect(cells[0]).toHaveStyle({ justifyContent: "flex-end" });
+    expect(cells[1]).toHaveStyle({ justifyContent: "center" });
+  });
+});

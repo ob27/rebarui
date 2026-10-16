@@ -18,6 +18,9 @@ export interface PivotTableProps {
   valueField: string;
   /** Defaults to `"sum"`. */
   aggregate?: PivotAggregate;
+  /** Formats every aggregated cell (including the Total row/column), e.g. `(n) => "$" + n.toLocaleString()`.
+   * Defaults to the raw number. */
+  formatValue?: (n: number) => string;
   /** A real, visible caption — see ref/HEURISTICS.md #16. */
   title?: string;
   className?: string;
@@ -71,6 +74,7 @@ export function PivotTable({
   colField,
   valueField,
   aggregate = "sum",
+  formatValue,
   title,
   className,
   "aria-label": ariaLabel,
@@ -89,10 +93,13 @@ export function PivotTable({
       )
       .map((r) => toNumber(r[valueField]));
 
+  const numeric = formatValue
+    ? { render: (value: unknown) => (typeof value === "number" ? formatValue(value) : String(value ?? "")) }
+    : {};
   const columns: TableColumn<PivotRow>[] = [
     { key: "__label", header: rowField },
-    ...colValues.map((cv, i) => ({ key: `col-${i}`, header: String(cv), align: "right" as const })),
-    { key: "__total", header: "Total", align: "right" as const },
+    ...colValues.map((cv, i) => ({ key: `col-${i}`, header: String(cv), align: "right" as const, ...numeric })),
+    { key: "__total", header: "Total", align: "right" as const, ...numeric },
   ];
 
   const bodyRows: PivotRow[] = rowValues.map((rv, ri) => {

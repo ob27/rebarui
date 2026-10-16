@@ -39,10 +39,12 @@ function cellText(value: unknown): string {
 function EditableCell({
   value,
   label,
+  align,
   onSubmit,
 }: {
   value: unknown;
   label: string;
+  align?: TableColumn<unknown>["align"];
   onSubmit: (next: string) => void;
 }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -50,7 +52,14 @@ function EditableCell({
     <div
       ref={wrapperRef}
       data-rebar-part="editable-cell"
-      style={{ minHeight: 44, minWidth: 44, display: "flex", alignItems: "center" }}
+      style={{
+        minHeight: 44,
+        minWidth: 44,
+        display: "flex",
+        alignItems: "center",
+        // The cell's own text-align (from the column's `align`) doesn't move a flex child, so mirror it.
+        justifyContent: align === "right" ? "flex-end" : align === "center" ? "center" : undefined,
+      }}
       onClick={(event) => {
         if (event.target === event.currentTarget) {
           wrapperRef.current?.querySelector<HTMLButtonElement>("button")?.click();
@@ -108,6 +117,7 @@ export function DataGrid<T>({
         <EditableCell
           value={value}
           label={col.header}
+          align={col.align}
           onSubmit={(newValue) => onCellChange?.(getRowKey(row), col.key, newValue)}
         />
       ),

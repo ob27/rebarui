@@ -67,3 +67,21 @@ describe("PivotTable", () => {
     expect(cellTextsOf(rows[2]!)).toEqual(["North", "0", "2", "2"]);
   });
 });
+
+describe("PivotTable formatValue", () => {
+  it("formats every aggregated cell including totals, leaving headers alone", () => {
+    render(
+      <PivotTable
+        data={data}
+        rowField="region"
+        colField="product"
+        valueField="sales"
+        formatValue={(n) => `$${n.toFixed(2)}`}
+      />,
+    );
+    expect(screen.getByText("$60.00")).toBeInTheDocument(); // grand total
+    expect(screen.getAllByText("$30.00").length).toBeGreaterThan(0);
+    expect(screen.getByRole("columnheader", { name: "Widget" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Total" })).toBeInTheDocument();
+  });
+});
