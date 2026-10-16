@@ -1,37 +1,35 @@
 "use client";
 
-import { FloatingPanel, Heading, Stack, Text } from "rebar-ui";
+import { Avatar, FloatingPanel, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
+import { PROJECTS, STATUS_TONE, avatarOf } from "@/fixtures/tideline";
+
+const CODE = `<FloatingPanel anchors={[80, 200, 320]} defaultHeight={200} header={<Heading level={3}>Projects</Heading>}>
+  <Text size="sm">Drag the bar, or focus it and use the arrow keys.</Text>
+</FloatingPanel>`;
+
+const AREA = { position: "relative", overflow: "hidden", border: "1px solid var(--rebar-color-border)", borderRadius: 12, background: "var(--rebar-color-tint-3)" } as const;
+
+function ProjectList({ count = 5 }: { count?: number }) {
+  return (
+    <Stack gap="sm">
+      {PROJECTS.slice(0, count).map((p) => (
+        <Stack key={p.id} direction="row" gap="sm" align="center">
+          <Avatar {...avatarOf(p.owner)} size="sm" />
+          <Text size="sm" style={{ flex: 1 }}>{p.name}</Text>
+          <Tag tone={STATUS_TONE[p.status]}>{p.status}</Tag>
+        </Stack>
+      ))}
+    </Stack>
+  );
+}
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<FloatingPanel anchors={[80, 260, 480]} header={<Heading level={3}>Directions</Heading>}>\n  <Text size="sm">Panel content goes here.</Text>\n</FloatingPanel>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["FloatingPanel"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "A fixed set of anchors, not a free-form resize",
-    body: [
-      {
-        kind: "text",
-        text: "Drag the handle bar to any height, and it snaps to the nearest value in `anchors` on release — the same map-details-panel pattern antd-mobile's `FloatingPanel` is built for. `handleDraggingOfContent` (on by default) also lets a drag inside the content area move the panel, but only once the content is scrolled to its own top edge and the drag continues in the collapsing direction, so it never fights a normal scroll.",
-      },
-      {
-        kind: "text",
-        text: 'The handle is a real, keyboard-operable `role="slider"` (Arrow keys jump between anchors, Home/End jump to the smallest/largest) — dragging is an addition to that, never the only way to resize it (ref/HEURISTICS.md #38).',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -55,31 +53,59 @@ export default function FloatingPanelPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>FloatingPanel</Heading>
-      <Text color="secondary">
-        A bottom (or top) sheet the user drags freely between a fixed set of anchor heights,
-        snapping to the nearest one on release.
-      </Text>
+      <Text color="secondary">A sheet you drag between a few set heights, snapping on release.</Text>
 
-      <LivePreview>
-        <div
-          style={{
-            position: "relative",
-            height: 360,
-            border: "1px solid var(--rebar-color-border)",
-            overflow: "hidden",
-            background: "var(--rebar-color-bg-secondary)",
-          }}
-        >
-          <FloatingPanel
-            anchors={[80, 200, 320]}
-            defaultHeight={200}
-            style={{ position: "absolute" }}
-            header={<Heading level={3}>Directions</Heading>}
-          >
-            <Text size="sm">Drag the bar above (or focus it and use Arrow keys) to resize.</Text>
+      <DemoStage
+        title="Projects sheet"
+        caption="Drag the bar, or use the arrow keys on it"
+        code={CODE}
+        states={[
+          {
+            label: "Starts collapsed",
+            node: (
+              <div style={{ ...AREA, height: 200 }}>
+                <FloatingPanel anchors={[60, 160]} defaultHeight={60} style={{ position: "absolute" }} header={<Heading level={3}>Projects</Heading>} aria-label="Collapsed panel">
+                  <ProjectList count={2} />
+                </FloatingPanel>
+              </div>
+            ),
+          },
+          {
+            label: "From the top",
+            node: (
+              <div style={{ ...AREA, height: 200 }}>
+                <FloatingPanel anchors={[60, 140]} placement="top" defaultHeight={140} style={{ position: "absolute" }} header={<Heading level={3}>Filters</Heading>} aria-label="Top panel">
+                  <Text size="sm">Status, owner, due date.</Text>
+                </FloatingPanel>
+              </div>
+            ),
+          },
+        ]}
+      >
+        <div style={{ ...AREA, height: 360 }}>
+          <FloatingPanel anchors={[80, 200, 320]} defaultHeight={200} style={{ position: "absolute" }} header={<Heading level={3}>Projects</Heading>} aria-label="Projects">
+            <ProjectList />
           </FloatingPanel>
         </div>
-      </LivePreview>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Depot map" caption="A details sheet over a map-style screen" padding="none" widths={false}>
+        <div style={{ display: "flex", justifyContent: "center", padding: 24 }}>
+          <TidelinePhone
+            title="Northern depots"
+            tabs={1}
+            padding={0}
+            overlay={
+              <FloatingPanel anchors={[90, 200, 330]} defaultHeight={200} style={{ position: "absolute", bottom: 56 }} header={<Heading level={3}>Depot signage</Heading>} aria-label="Depot details">
+                <ProjectList count={3} />
+              </FloatingPanel>
+            }
+          >
+            <div className="cs-grain" style={{ height: "100%", background: "var(--rebar-color-tint-3)" }} />
+          </TidelinePhone>
+        </div>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

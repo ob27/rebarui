@@ -1,40 +1,27 @@
-import { Box, DistributionChart, Heading, Stack, Text } from "rebar-ui";
+"use client";
+
+import { Card, DistributionChart, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
+const CODE = `<DistributionChart
+  title="Days to finish a task, by team"
+  series={[
+    { label: "Design", mean: 4.2, stdDev: 1.1 },
+    { label: "Engineering", mean: 6.5, stdDev: 2 },
+    { label: "Operations", mean: 3, stdDev: 0.8 },
+  ]}
+/>`;
+
+const DESIGN = { label: "Design", mean: 4.2, stdDev: 1.1, color: "var(--rebar-color-primary)" };
+const ENG = { label: "Engineering", mean: 6.5, stdDev: 2, color: "var(--rebar-color-info)" };
+const OPS = { label: "Operations", mean: 3, stdDev: 0.8, color: "var(--rebar-color-success)" };
+const days = (v: number) => `${v} d`;
+
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<DistributionChart title="Exam scores" series={[{ label: "Section A", mean: 72, stdDev: 9 }, { label: "Section B", mean: 78, stdDev: 5 }]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["DistributionChart"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Parametric, not fit from raw samples",
-    body: [
-      {
-        kind: "text",
-        text: "Each series is a normal (\"bell\") curve drawn from its own `mean`/`stdDev` — not computed from a raw sample array. Fitting a real kernel-density estimate from raw samples is a substantially bigger statistical undertaking than this project's low-fidelity philosophy calls for, and the parametric case (a known or already-summarized distribution — a test-score curve, a manufacturing tolerance, a confidence interval) is the more common real need. A caller with raw samples reduces them to a mean/stdDev first (two numbers), rather than this component attempting KDE internally.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "The ±1 standard-deviation band",
-    body: [
-      {
-        kind: "text",
-        text: '`showStdDevBand` (default on) shades the region within one standard deviation of the mean — the "68% of the data" convention — as a light tint under each curve, distinct from the curve\'s own fill. Turn it off for a cleaner look when several overlapping series would make the bands visually noisy.',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -61,52 +48,35 @@ export default function DistributionChartPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>DistributionChart</Heading>
-      <Text color="secondary">
-        A parametric normal (&quot;bell curve&quot;) distribution plot — each series drawn from its
-        own mean and standard deviation, with an optional ±1σ shaded band.
-      </Text>
+      <Text color="secondary">Bell curves drawn from a mean and a spread, with an optional shaded band.</Text>
 
-      <Box
-        style={{
-          border: "1px solid var(--rebar-color-border, #e0e0e0)",
-          borderRadius: 4,
-          padding: "var(--rebar-space-lg)",
-        }}
+      <DemoStage
+        title="Days to finish a task"
+        caption="One curve per team; the band is one standard deviation"
+        code={CODE}
+        states={[
+          { label: "One series", node: <DistributionChart title="Engineering" series={[ENG]} xFormat={days} height={160} /> },
+          { label: "No band", node: <DistributionChart title="Three teams, no band" series={[DESIGN, ENG, OPS]} xFormat={days} showStdDevBand={false} height={160} /> },
+          { label: "Very wide spread", node: <DistributionChart title="Crew interviews" series={[{ label: "Interviews", mean: 12, stdDev: 5, color: "var(--rebar-color-warning)" }]} xFormat={days} height={160} /> },
+        ]}
       >
-        <DistributionChart
-          title="Exam scores by section"
-          series={[
-            { label: "Section A", mean: 72, stdDev: 9 },
-            { label: "Section B", mean: 78, stdDev: 5 },
-          ]}
-        />
-      </Box>
+        <DistributionChart title="Days to finish a task, by team" series={[DESIGN, ENG, OPS]} xFormat={days} />
+      </DemoStage>
 
-      <Stack direction="row" gap="lg" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
-        <Stack gap="xs">
-          <Text size="sm" color="secondary">
-            A single series, wider spread
-          </Text>
-          <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-lg)" }}>
-            <DistributionChart title="Response time (ms)" series={[{ label: "P50", mean: 240, stdDev: 60 }]} />
-          </Box>
-        </Stack>
-        <Stack gap="xs">
-          <Text size="sm" color="secondary">
-            showStdDevBand={"{false}"} — no shaded band
-          </Text>
-          <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-lg)" }}>
-            <DistributionChart
-              title="Exam scores by section"
-              series={[
-                { label: "Section A", mean: 72, stdDev: 9 },
-                { label: "Section B", mean: 78, stdDev: 5 },
-              ]}
-              showStdDevBand={false}
-            />
-          </Box>
-        </Stack>
-      </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Team report" caption="Cycle time beside the headline" widths={false}>
+        <Card style={{ maxWidth: 680, margin: "0 auto" }} title="Cycle time, last 12 weeks">
+          <Stack gap="md">
+            <Stack direction="row" gap="sm" align="center" style={{ flexWrap: "wrap" }}>
+              <Tag tone="success">Operations 3 d</Tag>
+              <Tag tone="info">Design 4.2 d</Tag>
+              <Tag tone="default">Engineering 6.5 d</Tag>
+            </Stack>
+            <DistributionChart title="Days to finish a task" series={[DESIGN, ENG, OPS]} xFormat={days} height={200} />
+            <Text size="sm" color="secondary">Engineering varies most, mostly offline-sync work on Tideline mobile.</Text>
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

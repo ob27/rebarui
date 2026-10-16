@@ -1,36 +1,22 @@
 "use client";
 
-import { Ellipsis, Heading, Stack, Text } from "rebar-ui";
+import { Avatar, Card, Ellipsis, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { avatarOf, person } from "@/fixtures/tideline";
 
-const LONG_TEXT =
-  "Rebar UI is a headless-first, intentionally low-fidelity component library, built to be re-skinned into a real design system later without rewriting component structure or breaking tests.";
+const CODE = `<Ellipsis content={note} rows={2} expandText="More" collapseText="Less" />`;
+
+const NOTE =
+  "Interview 11: most of the crew keep a paper copy of the rota in the cab because the app is slow to open on the quay. They want shifts they can read at a glance, offline, with the next handover time shown first.";
+/** The core stylesheet leaves .rebar-ellipsis inline, so it measures a zero width and never truncates; block display fixes it (needs a core CSS change). */
+const BLOCK_FIX = ".cs-ellipsis-fix .rebar-ellipsis { display: block; }";
+const FILE = "interview-03-walkthrough-harbour-office-second-take-final.mp4";
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Ellipsis content={longText} rows={2} expandText="More" collapseText="Less" />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Ellipsis"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Real measurement, not plain CSS text-overflow",
-    body: [
-      {
-        kind: "text",
-        text: 'A binary search against a hidden, off-screen measurer clone (same width/font as the real content) finds the longest substring that fits within `rows` lines — this is what makes `direction="start"`/`"middle"` truncation and an inline expand/collapse affordance possible at all, neither of which plain CSS `text-overflow`/`-webkit-line-clamp` can do. `direction="end"` (the default) is the one case CSS could mostly approximate on its own.',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -52,24 +38,47 @@ const BLOCKS: Construct[] = [
 
 export default function EllipsisPage() {
   return (
-    <Stack gap="lg">
+    <Stack gap="lg" className="cs-ellipsis-fix">
+      <style>{BLOCK_FIX}</style>
       <Heading level={1}>Ellipsis</Heading>
-      <Text color="secondary">
-        Truncates text to a fixed number of lines with a real, measured &quot;…&quot; — not plain
-        CSS <code>text-overflow</code> — with optional expand/collapse text and a choice of where
-        the ellipsis goes.
-      </Text>
+      <Text color="secondary">Cuts text to a number of lines, with optional More and Less.</Text>
 
-      <LivePreview>
-        <Stack gap="lg">
-          <div style={{ maxWidth: 320 }}>
-            <Ellipsis content={LONG_TEXT} rows={2} expandText="More" collapseText="Less" />
-          </div>
-          <div style={{ maxWidth: 320 }}>
-            <Ellipsis content={LONG_TEXT} rows={1} direction="middle" />
-          </div>
-        </Stack>
-      </LivePreview>
+      <DemoStage
+        title="Interview note"
+        caption="Two lines, then More"
+        code={CODE}
+        states={[
+          { label: "One line, cut in the middle", node: <div style={{ maxWidth: 280 }}><Ellipsis content={FILE} rows={1} direction="middle" /></div> },
+          { label: "Cut at the start", node: <div style={{ maxWidth: 280 }}><Ellipsis content={FILE} rows={1} direction="start" /></div> },
+          { label: "Short text, nothing to cut", node: <div style={{ maxWidth: 280 }}><Ellipsis content="Twelve calls, one clear pattern." rows={2} expandText="More" /></div> },
+          { label: "Opens expanded", node: <div style={{ maxWidth: 280, background: "var(--rebar-color-bg-raised, var(--rebar-color-bg-primary))", padding: 8, borderRadius: 8 }}><Ellipsis content={NOTE} rows={2} defaultOpen expandText="More" collapseText="Less" /></div> },
+        ]}
+      >
+        <Card style={{ maxWidth: 460, margin: "0 auto" }}>
+          <Ellipsis content={NOTE} rows={2} expandText="More" collapseText="Less" />
+        </Card>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Activity feed" caption="Long updates stay one row tall until opened" widths={false}>
+        <Card style={{ maxWidth: 520, margin: "0 auto" }} title="Latest notes">
+          <Stack gap="md">
+            {[
+              { id: "priya", text: NOTE },
+              { id: "jonas", text: "Offline sync now queues edits while the phone has no signal and replays them in order when it reconnects. Conflicts keep the newest edit and flag the older one for a look." },
+              { id: "maya", text: "Palette signed off." },
+            ].map((n) => (
+              <Stack key={n.id} direction="row" gap="sm" align="start">
+                <Avatar {...avatarOf(n.id)} size="sm" />
+                <Stack gap="xs" style={{ flex: 1, minWidth: 0 }}>
+                  <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>{person(n.id).name}</Text>
+                  <Text size="sm" color="secondary"><Ellipsis content={n.text} rows={2} expandText="More" collapseText="Less" /></Text>
+                </Stack>
+              </Stack>
+            ))}
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

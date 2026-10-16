@@ -1,47 +1,24 @@
-import { Cascader, Heading, Stack, Text } from "rebar-ui";
+import { Button, Card, Cascader, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PROJECTS, TASKS } from "@/fixtures/tideline";
 
-const OPTIONS = [
-  {
-    value: "on",
-    label: "Ontario",
-    children: [
-      { value: "toronto", label: "Toronto" },
-      { value: "ottawa", label: "Ottawa" },
-    ],
-  },
-  {
-    value: "bc",
-    label: "British Columbia",
-    children: [{ value: "vancouver", label: "Vancouver" }],
-  },
-];
+const CODE = `<Cascader
+  options={[{ value: "harbour", label: "Harbour rebrand", children: [{ value: "icons", label: "Icon audit" }] }]}
+  onValueChange={(path, labels) => setTarget(path)}
+  aria-label="Project and task"
+/>`;
+
+/** Project, then task: each project's children are its tasks. */
+const OPTIONS = PROJECTS.map((p) => {
+  const tasks = TASKS.filter((t) => t.project === p.id);
+  return { value: p.id, label: p.name, children: tasks.length ? tasks.map((t) => ({ value: t.id, label: t.title })) : undefined };
+});
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Cascader options={[{ value: "on", label: "Ontario", children: [{ value: "toronto", label: "Toronto" }] }]} onValueChange={(path, labels) => setLocation(path)} aria-label="Location" />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Cascader"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "One Select per level",
-    body: [
-      {
-        kind: "text",
-        text: "Each level is a real `Select` — the next level's options are whichever option the previous level chose. Choosing a new value at any level clears every level after it, since those choices no longer apply to the new branch.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -60,14 +37,38 @@ export default function CascaderPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Cascader</Heading>
-      <Text color="secondary">
-        Multi-level cascading select — province, then city, then district — one real{" "}
-        <code>Select</code> per level.
-      </Text>
+      <Text color="secondary">Pick a value through levels, one Select per level.</Text>
 
-      <LivePreview>
-        <Cascader options={OPTIONS} placeholder="Select…" aria-label="Location" />
-      </LivePreview>
+      <DemoStage
+        title="Project, then task"
+        caption="Choosing a project fills the second Select"
+        code={CODE}
+        states={[
+          { label: "Preselected, disabled and with a custom placeholder", node: (
+            <Stack gap="sm">
+              <Cascader options={OPTIONS} defaultValue={["harbour", "palette"]} aria-label="Preselected" />
+              <Cascader options={OPTIONS} defaultValue={["mobile", "sync"]} disabled aria-label="Disabled" />
+              <Cascader options={OPTIONS} placeholder="Where should it go?" aria-label="Custom" />
+            </Stack>
+          ) },
+        ]}
+      >
+        <Cascader options={OPTIONS} placeholder="Select…" aria-label="Project and task" />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Move a task" caption="Send “Icon audit” to another project" widths={false}>
+        <Card
+          style={{ maxWidth: 520, margin: "0 auto" }}
+          title="Move “Icon audit”"
+          actions={[<Button key="c" variant="secondary">Cancel</Button>, <Button key="m">Move task</Button>]}
+        >
+          <Stack gap="sm">
+            <Text size="sm" color="secondary">Currently in Harbour rebrand, To do.</Text>
+            <Cascader options={OPTIONS} defaultValue={["mobile"]} aria-label="New location" />
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

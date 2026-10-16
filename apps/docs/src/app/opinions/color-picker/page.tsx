@@ -1,36 +1,17 @@
-import { ColorPicker, Heading, Stack, Text } from "rebar-ui";
+"use client";
+
+import { useState } from "react";
+import { Card, ColorPicker, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PROJECTS } from "@/fixtures/tideline";
+
+const CODE = `<ColorPicker defaultValue="#0066cc" onChange={(hex) => setLabelColour(hex)} aria-label="Label colour" />`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [{ kind: "code", code: '<ColorPicker defaultValue="#0066cc" onChange={(hex) => setColor(hex)} />' }],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["ColorPicker"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "The native picker does the hard part",
-    body: [
-      {
-        kind: "text",
-        text: "The popover's preset grid covers the common case; the native `<input type=\"color\">` alongside it is the browser's own accessible, cross-platform color picker for anything else — not reimplemented as a custom hue/saturation canvas here.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Real mutations: size, mode, and the eyedropper",
-    body: [
-      {
-        kind: "text",
-        text: '`size` (`"sm"`/`"md"`/`"lg"`) covers the visual scale; `mode="recent"` is the actual functional "micro" variant — instead of the full `presets` grid, it shows only the 3 most-recently-picked colors (seeded from the first few `presets` before anything\'s actually been picked), a real reduction in scope, not just a smaller version of the same grid. The native color input is still offered in both modes for anything not in the shown set. `allowEyedropper` adds a fourth, orthogonal capability — see below.',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "Picking a color from anywhere on screen: allowEyedropper",
@@ -58,55 +39,50 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function ColorPickerPage() {
+  const [colour, setColour] = useState("#0066cc");
   return (
     <Stack gap="lg">
       <Heading level={1}>ColorPicker</Heading>
-      <Text color="secondary">
-        A color swatch that opens a popover of preset swatches plus a native color input for
-        anything else.
-      </Text>
+      <Text color="secondary">A swatch that opens preset colours plus the browser&apos;s own picker.</Text>
 
-      <LivePreview>
-        <ColorPicker defaultValue="#0066cc" />
-      </LivePreview>
+      <DemoStage
+        title="Label colour"
+        caption="Presets, or any colour from the native input"
+        code={CODE}
+        widths={false}
+        states={[
+          { label: "Sizes", node: (
+            <Stack direction="row" gap="md" align="center">
+              <ColorPicker size="sm" defaultValue="#d32f2f" aria-label="Small" />
+              <ColorPicker size="md" defaultValue="#2e7d32" aria-label="Medium" />
+              <ColorPicker size="lg" defaultValue="#7b1fa2" aria-label="Large" />
+            </Stack>
+          ) },
+          { label: "Recent colours only", node: <ColorPicker mode="recent" size="sm" defaultValue="#0066cc" aria-label="Recent colours" /> },
+          { label: "With eyedropper", node: <ColorPicker allowEyedropper defaultValue="#0066cc" aria-label="Pick from screen" /> },
+          { label: "Disabled", node: <ColorPicker disabled defaultValue="#0066cc" aria-label="Disabled" /> },
+        ]}
+      >
+        <Stack direction="row" gap="md" align="center">
+          <ColorPicker defaultValue="#0066cc" aria-label="Label colour" />
+          <Text size="sm" color="secondary">Harbour rebrand</Text>
+        </Stack>
+      </DemoStage>
 
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          <code>size</code> — <code>&quot;sm&quot;</code>/<code>&quot;md&quot;</code>/
-          <code>&quot;lg&quot;</code> resize the visible swatch; the real clickable footprint stays
-          a genuine ≥44×44px target at every size (padding included when the swatch itself is
-          smaller — see ref/HEURISTICS.md #19), same as any other small tap target here.
-        </Text>
-        <LivePreview>
-          <Stack direction="row" gap="md" style={{ alignItems: "center" }}>
-            <ColorPicker size="sm" defaultValue="#d32f2f" aria-label="Small" />
-            <ColorPicker size="md" defaultValue="#2e7d32" aria-label="Medium" />
-            <ColorPicker size="lg" defaultValue="#7b1fa2" aria-label="Large" />
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Project colours" caption="One swatch per project" widths={false}>
+        <Card style={{ maxWidth: 460, margin: "0 auto" }} title="Project colours">
+          <Stack gap="sm">
+            {PROJECTS.slice(0, 3).map((p, i) => (
+              <Stack key={p.id} direction="row" gap="md" align="center">
+                <ColorPicker size="sm" value={i === 0 ? colour : undefined} defaultValue={["#0066cc", "#2e7d32", "#c2410c"][i]} onChange={i === 0 ? setColour : undefined} aria-label={`${p.name} colour`} />
+                <Text style={{ flex: 1 }}>{p.name}</Text>
+                <Tag>{p.kicker}</Tag>
+              </Stack>
+            ))}
           </Stack>
-        </LivePreview>
-      </Stack>
-
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          <code>mode=&quot;recent&quot;</code> — a real &quot;micro&quot; picker: only the 3
-          most-recently-picked colors, not the full preset grid. Pick a few different colors below
-          to see the shown set actually change.
-        </Text>
-        <LivePreview>
-          <ColorPicker mode="recent" size="sm" defaultValue="#0066cc" aria-label="Recent colors" />
-        </LivePreview>
-      </Stack>
-
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          <code>allowEyedropper</code> — click the swatch, then the eyedropper icon in the
-          popover, to sample any color on your screen (Chromium browsers only; the button is
-          absent elsewhere).
-        </Text>
-        <LivePreview>
-          <ColorPicker allowEyedropper defaultValue="#0066cc" aria-label="Pick from screen" />
-        </LivePreview>
-      </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

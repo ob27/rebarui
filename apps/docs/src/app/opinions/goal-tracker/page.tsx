@@ -1,13 +1,50 @@
-import { Heading, Stack, Text } from "rebar-ui";
+import { Card, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { project } from "@/fixtures/tideline";
+
+const CODE = `{
+  type: "goal-tracker",
+  aspiration: "Launch the Harbour rebrand on 24 Oct",
+  focusAreas: [{ id: "fa1", text: "Identity", goals: [{ id: "g1", text: "Sign off the palette", completed: true }] }],
+}`;
+
+const TRACKER: Construct = {
+  type: "goal-tracker",
+  aspiration: "Launch the Harbour rebrand on 24 Oct",
+  celebration: "small",
+  focusAreas: [
+    {
+      id: "fa1",
+      text: "Identity",
+      goals: [
+        { id: "g1", text: "Sign off the brand palette", completed: true },
+        { id: "g2", text: "Finish the icon audit", completed: false },
+        { id: "g3", text: "Cut the stacked mark as an SVG", completed: true },
+      ],
+    },
+    {
+      id: "fa2",
+      text: "Launch",
+      goals: [
+        { id: "g4", text: "Draft the launch checklist", completed: false },
+        { id: "g5", text: "Book the crew walkthrough", completed: false },
+      ],
+    },
+  ],
+};
+
+const DONE: Construct = {
+  type: "goal-tracker",
+  aspiration: "Hand payroll a clean rota",
+  celebration: "none",
+  focusAreas: [{ id: "fa1", text: "Rota export", goals: [{ id: "g1", text: "Export March rota to CSV", completed: true }, { id: "g2", text: "Check with Leo", completed: true }] }],
+};
+
+const FRESH: Construct = { type: "goal-tracker", aspiration: "Run twelve crew interviews", focusAreas: [] };
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Overview",
-    body: [{ kind: "text", text: "A hierarchical goal/OKR tracker: one Aspiration, several Focus Areas, each holding several Goals — all three levels inline-editable, goals toggle complete with a celebratory confetti burst (TodoItem underneath), and Add/Delete affordances mutate the board locally, the same 'seed local state from the block's own literal data' convention card-kanban uses. Reclassified from a standalone GoalTracker component into this block — the real reusable primitive was the smaller checkable-row control (now TodoItem), not the whole hierarchy; see the Design Heuristics component-vs-block test." }],
-  },
   {
     type: "doc-section",
     heading: "Shape",
@@ -15,40 +52,41 @@ const BLOCKS: Construct[] = [
 // GoalTrackerFocusAreaData = { id: string, text: string, goals: GoalTrackerGoalData[] }
 // GoalTrackerGoalData = { id: string, text: string, completed: boolean }` }],
   },
-  {
-    type: "doc-section",
-    heading: "Example",
-    body: [{ kind: "text", text: "A live example of the goal-tracker block:" }],
-  },
-  {
-      type: "goal-tracker",
-      aspiration: "Become the top board network",
-      focusAreas: [
-        {
-          id: "fa1",
-          text: "Grow membership",
-          goals: [
-            {
-              id: "g1",
-              text: "Reach 500 members",
-              completed: false,
-            },
-            {
-              id: "g2",
-              text: "Host 3 events",
-              completed: true,
-            },
-          ],
-        },
-      ],
-    },
 ];
 
 export default function GoalTrackerPage() {
+  const harbour = project("harbour");
   return (
     <Stack gap="lg">
       <Heading level={1}>Goal Tracker</Heading>
-      <Text color="secondary">{"A hierarchical goal/OKR tracker: one Aspiration, several Focus Areas, each holding several Goals — all three levels inline-editable, goals toggle complete with a celebratory confetti burst (TodoItem underneath), and Add/Delete affordances mutate the board locally, the same 'seed local state from the block's own literal data' convention card-kanban uses. Reclassified from a standalone GoalTracker component into this block — the real reusable primitive was the smaller checkable-row control (now TodoItem), not the whole hierarchy; see the Design Heuristics component-vs-block test."}</Text>
+      <Text color="secondary">One aspiration, focus areas under it and goals to tick off.</Text>
+
+      <DemoStage
+        title="Launch goals"
+        caption="Edit any line, tick a goal, add or delete"
+        code={CODE}
+        widths={false}
+        states={[
+          { label: "All done, and nothing added yet", node: <Stack gap="md"><NextBlockRenderer blocks={[DONE]} /><NextBlockRenderer blocks={[FRESH]} /></Stack> },
+        ]}
+      >
+        <NextBlockRenderer blocks={[TRACKER]} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Project overview" caption="Goals beside the project's status" widths={false}>
+        <Stack gap="md">
+          <Card>
+            <Stack direction="row" gap="md" align="center" style={{ flexWrap: "wrap" }}>
+              <Heading level={3}>{harbour.name}</Heading>
+              <Tag tone="success">{harbour.status}</Tag>
+              <Text size="sm" color="secondary">{harbour.done}% done, due {harbour.due}</Text>
+            </Stack>
+          </Card>
+          <NextBlockRenderer blocks={[TRACKER]} />
+        </Stack>
+      </DemoStage>
+
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

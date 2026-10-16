@@ -1,42 +1,16 @@
-"use client";
-
-import { Collapsible, Heading, Stack, Text } from "rebar-ui";
+import { Button, Card, Collapsible, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { STATUS_TONE, gbp, project } from "@/fixtures/tideline";
+
+const CODE = `<Collapsible trigger="Show budget details">
+  <Text>Budget £48,200, due 24 Oct.</Text>
+</Collapsible>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Collapsible trigger="Show shipping details">\n  <Text>Ships within 2-3 business days via standard courier.</Text>\n</Collapsible>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Collapsible"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Distinct from Accordion",
-    body: [
-      {
-        kind: "text",
-        text: '`Accordion`/`AccordionItem` require a `value`-keyed multi-item structure, even for a single region — you\'d have to invent a throwaway `value` just to render one. `Collapsible` is the bare single-region primitive: a lone "Show more" panel or filter drawer with no item list around it.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Real disclosure semantics",
-    body: [
-      {
-        kind: "text",
-        text: 'A real `<button>` trigger with `aria-expanded`/`aria-controls`, and the content region is `role="region"` + `aria-labelledby` back to the trigger — the standard disclosure-pattern association. Content is fully removed from the DOM when collapsed (not just visually hidden), matching `Accordion`\'s own convention.',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -60,17 +34,59 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function CollapsiblePage() {
+  const p = project("harbour");
+  const s = project("signage");
   return (
     <Stack gap="lg">
       <Heading level={1}>Collapsible</Heading>
-      <Text color="secondary">
-        A single expand/collapse region — the lone-panel counterpart to Accordion, with no
-        multi-item value machinery.
-      </Text>
+      <Text color="secondary">One region that opens and closes under a button.</Text>
 
-      <Collapsible trigger="Show shipping details">
-        <Text>Ships within 2-3 business days via standard courier. Free returns within 30 days.</Text>
-      </Collapsible>
+      <DemoStage
+        title="Project details"
+        caption="Content leaves the page when closed"
+        code={CODE}
+        states={[
+          {
+            label: "Open",
+            node: (
+              <Collapsible trigger="Budget details" defaultOpen>
+                <Text size="sm">{gbp(p.budget)} budget, {p.done}% complete.</Text>
+              </Collapsible>
+            ),
+          },
+          { label: "Disabled", node: <Collapsible trigger="Archived notes" disabled><Text size="sm">Nothing here.</Text></Collapsible> },
+          {
+            label: "Long label",
+            node: (
+              <Collapsible trigger="Show everything the crew said about the depot signage in the second round of interviews">
+                <Text size="sm">Twelve calls, one clear pattern.</Text>
+              </Collapsible>
+            ),
+          },
+        ]}
+      >
+        <Collapsible trigger="Show budget details">
+          <Text>
+            {gbp(p.budget)} budget for {p.name}, {p.done}% complete, due {p.due}.
+          </Text>
+        </Collapsible>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Project card" caption="Extra detail tucked under the summary" widths={false}>
+        <Card style={{ maxWidth: 460, margin: "0 auto" }} title={s.name} actions={[<Button key="o" variant="secondary">Open project</Button>]}>
+          <Stack gap="sm">
+            <Stack direction="row" gap="sm" align="center">
+              <Tag tone={STATUS_TONE[s.status]}>{s.status}</Tag>
+              <Text size="sm" color="secondary">Due {s.due}</Text>
+            </Stack>
+            <Text size="sm">{s.summary}</Text>
+            <Collapsible trigger="Budget and spend">
+              <Text size="sm" color="secondary">{gbp(s.budget)} budget, {s.done}% of the work done.</Text>
+            </Collapsible>
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

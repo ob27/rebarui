@@ -1,22 +1,24 @@
 "use client";
 
-import { EmailCapture, Heading, Stack, Text } from "rebar-ui";
+import { Button, Card, EmailCapture, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { project } from "@/fixtures/tideline";
+
+const CODE = `<EmailCapture
+  onSubmit={async (email) => {
+    const res = await fetch("/api/waitlist", { method: "POST", body: JSON.stringify({ email }) });
+    if (!res.ok) throw new Error("failed"); // any throw shows the error state
+  }}
+  submitLabel="Notify me"
+  helperText="We will only email you about the launch."
+/>`;
+
+const later = () => new Promise<void>((resolve) => setTimeout(resolve, 600));
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: `<EmailCapture\n  onSubmit={async (email) => {\n    const res = await fetch("/api/waitlist", { method: "POST", body: JSON.stringify({ email }) });\n    if (!res.ok) throw new Error("failed"); // any throw or rejection shows the error state\n  }}\n  submitLabel="Notify me"\n  helperText="We will only email you about the launch."\n/>`,
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["EmailCapture"] ?? [] },
   {
     type: "doc-section",
@@ -61,27 +63,39 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function EmailCapturePage() {
+  const mobile = project("mobile");
   return (
     <Stack gap="lg">
       <Heading level={1}>EmailCapture</Heading>
-      <Text color="secondary">
-        A one-field sign-up form: validation, a submit state machine and an accessible result
-        message. The caller owns the network call.
-      </Text>
+      <Text color="secondary">A one-field sign-up form with validation and a result message.</Text>
 
-      <LivePreview>
-        <Stack gap="lg">
-          <EmailCapture
-            onSubmit={() => new Promise<void>((resolve) => setTimeout(resolve, 600))}
-            helperText="Demo: succeeds after a short delay."
-          />
-          <EmailCapture
-            onSubmit={() => Promise.reject(new Error("demo failure"))}
-            submitLabel="Always fails"
-            helperText="Demo: always shows the error state."
-          />
-        </Stack>
-      </LivePreview>
+      <DemoStage
+        title="Launch list"
+        caption="Submits after a short delay; try a bad address first"
+        code={CODE}
+        widths={false}
+        states={[
+          { label: "Always fails", node: <EmailCapture onSubmit={() => Promise.reject(new Error("offline"))} submitLabel="Notify me" helperText="Shows the error state and keeps the address." /> },
+          { label: "Custom messages", node: <EmailCapture onSubmit={later} label="Work email" placeholder="you@tideline.studio" submitLabel="Join" successMessage="You are on the list." helperText="Crew only." /> },
+        ]}
+      >
+        <div style={{ maxWidth: 440, margin: "0 auto" }}>
+          <EmailCapture onSubmit={later} submitLabel="Notify me" helperText="We will only email you about the launch." />
+        </div>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Beta sign-up" caption="On a project landing panel" widths={false}>
+        <Card className="cs-grain" style={{ maxWidth: 560, margin: "0 auto", padding: 32 }}>
+          <Stack gap="md">
+            <Text size="xs" color="secondary" style={{ letterSpacing: "0.08em", textTransform: "uppercase" }}>{mobile.kicker}</Text>
+            <Heading level={2}>{mobile.name}, in beta from {mobile.due}</Heading>
+            <Text color="secondary">{mobile.summary}</Text>
+            <EmailCapture onSubmit={later} submitLabel="Get early access" />
+            <Button variant="tertiary">See what is in the beta</Button>
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

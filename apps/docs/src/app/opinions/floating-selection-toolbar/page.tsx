@@ -1,33 +1,30 @@
 "use client";
 
 import { useRef } from "react";
-import { FloatingSelectionToolbar, Heading, Stack, Text } from "rebar-ui";
+import { Avatar, Card, FloatingSelectionToolbar, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { avatarOf, person } from "@/fixtures/tideline";
+
+const CODE = `<FloatingSelectionToolbar
+  containerRef={noteRef}
+  actions={[
+    { key: "ask-ai", label: "Ask AI", onSelect: (text) => askAi(text) },
+    { key: "comment", label: "Comment", onSelect: (text) => addComment(text) },
+  ]}
+/>`;
+
+const NOTE = "Most of the crew keep a paper copy of the rota in the cab because the app is slow to open on the quay. They want shifts they can read at a glance, offline, with the next handover time shown first.";
+const ACTIONS = [
+  { key: "ask-ai", label: "Ask AI", onSelect: () => {} },
+  { key: "comment", label: "Comment", onSelect: () => {} },
+  { key: "copy", label: "Copy", onSelect: () => {} },
+];
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<FloatingSelectionToolbar\n  containerRef={editorRef}\n  actions={[{ key: "ask-ai", label: "Ask AI", onSelect: (text) => askAi(text) }]}\n/>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["FloatingSelectionToolbar"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Anchors to a live selection range, not a fixed element",
-    body: [
-      {
-        kind: "text",
-        text: "Distinct from Popover/ContextMenu/Tooltip, all of which anchor to a fixed trigger element — this tracks `document.selectionchange` and positions itself against the real selection's bounding box, clamped to stay in the viewport. Stays open after an action so a second action can be triggered against the same selection.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -51,33 +48,38 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function FloatingSelectionToolbarPage() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const demoRef = useRef<HTMLDivElement>(null);
+  const noteRef = useRef<HTMLDivElement>(null);
+  const priya = person("priya");
 
   return (
     <Stack gap="lg">
       <Heading level={1}>FloatingSelectionToolbar</Heading>
-      <Text color="secondary">
-        A small toolbar that appears at a live text selection's screen coordinates, offering
-        contextual actions.
-      </Text>
+      <Text color="secondary">A small toolbar that appears over selected text. Select a few words to see it.</Text>
 
-      <Text size="sm" color="secondary">
-        Select some text in the paragraph below to see the toolbar appear.
-      </Text>
-      <div ref={containerRef} style={{ border: "1px solid var(--rebar-color-border)", borderRadius: 4, padding: 16 }}>
-        <Text>
-          Rebar UI is a headless-first, intentionally low-fidelity component library built to be
-          re-skinned into a real design system later, by hand or by an LLM, without rewriting
-          component structure or breaking tests.
-        </Text>
-      </div>
-      <FloatingSelectionToolbar
-        containerRef={containerRef}
-        actions={[
-          { key: "ask-ai", label: "Ask AI", onSelect: () => {} },
-          { key: "define", label: "Define", onSelect: () => {} },
-        ]}
-      />
+      <DemoStage title="Interview note" caption="Select any words" code={CODE} widths={false}>
+        <div ref={demoRef} style={{ border: "1px solid var(--rebar-color-border)", borderRadius: 12, padding: 20, maxWidth: 560, margin: "0 auto" }}>
+          <Text>{NOTE}</Text>
+        </div>
+        <FloatingSelectionToolbar containerRef={demoRef} actions={ACTIONS} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Research note" caption="Quote a line from a crew interview" widths={false}>
+        <Card style={{ maxWidth: 560, margin: "0 auto" }} title="Interview 11, notes">
+          <Stack gap="sm">
+            <Stack direction="row" gap="sm" align="center">
+              <Avatar {...avatarOf("priya")} size="sm" />
+              <Text size="sm" color="secondary">{priya.name} · 21 Oct</Text>
+              <Tag tone="info">Research</Tag>
+            </Stack>
+            <div ref={noteRef}>
+              <Text>{NOTE}</Text>
+            </div>
+          </Stack>
+        </Card>
+        <FloatingSelectionToolbar containerRef={noteRef} actions={ACTIONS.slice(0, 2)} />
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
