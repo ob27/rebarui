@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { renderChartEmptyState } from "../chartEmptyState";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { CHART_DOWN, CHART_UP } from "../chartPalette";
 
 export interface CandlestickDataPoint {
   label: string;
@@ -43,8 +44,8 @@ export function CandlestickChart({
   title,
   ariaLabel,
   height = 320,
-  upColor = "var(--rebar-color-success, #2e7d32)",
-  downColor = "var(--rebar-color-danger, #d32f2f)",
+  upColor = CHART_UP,
+  downColor = CHART_DOWN,
   yFormat = (v: number) => v.toFixed(2),
   bionic,
   bionicOptions,

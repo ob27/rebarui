@@ -47,7 +47,7 @@ describe("WaterfallChart", () => {
     const stepGroups = container.querySelectorAll('[data-rebar-part="step"]');
     const refundsGroup = Array.from(stepGroups).find((g) => g.textContent?.includes("Refunds"));
     const rect = refundsGroup?.querySelector("rect");
-    expect(rect).toHaveAttribute("fill", "var(--rebar-color-danger, #d32f2f)");
+    expect(rect?.getAttribute("fill")).toContain("--rebar-chart-down");
     // A floating bar's own height is a real, positive rect height (not the whole plot height, and
     // not collapsed to zero) — it spans only the delta's own magnitude on the shared scale.
     expect(Number(rect?.getAttribute("height"))).toBeGreaterThan(0);

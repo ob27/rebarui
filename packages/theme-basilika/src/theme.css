@@ -103,6 +103,21 @@
   --rebar-float-card-radius: 1.25rem;
   --rebar-hero-scrim: linear-gradient(180deg, rgba(10, 11, 22, 0.55), rgba(10, 11, 22, 0.35));
   --rebar-hero-text: #fbf6ee;
+
+  /* Chart series palette (validated with the dataviz skill's validate_palette.js against the
+     basilika surfaces). Slot order is the colour-blind-safety mechanism: coral, blue, amber,
+     teal, violet. Success green is reserved for status and never a series; green/red appear only
+     as the signed up/down pair. Light, surface #fbf6ee: all slots L 0.43-0.77, chroma >= 0.10,
+     worst adjacent CVD dE 10.2, worst adjacent normal-vision dE 18.3, all >= 3:1 contrast.
+     Dark, surface #0f1124: L 0.48-0.67, worst adjacent CVD dE 10.4, normal 18.5, all >= 3:1. */
+  --rebar-chart-1: #c4402a;
+  --rebar-chart-2: #3d5fb4;
+  --rebar-chart-3: #b07a10;
+  --rebar-chart-4: #0b8a74;
+  --rebar-chart-5: #8a4fb0;
+  --rebar-chart-other: #6b6f86;
+  --rebar-chart-up: #2f7a4f;
+  --rebar-chart-down: #b3261e;
 }
 
 :where([data-theme="dark"], [data-theme="dark"] [data-rebar-theme="basilika"]) {
@@ -142,6 +157,16 @@
   --rebar-shadow-float: 0 4px 10px rgba(0, 0, 0, 0.35), 0 28px 60px rgba(0, 0, 0, 0.5);
   --rebar-shadow-chip: 0 1px 2px rgba(0, 0, 0, 0.4);
   --rebar-hero-text: #f3ede2;
+
+  /* Chart palette, dark steps (validation notes are in the light block above). */
+  --rebar-chart-1: #df6753;
+  --rebar-chart-2: #6c8ce0;
+  --rebar-chart-3: #bf8a20;
+  --rebar-chart-4: #25a08c;
+  --rebar-chart-5: #ae70d2;
+  --rebar-chart-other: #9094ad;
+  --rebar-chart-up: #74c996;
+  --rebar-chart-down: #ff8f86;
 }
 
 /* Page */

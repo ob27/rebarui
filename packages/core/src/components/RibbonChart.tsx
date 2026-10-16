@@ -5,6 +5,7 @@ import { ChartValueTag, useChartMarkSelection } from "../chartMarkSelection";
 import { ChartFilterFooter, useSeriesFilter } from "../chartSeriesFilter";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { CHART_PALETTE } from "../chartPalette";
 
 export interface RibbonChartSeries {
   label: string;
@@ -35,13 +36,7 @@ export interface RibbonChartProps extends Omit<ComponentPropsWithoutRef<"figure"
   bionicOptions?: BionicOptions;
 }
 
-const DEFAULT_PALETTE = [
-  "var(--rebar-color-primary, #0066cc)",
-  "var(--rebar-color-success, #2e7d32)",
-  "var(--rebar-color-warning, #f57c00)",
-  "var(--rebar-color-danger, #d32f2f)",
-  "var(--rebar-color-text-secondary, #757575)",
-];
+const DEFAULT_PALETTE = CHART_PALETTE;
 
 // Builds one closed, smoothly-curved ribbon polygon across every x position — the top edge left
 // to right (bezier-smoothed through each rank-center minus half the ribbon width), then the

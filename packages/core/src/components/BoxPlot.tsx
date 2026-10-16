@@ -4,6 +4,7 @@ import { renderChartEmptyState } from "../chartEmptyState";
 import { ChartValueTag, useChartMarkSelection } from "../chartMarkSelection";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { CHART_PALETTE } from "../chartPalette";
 
 export interface BoxPlotGroup {
   label: string;
@@ -36,13 +37,7 @@ export interface BoxPlotProps extends Omit<ComponentPropsWithoutRef<"figure">, "
   bionicOptions?: BionicOptions;
 }
 
-const DEFAULT_PALETTE = [
-  "var(--rebar-color-primary, #0066cc)",
-  "var(--rebar-color-success, #2e7d32)",
-  "var(--rebar-color-warning, #f57c00)",
-  "var(--rebar-color-danger, #d32f2f)",
-  "var(--rebar-color-text-secondary, #757575)",
-];
+const DEFAULT_PALETTE = CHART_PALETTE;
 
 /**
  * A statistical distribution chart — each group drawn as a vertical box-and-whisker from a
@@ -87,7 +82,7 @@ export function BoxPlot({
   const rawMin = Math.min(...allValues);
   const rawMax = Math.max(...allValues);
   const pad = (rawMax - rawMin) * 0.12 || rawMax * 0.1 || 1;
-  const yMin = rawMin - pad;
+  const yMin = rawMin >= 0 ? Math.max(0, rawMin - pad) : rawMin - pad;
   const yMax = rawMax + pad;
   const yScale = (v: number) => marginTop + plotHeight - ((v - yMin) / (yMax - yMin)) * plotHeight;
 

@@ -4,6 +4,7 @@ import { renderChartEmptyState } from "../chartEmptyState";
 import { ChartValueTag, useChartMarkSelection } from "../chartMarkSelection";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { CHART_PALETTE } from "../chartPalette";
 
 export interface DistributionSeries {
   label: string;
@@ -31,13 +32,7 @@ export interface DistributionChartProps extends Omit<ComponentPropsWithoutRef<"f
   bionicOptions?: BionicOptions;
 }
 
-const DEFAULT_PALETTE = [
-  "var(--rebar-color-primary, #0066cc)",
-  "var(--rebar-color-success, #2e7d32)",
-  "var(--rebar-color-warning, #f57c00)",
-  "var(--rebar-color-danger, #d32f2f)",
-  "var(--rebar-color-text-secondary, #757575)",
-];
+const DEFAULT_PALETTE = CHART_PALETTE;
 
 const SAMPLE_COUNT = 120;
 // A normal curve is, in principle, nonzero everywhere — 4 standard deviations either side of the
@@ -105,7 +100,10 @@ export function DistributionChart({
     );
   }
 
-  const domainMin = Math.min(...series.map((s) => s.mean - DOMAIN_STD_DEVS * s.stdDev));
+  // When every mean is non-negative the quantity is almost certainly non-negative too (counts,
+  // durations, scores), so the axis never starts below zero just because mean - 4σ does.
+  const rawDomainMin = Math.min(...series.map((s) => s.mean - DOMAIN_STD_DEVS * s.stdDev));
+  const domainMin = series.every((s) => s.mean >= 0) ? Math.max(0, rawDomainMin) : rawDomainMin;
   const domainMax = Math.max(...series.map((s) => s.mean + DOMAIN_STD_DEVS * s.stdDev));
   const domainSpan = domainMax - domainMin || 1;
 
