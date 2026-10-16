@@ -1,40 +1,13 @@
 import { Stack } from "rebar-ui";
 import { TierIntro } from "@/components/docs/TierIntro";
 import type { Construct } from "@rebar-ui/placement";
-import { tierComponentNames } from "@/data/tierSections";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 export default function OrdersPage() {
-  const count = tierComponentNames("order").length;
-
   const BLOCKS: Construct[] = [
     {
       type: "doc-section",
-      heading: "Philosophy",
-      body: [
-        {
-          kind: "text",
-          text: `Orders are macro/page-level structural governance — constructs that arrange other things at a page or app scale (nav bars, sidebars, tab strips that swap whole panels, page-level overlay/panel systems, page indexes) rather than carrying their own data-shaped state as their main purpose. ${count} components ship today, plus a handful of blocks. Read literally, "Order" looks like a fourth rung on the Imitation→Synthetic→Opinion complexity ladder; it isn't — it's a different axis entirely (macro governance vs. behavioral complexity), which is why only a small minority of the whole placement-layer catalog is Order rather than the whole thing.`,
-        },
-        {
-          kind: "text",
-          text: "Order is judged by page-structural *role*, not by the absence of a state machine — `SectionNav` and `NavIndex` both have real scroll-spy/search state and are still Orders, because that state exists in service of governing where the reader's attention sits on the page, not as the construct's own defining interaction. Three already-distinct Order artifacts exist for \"a nav bar\" alone — the `NavBar` component, and the `nav-bar` and `site-header` blocks — a known redundancy, not something to silently consolidate on your own without opening an issue first.",
-        },
-      ],
-    },
-    {
-      type: "doc-section",
-      heading: "When to reach for this tier",
-      body: [
-        {
-          kind: "text",
-          text: "Reach for an Order when the construct's job is to decide where *other* content lives, appears, or is currently focused — not to hold its own data. Ask: \"does this arrange the page around it, or does the page arrange around what this holds?\" A tab strip that swaps whole panels is an Order; a single tab's own content is whatever tier that content already is. Because this tier is deliberately small and touches shared page structure, a new Order candidate is worth extra scrutiny — open an issue before building one, per `CONTRIBUTING.md`, since it's more likely to interact with other pages' layout than a typical new Imitation or Synthetic.",
-        },
-      ],
-    },
-    {
-      type: "doc-section",
-      heading: "Building your own",
+      heading: "Build one",
       body: [
         {
           kind: "list",
@@ -49,7 +22,7 @@ export default function OrdersPage() {
     },
     {
       type: "doc-section",
-      heading: "Porting it back to the main repo",
+      heading: "Contribute it",
       body: [
         {
           kind: "text",
@@ -91,7 +64,7 @@ export default function OrdersPage() {
 
   return (
     <Stack gap="lg">
-      <TierIntro tier="order" title="Orders" lead="Macro/page-level structural governance — arranges other things at a page or app scale." lines={["Page-level law.", "Structure before decoration."]} />
+      <TierIntro tier="order" title="Orders" lead="Whole layouts: an app shell, a nav bar, a grid." />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

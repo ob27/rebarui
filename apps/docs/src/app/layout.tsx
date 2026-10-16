@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "rebar-ui/style.css";
 import "@rebar-ui/theme-basilika/theme.css";
+import "@/styles/site.css";
 // Statically imported (unlike the JS below): a static import() chained inside next/dynamic's
 // loader broke Turbopack's dynamic-import transform ("not an ecmascript client_module"), and
 // a few KB of unused CSS in production is a much smaller concern than shipping the panel's JS
@@ -12,8 +13,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 
 export const metadata: Metadata = {
   title: "Rebar UI",
-  description:
-    "Headless-first, intentionally low-fidelity React components, built to be re-skinned into a real design system later.",
+  description: "React constructs in five tiers, one look.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

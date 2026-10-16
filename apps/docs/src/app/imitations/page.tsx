@@ -1,44 +1,13 @@
 import { Stack } from "rebar-ui";
 import { TierIntro } from "@/components/docs/TierIntro";
 import type { Construct } from "@rebar-ui/placement";
-import { tierComponentNames } from "@/data/tierSections";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 export default function ImitationsPage() {
-  const count = tierComponentNames("imitation").length;
-
   const BLOCKS: Construct[] = [
     {
       type: "doc-section",
-      heading: "Philosophy",
-      body: [
-        {
-          kind: "text",
-          text: `Imitations are the floor of the tier ladder — static, standalone primitives with no composition of other named components, and no real state beyond mirroring one caller-controlled value for the controlled/uncontrolled convention. ${count} ship today. Every other tier is built *out of* these, directly or through composition; nothing in this catalog is built *out of* something smaller. A block can never be an Imitation — a block is always at least a fixed composition of components, so the placement layer's Packer doesn't touch this tier at all. It's components-only.`,
-        },
-        {
-          kind: "text",
-          text: "The two tests that actually decide membership, both mechanically checkable by reading the source rather than guessing from the name: **the composition test** — does this component import and render another *named* rebar-ui component? If so, it's at least a Synthetic, not an Imitation, no matter how simple it looks. **The state test** — does its own `useState` do anything beyond mirroring one caller-owned value for controlled/uncontrolled use? If it branches into meaningfully different rendered or behavioral modes, it's not an Imitation either.",
-        },
-      ],
-    },
-    {
-      type: "doc-section",
-      heading: "When to reach for this tier",
-      body: [
-        {
-          kind: "text",
-          text: "Reach for an Imitation when the thing you're building wraps one real semantic HTML element (or, occasionally, one Radix primitive) with no awareness of siblings and no internal decision-making beyond \"what value do I currently hold.\" A `Checkbox` mirroring one boolean is the canonical case. The moment you find yourself importing `Button` to render inside your new component, or branching your JSX on more than one internal state variable, you've already left this tier — that's not a failure, it just means the thing you're building is a Synthetic or an Opinion, and should be classified and tested as one.",
-        },
-        {
-          kind: "text",
-          text: "A real, enforced example from this codebase: `Pagination`, `SegmentedControl`, `Selector`, and `NumberInput` all deliberately reimplement their own raw `<button>` internally instead of importing the real `Button` component, specifically to stay Imitation. When a later audit found `ToggleGroup` (composing real `Toggle`s), `Carousel` (composing a real `Button` for its prev/next controls), and `AiChatInput` (composing a real `Button` for send/dictation) quietly breaking that same rule, all three were reclassified to Synthetic to match — not exceptions, the rule enforced consistently.",
-        },
-      ],
-    },
-    {
-      type: "doc-section",
-      heading: "Building your own",
+      heading: "Build one",
       body: [
         {
           kind: "list",
@@ -55,7 +24,7 @@ export default function ImitationsPage() {
     },
     {
       type: "doc-section",
-      heading: "Porting it back to the main repo",
+      heading: "Contribute it",
       body: [
         {
           kind: "text",
@@ -83,7 +52,7 @@ export default function ImitationsPage() {
 
   return (
     <Stack gap="lg">
-      <TierIntro tier="imitation" title="Imitations" lead="Static, standalone primitives — the smallest, closest-to-HTML building block in the catalog." lines={["Raw pieces.", "Nothing fancy in here."]} />
+      <TierIntro tier="imitation" title="Imitations" lead="Familiar parts: a button, an input, a tag." />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

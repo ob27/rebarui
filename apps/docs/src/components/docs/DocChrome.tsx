@@ -36,25 +36,18 @@ export function DocChrome() {
   const tier = (registered as Tier | undefined) ?? ROUTE_TIER[route];
   const title = slug ? (name ?? prettify(slug)) : undefined;
   const isNew = name ? NEW_CONSTRUCTS.has(name) : false;
+  if (!title) return null; // a tier's index page carries its own heading
   return (
     <div className="cs-chrome">
       <nav className="cs-crumbs" aria-label="Breadcrumb">
-        <span>Construct Library</span>
+        <Link href={`/${route}`}>{tierLabel}</Link>
         <span aria-hidden="true"> / </span>
-        {title ? <Link href={`/${route}`}>{tierLabel}</Link> : <span aria-current="page">{tierLabel}</span>}
-        {title ? (
-          <>
-            <span aria-hidden="true"> / </span>
-            <span aria-current="page">{title}</span>
-          </>
-        ) : null}
+        <span aria-current="page">{title}</span>
       </nav>
-      {title && tier ? (
-        <span className="cs-chrome-tags">
-          <span className={`cs-tag cs-tag--${tier}`}>{tier}</span>
-          {isNew ? <span className="cs-tag cs-tag--new">new</span> : null}
-        </span>
-      ) : null}
+      <span className="cs-chrome-tags">
+        <span className="cs-kicker">{tier}</span>
+        {isNew ? <span className="cs-tag cs-tag--new">new</span> : null}
+      </span>
     </div>
   );
 }

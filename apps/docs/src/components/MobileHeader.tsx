@@ -7,9 +7,8 @@ import { CONSTRUCT_SEARCH_INDEX } from "@/data/constructSearchIndex";
 import { REBAR_MARK_PATH, REBAR_MARK_VIEWBOX } from "@/data/rebarMark";
 
 const GROUPS: { label: string; links: [string, string][] }[] = [
-  { label: "For Agents", links: [["Agent context", "/about/agent"]] },
-  { label: "Construct Library", links: [["Orders", "/orders"], ["Archetypes", "/archetypes"], ["Imitations", "/imitations"], ["Synthetics", "/synthetics"], ["Opinions", "/opinions"], ["Geneses", "/geneses"]] },
-  { label: "Framework", links: [["Heuristics", "/heuristics"], ["Roadmap", "/roadmap"], ["Version Log", "/about/version-log"], ["Benchmarks", "/about/benchmarks"], ["About", "/about"]] },
+  { label: "Constructs", links: [["Imitations", "/imitations"], ["Synthetics", "/synthetics"], ["Opinions", "/opinions"], ["Orders", "/orders"], ["Archetypes", "/archetypes"], ["Geneses", "/geneses"]] },
+  { label: "Docs", links: [["For agents", "/about/agent"], ["Heuristics", "/heuristics"], ["Benchmarks", "/about/benchmarks"], ["Roadmap", "/roadmap"], ["Version log", "/about/version-log"], ["About", "/about"]] },
 ];
 
 /** The site header on a phone: the logo and a Menu button; the menu holds search, every link group and the theme controls. */
@@ -20,7 +19,7 @@ export function MobileHeader() {
     <header className="cs-mobile-header" data-open={open ? "true" : "false"}>
       <div className="cs-mobile-bar">
         <Link href="/" className="cs-mobile-logo" onClick={close}>
-          <svg viewBox={REBAR_MARK_VIEWBOX} width="26" height="28" aria-hidden="true"><path d={REBAR_MARK_PATH} fill="currentColor" /></svg>
+          <svg viewBox={REBAR_MARK_VIEWBOX} width="24" height="26" aria-hidden="true"><path d={REBAR_MARK_PATH} fill="currentColor" /></svg>
           Rebar UI
         </Link>
         <button type="button" className="cs-mobile-menubtn" aria-expanded={open} aria-controls="cs-mobile-menu" onClick={() => setOpen((o) => !o)}>
@@ -31,7 +30,7 @@ export function MobileHeader() {
         <nav id="cs-mobile-menu" className="cs-mobile-menu" aria-label="Main">
           <ConstructSearch
             results={CONSTRUCT_SEARCH_INDEX}
-            placeholder="Search constructs..."
+            placeholder="Search constructs"
             aria-label="Search constructs"
             renderLink={({ href, children, className }) => (
               <Link href={href} className={className} onClick={close}>{children}</Link>

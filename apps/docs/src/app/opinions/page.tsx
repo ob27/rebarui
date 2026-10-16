@@ -1,44 +1,13 @@
 import { Stack } from "rebar-ui";
 import { TierIntro } from "@/components/docs/TierIntro";
 import type { Construct } from "@rebar-ui/placement";
-import { tierComponentNames } from "@/data/tierSections";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 export default function OpinionsPage() {
-  const count = tierComponentNames("opinion").length;
-
   const BLOCKS: Construct[] = [
     {
       type: "doc-section",
-      heading: "Philosophy",
-      body: [
-        {
-          kind: "text",
-          text: `Opinions carry real internal state: validation, morphing, multi-step flow, drag/reorder, search-and-filter, open/closed with focus management. ${count} ship today — the largest tier by far, since "has a real state machine" covers most of what makes a UI feel alive. The dividing line isn't state *presence*, it's state *richness*: a checkbox mirroring one caller-owned boolean stays Imitation; a component with open/closed + filtered-list + highlighted-index + selection state (\`Combobox\`) is an Opinion, because its internal state causes it to branch into meaningfully different rendered and behavioral modes, not just reflect one value back.`,
-        },
-        {
-          kind: "text",
-          text: "The delegated-state exception matters more here than anywhere else: you cannot determine tier by grepping a component's own file for `useState`. Several Opinions below show zero own state because they delegate their entire state machine to a wrapped Radix primitive (`Select`, `Accordion`, `Tabs`, `Dialog`, `Popover`, `Dropdown`, `Tooltip`, `HoverCard`, `ContextMenu`, `Collapsible`, `Menubar`, `Combobox`), a shared chart hook (`useChartMarkSelection`/`useSeriesFilter`), or another Opinion-tier construct (`NodeLinkGraph`'s pan/zoom/drag under `Flowchart`/`MindMap`/`OrgChart`/`PertChart`; `Table`/`Editable`/`Accordion` under `DataGrid`; `Drawer` under `BottomSheet`/`ActionSheet`/`Popconfirm`/`Lightbox`/`VersionHistory`; react-hook-form under `Form`). `Card` is the one construct that genuinely needed two tier placements over one artifact: its default config is Synthetic, but the `editable` variant grafts real click-to-edit state via `Editable` and is an Opinion — a prop-level variant, not a forked duplicate export.",
-        },
-        {
-          kind: "text",
-          text: "For a block, Opinion isn't a judgment call at all — it's mechanical, computed directly off the schema. A block *is* an Opinion iff its own variant in `packages/placement/src/schema.ts` declares a `source` field or an `on<Verb>` handler, checked by `packages/placement/src/opinions.ts`'s `OpinionConstructType` and cross-verified against `apps/docs/src/data/constructTier.ts`'s tier table at compile time — the two can't silently disagree, `tsc --noEmit` fails first. This is exactly the live-data-binding surface `BlockRenderer`'s `data`/`handlers` props resolve against (see `ref/PLACEMENT_LIVE_DATA.md`): `ai-chat`, `table`, `goal-tracker`, `card-kanban`, `sticky-kanban`, `wizard`, `scatter-chart`, `line-chart`, and `stacked-bar-chart` are the current set.",
-        },
-      ],
-    },
-    {
-      type: "doc-section",
-      heading: "When to reach for this tier",
-      body: [
-        {
-          kind: "text",
-          text: "Reach for an Opinion when the real requirement forces genuine internal state that changes what gets rendered or how the user can interact next — not just a value being held, but a mode being entered. If a Radix primitive already models the interaction you need (a popover, a dialog, a select, a tabs strip), delegate to it rather than reimplementing focus-trapping and keyboard navigation by hand; that's not a lesser Opinion, it's most of this tier's real membership.",
-        },
-      ],
-    },
-    {
-      type: "doc-section",
-      heading: "Building your own",
+      heading: "Build one",
       body: [
         {
           kind: "list",
@@ -54,7 +23,7 @@ export default function OpinionsPage() {
     },
     {
       type: "doc-section",
-      heading: "Porting it back to the main repo",
+      heading: "Contribute it",
       body: [
         {
           kind: "text",
@@ -96,7 +65,7 @@ export default function OpinionsPage() {
 
   return (
     <Stack gap="lg">
-      <TierIntro tier="opinion" title="Opinions" lead="Real internal state — validation, morphing, multi-step flow, drag/reorder, search-and-filter, open/closed with focus management." lines={["State. But rich.", "Rich state. Hold the bloat."]} />
+      <TierIntro tier="opinion" title="Opinions" lead="Our own take: a Kanban, a combobox, a data grid." />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

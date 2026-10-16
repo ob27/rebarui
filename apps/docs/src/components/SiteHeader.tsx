@@ -11,55 +11,55 @@ const BLOCKS: Construct[] = [
     type: "site-header",
     logo: { label: "Rebar UI", href: "/", iconPath: REBAR_MARK_PATH, iconViewBox: REBAR_MARK_VIEWBOX },
     items: [
-      { href: "/about/agent", label: "For Agents" },
       {
-        href: "/orders",
-        label: "Construct Library",
+        href: "/opinions",
+        label: "Constructs",
         megaMenu: {
           columns: [
             {
               heading: "",
               items: [
-                { label: "Orders", description: "Pick your Plenum", href: "/orders" },
-                { label: "Archetypes", description: "Construct studies", href: "/archetypes" },
-                { label: "Imitations", description: "Primitive Constructs", href: "/imitations" },
+                { label: "Imitations", description: "Familiar parts", href: "/imitations" },
+                { label: "Synthetics", description: "Parts combined", href: "/synthetics" },
+                { label: "Opinions", description: "Our own take", href: "/opinions" },
               ],
             },
             {
               heading: "",
               items: [
-                { label: "Synthetics", description: "Complex Constructs", href: "/synthetics" },
-                { label: "Opinions", description: "Dynamic Constructs", href: "/opinions" },
-                { label: "Geneses", description: "Rebar alive", href: "/geneses" },
+                { label: "Orders", description: "Whole layouts", href: "/orders" },
+                { label: "Archetypes", description: "Construct studies", href: "/archetypes" },
               ],
             },
           ],
-          footer: { label: "Go to the GitHub Repo", href: "https://github.com/ob27/rebarui" },
         },
       },
+      { href: "/geneses", label: "Geneses" },
       {
-        href: "/heuristics",
-        label: "Framework",
+        href: "/about",
+        label: "Docs",
         megaMenu: {
           columns: [
             {
               heading: "",
               items: [
+                { label: "For agents", href: "/about/agent" },
                 { label: "Heuristics", href: "/heuristics" },
-                { label: "Roadmap", href: "/roadmap" },
-                { label: "Version Log", href: "/about/version-log" },
                 { label: "Benchmarks", href: "/about/benchmarks" },
+                { label: "Roadmap", href: "/roadmap" },
+                { label: "Version log", href: "/about/version-log" },
                 { label: "About", href: "/about" },
               ],
             },
           ],
+          footer: { label: "Source on GitHub", href: "https://github.com/ob27/rebarui" },
         },
       },
     ],
     ariaLabel: "Main",
-    trailing: { kind: "text", text: "0.12.1" },
+    trailing: { kind: "text", text: "0.13" },
     themeToggle: { sections: ["mode", "bionic"] },
-    constructSearch: { source: "constructSearchIndex", placeholder: "Search constructs..." },
+    constructSearch: { source: "constructSearchIndex", placeholder: "Search constructs" },
   },
 ];
 
