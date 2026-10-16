@@ -152,3 +152,24 @@ a.cs-ccard:hover { transform: translateY(-2px); box-shadow: var(--rebar-shadow);
   .cs-sec-h { flex-wrap: wrap; }
   .cs-docs-main .rebar-stack[data-rebar-direction="row"] { flex-wrap: wrap; }
 }
+
+/* ---- demo stage: the frame every live example sits in ----------------------------------------------------------------- */
+.cs-stage { background: var(--rebar-color-bg-secondary); border: 1px solid var(--rebar-color-border); border-radius: var(--rebar-radius-lg); margin: 18px 0 26px; overflow: hidden; }
+.cs-stage-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 18px; border-bottom: 1px solid var(--rebar-color-border); font-size: 0.82rem; color: var(--rebar-color-text-secondary); }
+.cs-stage-bar b { color: var(--rebar-color-text-primary); font-weight: var(--rebar-font-weight-semibold); }
+.cs-stage-bar .cs-sp { flex: 1; }
+.cs-seg { display: flex; border: 1px solid var(--rebar-color-border); border-radius: 999px; padding: 2px; background: var(--rebar-color-bg-raised, var(--rebar-color-bg-primary)); }
+.cs-seg button { border: 0; background: transparent; color: var(--rebar-color-text-secondary); font: var(--rebar-font-weight-medium) 0.8rem/1 var(--rebar-font-family-sans); padding: 6px 12px; border-radius: 999px; cursor: pointer; }
+.cs-seg button[aria-pressed="true"] { background: var(--rebar-color-text-primary); color: var(--rebar-color-bg-primary); }
+.cs-stage-codebtn { border: 1px solid var(--rebar-color-border); background: var(--rebar-color-bg-raised, var(--rebar-color-bg-primary)); color: var(--rebar-color-text-primary); font: var(--rebar-font-weight-medium) 0.8rem/1 var(--rebar-font-family-sans); padding: 7px 12px; border-radius: 999px; cursor: pointer; }
+.cs-stage-codebtn[aria-pressed="true"] { background: var(--rebar-color-text-primary); color: var(--rebar-color-bg-primary); border-color: transparent; }
+.cs-stage-body { padding: 34px; }
+.cs-stage-body[data-cs-padding="none"] { padding: 0; }
+.cs-stage-canvas { margin: 0 auto; min-width: 0; }
+.cs-stage[data-cs-width="tablet"] .cs-stage-canvas, .cs-stage[data-cs-width="phone"] .cs-stage-canvas { outline: 1px dashed var(--rebar-color-border-strong); outline-offset: 10px; border-radius: 4px; }
+.cs-stage-code { border-top: 1px solid var(--rebar-color-border); }
+.cs-stage-code .rebar-code-block { border: 0; border-radius: 0; }
+.cs-stage-states { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 20px; padding: 22px 34px 30px; border-top: 1px solid var(--rebar-color-border); background: color-mix(in srgb, var(--rebar-color-bg-secondary) 60%, var(--rebar-color-bg-primary)); }
+.cs-stage-states figure { margin: 0; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.cs-stage-states figcaption { font: var(--rebar-font-weight-semibold) 0.68rem/1 var(--rebar-font-family-sans); letter-spacing: 0.12em; text-transform: uppercase; color: var(--rebar-color-text-secondary); }
+@media (max-width: 760px) { .cs-stage-body { padding: 18px; } .cs-stage-states { padding: 18px; } .cs-seg { display: none; } }

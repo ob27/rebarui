@@ -1,20 +1,16 @@
-import { Button, Heading, Stack, Text } from "rebar-ui";
+import { Button, Card, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { project } from "@/fixtures/tideline";
+
+const CODE = `<Button variant="primary">Save changes</Button>
+<Button variant="secondary">Cancel</Button>
+<Button variant="tertiary">Skip</Button>
+<Button variant="destructive" onClick={handleDelete}>Delete project</Button>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: `<Button variant="primary">Save changes</Button>\n<Button variant="destructive" onClick={handleDelete}>Delete</Button>`,
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Button"] ?? [] },
   {
     type: "doc-section",
@@ -22,7 +18,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: 'Real `<button type="button">` by default (pass `type="submit"` for form submission) — Tab to focus, Enter/Space to activate, native focus-visible outline. `aria-busy` is set while `loading`.',
+        text: 'A real `<button type="button">` by default (pass `type="submit"` for form submission): Tab to focus, Enter or Space to activate, a visible focus ring. `aria-busy` is set while `loading`.',
       },
     ],
   },
@@ -42,38 +38,53 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "`@rebar-ui/migrate-antd` renames `variant` to AntD's `type`/`danger` vocabulary and `size=\"sm\"|\"md\"|\"lg\"` to `\"small\"|\"middle\"|\"large\"`. If the element already has a native `type` (e.g. `type=\"submit\"`), it's moved to AntD's `htmlType` prop first, since AntD's own `type` means visual variant, not HTML button type.",
+        text: "`@rebar-ui/migrate-antd` renames `variant` to AntD's `type`/`danger` vocabulary and `size=\"sm\"|\"md\"|\"lg\"` to `\"small\"|\"middle\"|\"large\"`. If the element already has a native `type` (e.g. `type=\"submit\"`), it is moved to AntD's `htmlType` prop first, since AntD's own `type` means visual variant, not HTML button type.",
       },
     ],
   },
 ];
 
 export default function ButtonPage() {
+  const harbour = project("harbour");
   return (
     <Stack gap="lg">
       <Heading level={1}>Button</Heading>
-      <Text color="secondary">
-        A real <code>&lt;button&gt;</code> element. One primary action per screen is the
-        convention (Nielsen #6 — recognition over recall); loading disables the button and shows
-        a spinner, preventing double-submit.
-      </Text>
+      <Text color="secondary">A button. Four variants, three sizes.</Text>
 
-      <LivePreview>
-        <Stack gap="sm">
-          <Stack direction="row" gap="sm">
-            <Button variant="primary">Primary</Button>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="tertiary">Tertiary</Button>
-            <Button variant="destructive">Destructive</Button>
-          </Stack>
-          <Stack direction="row" gap="sm">
-            <Button size="sm">Small</Button>
-            <Button size="md">Medium</Button>
-            <Button size="lg">Large</Button>
-            <Button loading>Loading</Button>
-          </Stack>
+      <DemoStage
+        title="Variants"
+        caption="Primary, secondary, tertiary, destructive"
+        code={CODE}
+        states={[
+          { label: "Loading", node: <Button loading>Saving</Button> },
+          { label: "Disabled", node: <Button disabled>Save</Button> },
+          { label: "Long label", node: <Button variant="secondary">Export every Tideline project</Button> },
+          {
+            label: "Sizes",
+            node: (
+              <Stack direction="row" gap="sm" align="center" style={{ flexWrap: "wrap" }}>
+                <Button size="sm">Small</Button>
+                <Button>Medium</Button>
+                <Button size="lg">Large</Button>
+              </Stack>
+            ),
+          },
+        ]}
+      >
+        <Stack direction="row" gap="md" align="center" style={{ flexWrap: "wrap" }}>
+          <Button variant="primary">Save changes</Button>
+          <Button variant="secondary">Cancel</Button>
+          <Button variant="tertiary">Skip</Button>
+          <Button variant="destructive">Delete project</Button>
         </Stack>
-      </LivePreview>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Confirm" caption="One primary action, the destructive one outlined" widths={false}>
+        <Card style={{ maxWidth: 420, margin: "0 auto" }} title={`Delete “${harbour.name}”?`} actions={[<Button key="keep" variant="secondary">Keep it</Button>, <Button key="delete" variant="destructive">Delete project</Button>]}>
+          <Text size="sm" color="secondary">12 tasks and 3 files go with it. This can’t be undone.</Text>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
