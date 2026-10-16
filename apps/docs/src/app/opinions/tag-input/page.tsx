@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Avatar, Card, Heading, Stack, Tag, TagInput, Text } from "rebar-ui";
+import { Avatar, Card, Heading, Stack, TagInput, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
