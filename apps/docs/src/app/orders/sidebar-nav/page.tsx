@@ -1,387 +1,176 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Box,
-  CalendarIcon,
-  ChatIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  CreditCardIcon,
-  DashboardIcon,
-  ErrorWarningIcon,
-  FolderIcon,
-  Heading,
-  HomeIcon,
-  LineChartIcon,
-  QuestionIcon,
-  SettingsIcon,
-  SidebarNav,
-  Stack,
-  TaskIcon,
-  TeamIcon,
-  Text,
-} from "rebar-ui";
-import type { SidebarNavEntry, SidebarNavItem } from "rebar-ui";
+import type { CSSProperties } from "react";
+import { Avatar, CalendarIcon, DownloadIcon, FolderIcon, Heading, HomeIcon, LineChartIcon, SettingsIcon, SidebarNav, Stack, TeamIcon, Text } from "rebar-ui";
+import type { SidebarNavEntry } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PROJECTS, avatarOf, person, project } from "@/fixtures/tideline";
+import { PhoneList, PhoneRow, TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
 
-const ITEMS: SidebarNavItem[] = [
-  { label: "Dashboard", href: "#dashboard", icon: <HomeIcon />, active: true },
-  { label: "Projects", href: "#projects", icon: <FolderIcon /> },
-  {
-    label: "Settings",
-    icon: <SettingsIcon />,
-    items: [
-      { label: "Profile", href: "#profile" },
-      { label: "Billing", href: "#billing" },
-      { label: "Team members", href: "#team" },
-    ],
-  },
-  { label: "Help", href: "#help", icon: <QuestionIcon /> },
-];
-
-const APP_SHELL_ITEMS: SidebarNavEntry[] = [
-  { label: "Dashboard", href: "#dashboard", icon: <DashboardIcon />, active: true },
-  { label: "Overview", href: "#overview", icon: <LineChartIcon /> },
-  { label: "Chat", href: "#chat", icon: <ChatIcon />, badge: "5" },
-  { label: "Team", href: "#team", icon: <TeamIcon /> },
-  { type: "heading", label: "Shortcuts" },
-  { label: "Tasks", href: "#tasks", icon: <TaskIcon /> },
-  { label: "Reports", href: "#reports", icon: <ErrorWarningIcon /> },
-  { type: "divider" },
-  { label: "Settings", href: "#settings", icon: <SettingsIcon /> },
-];
-
-const GRID_ITEMS: SidebarNavItem[] = [
-  { label: "Dashboard", href: "#dashboard", icon: <DashboardIcon />, active: true },
-  { label: "Teams", href: "#teams", icon: <TeamIcon /> },
-  { label: "Payments", href: "#payments", icon: <CreditCardIcon /> },
-  { label: "Attendance", href: "#attendance", icon: <CalendarIcon /> },
-  { label: "Task", href: "#task", icon: <TaskIcon /> },
-  { label: "Settings", href: "#settings", icon: <SettingsIcon /> },
-];
+const CODE = `<SidebarNav
+  logo={{ full: <Wordmark />, compact: <Mark /> }}
+  items={[
+    { label: "Today", href: "/today", icon: <HomeIcon />, badge: "3" },
+    { label: "Projects", href: "/projects", icon: <FolderIcon />, active: true, items: [
+      { label: "Harbour rebrand", href: "/projects/harbour" },
+      { label: "Tideline mobile", href: "/projects/mobile" },
+    ] },
+    { label: "Calendar", href: "/calendar", icon: <CalendarIcon /> },
+    { label: "People", href: "/people", icon: <TeamIcon /> },
+    { type: "heading", label: "Studio" },
+    { label: "Reports", href: "/reports", icon: <LineChartIcon /> },
+    { label: "Settings", href: "/settings", icon: <SettingsIcon /> },
+  ]}
+  footer={({ collapsed }) => <Account collapsed={collapsed} />}
+/>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<SidebarNav logo={{ full: <Wordmark />, compact: <Icon /> }} items={[{ label: "Dashboard", href: "/dashboard", icon: <HomeIcon />, active: true }, { label: "Settings", icon: <SettingsIcon />, items: [{ label: "Profile", href: "/settings/profile" }] }]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["SidebarNav"] ?? [] },
   {
     type: "doc-section",
-    heading: "A real alternative shape to NavBar, not a variant of it",
+    heading: "Slots and entries",
     body: [
       {
         kind: "text",
-        text: "`NavBar` is a horizontal row that collapses overflowing items into a trailing \"More\" popover once it runs out of width — real measure-and-collapse mechanics `SidebarNav` doesn't need, since a vertical list doesn't run out of horizontal room the way a horizontal row does. `SidebarNav` instead has its own real concerns `NavBar` doesn't: one level of collapsible nested/grouped items (a common admin-dashboard \"Settings\" group), and an icon-only `collapsed` mode for reclaiming horizontal space. Reach for `NavBar` for a top-level marketing/docs-site nav, `SidebarNav` for an admin/dashboard-shaped app where the nav genuinely lives down the side.",
+        text: '`logo` swaps between `full` and `compact` as the rail collapses; `header`, `workspace`, `search`, `panel` and `footer` take the rest of a real dashboard sidebar. Besides items (one level of nested `items`, a `badge`, `active`), the list accepts `{ type: "heading" }` and `{ type: "divider" }` entries. `activeStyle` is `"tint"`, `"bar"` or `"fill"`; `collapseTogglePlacement` is `"inline"`, `"edge"` or `"edge-hover"`.',
       },
     ],
   },
   {
     type: "doc-section",
-    heading: "Collapsed mode keeps a real accessible name",
-    body: [
-      {
-        kind: "text",
-        text: "Collapsing hides the visible label text (kept as a `title` attribute, the standard browser-tooltip affordance for an icon-only control) but every link/group-toggle still carries a real `aria-label` matching the full label — an icon-only sidebar item is still announced by its real name to a screen reader, not silently reduced to an unlabeled icon.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "App-shell slots: logo, header, workspace, search, panel, footer",
-    body: [
-      {
-        kind: "text",
-        text: "Real dashboard sidebars are rarely just a bare item list — a logo up top, an account/workspace switcher, a search box, a promo or quota widget, a profile row at the bottom. Six pieces cover this without inventing a prescribed sub-component for each: `logo` (a brand mark that natively swaps between a wide `full` asset and a square `compact` one as the rail collapses — see below), `header` (anything else above the list — a tagline, a secondary brand element), `workspace` (a ready-made switcher row — icon/avatar, label, optional description, a trailing switch affordance), `search` (built-in, self-filtering — filters `items` by label as the user types, recursing into nested children and auto-expanding a group with a match), `panel` (anything between the list and the footer — a promo card, a storage/quota widget), and `footer` (an account row, a logout button). `header`/`panel`/`footer` accept a plain node or a function of `{ collapsed }` for the same kind of collapse-aware swap `logo` gives natively.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "A brand mark that swaps itself: logo",
-    body: [
-      {
-        kind: "text",
-        text: '`logo={{ full, compact }}` renders `full` (typically a wide wordmark/logo image) while expanded and `compact` (typically a square 1:1 icon mark) while collapsed, switching automatically with the sidebar\'s own collapsed state — no hand-written `collapsed ? ... : ...` ternary required. Pass real `<img>`s (a wide logo file and a square icon file) or inline SVG/React content for either side; each renders as-is, sized to fit the sidebar\'s own width via `max-width: 100%`.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Flat sections without nesting: heading and divider entries",
-    body: [
-      {
-        kind: "text",
-        text: 'Alongside a real `SidebarNavItem`, `items` accepts two plain entry kinds: `{ type: "heading", label }` — a non-interactive section label (e.g. "SHORTCUTS") that splits flat items without turning them into a collapsible group — and `{ type: "divider" }`, a bare visual rule. Neither has a destination or anything that collapses under it, unlike an `items`-bearing `SidebarNavItem`, which is for a real collapsible group. A heading hides while collapsed (nothing to show); a divider still renders as a bare rule.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Layout variants: labelPlacement and variant=\"grid\"",
-    body: [
-      {
-        kind: "text",
-        text: '`labelPlacement="below"` stacks the icon above a small label underneath it — a third density tier between a full label and icon-only, common at a narrower "tablet" sidebar width. `variant="grid"` renders a 2-column grid of icon-over-label tiles instead of a vertical list — the dashboard-tile pattern. Both fall back to a single icon-only column while collapsed, regardless of setting.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Active-item style: activeStyle",
-    body: [
-      {
-        kind: "text",
-        text: '`activeStyle` picks how the current item is marked: `"tint"` (default) is a soft background wash plus colored text; `"bar"` adds a solid accent bar on the leading edge; `"fill"` is a solid, fully-filled background with inverted text — the boldest option. All three ship as real CSS, not a "bring your own override."',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Collapse toggle placement: collapseTogglePlacement",
-    body: [
-      {
-        kind: "text",
-        text: '`collapseTogglePlacement="edge"` anchors a small circular toggle to the sidebar\'s own right border, vertically centered, instead of the default full-width inline row at the bottom of the list — the floating-chevron pattern some dashboard sidebars use. `"edge-hover"` is the same button in the same spot, transparent until the sidebar is hovered or the button itself gets keyboard focus — the VS Code/Notion reveal-on-hover pattern. Two more placements below are composed, not props: a controlled `collapsed` state with a real toggle button placed in the `header` slot, and a native CSS `resize: horizontal` handle for continuously resizing the sidebar\'s own width rather than a binary collapsed/expanded toggle at all.',
-      },
-    ],
+    heading: "Accessibility",
+    body: [{ kind: "text", text: "Collapsed, every link keeps its full label as the accessible name (and a native `title` tooltip); the active item carries `aria-current=\"page\"`; groups are real disclosure buttons." }],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="sidebar-nav"`, `data-rebar-collapsed` when collapsed; parts: `logo`, `header`, `workspace`, `search`, `list`, `heading`, `divider`, `item`, `sublist`, `subitem`, `badge`, `panel`, `footer`, `collapse-toggle`.',
-      },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-component="sidebar-nav"`, `data-rebar-collapsed` when collapsed; parts: `logo`, `header`, `workspace`, `search`, `list`, `heading`, `divider`, `item`, `sublist`, `subitem`, `badge`, `panel`, `footer`, `collapse-toggle`.' }],
   },
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      {
-        kind: "text",
-        text: "AntD's own `Menu` (in `inline` mode, inside a `Layout.Sider`) is a close structural match — `items`/`icon`/nested sub-menus map across directly; `collapsed` maps to `Layout.Sider`'s own `collapsed` prop. Not yet codemod-covered.",
-      },
-    ],
+    body: [{ kind: "text", text: "AntD's `Menu` in `inline` mode inside a `Layout.Sider` is a close structural match (`items`/`icon`/nested sub-menus map across; `collapsed` maps to the Sider's own prop). Not yet codemod-covered." }],
   },
 ];
 
+const maya = person("maya");
+const Mark = ({ size = 22 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" style={{ display: "block" }}>
+    <path d="M7 20V6a3 3 0 0 1 6 0v3a3 3 0 0 1-3 3H7l6 8" fill="none" stroke="var(--rebar-color-primary)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+const Wordmark = () => (
+  <span style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 4px", fontFamily: "var(--rebar-font-family-display)", fontVariationSettings: '"SOFT" 100', fontWeight: 600, fontSize: 19 }}>
+    <Mark /> Tideline
+  </span>
+);
+
+const ITEMS: SidebarNavEntry[] = [
+  { label: "Today", href: "#today", icon: <HomeIcon />, badge: "3" },
+  {
+    label: "Projects",
+    href: "#projects",
+    icon: <FolderIcon />,
+    active: true,
+    items: [
+      { label: project("harbour").name, href: "#harbour" },
+      { label: project("mobile").name, href: "#mobile" },
+    ],
+  },
+  { label: "Calendar", href: "#calendar", icon: <CalendarIcon /> },
+  { label: "People", href: "#people", icon: <TeamIcon /> },
+  { type: "heading", label: "Studio" },
+  { label: "Reports", href: "#reports", icon: <LineChartIcon /> },
+  { label: project("rota").name, href: "#rota", icon: <DownloadIcon /> },
+  { label: "Settings", href: "#settings", icon: <SettingsIcon /> },
+];
+
+const CALENDAR_ACTIVE: SidebarNavEntry[] = ITEMS.map((e) => ("label" in e && "href" in e ? { ...e, active: e.label === "Calendar", items: undefined } : e));
+
+function Account({ collapsed }: { collapsed: boolean }) {
+  return (
+    <Stack direction="row" gap="sm" align="center" justify={collapsed ? "center" : "start"}>
+      <Avatar size="sm" {...avatarOf(maya.id)} />
+      {collapsed ? null : (
+        <span>
+          <Text size="sm" style={{ display: "block", fontWeight: "var(--rebar-font-weight-semibold)" }}>
+            {maya.name}
+          </Text>
+          <Text size="xs" color="secondary" style={{ display: "block" }}>
+            {maya.role}
+          </Text>
+        </span>
+      )}
+    </Stack>
+  );
+}
+
+/** The active row reads as a raised card on the cream sidebar (as in the mocks), and the action colour on it clears AA. */
+const BOX = { border: "1px solid var(--rebar-color-border)", borderRadius: 14, overflow: "hidden", background: "var(--rebar-color-bg-raised, var(--rebar-color-bg-primary))", display: "flex", "--rebar-color-bg-secondary": "var(--rebar-color-bg-raised)" } as CSSProperties;
+
 export default function SidebarNavPage() {
   const [collapsed, setCollapsed] = useState(false);
-  const [headerToggleCollapsed, setHeaderToggleCollapsed] = useState(false);
-
   return (
     <Stack gap="lg">
       <Heading level={1}>SidebarNav</Heading>
-      <Text color="secondary">
-        A traditional vertical left-hand navigation — the Bootstrap-dashboard-style pattern, for
-        admin/dashboard-shaped apps.
-      </Text>
+      <Text color="secondary">Grouped links with an active page, counts and nested projects.</Text>
 
-      <Box
-        style={{
-          border: "1px solid var(--rebar-color-border, #e0e0e0)",
-          borderRadius: 4,
-          height: 420,
-          overflow: "hidden",
-        }}
+      <DemoStage
+        title="Primary navigation"
+        caption="Tint and bar active styles; the first collapses to a rail"
+        code={CODE}
+        states={[
+          { label: "Collapsed rail", node: <div style={{ ...BOX, height: 300, width: 66 }}><SidebarNav items={ITEMS.slice(0, 4)} logo={{ full: <Wordmark />, compact: <Mark /> }} collapsed hideCollapseToggle style={{ height: "100%" }} /></div> },
+          { label: "Fill", node: <div style={{ ...BOX, height: 300 }}><SidebarNav items={CALENDAR_ACTIVE.slice(0, 4)} activeStyle="fill" hideCollapseToggle style={{ height: "100%", width: "100%" }} /></div> },
+          { label: "Long label", node: <div style={{ ...BOX, height: 300 }}><SidebarNav items={[{ label: "Northern depot signage and wayfinding", href: "#signage", active: true, icon: <FolderIcon />, badge: "12" }]} hideCollapseToggle style={{ height: "100%", width: "100%" }} /></div> },
+          { label: "Empty", node: <div style={{ ...BOX, height: 300 }}><SidebarNav items={[{ type: "heading", label: "Projects" }]} hideCollapseToggle panel={<Text size="xs" color="secondary">No projects yet. Create one to see it here.</Text>} style={{ height: "100%", width: "100%" }} /></div> },
+        ]}
       >
-        <SidebarNav items={ITEMS} collapsed={collapsed} onCollapsedChange={setCollapsed} />
-      </Box>
+        <Stack direction="row" gap="md" justify="center" style={{ flexWrap: "wrap" }}>
+          <div style={{ ...BOX, height: 560 }}>
+            <SidebarNav items={ITEMS} logo={{ full: <Wordmark />, compact: <Mark /> }} footer={({ collapsed: c }) => <Account collapsed={c} />} collapsed={collapsed} onCollapsedChange={setCollapsed} style={{ height: "100%" }} />
+          </div>
+          <div style={{ ...BOX, height: 560 }}>
+            <SidebarNav items={CALENDAR_ACTIVE} activeStyle="bar" search={{ placeholder: "Search" }} footer={<Account collapsed={false} />} hideCollapseToggle style={{ height: "100%" }} />
+          </div>
+        </Stack>
+      </DemoStage>
 
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          Every app-shell slot at once: <code>header</code>, <code>workspace</code>,{" "}
-          <code>search</code>, a <code>heading</code>/<code>divider</code>/<code>badge</code> mix,{" "}
-          <code>panel</code>, and <code>footer</code>.
-        </Text>
-        <Box
-          style={{
-            border: "1px solid var(--rebar-color-border, #e0e0e0)",
-            borderRadius: 4,
-            height: 560,
-            overflow: "hidden",
-          }}
-        >
-          <SidebarNav
-            items={APP_SHELL_ITEMS}
-            logo={{ full: <strong>Sport Live</strong>, compact: <DashboardIcon /> }}
-            workspace={{ label: "Saleshouse", description: "general team", icon: <TeamIcon /> }}
-            search={{ placeholder: "Search" }}
-            panel={({ collapsed: c }) =>
-              c ? null : (
-                <div>
-                  <strong style={{ fontSize: "var(--rebar-font-size-sm, 14px)" }}>Used space</strong>
-                  <div style={{ fontSize: "var(--rebar-font-size-xs, 12px)", color: "var(--rebar-color-text-secondary, #757575)" }}>
-                    71% of quota
-                  </div>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="On a phone" caption="The sidebar as a drawer over the projects list" widths={false}>
+        <div className="cs-grain" style={{ padding: "28px 20px" }}>
+          <Stack direction="row" gap="md" justify="center" style={{ flexWrap: "wrap" }}>
+            <TidelinePhone
+              title="Projects"
+              tabs={1}
+              height={460}
+              dim
+              overlay={
+                <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: 200, zIndex: 1002, display: "flex", boxShadow: "var(--rebar-shadow-float)", "--rebar-color-bg-secondary": "var(--rebar-color-bg-raised)" } as CSSProperties}>
+                  <SidebarNav items={CALENDAR_ACTIVE.slice(0, 4)} logo={{ full: <Wordmark />, compact: <Mark /> }} activeStyle="tint" hideCollapseToggle footer={<Account collapsed={false} />} style={{ height: "100%", width: "100%" }} />
                 </div>
-              )
-            }
-            footer={({ collapsed: c }) => (c ? "JW" : "Jerry Wilson")}
-          />
-        </Box>
-      </Stack>
-
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          <code>labelPlacement=&quot;below&quot;</code> (left) vs. <code>variant=&quot;grid&quot;</code> (right).
-        </Text>
-        <Stack direction="row" gap="md">
-          <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, height: 340, overflow: "hidden" }}>
-            <SidebarNav items={GRID_ITEMS} labelPlacement="below" hideCollapseToggle />
-          </Box>
-          <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, height: 340, overflow: "hidden" }}>
-            <SidebarNav items={GRID_ITEMS} variant="grid" hideCollapseToggle />
-          </Box>
-        </Stack>
-      </Stack>
-
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          <code>activeStyle</code>: &quot;tint&quot; (default), &quot;bar&quot;, &quot;fill&quot;.
-        </Text>
-        <Stack direction="row" gap="md">
-          {(["tint", "bar", "fill"] as const).map((style) => (
-            <Box
-              key={style}
-              style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, height: 220, overflow: "hidden" }}
+              }
             >
-              <SidebarNav items={ITEMS.slice(0, 3)} activeStyle={style} hideCollapseToggle />
-            </Box>
-          ))}
-        </Stack>
-      </Stack>
-
-      <Stack gap="md">
-        <Text size="sm" color="secondary">
-          Four ways to expose the collapse control — the first two are the built-in{" "}
-          <code>collapseTogglePlacement</code> values; the last two are composed on top of{" "}
-          <code>SidebarNav</code>, not props it accepts itself.
-        </Text>
-        <Stack direction="row" gap="lg" style={{ flexWrap: "wrap" }}>
-          <Stack gap="xs">
-            <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
-              collapseTogglePlacement=&quot;edge&quot;
-            </Text>
-            <Text size="xs" color="secondary" style={{ maxWidth: 200 }}>
-              A small circular toggle on the sidebar&apos;s own border, always visible.
-            </Text>
-            <Box
-              style={{
-                border: "1px solid var(--rebar-color-border, #e0e0e0)",
-                borderRadius: 4,
-                height: 300,
-                overflow: "visible",
-                paddingRight: 20,
-              }}
-            >
-              <SidebarNav items={ITEMS.slice(0, 3)} collapseTogglePlacement="edge" />
-            </Box>
+              <PhoneList>
+                {PROJECTS.slice(0, 4).map((p, i) => (
+                  <PhoneRow key={p.id} title={p.name} meta={p.status} tint={((i % 4) + 1) as 1 | 2 | 3 | 4} />
+                ))}
+              </PhoneList>
+            </TidelinePhone>
+            <TidelinePhone title="Projects" tabs={1} height={460}>
+              <PhoneList>
+                {PROJECTS.slice(0, 4).map((p, i) => (
+                  <PhoneRow key={p.id} title={p.name} meta={p.status} tint={((i % 4) + 1) as 1 | 2 | 3 | 4} />
+                ))}
+              </PhoneList>
+            </TidelinePhone>
           </Stack>
-
-          <Stack gap="xs">
-            <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
-              collapseTogglePlacement=&quot;edge-hover&quot;
-            </Text>
-            <Text size="xs" color="secondary" style={{ maxWidth: 200 }}>
-              Same button, transparent until the sidebar is hovered or the button gets keyboard
-              focus. Hover the box to see it.
-            </Text>
-            <Box
-              style={{
-                border: "1px solid var(--rebar-color-border, #e0e0e0)",
-                borderRadius: 4,
-                height: 300,
-                overflow: "visible",
-                paddingRight: 20,
-              }}
-            >
-              <SidebarNav items={ITEMS.slice(0, 3)} collapseTogglePlacement="edge-hover" />
-            </Box>
-          </Stack>
-
-          <Stack gap="xs">
-            <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
-              Composed: integrated into the header
-            </Text>
-            <Text size="xs" color="secondary" style={{ maxWidth: 200 }}>
-              Not a prop — control <code>collapsed</code> yourself and put a real toggle button in
-              the <code>header</code> slot instead of the built-in one.
-            </Text>
-            <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, height: 300, overflow: "hidden" }}>
-              <SidebarNav
-                items={ITEMS.slice(0, 3)}
-                collapsed={headerToggleCollapsed}
-                hideCollapseToggle
-                header={({ collapsed: c }) => (
-                  <Stack direction="row" align="center" justify={c ? "center" : "between"}>
-                    {c ? null : (
-                      <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
-                        My App
-                      </Text>
-                    )}
-                    <button
-                      type="button"
-                      aria-label={c ? "Expand sidebar" : "Collapse sidebar"}
-                      onClick={() => setHeaderToggleCollapsed((v) => !v)}
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        width: 24,
-                        height: 24,
-                        padding: 0,
-                        border: "1px solid var(--rebar-color-border)",
-                        borderRadius: "var(--rebar-radius, 4px)",
-                        background: "none",
-                        cursor: "pointer",
-                      }}
-                    >
-                      {c ? <ChevronRightIcon aria-hidden="true" /> : <ChevronLeftIcon aria-hidden="true" />}
-                    </button>
-                  </Stack>
-                )}
-              />
-            </Box>
-          </Stack>
-
-          <Stack gap="xs">
-            <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
-              Composed: drag to resize
-            </Text>
-            <Text size="xs" color="secondary" style={{ maxWidth: 200 }}>
-              Also not a prop — a native CSS <code>resize: horizontal</code> wrapper. Drag the
-              bottom-right corner.
-            </Text>
-            <Box
-              style={{
-                height: 300,
-                width: 220,
-                minWidth: 64,
-                maxWidth: 320,
-                border: "1px solid var(--rebar-color-border, #e0e0e0)",
-                borderRadius: 4,
-                resize: "horizontal",
-                overflow: "auto",
-              }}
-            >
-              <SidebarNav items={ITEMS.slice(0, 3)} hideCollapseToggle style={{ width: "100%", height: "100%" }} />
-            </Box>
-          </Stack>
-        </Stack>
-      </Stack>
+        </div>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

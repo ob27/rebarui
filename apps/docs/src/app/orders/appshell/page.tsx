@@ -1,352 +1,260 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Box,
-  ChatIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DashboardIcon,
-  ErrorWarningIcon,
-  FolderIcon,
-  Heading,
-  HomeIcon,
-  LineChartIcon,
-  SegmentedControl,
-  SettingsIcon,
-  SidebarNav,
-  Stack,
-  TaskIcon,
-  TeamIcon,
-  Text,
-  AppShell,
-} from "rebar-ui";
-import type { SidebarNavProps } from "rebar-ui";
+import { AppShell, Avatar, Button, CalendarIcon, DeviceFrame, DownloadIcon, FolderIcon, Heading, HomeIcon, LineChartIcon, SettingsIcon, Skeleton, Stack, Tag, TeamIcon, Text } from "rebar-ui";
+import type { SidebarNavEntry } from "rebar-ui";
+import type { CSSProperties, ReactNode } from "react";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { EVENTS, PEOPLE, STATUS_TONE, TASKS, avatarOf, gbp, person, project } from "@/fixtures/tideline";
+import { Kicker, PHONE_TAB_ITEMS, PhoneList, PhoneRow, TAB_BAR_STYLE } from "@/app/imitations/device-frame/TidelinePhone";
 
-const SIDEBAR_ITEMS: SidebarNavProps["items"] = [
-  { label: "Dashboard", href: "#dashboard", icon: <DashboardIcon />, active: true },
-  { label: "Overview", href: "#overview", icon: <LineChartIcon /> },
-  { label: "Chat", href: "#chat", icon: <ChatIcon />, badge: "5" },
-  { label: "Team", href: "#team", icon: <TeamIcon /> },
-  { type: "heading", label: "Shortcuts" },
-  { label: "Tasks", href: "#tasks", icon: <TaskIcon /> },
-  { label: "Reports", href: "#reports", icon: <ErrorWarningIcon /> },
-  { type: "divider" },
-  { label: "Settings", href: "#settings", icon: <SettingsIcon /> },
-];
-
-const RAIL_ITEMS: SidebarNavProps["items"] = [
-  { label: "Home", href: "#home", icon: <HomeIcon />, active: true },
-  { label: "Chat", href: "#chat", icon: <ChatIcon /> },
-  { label: "Files", href: "#files", icon: <FolderIcon /> },
-  { label: "Settings", href: "#settings", icon: <SettingsIcon /> },
-];
-
-const TOP_NAV_ITEMS = [
-  { label: "Home", href: "#home" },
-  { label: "Docs", href: "#docs" },
-  { label: "About", href: "#about" },
-];
-
-const TAB_BAR_ITEMS = [
-  { label: "Home", href: "#home", icon: <HomeIcon /> },
-  { label: "Chat", href: "#chat", icon: <ChatIcon /> },
-  { label: "Settings", href: "#settings", icon: <SettingsIcon /> },
-];
-
-const VARIANTS = [
-  { value: "sidebar", label: "Sidebar" },
-  { value: "top-nav", label: "Top nav" },
-  { value: "top-nav-sidebar", label: "Top nav + sidebar" },
-  { value: "three-pane", label: "Three pane" },
-  { value: "mobile", label: "Mobile" },
-  { value: "tablet", label: "Tablet" },
-] as const;
-
-type Variant = (typeof VARIANTS)[number]["value"];
+const CODE = `<AppShell
+  variant="tablet"
+  height="520px"
+  sidebar={{ items, logo: { full: <Wordmark />, compact: <Mark /> }, footer: <Account /> }}
+  rightPanel={{ title: "Task", width: 230, children: <TaskDetails task={task} /> }}
+>
+  <ProjectPage project={harbour} />
+</AppShell>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: `<AppShell
-  sidebar={{
-    items: [
-      { label: "Dashboard", href: "/dashboard", icon: <DashboardIcon />, active: true },
-      { label: "Settings", href: "/settings", icon: <SettingsIcon /> },
-    ],
-    header: <Heading level={3}>My App</Heading>,
-  }}
->
-  <BlockRenderer document={myBlocks} />
-</AppShell>`,
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["AppShell"] ?? [] },
   {
     type: "doc-section",
-    heading: "Starter template: AppShell + BlockRenderer",
+    heading: "Variants",
     body: [
       {
         kind: "text",
-        text: "The expected architecture for a full-viewport application: `AppShell` provides the structural frame, and `BlockRenderer` prints declarative content within that frame. This separation keeps layout concerns (the shell) distinct from content concerns (the blocks), and makes it impossible to hand-roll or hand-draw the shell — you select an Order-tier component first, then compose content inside it.",
+        text: '`"sidebar"` (default), `"top-nav"`, `"top-nav-sidebar"`, `"three-pane"` (an icon rail beside a sidebar), `"mobile"` (a top bar and a real `MobileTabBar`) and `"tablet"` (the sidebar collapsed to a rail by default). `rightPanel` is a real `SidePanel` and composes with any of them.',
       },
     ],
   },
   {
     type: "doc-section",
-    heading: "Seven variants, not two",
-    body: [
-      {
-        kind: "text",
-        text: '`variant="sidebar"` (default, dashboard pattern) and `variant="top-nav"` (docs/marketing pattern) are the two original shapes. Five more now cover the real layouts those two alone can\'t represent: `"top-nav-sidebar"` combines both (a global top bar plus a section sidebar — the GitHub/Linear complex-dashboard shape), `"three-pane"` adds a forced-collapsed icon-only `railSidebar` alongside a normal `sidebar` (Slack/Discord/VS Code), `"mobile"` composes an optional top bar with a real `MobileTabBar` pinned to the bottom, and `"tablet"` is the same shape as `"sidebar"` with the icon-only collapsed rail defaulted on (Material Design\'s "navigation rail") instead of a fully-expanded list.',
-      },
-      {
-        kind: "text",
-        text: '`rightPanel` (a real `SidePanel` — non-modal, sits beside content rather than over it, the Slack "thread" pattern) is deliberately not an eighth variant: it composes *with* any of the seven above rather than replacing one, since a right-docked detail panel is commonly used alongside whatever the primary navigation shape already is. Try it in the live preview below.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Why this architecture",
-    body: [
-      {
-        kind: "text",
-        text: "`AppShell` solves the CSS height-inheritance problem — the common bug where a sidebar doesn't extend to the bottom of the viewport because `height: 100%` on a child only works when the parent has an explicit `height` (not just `minHeight`). `AppShell` uses `height: 100vh` on the outer container by default, ensuring all children with `height: 100%` resolve correctly, however many nav elements that variant composes.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "When NOT to use AppShell",
-    body: [
-      {
-        kind: "text",
-        text: "Don't use `AppShell` for embedded widgets that don't own the full viewport — use a plain `<Stack>` or `<Box>` instead. Don't use it for pages that scroll naturally — `AppShell` is for full-viewport applications where the nav must extend to the viewport edge.",
-      },
-    ],
+    heading: "When not to use it",
+    body: [{ kind: "text", text: "Not for embedded widgets or pages that scroll naturally: `AppShell` owns the full viewport (`height: 100vh` by default) so every nav element reaches the edge." }],
   },
 ];
 
-const TOGGLE_DEMO_ITEMS: SidebarNavProps["items"] = [
-  { label: "Dashboard", href: "#dashboard", icon: <DashboardIcon />, active: true },
-  { label: "Overview", href: "#overview", icon: <LineChartIcon /> },
-  { label: "Chat", href: "#chat", icon: <ChatIcon /> },
+const harbour = project("harbour");
+const maya = person("maya");
+const homeTask = TASKS.find((t) => t.id === "home") ?? TASKS[0];
+
+const Mark = ({ size = 22 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" style={{ display: "block" }}>
+    <path d="M7 20V6a3 3 0 0 1 6 0v3a3 3 0 0 1-3 3H7l6 8" fill="none" stroke="var(--rebar-color-primary)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+const Wordmark = () => (
+  <span style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 4px", fontFamily: "var(--rebar-font-family-display)", fontVariationSettings: '"SOFT" 100', fontWeight: 600, fontSize: 19 }}>
+    <Mark /> Tideline
+  </span>
+);
+
+const SHELL_ITEMS: SidebarNavEntry[] = [
+  { label: "Today", href: "#today", icon: <HomeIcon />, badge: "3" },
+  {
+    label: "Projects",
+    href: "#projects",
+    icon: <FolderIcon />,
+    active: true,
+    items: [
+      { label: harbour.name, href: "#harbour" },
+      { label: project("mobile").name, href: "#mobile" },
+    ],
+  },
+  { label: "Calendar", href: "#calendar", icon: <CalendarIcon /> },
+  { label: "People", href: "#people", icon: <TeamIcon /> },
+  { type: "heading", label: "Studio" },
+  { label: "Reports", href: "#reports", icon: <LineChartIcon /> },
+  { label: project("rota").name, href: "#rota", icon: <DownloadIcon /> },
   { label: "Settings", href: "#settings", icon: <SettingsIcon /> },
 ];
 
-export default function AppShellPage() {
-  const [variant, setVariant] = useState<Variant>("sidebar");
-  const [showRightPanel, setShowRightPanel] = useState(false);
-  const [topToggleCollapsed, setTopToggleCollapsed] = useState(false);
-
-  const content = (
-    <Box style={{ padding: "var(--rebar-space-lg)" }}>
-      <Heading level={2}>Content area</Heading>
-      <Text>
-        This is where your page content goes — the content area fills whatever space the
-        variant&apos;s nav elements don&apos;t claim, and scrolls independently if it overflows.
-      </Text>
-    </Box>
+function Account({ collapsed }: { collapsed: boolean }) {
+  return (
+    <Stack direction="row" gap="sm" align="center" justify={collapsed ? "center" : "start"}>
+      <Avatar size="sm" {...avatarOf(maya.id)} />
+      {collapsed ? null : (
+        <span>
+          <Text size="sm" style={{ display: "block", fontWeight: "var(--rebar-font-weight-semibold)" }}>
+            {maya.name}
+          </Text>
+          <Text size="xs" color="secondary" style={{ display: "block" }}>
+            {maya.role}
+          </Text>
+        </span>
+      )}
+    </Stack>
   );
+}
 
+function TaskDetails() {
+  const rows: [string, ReactNode][] = [
+    ["Status", <Tag key="s" tone="info">In progress</Tag>],
+    ["Owner", <Stack key="o" direction="row" gap="xs" align="center"><Avatar size="sm" {...avatarOf(maya.id)} /><Text size="sm">{maya.name}</Text></Stack>],
+    ["Due", <Text key="d" size="sm">Fri {harbour.due}</Text>],
+    ["Budget", <Text key="b" size="sm">{gbp(2400)}</Text>],
+  ];
+  return (
+    <Stack gap="md">
+      <Heading level={3} style={{ fontSize: 18 }}>
+        {homeTask.title}
+      </Heading>
+      <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "8px 14px", alignItems: "center" }}>
+        {rows.map(([k, v]) => (
+          <span key={k} style={{ display: "contents" }}>
+            <Text size="sm" color="secondary">
+              {k}
+            </Text>
+            {v}
+          </span>
+        ))}
+      </div>
+      <div style={{ padding: "12px 14px", borderRadius: 14, background: "var(--rebar-color-tint-2)" }}>
+        <Kicker style={{ marginBottom: 4 }}>Note</Kicker>
+        <Text size="sm">Waiting on final harbour photography from Leo.</Text>
+      </div>
+      <Stack direction="row" gap="sm" style={{ flexWrap: "wrap" }}>
+        <Button size="sm">Mark done</Button>
+        <Button size="sm" variant="secondary">
+          Reassign
+        </Button>
+      </Stack>
+    </Stack>
+  );
+}
+
+function ProjectPage() {
+  const tasks = TASKS.filter((t) => t.project === harbour.id).slice(0, 3);
+  return (
+    <div style={{ padding: 20 }}>
+      <Stack gap="md">
+        <Stack gap="xs">
+          <Kicker>Project</Kicker>
+          <Heading level={2}>{harbour.name}</Heading>
+        </Stack>
+        <Stack direction="row" gap="sm" style={{ flexWrap: "wrap" }}>
+          <Button size="sm" variant="secondary">
+            Share
+          </Button>
+          <Button size="sm">New task</Button>
+        </Stack>
+        <PhoneList>
+          {tasks.map((t) => (
+            <PhoneRow key={t.id} thumb={false} title={t.title} meta={<Tag tone={t.tag === "Design" ? "error" : t.tag === "Ops" ? "success" : "info"} style={{ marginTop: 6 }}>{t.tag}</Tag>} trailing={<Avatar size="sm" {...avatarOf(t.assignee)} />} />
+          ))}
+        </PhoneList>
+      </Stack>
+    </div>
+  );
+}
+
+const FRAME = { border: "1px solid var(--rebar-color-border)", borderRadius: 14, overflow: "hidden", background: "var(--rebar-color-bg-raised, var(--rebar-color-bg-primary))", "--rebar-color-bg-secondary": "var(--rebar-color-bg-raised)" } as CSSProperties;
+
+export default function AppShellPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>AppShell</Heading>
-      <Text>
-        A full-viewport application shell that handles CSS height inheritance correctly, composing
-        the real nav components for you across seven layout variants.
-      </Text>
+      <Text color="secondary">Sidebar, top bar, content and a detail panel in one frame.</Text>
 
-      <Box style={{ border: "1px solid var(--rebar-color-border)", padding: "var(--rebar-space-md)" }}>
-        <Stack gap="md">
-          <Heading level={3}>Live preview</Heading>
-          <Stack direction="row" gap="md" style={{ alignItems: "center", flexWrap: "wrap" }}>
-            <SegmentedControl
-              options={VARIANTS.map(({ value, label }) => ({ value, label }))}
-              value={variant}
-              onValueChange={(v) => setVariant(v as Variant)}
-            />
-            <label style={{ display: "flex", alignItems: "center", gap: "var(--rebar-space-xs)", fontSize: 14 }}>
-              <input
-                type="checkbox"
-                checked={showRightPanel}
-                onChange={(e) => setShowRightPanel(e.target.checked)}
-                disabled={variant === "mobile"}
-              />
-              rightPanel
-            </label>
-          </Stack>
-          <Box
-            style={{
-              height: 420,
-              border: "1px solid var(--rebar-color-border)",
-              overflowX: "auto",
-              overflowY: "hidden",
+      <DemoStage
+        title="Studio workspace"
+        caption="Rail sidebar, project page and a task panel; both sides collapse"
+        code={CODE}
+        states={[
+          {
+            label: "Two column",
+            node: (
+              <div style={FRAME}>
+                <AppShell variant="sidebar" height="200px" sidebar={{ items: SHELL_ITEMS.slice(0, 3), hideCollapseToggle: true, collapsed: true }}>
+                  <div style={{ padding: 14 }}>
+                    <Heading level={3} style={{ fontSize: 16 }}>
+                      Today
+                    </Heading>
+                    <Text size="sm" color="secondary">
+                      7 tasks due
+                    </Text>
+                  </div>
+                </AppShell>
+              </div>
+            ),
+          },
+          {
+            label: "Top nav",
+            node: (
+              <div style={FRAME}>
+                <AppShell variant="top-nav" height="200px" topNav={{ items: [{ label: "Today", href: "#today" }, { label: "Projects", href: "#projects" }, { label: "Calendar", href: "#calendar" }] }}>
+                  <div style={{ padding: 14 }}>
+                    <Heading level={3} style={{ fontSize: 16 }}>
+                      Calendar
+                    </Heading>
+                    <Text size="sm" color="secondary">
+                      {EVENTS[2].title}, {EVENTS[2].time}
+                    </Text>
+                  </div>
+                </AppShell>
+              </div>
+            ),
+          },
+          {
+            label: "Loading",
+            node: (
+              <div style={FRAME}>
+                <AppShell variant="sidebar" height="200px" sidebar={{ items: [], hideCollapseToggle: true, collapsed: true, header: <Skeleton variant="avatar" /> }}>
+                  <Stack gap="sm" style={{ padding: 14 }}>
+                    <Skeleton variant="text" lines={2} />
+                    <Skeleton variant="rect" height={60} />
+                  </Stack>
+                </AppShell>
+              </div>
+            ),
+          },
+        ]}
+      >
+        <div style={FRAME}>
+          <AppShell
+            variant="tablet"
+            height="520px"
+            sidebar={{
+              items: SHELL_ITEMS,
+              logo: { full: <Wordmark />, compact: <Mark /> },
+              footer: ({ collapsed }) => <Account collapsed={collapsed} />,
+              collapseTogglePlacement: "edge",
             }}
+            rightPanel={{ title: "Task", width: 230, children: <TaskDetails /> }}
           >
-            {/* A real app gives AppShell the full viewport width — this reference page can't, since
-                it's embedded in the docs site's own prose column. Rather than let a wide combination
-                (e.g. sidebar + rightPanel) squeeze the content area down to an unreadable sliver, the
-                shell gets a floor width and the box scrolls horizontally below that, same as it would
-                on a real narrow viewport. */}
-            <AppShell
-              variant={variant}
-              height="420px"
-              style={{ minWidth: 720 }}
-              sidebar={
-                variant === "sidebar" || variant === "tablet" || variant === "top-nav-sidebar" || variant === "three-pane"
-                  ? {
-                      items: SIDEBAR_ITEMS,
-                      header: ({ collapsed }: { collapsed: boolean }) =>
-                        collapsed ? (
-                          <Heading level={3} style={{ textAlign: "center" }}>
-                            R
-                          </Heading>
-                        ) : (
-                          <Heading level={3}>My App</Heading>
-                        ),
-                    }
-                  : undefined
-              }
-              railSidebar={variant === "three-pane" ? { items: RAIL_ITEMS } : undefined}
-              topNav={
-                variant === "top-nav" || variant === "top-nav-sidebar" || variant === "mobile"
-                  ? { items: TOP_NAV_ITEMS }
-                  : undefined
-              }
-              tabBar={variant === "mobile" ? { items: TAB_BAR_ITEMS } : undefined}
-              rightPanel={
-                showRightPanel && variant !== "mobile"
-                  ? { title: "Details", children: <Text size="sm">A real, non-modal SidePanel.</Text> }
-                  : undefined
-              }
-            >
-              {content}
-            </AppShell>
-          </Box>
-        </Stack>
-      </Box>
+            <ProjectPage />
+          </AppShell>
+        </div>
+      </DemoStage>
 
-      <Box style={{ border: "1px solid var(--rebar-color-border)", padding: "var(--rebar-space-md)" }}>
-        <Stack gap="md">
-          <Heading level={3}>Collapse toggle placements</Heading>
-          <Text color="secondary">
-            The sidebar&apos;s own <code>collapseTogglePlacement</code> prop (on{" "}
-            <code>SidebarNav</code>, which every <code>sidebar</code>/<code>railSidebar</code> above
-            composes) covers the default full-width row and a floating edge button. The other two
-            below are composed, not built-in: a controlled <code>header</code> button, and a native
-            CSS resize handle.
-          </Text>
-          <Stack direction="row" gap="lg" style={{ flexWrap: "wrap" }}>
-            <Stack gap="xs">
-              <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
-                Integrated into the header
-              </Text>
-              <Text size="xs" color="secondary" style={{ maxWidth: 220 }}>
-                Composed, not a SidebarNav prop: control <code>collapsed</code> yourself and put a
-                real toggle button in the <code>header</code> slot instead of the built-in one.
-              </Text>
-              <Box style={{ height: 320, border: "1px solid var(--rebar-color-border)", overflow: "hidden" }}>
-                <SidebarNav
-                  items={TOGGLE_DEMO_ITEMS}
-                  collapsed={topToggleCollapsed}
-                  hideCollapseToggle
-                  header={({ collapsed }) => (
-                    <Stack direction="row" align="center" justify={collapsed ? "center" : "between"}>
-                      {collapsed ? null : (
-                        <Heading level={3} style={{ margin: 0, fontSize: "var(--rebar-font-size-md)" }}>
-                          My App
-                        </Heading>
-                      )}
-                      <button
-                        type="button"
-                        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-                        onClick={() => setTopToggleCollapsed((c) => !c)}
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          width: 24,
-                          height: 24,
-                          padding: 0,
-                          border: "1px solid var(--rebar-color-border)",
-                          borderRadius: "var(--rebar-radius, 4px)",
-                          background: "none",
-                          cursor: "pointer",
-                        }}
-                      >
-                        {collapsed ? <ChevronRightIcon aria-hidden="true" /> : <ChevronLeftIcon aria-hidden="true" />}
-                      </button>
-                    </Stack>
-                  )}
-                  style={{ height: "100%" }}
-                />
-              </Box>
-            </Stack>
-
-            <Stack gap="xs">
-              <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
-                Hover-revealed edge button
-              </Text>
-              <Text size="xs" color="secondary" style={{ maxWidth: 220 }}>
-                <code>collapseTogglePlacement=&quot;edge-hover&quot;</code> — a floating chevron
-                anchored to the sidebar&apos;s own right border, transparent until the sidebar is
-                hovered (or the button itself gets keyboard focus). Hover the box to see it.
-              </Text>
-              {/* The edge-hover toggle deliberately pokes half outside SidebarNav's own right
-                  border (see .rebar-sidebar-nav-collapse-toggle-edge) — this demo box needs its
-                  own right padding to give it room, or overflow:hidden truncates it. */}
-              <Box
-                style={{
-                  height: 320,
-                  border: "1px solid var(--rebar-color-border)",
-                  paddingRight: "var(--rebar-space-md)",
-                  overflow: "hidden",
-                }}
-              >
-                <SidebarNav
-                  items={TOGGLE_DEMO_ITEMS}
-                  collapseTogglePlacement="edge-hover"
-                  style={{ height: "100%" }}
-                />
-              </Box>
-            </Stack>
-
-            <Stack gap="xs">
-              <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
-                Drag to resize
-              </Text>
-              <Text size="xs" color="secondary" style={{ maxWidth: 220 }}>
-                Also composed, not a SidebarNav prop: a native CSS <code>resize: horizontal</code>{" "}
-                wrapper, the same technique the nav-bar reference page uses for its own resizable
-                demo. Drag the bottom-right corner.
-              </Text>
-              <Box
-                style={{
-                  height: 320,
-                  width: 220,
-                  minWidth: 64,
-                  maxWidth: 320,
-                  border: "1px solid var(--rebar-color-border)",
-                  resize: "horizontal",
-                  overflow: "auto",
-                }}
-              >
-                <SidebarNav items={TOGGLE_DEMO_ITEMS} hideCollapseToggle style={{ width: "100%", height: "100%" }} />
-              </Box>
-            </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="On a phone" caption="The mobile variant: a top bar, the page and a real tab bar" widths={false}>
+        <div className="cs-grain" style={{ padding: "28px 20px" }}>
+          <Stack direction="row" gap="md" justify="center" style={{ flexWrap: "wrap" }}>
+            <DeviceFrame variant="phone" style={{ width: "100%", "--rebar-device-frame-max-width": "250px" } as CSSProperties}>
+              <AppShell variant="mobile" height="460px" topNav={{ items: [{ label: "Today", href: "#today" }, { label: "Projects", href: "#projects" }, { label: "Calendar", href: "#calendar" }, { label: "People", href: "#people" }] }} tabBar={{ items: PHONE_TAB_ITEMS, defaultActiveIndex: 1, style: TAB_BAR_STYLE }}>
+                <div style={{ padding: "12px 14px 70px" }}>
+                  <Stack gap="sm">
+                    <Kicker>Projects</Kicker>
+                    <PhoneList>
+                      {[harbour, project("mobile"), project("interviews")].map((p, i) => (
+                        <PhoneRow key={p.id} title={p.name} meta={<Tag tone={STATUS_TONE[p.status]}>{p.status}</Tag>} tint={((i % 4) + 1) as 1 | 2 | 3 | 4} />
+                      ))}
+                    </PhoneList>
+                    <Text size="xs" color="secondary">
+                      {PEOPLE.length} people, 5 projects.
+                    </Text>
+                  </Stack>
+                </div>
+              </AppShell>
+            </DeviceFrame>
           </Stack>
-        </Stack>
-      </Box>
+        </div>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

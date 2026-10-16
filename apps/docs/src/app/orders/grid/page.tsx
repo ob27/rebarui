@@ -1,100 +1,106 @@
-import { Box, Grid, Heading, Stack, Text } from "rebar-ui";
+"use client";
+
+import type { CSSProperties } from "react";
+import { Avatar, Grid, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { KPIS, PROJECTS, STATUS_TONE, TAGS, avatarOf, gbp, project } from "@/fixtures/tideline";
+import { Kicker } from "@/app/imitations/device-frame/TidelinePhone";
+
+const CODE = `<Grid minItemWidth={120} gap="sm">
+  {kpis.map((k) => <Stat key={k.label} {...k} />)}
+</Grid>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Grid minItemWidth={240} gap="md">\n  <Card>...</Card>\n  <Card>...</Card>\n  <Card>...</Card>\n</Grid>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Grid"] ?? [] },
   {
     type: "doc-section",
-    heading: "A primitive, not a purpose-shaped block",
-    body: [
-      {
-        kind: "text",
-        text: "Distinct from `Stack` (flexbox row/column, for lining things up) and from the placement layer's own `card-grid`/`feature-grid`/`pillar-grid` blocks (each a fixed shape for one specific kind of content — cards, feature tiles, pillar cards — not a primitive a caller lays arbitrary content into). `Grid` is real CSS Grid with no opinion about what's inside it.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
     heading: "Responsive with zero breakpoints",
-    body: [
-      {
-        kind: "text",
-        text: 'The default strategy is `minItemWidth` (real `repeat(auto-fit, minmax(...))` CSS), not a fixed `columns` count — resize the window and the demo below reflows down toward one column on its own, with no breakpoint prop, media query, or JS measurement involved. Pass `columns` instead for a fixed count that never reflows (e.g. a strict two-up layout regardless of width).',
-      },
-    ],
+    body: [{ kind: "text", text: "`minItemWidth` is real `repeat(auto-fit, minmax(...))`: the grid reflows toward one column on its own. Pass `columns` instead for a fixed count that never reflows. Reach for `Row`/`Col` when regions of one row need different widths." }],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="grid"` on the root.',
-      },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-component="grid"` on the root.' }],
   },
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      {
-        kind: "text",
-        text: "AntD's `Row`/`Col` use a fixed 24-unit span system rather than CSS Grid's `auto-fit`/`minmax` — not a 1:1 codemod target; a migration typically recomputes fixed `columns` spans from the rendered item count instead.",
-      },
-    ],
+    body: [{ kind: "text", text: "AntD's `Row`/`Col` use a fixed 24-unit span system rather than CSS Grid's `auto-fit`; a migration recomputes fixed spans from the rendered item count." }],
   },
 ];
 
-export default function GridPage() {
-  const demoBox = (n: number) => (
-    <Box
-      key={n}
-      style={{
-        background: "var(--rebar-color-bg-secondary, #f5f5f5)",
-        border: "1px solid var(--rebar-color-border, #e0e0e0)",
-        borderRadius: 4,
-        padding: "var(--rebar-space-md)",
-        textAlign: "center",
-      }}
-    >
-      <Text size="sm" color="secondary">
-        Item {n}
-      </Text>
-    </Box>
-  );
+const harbour = project("harbour");
+const CARD: CSSProperties = { background: "var(--rebar-color-bg-raised, var(--rebar-color-bg-primary))", border: "1px solid var(--rebar-color-border)", borderRadius: 14, padding: 14 };
+const STATS = [
+  { label: "Tasks done", value: `${Math.round((harbour.done * 14) / 100)} of 14`, note: "+3 this week" },
+  { label: "Budget used", value: gbp(7640), note: `of ${gbp(12000)}` },
+  { label: "Next review", value: `Fri ${harbour.due}`, note: "Maya Chen" },
+  { label: KPIS[1].label, value: String(KPIS[1].value), note: KPIS[1].delta },
+];
 
+function Stat({ label, value, note }: { label: string; value: string; note: string }) {
+  return (
+    <div style={CARD}>
+      <Kicker style={{ marginBottom: 6 }}>{label}</Kicker>
+      <div style={{ fontFamily: "var(--rebar-font-family-display)", fontVariationSettings: '"SOFT" 100', fontWeight: 600, fontSize: 22, lineHeight: 1.1 }}>{value}</div>
+      <Text size="xs" color="secondary">
+        {note}
+      </Text>
+    </div>
+  );
+}
+
+const Swatch = () => <div style={{ height: 22, borderRadius: 999, background: "var(--rebar-color-tint-1)" }} />;
+
+export default function GridPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Grid</Heading>
-      <Text color="secondary">
-        A general responsive column grid. Resize the window — the row below reflows on its own,
-        no breakpoint configuration required.
-      </Text>
+      <Text color="secondary">Equal columns that reflow on their own.</Text>
 
-      <Grid minItemWidth={160} gap="sm">
-        {[1, 2, 3, 4, 5, 6].map(demoBox)}
-      </Grid>
-
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          Fixed <code>columns=3</code> instead — never reflows:
-        </Text>
-        <Grid columns={3} gap="sm">
-          {[1, 2, 3, 4, 5, 6].map(demoBox)}
+      <DemoStage
+        title="Project overview"
+        caption="Four stats at 120px minimum; narrow the stage and they wrap"
+        code={CODE}
+        states={[
+          { label: "Two columns", node: <Grid columns={2} gap="sm"><Stat {...STATS[0]} /><Stat {...STATS[1]} /></Grid> },
+          { label: "Auto fit", node: <Grid minItemWidth={64} gap="xs">{TAGS.map((t) => <Tag key={t} tone={t === "Design" ? "error" : t === "Eng" ? "info" : t === "Ops" ? "success" : "default"} style={{ justifyContent: "center" }}>{t}</Tag>)}</Grid> },
+          { label: "Gap sizes", node: <Stack gap="sm"><Grid columns={3} gap="xs"><Swatch /><Swatch /><Swatch /></Grid><Grid columns={3} gap="lg"><Swatch /><Swatch /><Swatch /></Grid></Stack> },
+        ]}
+      >
+        <Grid minItemWidth={120} gap="sm">
+          {STATS.map((s) => (
+            <Stat key={s.label} {...s} />
+          ))}
         </Grid>
-      </Stack>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Projects" caption="Project cards at 160px minimum" widths={false}>
+        <Grid minItemWidth={160} gap="md">
+          {PROJECTS.map((p) => (
+            <div key={p.id} style={CARD}>
+              <Stack gap="sm">
+                <div className={p.kicker === "Brand" ? "cs-grain" : "cs-grain cs-grain--sand"} style={{ height: 64, borderRadius: 10 }} />
+                <Kicker>{p.kicker}</Kicker>
+                <Heading level={3} style={{ fontSize: 17 }}>
+                  {p.name}
+                </Heading>
+                <Text size="xs" color="secondary">
+                  {p.summary}
+                </Text>
+                <Stack direction="row" gap="sm" align="center" justify="between">
+                  <Tag tone={STATUS_TONE[p.status]}>{p.status}</Tag>
+                  <Avatar size="sm" {...avatarOf(p.owner)} />
+                </Stack>
+              </Stack>
+            </div>
+          ))}
+        </Grid>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

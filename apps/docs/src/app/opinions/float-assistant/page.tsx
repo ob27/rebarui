@@ -1,204 +1,140 @@
-import { Heading, Stack, Text, AssistantOrb } from "rebar-ui";
+"use client";
+
+import { useState } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { ArrowUpIcon, Avatar, Button, FloatAssistant, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
-import { PersonaShowcase } from "./PersonaShowcase";
-import { FloatAssistantDemo } from "./FloatAssistantDemo";
+import { CHAT, TASKS, avatarOf, person, project } from "@/fixtures/tideline";
+import { Kicker, PhoneList, PhoneRow, TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
+
+const CODE = `<FloatAssistant
+  name="Tideline assistant"
+  greeting="Seven tasks due this week, three today. Offline sync is in review."
+  apiEndpoint="/api/assistant/chat"
+  getHostContext={() => \`Project: \${project.name}, \${openTasks} open tasks\`}
+  screenshotEnabled={false}
+  markdown
+/>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Overview",
-    body: [
-      {
-        kind: "text",
-        text: "A floating AI assistant button that expands into a chat/voice interface. Features dynamic orb animations, drag-to-move with physics, minimize to a 15×15px dot, and transparent AI interaction design. Supports text and voice input modes, with API integration for Qwen LLM, Qwen TTS/STT, and the OpenKnowledge (Rebar Super) service.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Shape",
-    body: [
-      {
-        kind: "code",
-        code: `{
-  type: "float-assistant",
-  name?: string,
-  greeting?: string,
-  position?: "bottom-right" | "bottom-left" | "top-right" | "top-left",
-  accentColor?: string,
-  persona?: "spark" | "strato" | "chorus",
-  voiceEnabled?: boolean,
-  draggable?: boolean,
-  minimizable?: boolean,
-  sidebarDockable?: boolean,
-  sidebarWidth?: number,
-  dockMode?: "floating" | "sidebar",
-  apiEndpoint?: string,
-  apiAuthToken?: string,
-  getHostContext?: string,
-  // Opinion-tier live bindings — see "API Integration" below
-  source?: string,
-  onSendMessage?: string,
-  onVoiceRecord?: string,
-}`,
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["FloatAssistant"] ?? [] },
   {
     type: "doc-section",
-    heading: "API Integration",
+    heading: "API integration",
     body: [
-      {
-        kind: "text",
-        text: "The FloatAssistant uses a **server-side proxy pattern** for security. The app developer implements an API endpoint that holds API keys securely server-side. The construct never sees real API keys.",
-      },
-      {
-        kind: "text",
-        text: "**Endpoint contract:**",
-      },
-      {
-        kind: "code",
-        code: `POST /api/assistant/chat
-Content-Type: application/json
-Authorization: Bearer <session-token>
-
-{
-  "message": "What is the weather?",
-  "history": [
-    { "role": "user", "content": "Hello" },
-    { "role": "assistant", "content": "Hi there!" }
-  ],
-  // present only if a screenshot was captured since the last message
-  "screenshot": "data:image/png;base64,...",
-  // present only if contextAware and a screenshot were both on for this send
-  "pageContext": ["Page title", "Active filter: Q3", "..."],
-  // present only if getHostContext was passed and returned a non-empty string
-  "hostContext": "..."
-}
-
-Response:
-{
-  "reply": "I don't have access to weather data, but..."
-}`,
-      },
-      {
-        kind: "text",
-        text: "The server endpoint then calls Qwen LLM, OpenKnowledge, or any other service with the real API keys stored in environment variables.",
-      },
+      { kind: "text", text: "The construct never sees an API key: `apiEndpoint` is a server-side proxy you implement. It receives `{ message, history, screenshot?, pageContext?, hostContext? }` and returns `{ reply }`. `getHostContext` is called fresh before every send to describe the real on-screen state (the open project, an active filter)." },
+      { kind: "code", code: `POST /api/assistant/chat\n{ "message": "What is due this week?", "history": [...], "hostContext": "Project: Harbour rebrand, 5 open tasks" }\n\n{ "reply": "Seven tasks, three today. Offline sync is in review." }` },
     ],
   },
   {
     type: "doc-section",
     heading: "Features",
     body: [
-      {
-        kind: "text",
-        text: "**Drag with physics** — Click and drag the button to move it anywhere on screen. When released with momentum, it continues moving with friction until it stops.",
-      },
-      {
-        kind: "text",
-        text: "**Minimize to dot** — Click the minimize button to collapse to a 15×15px dot in the bottom-right corner. Click the dot to expand again.",
-      },
-      {
-        kind: "text",
-        text: "**Voice mode** — Toggle between text and voice input. In voice mode, click the microphone to start recording. Visual wave animation shows recording activity.",
-      },
-      {
-        kind: "text",
-        text: "**Transparent AI** — The footer disclaimer reminds users that AI can make mistakes. The assistant never pretends to be human.",
-      },
-      {
-        kind: "text",
-        text: "**Orb personas** — set `persona` to one of Spark, Strato, or Chorus (see the Personas section above) for a WebGL-shader orb that reacts to the assistant's own interaction state, instead of the default lightweight 2D-canvas animation. Only the trigger button uses the orb; chat message avatars and the typing indicator use a static icon, since animating a full shader per message was distracting and wasteful compute for repeated small instances.",
-      },
-      {
-        kind: "text",
-        text: "**Dock to a full-height sidebar** — set `sidebarDockable` and click the dock-toggle button in this demo's own panel header: it swaps the default floating panel for a full-height sidebar anchored to the right screen edge, with a Claude-Code-style input toolbar (attachment, slash-command, history, an optional model pill, and submit) instead of the compact floating input. Off by default — every existing floating-panel behavior is unchanged unless this is set.",
-      },
-      {
-        kind: "text",
-        text: "**Markdown replies** — assistant messages render as real Markdown (bold, lists, headings, inline code), reusing the same `renderMarkdown` utility `ChatThread` already uses — a real LLM's reply comes back as Markdown prose, and this is what keeps it from showing up as literal `**text**`/`- item` syntax.",
-      },
-      {
-        kind: "text",
-        text: "**Copy any assistant message** — a copy button appears on hover/focus over each assistant message, copying its raw Markdown content (not whatever text the rendered output happens to produce), and swaps to a checkmark for 2 seconds. User's own messages don't get one — there's nothing to copy back to the person who just typed it.",
-      },
-      {
-        kind: "text",
-        text: "**getHostContext: real structured state, not a screenshot guess** — pass `getHostContext` (sync or async, returning a plain string) and it's called fresh before every send, included in the `apiEndpoint` request body as `hostContext`. This is the host app's own channel for describing *actual, current, structured* on-screen state — the live numbers behind a chart, an active filter, which record is open — that a screenshot or DOM scrape can't reliably capture (see `contextAware` above, which covers a different, opt-in-per-message case: the user explicitly asking the assistant to \"look at\" an arbitrary page). `apiEndpoint`'s own server implementation decides what to do with it, unmodified, the same \"app developer owns the real LLM call\" stance every other integration point here already takes.",
-      },
+      { kind: "text", text: "Drag the button anywhere (`draggable`), minimise it to a dot (`minimizable`), dock the panel to a full-height sidebar (`sidebarDockable`), switch to voice (`voiceEnabled`, `voices`), render replies as Markdown (`markdown`), and pick a WebGL orb persona (`persona`: Spark, Strato or Chorus). The footer always says it is an AI." },
     ],
   },
   {
     type: "doc-section",
     heading: "Accessibility",
-    body: [
-      {
-        kind: "text",
-        text: "Real `role=\"dialog\"` when expanded, proper `aria-label` and `aria-expanded` states, keyboard-navigable controls, and visible focus indicators. The floating button is always reachable via Tab.",
-      },
-    ],
+    body: [{ kind: "text", text: 'Real `role="dialog"` when expanded, `aria-label` and `aria-expanded` on the trigger, keyboard-navigable controls and visible focus. The floating button is always reachable with Tab.' }],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="float-assistant"`, `data-rebar-part="trigger"` on the button, `data-rebar-part="panel"` on the expanded panel, `data-rebar-part="messages"` on the message list.',
-      },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-component="float-assistant"`, `data-rebar-part="trigger"` on the button, `"panel"` on the expanded panel, `"messages"` on the message list.' }],
   },
 ];
 
+const harbour = project("harbour");
+const sync = TASKS.find((t) => t.id === "sync") ?? TASKS[0];
+const home = TASKS.find((t) => t.id === "home") ?? TASKS[0];
+const GREETING = "Seven tasks due this week, three today. Offline sync for tasks is in review.";
+
+/** A box that is its own containing block, so the assistant's fixed button and panel stay inside it. */
+function Screen({ children, height = 300, style }: { children?: ReactNode; height?: number; style?: CSSProperties }) {
+  return <div style={{ position: "relative", transform: "translateZ(0)", height, overflow: "hidden", borderRadius: 14, border: "1px solid var(--rebar-color-border)", background: "var(--rebar-color-bg-raised, var(--rebar-color-bg-primary))", ...style }}>{children}</div>;
+}
+
+function Bubble({ from, children, cite }: { from: "user" | "assistant"; children: ReactNode; cite?: string }) {
+  const mine = from === "user";
+  return (
+    <div style={{ alignSelf: mine ? "flex-start" : "flex-end", maxWidth: "84%", padding: "10px 14px", borderRadius: 16, background: mine ? "var(--rebar-color-bg-raised, var(--rebar-color-bg-primary))" : "var(--rebar-color-bg-inverse)", color: mine ? "var(--rebar-color-text-primary)" : "var(--rebar-color-text-inverse)", border: mine ? "1px solid var(--rebar-color-border)" : 0, fontSize: 14, lineHeight: 1.45 }}>
+      {children}
+      {cite ? <div style={{ marginTop: 6 }}><Tag>{cite}</Tag></div> : null}
+    </div>
+  );
+}
+
 export default function FloatAssistantPage() {
+  const [sent, setSent] = useState<string | null>(null);
+  const common = { name: "Tideline assistant", greeting: GREETING, screenshotEnabled: false, markdown: true, onSendMessage: (m: string) => setSent(m) } as const;
+
   return (
     <Stack gap="lg">
       <Heading level={1}>FloatAssistant</Heading>
-      <Text color="secondary">
-        A floating AI assistant with drag-to-move physics, minimize-to-dot, voice and text modes,
-        and server-side API proxy integration. The assistant is 100% transparent about being an AI
-        — it never pretends to be human.
-      </Text>
+      <Text color="secondary">A button that opens an assistant panel over the page.</Text>
 
-      {/* Live demo: the orb on its own */}
-      <div
-        style={{
-          width: 128,
-          height: 128,
-          borderRadius: "50%",
-          background: "#000",
-          overflow: "hidden",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "2rem 0",
-        }}
+      <DemoStage
+        title="Open panel"
+        caption="Press Ask; the panel, the composer and the greeting"
+        code={CODE}
+        states={[
+          { label: "Closed", node: <Screen height={120}><FloatAssistant {...common} /></Screen> },
+          { label: "Dark", node: <Screen height={120}><FloatAssistant {...common} theme="dark" /></Screen> },
+          { label: "Bottom left", node: <Screen height={120}><FloatAssistant {...common} position="bottom-left" /></Screen> },
+          { label: "Accent", node: <Screen height={120}><FloatAssistant {...common} accentColor="var(--rebar-color-info)" /></Screen> },
+        ]}
       >
-        <AssistantOrb persona="chorus" state="idle" size={160} />
-      </div>
+        <Screen height={600} style={{ background: "transparent", border: 0 }}>
+          <Stack gap="sm" style={{ padding: 4, maxWidth: 360 }}>
+            <Kicker>{harbour.kicker}</Kicker>
+            <Heading level={3}>{harbour.name}</Heading>
+            <PhoneList>
+              {[sync, home].map((t) => (
+                <PhoneRow key={t.id} thumb={false} title={t.title} meta={<Tag tone={t.tag === "Design" ? "error" : "info"} style={{ marginTop: 6 }}>{t.tag}</Tag>} trailing={<Avatar size="sm" {...avatarOf(t.assignee)} />} />
+              ))}
+            </PhoneList>
+            <Text size="xs" color="secondary" aria-live="polite">
+              {sent ? `Sent: “${sent}”. Wire apiEndpoint for a reply.` : "Open the assistant and ask about the project."}
+            </Text>
+          </Stack>
+          <FloatAssistant {...common} draggable minimizable getHostContext={() => `Project: ${harbour.name}, ${TASKS.filter((t) => t.project === harbour.id && t.column !== "done").length} open tasks`} />
+        </Screen>
+      </DemoStage>
 
-      {/* Full FloatAssistant — renders fixed in the bottom-right corner. Its own file (rather than
-          inlined here) because it needs real function props (onAttachmentPress etc.), which can't
-          cross the server/client boundary as literal props on this Server Component page — same
-          reason PersonaShowcase below is its own "use client" file. */}
-      <FloatAssistantDemo />
-
-      <Stack gap="sm">
-        <Heading level={2}>Personas</Heading>
-        <Text color="secondary">
-          Set <code>persona</code> to swap the trigger button&rsquo;s orb for one of the tuned WebGL
-          shaders from <code>/dev/orb-comparison</code> — Spark and Strato are the raymarched
-          &ldquo;Solid Orb&rdquo; hollow shell, Chorus is the metaball-based &ldquo;Flow Orb&rdquo;.
-          Each persona defines an Idle and a Thinking state (Spark/Strato also define Listening/
-          Speaking); the trigger interpolates between them automatically as the assistant&rsquo;s own
-          interaction state changes. Toggle below to see it live.
-        </Text>
-        <PersonaShowcase />
-      </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="On a phone" caption="The button over the project, and the conversation as a screen" widths={false}>
+        <div className="cs-grain" style={{ padding: "28px 20px" }}>
+          <Stack direction="row" gap="md" justify="center" style={{ flexWrap: "wrap" }}>
+            <TidelinePhone title={harbour.name} height={460} overlay={<FloatAssistant {...common} />}>
+              <PhoneList>
+                <PhoneRow title={sync.title} meta={`${person(sync.assignee).name.split(" ")[0]} · ${sync.tag}`} tint={1} />
+                <PhoneRow title={home.title} meta={`${person(home.assignee).name.split(" ")[0]} · ${home.tag}`} tint={2} />
+              </PhoneList>
+            </TidelinePhone>
+            <TidelinePhone title="Assistant" height={460}>
+              <Stack gap="sm" style={{ minHeight: 330 }}>
+                {CHAT.map((m) => (
+                  <Bubble key={m.id} from={m.from === "assistant" ? "assistant" : "user"} cite={m.citations?.[0]}>
+                    {m.text}
+                  </Bubble>
+                ))}
+                <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 8, padding: "6px 6px 6px 14px", borderRadius: 999, border: "1px solid var(--rebar-color-border)", background: "var(--rebar-color-bg-raised, var(--rebar-color-bg-primary))" }}>
+                  <Text size="sm" color="secondary" style={{ flex: 1 }}>
+                    Ask about {harbour.name}
+                  </Text>
+                  <Button size="sm" aria-label="Send" style={{ padding: "0 10px", minHeight: 32 }}>
+                    <ArrowUpIcon aria-hidden="true" />
+                  </Button>
+                </div>
+              </Stack>
+            </TidelinePhone>
+          </Stack>
+        </div>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
