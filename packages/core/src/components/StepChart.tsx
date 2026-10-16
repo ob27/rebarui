@@ -6,6 +6,7 @@ import { ChartFilterFooter, useSeriesFilter } from "../chartSeriesFilter";
 import { computeTrendline } from "../chartTrendline";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { CHART_PALETTE } from "../chartPalette";
 
 export interface StepChartSeries {
   label: string;
@@ -43,13 +44,7 @@ export interface StepChartProps extends Omit<ComponentPropsWithoutRef<"figure">,
   bionicOptions?: BionicOptions;
 }
 
-const DEFAULT_PALETTE = [
-  "var(--rebar-color-primary, #0066cc)",
-  "var(--rebar-color-success, #2e7d32)",
-  "var(--rebar-color-warning, #f57c00)",
-  "var(--rebar-color-danger, #d32f2f)",
-  "var(--rebar-color-text-secondary, #757575)",
-];
+const DEFAULT_PALETTE = CHART_PALETTE;
 
 function stepPath(xs: number[], ys: number[], step: StepChartStep): string {
   const points: string[] = [`${xs[0]},${ys[0]}`];

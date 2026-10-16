@@ -5,6 +5,7 @@ import { ChartValueTag, useChartMarkSelection } from "../chartMarkSelection";
 import { computeTrendline } from "../chartTrendline";
 import { renderBionicChildren, useAmbientBionic, useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { CHART_PALETTE } from "../chartPalette";
 
 export interface BubbleChartPoint {
   x: number;
@@ -43,13 +44,7 @@ export interface BubbleChartProps extends Omit<ComponentPropsWithoutRef<"figure"
   bionicOptions?: BionicOptions;
 }
 
-const DEFAULT_PALETTE = [
-  "var(--rebar-color-primary, #0066cc)",
-  "var(--rebar-color-success, #2e7d32)",
-  "var(--rebar-color-warning, #f57c00)",
-  "var(--rebar-color-danger, #d32f2f)",
-  "var(--rebar-color-text-secondary, #757575)",
-];
+const DEFAULT_PALETTE = CHART_PALETTE;
 
 // Never let a point vanish to an invisible dot or blow up past its neighbors, however extreme the
 // real `size` values are — a bounded footprint regardless of the underlying data (see

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import clsx from "clsx";
 import { Button } from "./Button";
@@ -16,6 +16,11 @@ export interface CalendarProps extends Omit<ComponentPropsWithoutRef<"div">, "va
   /** Dates outside this range render disabled, not selectable. */
   minDate?: Date;
   maxDate?: Date;
+  /** Highlights the days from `rangeStart` to `rangeEnd` (inclusive) as a range, with the two
+   * ends marked. Display only: picking still goes through `onValueChange`, so a range picker
+   * decides what each click means. Either end alone marks just that day as a range start/end. */
+  rangeStart?: Date;
+  rangeEnd?: Date;
 }
 
 const WEEKDAY_LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -96,6 +101,8 @@ export const Calendar = ({
   onMonthChange,
   minDate,
   maxDate,
+  rangeStart,
+  rangeEnd,
   className,
   ...props
 }: CalendarProps) => {
@@ -143,6 +150,52 @@ export const Calendar = ({
   const todayKey = dayKey(new Date());
   const minKey = minDate ? dayKey(minDate) : undefined;
   const maxKey = maxDate ? dayKey(maxDate) : undefined;
+
+  const rangeStartKey = rangeStart ? dayKey(rangeStart) : undefined;
+  const rangeEndKey = rangeEnd ? dayKey(rangeEnd) : undefined;
+
+  // Keyboard navigation: arrows move by day/week, Home/End jump to the week's start/end,
+  // PageUp/PageDown change month. Moving into another month changes the displayed month first and
+  // focuses the target once it has rendered. Out-of-range targets are skipped.
+  const gridRef = useRef<HTMLDivElement>(null);
+  const pendingFocusKey = useRef<number | null>(null);
+  useEffect(() => {
+    if (pendingFocusKey.current === null) return;
+    const target = gridRef.current?.querySelector<HTMLButtonElement>(`[data-rebar-key="${pendingFocusKey.current}"]`);
+    pendingFocusKey.current = null;
+    target?.focus();
+  });
+  const handleGridKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const active = (event.target as HTMLElement).closest<HTMLElement>("[data-rebar-key]");
+    if (!active) return;
+    const from = new Date(Number(active.getAttribute("data-rebar-key")));
+    let to: Date | null = null;
+    const y = from.getFullYear();
+    const m = from.getMonth();
+    const d = from.getDate();
+    switch (event.key) {
+      case "ArrowLeft": to = new Date(y, m, d - 1); break;
+      case "ArrowRight": to = new Date(y, m, d + 1); break;
+      case "ArrowUp": to = new Date(y, m, d - 7); break;
+      case "ArrowDown": to = new Date(y, m, d + 7); break;
+      case "Home": to = new Date(y, m, d - from.getDay()); break;
+      case "End": to = new Date(y, m, d + (6 - from.getDay())); break;
+      case "PageUp": to = new Date(y, m - 1, Math.min(d, new Date(y, m, 0).getDate())); break;
+      case "PageDown": to = new Date(y, m + 1, Math.min(d, new Date(y, m + 2, 0).getDate())); break;
+      default: return;
+    }
+    event.preventDefault();
+    const key = dayKey(to);
+    if ((minKey !== undefined && key < minKey) || (maxKey !== undefined && key > maxKey)) return;
+    pendingFocusKey.current = key;
+    if (to.getFullYear() !== currentMonth.getFullYear() || to.getMonth() !== currentMonth.getMonth()) {
+      setMonth(new Date(to.getFullYear(), to.getMonth(), 1));
+    } else {
+      // Same month: no re-render is coming, so move focus now.
+      pendingFocusKey.current = null;
+      gridRef.current?.querySelector<HTMLButtonElement>(`[data-rebar-key="${key}"]`)?.focus();
+    }
+  };
 
   const monthLabel = currentMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" });
   const currentDecadeStart = decadeStart(browseYear);
@@ -208,13 +261,18 @@ export const Calendar = ({
               </div>
             ))}
           </div>
-          <div className="rebar-calendar-grid" data-rebar-part="grid">
+          <div className="rebar-calendar-grid" data-rebar-part="grid" ref={gridRef} onKeyDown={handleGridKeyDown}>
             {cells.map(({ date, inCurrentMonth }) => {
               const key = dayKey(date);
               const outOfRange = (minKey !== undefined && key < minKey) || (maxKey !== undefined && key > maxKey);
               const disabled = !inCurrentMonth || outOfRange;
               const selected = selectedKey !== undefined && key === selectedKey;
               const isToday = key === todayKey;
+              const lo = rangeStartKey !== undefined && rangeEndKey !== undefined ? Math.min(rangeStartKey, rangeEndKey) : rangeStartKey ?? rangeEndKey;
+              const hi = rangeStartKey !== undefined && rangeEndKey !== undefined ? Math.max(rangeStartKey, rangeEndKey) : rangeEndKey ?? rangeStartKey;
+              const inRange = inCurrentMonth && lo !== undefined && hi !== undefined && key >= lo && key <= hi;
+              const isRangeStart = inCurrentMonth && key === lo && (rangeStartKey !== undefined || rangeEndKey !== undefined);
+              const isRangeEnd = inCurrentMonth && key === hi && (rangeStartKey !== undefined || rangeEndKey !== undefined);
 
               return (
                 <button
@@ -222,12 +280,16 @@ export const Calendar = ({
                   type="button"
                   className="rebar-calendar-day"
                   data-rebar-part="day"
-                  data-rebar-selected={selected || undefined}
+                  data-rebar-key={inCurrentMonth ? key : undefined}
+                  data-rebar-selected={selected || isRangeStart || isRangeEnd || undefined}
+                  data-rebar-in-range={(inRange && !isRangeStart && !isRangeEnd) || undefined}
+                  data-rebar-range-start={isRangeStart || undefined}
+                  data-rebar-range-end={isRangeEnd || undefined}
                   data-rebar-today={isToday || undefined}
                   data-rebar-outside={!inCurrentMonth || undefined}
                   disabled={disabled}
                   aria-current={isToday ? "date" : undefined}
-                  aria-pressed={selected}
+                  aria-pressed={selected || isRangeStart || isRangeEnd}
                   aria-label={date.toLocaleDateString("en-US", {
                     month: "long",
                     day: "numeric",

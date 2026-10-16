@@ -2,6 +2,7 @@ import type { ComponentPropsWithoutRef } from "react";
 import clsx from "clsx";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { CHART_PALETTE } from "../chartPalette";
 
 export interface SankeyDiagramNode {
   id: string;
@@ -33,13 +34,7 @@ export interface SankeyDiagramProps extends Omit<ComponentPropsWithoutRef<"figur
   bionicOptions?: BionicOptions;
 }
 
-const DEFAULT_PALETTE = [
-  "var(--rebar-color-primary, #0066cc)",
-  "var(--rebar-color-success, #2e7d32)",
-  "var(--rebar-color-warning, #f57c00)",
-  "var(--rebar-color-danger, #d32f2f)",
-  "var(--rebar-color-text-secondary, #757575)",
-];
+const DEFAULT_PALETTE = CHART_PALETTE;
 
 const NODE_WIDTH = 16;
 const NODE_GAP = 8;

@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { renderChartEmptyState } from "../chartEmptyState";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { CHART_PALETTE } from "../chartPalette";
 
 export interface BulletGraphMeasure {
   label: string;
@@ -33,13 +34,7 @@ export interface BulletGraphProps extends Omit<ComponentPropsWithoutRef<"figure"
   bionicOptions?: BionicOptions;
 }
 
-const DEFAULT_PALETTE = [
-  "var(--rebar-color-primary, #0066cc)",
-  "var(--rebar-color-success, #2e7d32)",
-  "var(--rebar-color-warning, #f57c00)",
-  "var(--rebar-color-danger, #d32f2f)",
-  "var(--rebar-color-text-secondary, #757575)",
-];
+const DEFAULT_PALETTE = CHART_PALETTE;
 
 // Three qualitative range bands, light to dark on a single neutral scale (never a hue at this
 // level — the *bands* are context, only the measure bar and target tick carry real identity/

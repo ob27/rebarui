@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { renderChartEmptyState } from "../chartEmptyState";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { CHART_DOWN, CHART_UP, chartColor } from "../chartPalette";
 
 export interface WaterfallChartStep {
   label: string;
@@ -82,7 +83,8 @@ export function WaterfallChart({
   const rawMin = Math.min(0, ...levels);
   const rawMax = Math.max(0, ...levels);
   const pad = (rawMax - rawMin) * 0.1 || Math.abs(rawMax) * 0.1 || 1;
-  const yMin = rawMin - pad;
+  // Never extend the axis below zero when every level is non-negative.
+  const yMin = rawMin < 0 ? rawMin - pad : 0;
   const yMax = rawMax + pad;
   const yScale = (v: number) => marginTop + plotHeight - ((v - yMin) / (yMax - yMin)) * plotHeight;
   const zeroY = yScale(0);
@@ -130,10 +132,10 @@ export function WaterfallChart({
           const yTop = yScale(top);
           const cx = marginLeft + bandWidth * (i + 0.5);
           const color = step.isTotal
-            ? "var(--rebar-color-primary, #0066cc)"
+            ? chartColor(1)
             : step.value >= 0
-              ? "var(--rebar-color-success, #2e7d32)"
-              : "var(--rebar-color-danger, #d32f2f)";
+              ? CHART_UP
+              : CHART_DOWN;
           const nextStep = steps[i + 1];
           const nextLevel = levels[i + 1];
           const showConnector = i < n - 1 && !nextStep?.isTotal && nextLevel !== undefined;

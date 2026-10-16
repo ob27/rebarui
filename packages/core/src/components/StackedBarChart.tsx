@@ -4,6 +4,7 @@ import { renderChartEmptyState } from "../chartEmptyState";
 import { ChartFilterFooter, useSeriesFilter } from "../chartSeriesFilter";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { CHART_PALETTE } from "../chartPalette";
 
 export interface StackedBarChartSegment {
   label: string;
@@ -37,13 +38,7 @@ export interface StackedBarChartProps extends Omit<ComponentPropsWithoutRef<"fig
   bionicOptions?: BionicOptions;
 }
 
-const DEFAULT_PALETTE = [
-  "var(--rebar-color-primary, #0066cc)",
-  "var(--rebar-color-success, #2e7d32)",
-  "var(--rebar-color-warning, #f57c00)",
-  "var(--rebar-color-danger, #d32f2f)",
-  "var(--rebar-color-text-secondary, #757575)",
-];
+const DEFAULT_PALETTE = CHART_PALETTE;
 
 // The default palette is `var(--rebar-color-*, #hex)` strings, not plain hex — a caller can also
 // pass either shape. Previously this only recognized a bare `#hex` and silently fell back to dark

@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { renderChartEmptyState } from "../chartEmptyState";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { CHART_PALETTE } from "../chartPalette";
 
 export interface FunnelChartStage {
   label: string;
@@ -38,13 +39,7 @@ export interface FunnelChartProps extends Omit<ComponentPropsWithoutRef<"figure"
   bionicOptions?: BionicOptions;
 }
 
-const DEFAULT_PALETTE = [
-  "var(--rebar-color-primary, #0066cc)",
-  "var(--rebar-color-success, #2e7d32)",
-  "var(--rebar-color-warning, #f57c00)",
-  "var(--rebar-color-danger, #d32f2f)",
-  "var(--rebar-color-text-secondary, #757575)",
-];
+const DEFAULT_PALETTE = CHART_PALETTE;
 
 /**
  * A staged, narrowing-bar chart (Visitors → Signups → Purchases, ...) — each stage's width scaled
