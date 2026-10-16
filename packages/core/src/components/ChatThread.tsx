@@ -38,6 +38,14 @@ export interface ChatMessage {
   actions?: ReactNode;
   /** `"highlight"` tints the bubble. Default `"default"`. */
   tone?: ChatMessageTone;
+  /** Sources the message cites, rendered as small pills inside the bubble under the content
+   * (a link when `href` is given, otherwise plain text). Separate from `actions`, which stays in the meta row. */
+  citations?: ChatCitation[];
+}
+
+export interface ChatCitation {
+  label: string;
+  href?: string;
 }
 
 export interface ChatThreadProps extends ComponentPropsWithoutRef<"div"> {
@@ -209,6 +217,21 @@ function MessageBubble({
             {plainContent}
           </span>
         )}
+        {message.citations && message.citations.length > 0 ? (
+          <div className="rebar-chat-message-citations" data-rebar-part="citations">
+            {message.citations.map((c, i) =>
+              c.href ? (
+                <a key={`${c.label}-${i}`} className="rebar-chat-message-citation" data-rebar-part="citation" href={c.href}>
+                  {c.label}
+                </a>
+              ) : (
+                <span key={`${c.label}-${i}`} className="rebar-chat-message-citation" data-rebar-part="citation">
+                  {c.label}
+                </span>
+              ),
+            )}
+          </div>
+        ) : null}
         {status === "streaming" ? (
           message.content.length === 0 ? (
             // Waiting for the first token — bouncing dots, the same "something is about to

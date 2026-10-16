@@ -668,6 +668,7 @@ export type { NumberKeyboardProps } from "./components/NumberKeyboard";
 export { ChatThread } from "./components/ChatThread";
 export type {
   ChatThreadProps,
+  ChatCitation,
   ChatMessage,
   ChatMessageRole,
   ChatMessageStatus,

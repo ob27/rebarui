@@ -453,3 +453,28 @@ describe("ChatThread", () => {
     });
   });
 });
+
+describe("ChatThread citations", () => {
+  it("renders citations as pills inside the bubble, linking when href is given", () => {
+    const messages: ChatMessage[] = [
+      {
+        id: "1",
+        role: "assistant",
+        content: "See the docs.",
+        citations: [{ label: "Docs", href: "/docs" }, { label: "Spec" }],
+      },
+    ];
+    const { container } = render(<ChatThread messages={messages} />);
+    const bubble = container.querySelector('[data-rebar-part="bubble"]')!;
+    const pills = bubble.querySelectorAll('[data-rebar-part="citation"]');
+    expect(pills).toHaveLength(2);
+    expect(pills[0]).toHaveAttribute("href", "/docs");
+    expect(pills[1].tagName).toBe("SPAN");
+    expect(pills[1]).toHaveTextContent("Spec");
+  });
+
+  it("renders nothing extra without citations", () => {
+    const { container } = render(<ChatThread messages={[{ id: "1", role: "assistant", content: "Hi" }]} />);
+    expect(container.querySelector('[data-rebar-part="citations"]')).toBeNull();
+  });
+});

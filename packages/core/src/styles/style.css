@@ -5359,6 +5359,28 @@ div.rebar-chat-message-content > *:last-child { margin-bottom: 0; }
 .rebar-chat-message-sender { color: var(--rebar-color-text-primary, #212121); font-weight: 600; }
 .rebar-chat-message-header { margin-bottom: var(--rebar-space-xs, 4px); }
 .rebar-chat-message-actions { display: inline-flex; align-items: center; gap: var(--rebar-space-sm, 8px); font-style: normal; }
+.rebar-chat-message-citations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rebar-space-xs, 4px);
+  margin-top: var(--rebar-space-sm, 8px);
+}
+.rebar-chat-message-citation {
+  display: inline-block;
+  padding: 1px var(--rebar-space-sm, 8px);
+  border: var(--rebar-border-width, 1px) solid currentColor;
+  border-radius: 999px;
+  font-size: var(--rebar-font-size-xs, 12px);
+  line-height: 1.5;
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.85;
+}
+a.rebar-chat-message-citation:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
 .rebar-chat-message[data-rebar-tone="highlight"] .rebar-chat-message-bubble {
   background: var(--rebar-color-bg-secondary, #f5f5f5);
   background: color-mix(in srgb, var(--rebar-color-primary, #0066cc) 12%, var(--rebar-color-bg-primary, #ffffff));

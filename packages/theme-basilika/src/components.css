@@ -744,6 +744,12 @@ textarea.rebar-input {
 .rebar-chat-message[data-rebar-status="error"] .rebar-chat-message-bubble {
   border-color: var(--rebar-color-danger);
 }
+.rebar-chat-message-citation {
+  border-color: color-mix(in srgb, currentColor 30%, transparent);
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  font-weight: var(--rebar-font-weight-medium);
+  opacity: 1;
+}
 .rebar-chat-typing-bubble {
   padding: 12px 16px;
   border-radius: 18px 18px 18px 6px;
