@@ -121,7 +121,7 @@ export default function KanbanPage() {
         <Stack gap="lg">
           <Card>
             <Stack gap="md">
-              <Stack direction="row" gap="sm" align="baseline" style={{ flexWrap: "wrap" }}>
+              <Stack direction="row" gap="sm" align="center" style={{ flexWrap: "wrap" }}>
                 <Heading level={3}>{harbour.name}</Heading>
                 <Text size="sm" color="secondary">
                   9 of 14 done · launch {harbour.due}
