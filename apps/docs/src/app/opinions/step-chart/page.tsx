@@ -1,30 +1,21 @@
-import { Box, Heading, Stack, StepChart, Text } from "rebar-ui";
+"use client";
+
+import { Card, Heading, Stack, StepChart, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
+const DAYS = ["Mon 20", "Tue 21", "Wed 22", "Thu 23", "Fri 24", "Sat 25"];
+
+const CODE = `<StepChart
+  title="Crew on shift"
+  xLabels={["Mon 20", "Tue 21", "Wed 22", "Thu 23", "Fri 24", "Sat 25"]}
+  series={[{ label: "Crew", values: [8, 8, 10, 10, 12, 6] }]}
+/>`;
+
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<StepChart title="Interest rate" xLabels={["Q1","Q2","Q3","Q4"]} series={[{ label: "Base rate", values: [1.5, 2, 2, 3.5] }]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["StepChart"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "What it's for",
-    body: [
-      {
-        kind: "text",
-        text: '`step` (`"after"` by default, or `"before"`/`"middle"`) picks where the right-angle jump happens between two points. For a value that holds constant between discrete change events (an interest rate, an inventory level, a feature-flag rollout percentage), a diagonal `LineChart` would visually imply a gradual change that never actually happened — this draws the real staircase instead.',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -48,14 +39,27 @@ export default function StepChartPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>StepChart</Heading>
-      <Text color="secondary">
-        A line chart drawn with right-angle staircase segments instead of diagonal ones, for values
-        that hold constant between discrete change points.
-      </Text>
+      <Text color="secondary">A line drawn as steps, for values that hold until the next change.</Text>
 
-      <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-lg)" }}>
-        <StepChart title="Interest rate" xLabels={["Q1", "Q2", "Q3", "Q4"]} series={[{ label: "Base rate", values: [1.5, 2, 2, 3.5] }]} />
-      </Box>
+      <DemoStage
+        title="Crew on shift"
+        caption="Headcount at the three northern depots, launch week"
+        code={CODE}
+        states={[
+          { label: "Two series", node: <StepChart title="Crew by depot" xLabels={DAYS} series={[{ label: "North", values: [4, 4, 5, 5, 6, 3] }, { label: "East", values: [4, 4, 5, 5, 6, 3] }]} height={180} /> },
+          { label: "Formatted axis", node: <StepChart title="Hourly rate" xLabels={DAYS} series={[{ label: "Rate", values: [18, 18, 20, 20, 22, 22] }]} yFormat={(v) => `£${v}`} height={180} /> },
+          { label: "Trendline", node: <StepChart title="Crew on shift" xLabels={DAYS} series={[{ label: "Crew", values: [8, 8, 10, 10, 12, 6] }]} trendline height={180} /> },
+        ]}
+      >
+        <StepChart title="Crew on shift" xLabels={DAYS} series={[{ label: "Crew", values: [8, 8, 10, 10, 12, 6] }]} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Rota" caption="A card on the rota page" widths={false}>
+        <Card style={{ maxWidth: 560, margin: "0 auto" }} title="Staffing this week" subtitle="Payroll cut-off 28 Oct" extra={<Tag tone="info">Launch Fri</Tag>}>
+          <StepChart ariaLabel="Crew on shift per day" xLabels={DAYS} series={[{ label: "Crew", values: [8, 8, 10, 10, 12, 6] }]} />
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

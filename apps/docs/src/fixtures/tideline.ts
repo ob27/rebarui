@@ -225,3 +225,11 @@ export const CYCLE_DAYS = [
 ];
 /** Hours logged per project this quarter. */
 export const PROJECT_HOURS: Record<string, number> = { harbour: 410, mobile: 760, interviews: 120, rota: 90, signage: 230 };
+// ---- wave B/C (m): stacked chart series -----------------------------------------------------------
+/** Tasks done per week by tag, the last six weeks (14 Sep to 19 Oct). Each week sums to the matching WEEKLY_DONE entry. */
+export const DONE_BY_TAG: Record<(typeof TAGS)[number], number[]> = {
+  Design: [8, 9, 8, 10, 9, 11],
+  Eng: [7, 10, 9, 11, 10, 12],
+  Research: [4, 4, 3, 5, 5, 5],
+  Ops: [4, 5, 5, 5, 5, 5],
+};

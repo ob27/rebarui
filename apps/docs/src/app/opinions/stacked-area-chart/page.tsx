@@ -1,40 +1,27 @@
-import { Box, Heading, Stack, StackedAreaChart, Text } from "rebar-ui";
+"use client";
+
+import { Card, Heading, Stack, StackedAreaChart, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { WEEK_LABELS, DONE_BY_TAG } from "@/fixtures/tideline";
+
+const WEEKS = WEEK_LABELS.slice(-6);
+const SERIES = Object.entries(DONE_BY_TAG).map(([label, values]) => ({ label, values }));
+
+const CODE = `<StackedAreaChart
+  title="Tasks done per week"
+  xLabels={["28 Sep", "5 Oct", "12 Oct", "19 Oct"]}
+  series={[
+    { label: "Design", values: [8, 9, 8, 10] },
+    { label: "Eng", values: [7, 10, 9, 11] },
+  ]}
+  filterable
+/>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<StackedAreaChart title="Signups" xLabels={["Jan","Feb","Mar","Apr"]} series={[{ label: "Free", values: [10, 15, 22, 28] }, { label: "Paid", values: [5, 8, 12, 18] }]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["StackedAreaChart"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "What it's for",
-    body: [
-      {
-        kind: "text",
-        text: "Each series' band stacks on top of the ones before it in `series` order — showing both each series' own shape *and* the running total (the topmost band's upper edge) at once, the composition-over-time counterpart to `StackedBarChart`. Each band is filled solid (not the low-opacity overlap `AreaChart` uses), since stacked bands never overlap each other by construction, with a thin divider line between bands for legibility.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Series filtering",
-    body: [
-      {
-        kind: "text",
-        text: "Set `filterable` for a toggle row below the chart — hiding a series drops its whole band and the bands above it collapse down to fill the gap, the same behavior `StackedBarChart`'s own `filterable` segments already have.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -58,20 +45,27 @@ export default function StackedAreaChartPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>StackedAreaChart</Heading>
-      <Text color="secondary">
-        A multi-series area chart where each series&apos; band stacks on top of the ones before it.
-      </Text>
+      <Text color="secondary">Bands stacked on top of each other, so the top edge is the total.</Text>
 
-      <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-lg)" }}>
-        <StackedAreaChart
-          title="Signups"
-          xLabels={["Jan", "Feb", "Mar", "Apr"]}
-          series={[
-            { label: "Free", values: [10, 15, 22, 28] },
-            { label: "Paid", values: [5, 8, 12, 18] },
-          ]}
-        />
-      </Box>
+      <DemoStage
+        title="Tasks done per week"
+        caption="By tag, 14 Sep to 19 Oct"
+        code={CODE}
+        states={[
+          { label: "Two series", node: <StackedAreaChart title="Design and Eng" xLabels={WEEKS} series={SERIES.slice(0, 2)} height={180} /> },
+          { label: "Single series", node: <StackedAreaChart title="Ops only" xLabels={WEEKS} series={SERIES.slice(3)} height={180} /> },
+          { label: "Two points", node: <StackedAreaChart title="This fortnight" xLabels={WEEKS.slice(-2)} series={SERIES} height={180} /> },
+        ]}
+      >
+        <StackedAreaChart title="Tasks done per week" xLabels={WEEKS} series={SERIES} filterable />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Delivery dashboard" caption="A card above the project table" widths={false}>
+        <Card style={{ maxWidth: 600, margin: "0 auto" }} title="Output" subtitle="33 tasks done in the week of 19 Oct" extra={<Tag tone="success">Up 4 on last week</Tag>}>
+          <StackedAreaChart ariaLabel="Tasks done per week by tag" xLabels={WEEKS} series={SERIES} />
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

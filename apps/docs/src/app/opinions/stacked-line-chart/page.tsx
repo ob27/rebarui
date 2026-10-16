@@ -1,40 +1,27 @@
-import { Box, Heading, Stack, StackedLineChart, Text } from "rebar-ui";
+"use client";
+
+import { Card, Heading, Stack, StackedLineChart, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { WEEK_LABELS, DONE_BY_TAG } from "@/fixtures/tideline";
+
+const WEEKS = WEEK_LABELS.slice(-6);
+const SERIES = Object.entries(DONE_BY_TAG).map(([label, values]) => ({ label, values }));
+
+const CODE = `<StackedLineChart
+  title="Tasks done per week"
+  xLabels={["28 Sep", "5 Oct", "12 Oct", "19 Oct"]}
+  series={[
+    { label: "Design", values: [8, 9, 8, 10] },
+    { label: "Eng", values: [7, 10, 9, 11] },
+  ]}
+  filterable
+/>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<StackedLineChart title="Signups" xLabels={["Jan","Feb","Mar","Apr"]} series={[{ label: "Free", values: [10, 15, 22, 28] }, { label: "Paid", values: [5, 8, 12, 18] }]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["StackedLineChart"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "What it's for",
-    body: [
-      {
-        kind: "text",
-        text: "Each line plots a *cumulative running total* (itself plus every series stacked below it in `series` order), not its own raw values — the topmost line is always the grand total. Shows each series' individual contribution to a growing whole without the visual weight `StackedAreaChart`'s filled bands carry, useful when the reader mainly needs to compare shapes/slopes rather than read the exact fill volume at a glance.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Series filtering",
-    body: [
-      {
-        kind: "text",
-        text: "Set `filterable` for a toggle row below the chart — hiding a series drops it from the stack entirely and the remaining lines' cumulative sums recompute without it, the same behavior `StackedBarChart`'s own `filterable` segments already have.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -58,21 +45,27 @@ export default function StackedLineChartPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>StackedLineChart</Heading>
-      <Text color="secondary">
-        A multi-series line chart where each line plots a cumulative running total, not raw values
-        — the composition-over-time counterpart to `LineChart`.
-      </Text>
+      <Text color="secondary">Lines that plot a running total, so each line sits on top of the ones before it.</Text>
 
-      <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-lg)" }}>
-        <StackedLineChart
-          title="Signups"
-          xLabels={["Jan", "Feb", "Mar", "Apr"]}
-          series={[
-            { label: "Free", values: [10, 15, 22, 28] },
-            { label: "Paid", values: [5, 8, 12, 18] },
-          ]}
-        />
-      </Box>
+      <DemoStage
+        title="Tasks done per week"
+        caption="Cumulative by tag, 14 Sep to 19 Oct"
+        code={CODE}
+        states={[
+          { label: "Two series", node: <StackedLineChart title="Design and Eng" xLabels={WEEKS} series={SERIES.slice(0, 2)} height={180} /> },
+          { label: "Single series", node: <StackedLineChart title="Research only" xLabels={WEEKS} series={SERIES.slice(2, 3)} height={180} /> },
+          { label: "Formatted axis", node: <StackedLineChart title="Hours" xLabels={WEEKS} series={SERIES.slice(0, 2)} yFormat={(v) => `${v}h`} height={180} /> },
+        ]}
+      >
+        <StackedLineChart title="Tasks done per week" xLabels={WEEKS} series={SERIES} filterable />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Delivery dashboard" caption="A card beside the area chart's totals" widths={false}>
+        <Card style={{ maxWidth: 600, margin: "0 auto" }} title="Output by tag" subtitle="Each line includes the ones below it" extra={<Tag>Last 6 weeks</Tag>}>
+          <StackedLineChart ariaLabel="Cumulative tasks done by tag" xLabels={WEEKS} series={SERIES} />
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

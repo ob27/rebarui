@@ -1,22 +1,22 @@
 "use client";
 
-import { Heading, SplitButton, Stack, Text } from "rebar-ui";
+import { Button, Card, Heading, SplitButton, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
+const CODE = `<SplitButton
+  label="Send report"
+  onClick={send}
+  items={[
+    { label: "Send and archive", onSelect: sendAndArchive },
+    { label: "Schedule for Friday", onSelect: schedule },
+  ]}
+/>`;
+const ITEMS = [{ label: "Save as draft" }, { label: "Save and publish" }];
+
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: `<SplitButton\n  label="Save"\n  onClick={() => {}}\n  items={[\n    { label: "Save as draft", onSelect: () => {} },\n    { label: "Save and publish", onSelect: () => {} },\n  ]}\n/>`,
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["SplitButton"] ?? [] },
   {
     type: "doc-section",
@@ -25,16 +25,6 @@ const BLOCKS: Construct[] = [
       {
         kind: "text",
         text: '`data-rebar-component="split-button"` on the root; `data-rebar-part="primary"` on the main button, `"trigger"` on the caret button, `"menu"` on the popover content, `"item"` per secondary action.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Pure composition, no reimplemented menu logic",
-    body: [
-      {
-        kind: "text",
-        text: "Built entirely from the real `Button` and `Popover` components — the primary action and the caret each render as a real `Button`, and the secondary-action list is the real `Popover`'s own content. Nothing about positioning or open/close behavior is reimplemented here.",
       },
     ],
   },
@@ -54,56 +44,49 @@ export default function SplitButtonPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>SplitButton</Heading>
-      <Text color="secondary">
-        A primary button with an attached caret button opening a menu of secondary actions,
-        rendered as one visually joined unit.
-      </Text>
+      <Text color="secondary">A main action with a caret that opens related actions, joined as one button.</Text>
 
-      <LivePreview>
+      <DemoStage
+        title="Send report"
+        caption="Click the label to send, the caret for the alternatives"
+        code={CODE}
+        widths={false}
+        states={[
+          { label: "Secondary", node: <SplitButton label="Save" variant="secondary" items={ITEMS} /> },
+          { label: "Destructive", node: <SplitButton label="Delete" variant="destructive" items={[{ label: "Delete forever" }]} /> },
+          {
+            label: "Sizes",
+            node: (
+              <Stack direction="row" gap="sm" align="center" style={{ flexWrap: "wrap" }}>
+                <SplitButton label="Save" size="sm" items={ITEMS} />
+                <SplitButton label="Save" items={ITEMS} />
+                <SplitButton label="Save" size="lg" items={ITEMS} />
+              </Stack>
+            ),
+          },
+        ]}
+      >
         <SplitButton
-          label="Save"
+          label="Send report"
           onClick={() => {}}
-          items={[
-            { label: "Save as draft", onSelect: () => {} },
-            { label: "Save and publish", onSelect: () => {} },
-          ]}
+          items={[{ label: "Send and archive", onSelect: () => {} }, { label: "Schedule for Friday", onSelect: () => {} }]}
         />
-      </LivePreview>
+      </DemoStage>
 
-      <Stack gap="sm">
-        <Text size="sm" color="secondary">
-          <code>variant</code> and <code>size</code> pass through to both the primary and caret
-          button, the same values <code>Button</code> itself takes.
-        </Text>
-        <LivePreview>
-          <Stack direction="row" gap="md" style={{ flexWrap: "wrap", alignItems: "center" }}>
-            <SplitButton
-              label="Save"
-              variant="secondary"
-              onClick={() => {}}
-              items={[{ label: "Save as draft", onSelect: () => {} }]}
-            />
-            <SplitButton
-              label="Delete"
-              variant="destructive"
-              onClick={() => {}}
-              items={[{ label: "Delete forever", onSelect: () => {} }]}
-            />
-            <SplitButton
-              label="Save"
-              size="sm"
-              onClick={() => {}}
-              items={[{ label: "Save as draft", onSelect: () => {} }]}
-            />
-            <SplitButton
-              label="Save"
-              size="lg"
-              onClick={() => {}}
-              items={[{ label: "Save as draft", onSelect: () => {} }]}
-            />
-          </Stack>
-        </LivePreview>
-      </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Weekly report" caption="One primary send, two variations" widths={false}>
+        <Card
+          style={{ maxWidth: 480, margin: "0 auto" }}
+          title="Week of 19 Oct"
+          subtitle="33 tasks done, 7 due soon"
+          actions={[
+            <Button key="preview" variant="secondary">Preview</Button>,
+            <SplitButton key="send" label="Send to crew" onClick={() => {}} items={[{ label: "Send and archive", onSelect: () => {} }, { label: "Schedule for Friday", onSelect: () => {} }]} />,
+          ]}
+        >
+          <Text size="sm" color="secondary">Harbour launch moves to 24 Oct. Rota export shipped. Crew interviews are one task behind.</Text>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
