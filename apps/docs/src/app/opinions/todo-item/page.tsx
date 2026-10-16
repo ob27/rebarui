@@ -1,129 +1,87 @@
 "use client";
 
 import { useState } from "react";
-import { Editable, Heading, Stack, Text, TodoItem } from "rebar-ui";
+import { Card, Editable, Heading, Progress, Stack, Text, TodoItem } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TASKS, project } from "@/fixtures/tideline";
 
-interface Task {
-  id: string;
-  label: string;
-  completed: boolean;
-  disabled?: boolean;
+const CODE = "<TodoItem label=\"Draft launch checklist\" completed={done} onToggle={setDone} toggleLabel={`Mark as ${done ? \"incomplete\" : \"complete\"}`} />";
+
+const LAUNCH = ["Final palette signed off", "Homepage live on staging", "Van livery photos filed", "Crew briefing sent"];
+const noop = () => {};
+function row(label: string, completed: boolean, extra: { disabled?: boolean; celebration?: "big" | "small" | "none" } = {}) {
+  return <TodoItem label={<Text size="sm">{label}</Text>} completed={completed} onToggle={noop} toggleLabel={`Toggle ${label}`} {...extra} />;
 }
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<TodoItem label="Ship the release" completed={done} onToggle={setDone} toggleLabel={`Mark "Ship the release" as ${done ? "incomplete" : "complete"}`} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["TodoItem"] ?? [] },
   {
     type: "doc-section",
-    heading: "A row, not a list",
-    body: [
-      {
-        kind: "text",
-        text: 'This is one checkable row — a real ≥44×44 `<button role="checkbox">` toggle plus a label slot — not a list container. `label` accepts any `ReactNode`, so an inline-editable name (an `Editable`, as in the second example below) composes directly, the same way `Card`\'s slot props accept arbitrary content rather than a fixed string. The `goal-tracker` [block](/opinions#goal-tracker) is what actually assembles many of these into the full Aspiration → Focus Area → Goal hierarchy `GoalTracker` used to be as a standalone component — see that block for a hierarchical to-do/OKR tracker; reach for `TodoItem` directly when you only need one checkable row inside your own layout.',
-      },
-    ],
+    heading: "Label and disabled",
+    body: [{ kind: "text", text: "`label` takes any node, so an `Editable` composes in. `disabled` shows a struck-through toggle that ignores clicks, for a task that is blocked rather than just not done." }],
   },
   {
     type: "doc-section",
-    heading: "Disabled: not applicable, not just unchecked",
-    body: [
-      {
-        kind: "text",
-        text: 'The optional `disabled` prop renders a greyed-out, struck-through toggle that ignores clicks entirely — for an item that isn\'t tickable right now (e.g. blocked by something else in the same list), which reads differently from simply "not done yet." Additive: every existing usage (plain `completed`, no `disabled`) is unaffected. See the last row in the demo above.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Celebration is opt-in and respects reduced motion",
-    body: [
-      {
-        kind: "text",
-        text: 'The confetti burst only fires when toggling *into* completed (never on un-completing), is skipped entirely under `prefers-reduced-motion` regardless of the `celebration` prop, and has three sizes: `"small"` (default), `"big"`, or `"none"` to disable it.',
-      },
-    ],
+    heading: "Accessibility",
+    body: [{ kind: "text", text: "The toggle is a real `<button role=\"checkbox\">` of at least 44 by 44 px. The burst only fires when completing, and is skipped under `prefers-reduced-motion`." }],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="todo-item"` on the root; parts: `toggle`, `label`, `burst` (present only while a completion celebration is animating).',
-      },
-    ],
+    body: [{ kind: "text", text: "`data-rebar-component=\"todo-item\"` on the root; parts: `toggle`, `label`, `burst` (only while a celebration animates)." }],
   },
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      {
-        kind: "text",
-        text: "Not codemod-covered — AntD has no direct equivalent of a celebratory-burst checkbox row; migrating means composing AntD's own `Checkbox` with a custom or third-party confetti effect.",
-      },
-    ],
+    body: [{ kind: "text", text: "Not codemod-covered. Compose AntD's `Checkbox` with your own confetti effect." }],
   },
 ];
 
 export default function TodoItemPage() {
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: "t1", label: "Write the proposal", completed: true },
-    { id: "t2", label: "Ship the release", completed: false },
-    { id: "t3", label: "Send the recap", completed: false },
-    { id: "t4", label: "Blocked on legal review", completed: false, disabled: true },
-  ]);
-
-  const toggle = (id: string, completed: boolean) => {
-    setTasks((prev) => prev.map((task) => (task.id === id ? { ...task, completed } : task)));
-  };
-
-  const rename = (id: string, label: string) => {
-    setTasks((prev) => prev.map((task) => (task.id === id ? { ...task, label } : task)));
-  };
-
+  const [tasks, setTasks] = useState(TASKS.slice(0, 4));
+  const [done, setDone] = useState<string[]>(["sync"]);
+  const [checked, setChecked] = useState<string[]>([LAUNCH[0]]);
+  const harbour = project("harbour");
   return (
     <Stack gap="lg">
       <Heading level={1}>TodoItem</Heading>
-      <Text color="secondary">
-        A checkable row — a large toggle button, a label slot, and an optional celebratory
-        confetti burst on completion. The primitive extracted from <code>GoalTracker</code> when
-        that hierarchy was reclassified into the <code>goal-tracker</code> block.
-      </Text>
+      <Text color="secondary">One checkable row: a large toggle, a label, and an optional confetti burst on completion.</Text>
 
-      <LivePreview>
-        <Stack gap="sm" style={{ maxWidth: 360 }}>
-          {tasks.map((task) => (
+      <DemoStage title="Task list" caption="Tick a task, rename it in place" code={CODE} widths={false}
+        states={[
+          { label: "Done", node: row("Brand palette", true) },
+          { label: "Disabled", node: row("Waiting on legal review", false, { disabled: true }) },
+          { label: "Big celebration", node: row("Ship the harbour homepage", false, { celebration: "big" }) },
+          { label: "No celebration", node: row("Icon audit", false, { celebration: "none" }) },
+          { label: "Long label", node: row("Book the twelve crew interviews and confirm every night-watch slot with Leo", false) },
+        ]}>
+        <Stack gap="sm" style={{ maxWidth: 380 }}>
+          {tasks.map((t) => (
             <TodoItem
-              key={task.id}
-              label={
-                <Editable
-                  value={task.label}
-                  onChange={(text) => rename(task.id, text)}
-                  aria-label="Task"
-                  className={task.completed ? "rebar-todo-item-label-completed" : undefined}
-                />
-              }
-              completed={task.completed}
-              disabled={task.disabled}
-              onToggle={(completed) => toggle(task.id, completed)}
-              toggleLabel={`Mark "${task.label}" as ${task.completed ? "incomplete" : "complete"}`}
+              key={t.id}
+              label={<Editable value={t.title} onChange={(text) => setTasks((p) => p.map((x) => (x.id === t.id ? { ...x, title: text } : x)))} aria-label="Task" className={done.includes(t.id) ? "rebar-todo-item-label-completed" : undefined} />}
+              completed={done.includes(t.id)}
+              onToggle={(c) => setDone((p) => (c ? [...p, t.id] : p.filter((i) => i !== t.id)))}
+              toggleLabel={`Mark "${t.title}" as ${done.includes(t.id) ? "incomplete" : "complete"}`}
             />
           ))}
         </Stack>
-      </LivePreview>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Launch checklist" caption="Harbour rebrand, launching 24 Oct" widths={false}>
+        <Card style={{ maxWidth: 460, margin: "0 auto" }} title="Harbour launch checklist" subtitle={`${harbour.status}, ${harbour.done}% done`} labels={[{ label: "Brand", tone: "info" }]}>
+          <Stack gap="md">
+            <Progress value={checked.length * 25} aria-label="Checklist progress" />
+            {LAUNCH.map((l) => (
+              <TodoItem key={l} label={<Text size="sm">{l}</Text>} completed={checked.includes(l)} onToggle={(c) => setChecked((p) => (c ? [...p, l] : p.filter((i) => i !== l)))} toggleLabel={`Mark "${l}" as done`} celebration="small" />
+            ))}
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

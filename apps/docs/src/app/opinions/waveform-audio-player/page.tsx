@@ -1,66 +1,57 @@
-import { Heading, Stack, Text, WaveformAudioPlayer } from "rebar-ui";
+"use client";
+
+import { Avatar, Card, Heading, Stack, Text, WaveformAudioPlayer } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { avatarOf } from "@/fixtures/tideline";
+
+const CODE = "<WaveformAudioPlayer src=\"/voice-note.mp3\" barCount={48} skipSeconds={15} />";
+
+const SRC = "/audio/empty-state-waiting-music.mp3";
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      { kind: "code", code: '<WaveformAudioPlayer src="/voice-message.mp3" barCount={48} skipSeconds={15} />' },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["WaveformAudioPlayer"] ?? [] },
   {
     type: "doc-section",
-    heading: "A deterministic, low-fidelity waveform",
-    body: [
-      {
-        kind: "text",
-        text: 'Bar heights are seeded from a hash of `src` (the same deterministic-seed trick `Sticky`/`Avatar` placeholders use) — no real amplitude analysis, so the same audio always shows the same bar pattern. Bars double as a real click-to-seek scrub bar, with Arrow/Home/End keyboard seeking as the non-drag equivalent.',
-      },
-    ],
+    heading: "Waveform",
+    body: [{ kind: "text", text: "Bar heights are seeded from `src`, so the same audio always shows the same bars; there is no real amplitude analysis." }],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="waveform-audio-player"`; parts include `play-button`, `skip-back`, `skip-forward`, `waveform`, `bar` (with `data-played` once passed), and `time`.',
-      },
-    ],
+    body: [{ kind: "text", text: "`data-rebar-component=\"waveform-audio-player\"`; parts include `play-button`, `skip-back`, `skip-forward`, `waveform`, `bar` (with `data-played` once passed), `time`." }],
   },
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      {
-        kind: "text",
-        text: "Not codemod-covered — AntD has no audio-player primitive of its own; migrate to a dedicated audio-player library or a plain native `<audio controls>` if the waveform isn't required.",
-      },
-    ],
+    body: [{ kind: "text", text: "Not codemod-covered. AntD has no audio player; use a dedicated library or a native `<audio controls>` if you do not need the waveform." }],
   },
 ];
 
 export default function WaveformAudioPlayerPage() {
   return (
     <Stack gap="lg">
-      <Heading level={1}>WaveformAudioPlayer</Heading>
-      <Text color="secondary">
-        A transport control with a click-to-seek bar-based waveform display.
-      </Text>
+      <Heading level={1} style={{ overflowWrap: "anywhere" }}>WaveformAudioPlayer</Heading>
+      <Text color="secondary">An audio player with a bar waveform you can click to seek.</Text>
 
-      <Text size="sm" color="secondary">
-        A real audio track is wired up below (Rebar&apos;s own &quot;empty state, waiting&quot;
-        music cue) so the transport controls are genuinely interactive against real, audible
-        content, not a silent placeholder clip.
-      </Text>
-      <WaveformAudioPlayer
-        src="/audio/empty-state-waiting-music.mp3"
-        aria-label="Demo audio player"
-      />
+      <DemoStage title="Voice note" caption="Click the bars to seek; arrows and Home/End work too" code={CODE} widths={false}
+        states={[
+          { label: "Few bars, skip 5 seconds", node: <div style={{ overflowX: "auto" }}><WaveformAudioPlayer src={SRC} barCount={20} skipSeconds={5} aria-label="Few bars" /></div> },
+          { label: "A different track", node: <div style={{ overflowX: "auto" }}><WaveformAudioPlayer src={SRC + "?b"} aria-label="Different bars" /></div> },
+        ]}>
+        <div style={{ maxWidth: 480, overflowX: "auto" }}>
+          <WaveformAudioPlayer src={SRC} aria-label="Voice note from Priya" />
+        </div>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Message" caption="A voice note in the crew chat" widths={false}>
+        <Card style={{ maxWidth: 480, margin: "0 auto" }} title="Priya Nair" subtitle="Crew interviews, 21 Oct 09:40" avatar={<Avatar {...avatarOf("priya")} />} labels={[{ label: "Voice note" }]}>
+          <div style={{ overflowX: "auto" }}><WaveformAudioPlayer src={SRC} aria-label="Voice note from Priya" /></div>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

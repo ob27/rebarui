@@ -1,105 +1,70 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Button, Heading, Stack, Text, Tour } from "rebar-ui";
+import { Button, Card, Heading, Stack, Text, Tour } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
+const CODE = "<Tour\n  open={open}\n  onOpenChange={setOpen}\n  steps={[\n    { target: () => newRef.current, title: \"Add work\", description: \"Start a task for any Tideline project.\" },\n    { target: () => filterRef.current, title: \"Narrow the board\", description: \"Filter by person, tag or project.\" },\n  ]}\n/>";
+
+
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Tour\n  open={open}\n  onOpenChange={setOpen}\n  steps={[\n    { target: () => saveButtonRef.current, title: "Save your work", description: "Click here any time." },\n    { target: () => settingsRef.current, title: "Settings", description: "Configure the workspace." },\n  ]}\n/>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Tour"] ?? [] },
   {
     type: "doc-section",
-    heading: "target is a real, accepted function-prop exception",
-    body: [
-      {
-        kind: "text",
-        text: '`target: () => HTMLElement | null` is a deliberate exception to this project\'s usual "avoid function props" guidance — there\'s no serializable way to say "the third button on the page" otherwise, the same call `BackTop`\'s own `target` prop makes. If `target()` returns `null` (not yet rendered, conditionally hidden), that step\'s callout still renders — centered on screen — rather than crashing.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "The highlighted target wears the same active-border beam as a Kanban drop target",
-    body: [
-      {
-        kind: "text",
-        text: '`.rebar-active-border` (the animated conic-gradient beam Kanban and FileUpload use to signal "this is where a drag should land") is a generic flag, not a drag-and-drop-specific style — see its own doc comment in `style.css`. Here it signals "this is the element being explained right now" instead, applied straight to the highlight rect alongside its existing static blue outline.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "A four-sided mask, and scroll is deliberately locked",
-    body: [
-      {
-        kind: "text",
-        text: 'The dimmed overlay is four separate rects framing the highlighted element\'s real position — not an SVG mask — so the target underneath stays genuinely clickable if a step needs to demonstrate real interaction, not just point at something. The page\'s own scroll is locked while a tour is open, the same convention Radix already applies to `Dialog` — stated here as an intentional choice, not an oversight.',
-      },
-    ],
+    heading: "Targets and scroll",
+    body: [{ kind: "text", text: "`target` is a function returning the real element (a deliberate exception to the no-function-props rule). If it returns `null`, the callout centres on screen. Page scroll is locked while a tour is open, and the highlighted element stays clickable." }],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="tour"`; parts include the overlay, mask, highlight, and callout.',
-      },
-    ],
+    body: [{ kind: "text", text: "`data-rebar-component=\"tour\"`; parts include the overlay, mask, highlight and callout." }],
   },
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      {
-        kind: "text",
-        text: "AntD's own `Tour` is a close direct equivalent — `steps`/`open`/`onOpenChange`/`currentStep` map to AntD's `steps`/`open`/`onOpenChange`/`current`, though AntD's step `target` is the same function-returning-an-element shape this component already uses.",
-      },
-    ],
+    body: [{ kind: "text", text: "AntD's `Tour` is a close equivalent (`steps`, `open`, `onOpenChange`; `currentStep` is AntD's `current`). Step `target` has the same function shape." }],
   },
 ];
 
 export default function TourPage() {
   const [open, setOpen] = useState(false);
-  const startRef = useRef<HTMLButtonElement>(null);
-  const finishRef = useRef<HTMLButtonElement>(null);
-
+  const [ctx, setCtx] = useState(false);
+  const newRef = useRef<HTMLButtonElement>(null);
+  const filterRef = useRef<HTMLButtonElement>(null);
+  const shareRef = useRef<HTMLButtonElement>(null);
+  const welcomeRef = useRef<HTMLButtonElement>(null);
   return (
     <Stack gap="lg">
       <Heading level={1}>Tour</Heading>
-      <Text color="secondary">
-        A guided, sequential product walkthrough — a mask over the page with one real element
-        highlighted at a time.
-      </Text>
+      <Text color="secondary">A guided walkthrough: a dimmed page with one real element highlighted at a time.</Text>
 
-      <Stack direction="row" gap="md">
-        <Button ref={startRef} onClick={() => setOpen(true)}>
-          Start button
-        </Button>
-        <Button ref={finishRef} variant="secondary">
-          Finish button
-        </Button>
-      </Stack>
+      <DemoStage title="Toolbar tour" caption="Start the tour; it highlights each button in turn" code={CODE} widths={false}>
+        <Stack direction="row" gap="md" style={{ flexWrap: "wrap" }}>
+          <Button ref={newRef} onClick={() => setOpen(true)}>New task</Button>
+          <Button ref={filterRef} variant="secondary">Filters</Button>
+          <Button ref={shareRef} variant="secondary">Share</Button>
+        </Stack>
+        <Tour
+          open={open}
+          onOpenChange={setOpen}
+          steps={[
+            { target: () => newRef.current, title: "Add work", description: "Start a task for any Tideline project." },
+            { target: () => filterRef.current, title: "Narrow the board", description: "Filter by person, tag or project." },
+            { target: () => shareRef.current, title: "Bring in the crew", description: "Share the board with Jonas, Priya and Leo." },
+          ]}
+        />
+      </DemoStage>
 
-      <Tour
-        open={open}
-        onOpenChange={setOpen}
-        steps={[
-          { target: () => startRef.current, title: "Start here", description: "This button kicks off the flow." },
-          { target: () => finishRef.current, title: "Then finish here", description: "This one wraps things up." },
-        ]}
-      />
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="First run" caption="A welcome card offers the tour" widths={false}>
+        <Card style={{ maxWidth: 440, margin: "0 auto" }} title="Welcome to Tideline, Maya" subtitle="Harbour rebrand is on track for 24 Oct" actions={[<Button key="skip" variant="tertiary">Skip</Button>, <Button key="go" ref={welcomeRef} onClick={() => setCtx(true)}>Take the tour</Button>]}>
+          <p style={{ margin: 0, color: "var(--rebar-color-text-secondary)", fontSize: 14 }}>Two minutes to see the board, the inbox and the calendar.</p>
+        </Card>
+        <Tour open={ctx} onOpenChange={setCtx} steps={[{ target: () => welcomeRef.current, title: "You are here", description: "Every project opens to its own board." }]} />
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
