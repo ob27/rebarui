@@ -152,3 +152,24 @@ export const CHAT: Message[] = [
 export const TAGS = ["Design", "Eng", "Research", "Ops"] as const;
 export const TAG_OPTIONS = TAGS.map((t) => ({ value: t.toLowerCase(), label: t }));
 export const PROJECT_OPTIONS = PROJECTS.map((p) => ({ value: p.id, label: p.name }));
+
+export type InvoiceStatus = "Paid" | "Due" | "Overdue" | "Draft";
+export interface Invoice {
+  id: string;
+  supplier: string;
+  date: string;
+  status: InvoiceStatus;
+  /** GBP, with pence. */
+  amount: number;
+  project: string;
+}
+/** October's supplier invoices, for the plain tables. */
+export const INVOICES: Invoice[] = [
+  { id: "INV-1041", supplier: "Quay Marine Supplies", date: "22 Oct", status: "Paid", amount: 1240, project: "harbour" },
+  { id: "INV-1042", supplier: "Northern Print Co.", date: "23 Oct", status: "Due", amount: 3860.5, project: "signage" },
+  { id: "INV-1043", supplier: "Brightwater Studio", date: "24 Oct", status: "Overdue", amount: 980, project: "interviews" },
+  { id: "INV-1044", supplier: "Harbour Cafe Catering", date: "24 Oct", status: "Draft", amount: 415.25, project: "harbour" },
+];
+export const INVOICE_TONE: Record<InvoiceStatus, "success" | "info" | "error" | "default"> = { Paid: "success", Due: "info", Overdue: "error", Draft: "default" };
+/** GBP with pence: `gbpPence(3860.5)` is "£3,860.50". */
+export const gbpPence = (n: number) => `£${n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
