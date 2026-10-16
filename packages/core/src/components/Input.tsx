@@ -4,6 +4,9 @@ import clsx from "clsx";
 
 export interface InputProps extends Omit<ComponentPropsWithoutRef<"input">, "size"> {
   size?: "sm" | "md" | "lg";
+  /** Marks the field as failing validation: sets `aria-invalid="true"` and `data-rebar-invalid`
+   * (a theme styles these with a danger ring). An explicit `aria-invalid` prop still wins. */
+  invalid?: boolean;
   /**
    * A format mask applied as the user types — `9` accepts a digit, `a` a letter, `*` any
    * character; every other character in the mask is a literal, inserted automatically (e.g.
@@ -52,7 +55,7 @@ function extractRaw(mask: string, value: string): string {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { size = "md", className, mask, onChange, ...props },
+  { size = "md", className, mask, onChange, invalid, ...props },
   ref,
 ) {
   const handleMaskedChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +72,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       className={clsx("rebar-input", className)}
       data-rebar-component="input"
       data-rebar-size={size}
+      aria-invalid={invalid ? true : undefined}
+      data-rebar-invalid={invalid ? "true" : undefined}
       onChange={mask ? handleMaskedChange : onChange}
       placeholder={mask ? mask.replace(/9/g, "_").replace(/a/g, "_") : undefined}
       {...props}

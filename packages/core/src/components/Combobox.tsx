@@ -30,6 +30,8 @@ export type ComboboxProps = (ComboboxSingleProps | ComboboxMultipleProps) & {
   "aria-label"?: string;
   disabled?: boolean;
   className?: string;
+  /** Marks the field as failing validation: sets `aria-invalid="true"` on the input and `data-rebar-invalid` on the field. */
+  invalid?: boolean;
 };
 
 /**
@@ -47,7 +49,7 @@ export type ComboboxProps = (ComboboxSingleProps | ComboboxMultipleProps) & {
  * not a structurally different interaction.
  */
 export function Combobox(props: ComboboxProps) {
-  const { options, placeholder, "aria-label": ariaLabel, disabled, className, multiple } = props;
+  const { options, placeholder, "aria-label": ariaLabel, disabled, className, multiple, invalid } = props;
   const listId = useId();
 
   const singleProps = !multiple ? (props as ComboboxSingleProps) : undefined;
@@ -130,6 +132,8 @@ export function Combobox(props: ComboboxProps) {
       aria-autocomplete="list"
       aria-activedescendant={activeIndex >= 0 ? `${listId}-${activeIndex}` : undefined}
       aria-multiselectable={multiple || undefined}
+      aria-invalid={invalid ? true : undefined}
+      data-rebar-invalid={invalid ? "true" : undefined}
       placeholder={multiple && selectedValues.length > 0 ? undefined : placeholder}
       disabled={disabled}
       value={query}
@@ -151,7 +155,7 @@ export function Combobox(props: ComboboxProps) {
       data-rebar-multiple={multiple || undefined}
     >
       {multiple ? (
-        <div className="rebar-combobox-chips" data-rebar-part="field">
+        <div className="rebar-combobox-chips" data-rebar-part="field" data-rebar-invalid={invalid ? "true" : undefined}>
           {selectedValues.map((v) => {
             const option = options.find((o) => o.value === v);
             return (

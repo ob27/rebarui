@@ -23,13 +23,15 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(function R
 
 export interface RadioProps extends Omit<RadixRadioGroup.RadioGroupItemProps, "asChild"> {
   children?: ReactNode;
+  /** Marks the field as failing validation: sets `aria-invalid="true"` and `data-rebar-invalid`. */
+  invalid?: boolean;
   /** Force bionic reading on/off for the label, overriding the ambient data-rebar-bionic setting. */
   bionic?: boolean;
   bionicOptions?: BionicOptions;
 }
 
 export const Radio = forwardRef<HTMLButtonElement, RadioProps>(function Radio(
-  { className, children, bionic, bionicOptions, id, ...props },
+  { className, children, bionic, bionicOptions, id, invalid, ...props },
   ref,
 ) {
   const label = useBionicChildren(children, bionic, bionicOptions);
@@ -40,6 +42,8 @@ export const Radio = forwardRef<HTMLButtonElement, RadioProps>(function Radio(
         id={id}
         className={clsx("rebar-radio", className)}
         data-rebar-component="radio"
+        aria-invalid={invalid ? true : undefined}
+        data-rebar-invalid={invalid ? "true" : undefined}
         {...props}
       >
         <RadixRadioGroup.Indicator className="rebar-radio-indicator" data-rebar-part="indicator" />

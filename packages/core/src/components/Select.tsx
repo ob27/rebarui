@@ -22,11 +22,13 @@ export interface SelectProps {
    * Default `"md"`. */
   size?: "sm" | "md" | "lg";
   className?: string;
+  /** Marks the field as failing validation: sets `aria-invalid="true"` and `data-rebar-invalid` on the trigger. */
+  invalid?: boolean;
   "aria-label"?: string;
 }
 
 export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
-  { options, value, defaultValue, onValueChange, placeholder, disabled, size = "md", className, ...props },
+  { options, value, defaultValue, onValueChange, placeholder, disabled, size = "md", className, invalid, ...props },
   ref,
 ) {
   return (
@@ -41,6 +43,8 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select
         className={clsx("rebar-select-trigger", className)}
         data-rebar-component="select"
         data-rebar-size={size}
+        aria-invalid={invalid ? true : undefined}
+        data-rebar-invalid={invalid ? "true" : undefined}
         {...props}
       >
         <RadixSelect.Value placeholder={placeholder} />

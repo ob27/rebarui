@@ -28,3 +28,26 @@ describe("Alert", () => {
     ).toHaveAttribute("data-rebar-part", "description");
   });
 });
+
+describe("Alert icon and onClose", () => {
+  it("has no icon or close button by default", () => {
+    const { container } = render(<Alert title="T">Body</Alert>);
+    expect(container.querySelector('[data-rebar-part="icon"]')).toBeNull();
+    expect(screen.queryByRole("button", { name: "Close" })).toBeNull();
+  });
+
+  it("icon={true} renders the default glyph for the type; a node is rendered as given", () => {
+    const { container, rerender } = render(<Alert type="success" icon>Done</Alert>);
+    expect(container.querySelector('[data-rebar-part="icon"]')).toHaveTextContent("✓");
+    expect(container.firstElementChild).toHaveAttribute("data-rebar-has-icon", "true");
+    rerender(<Alert icon={<b data-testid="custom">*</b>}>Done</Alert>);
+    expect(screen.getByTestId("custom")).toBeInTheDocument();
+  });
+
+  it("renders a close button that calls onClose", () => {
+    let closed = 0;
+    render(<Alert onClose={() => { closed++; }}>Body</Alert>);
+    screen.getByRole("button", { name: "Close" }).click();
+    expect(closed).toBe(1);
+  });
+});

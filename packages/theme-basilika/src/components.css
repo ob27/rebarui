@@ -157,6 +157,33 @@ textarea.rebar-input {
   border-color: transparent;
   color: var(--rebar-color-text-primary);
 }
+.rebar-alert-icon {
+  width: 22px;
+  height: 22px;
+  margin-top: -1px;
+  border: 0;
+  background: var(--rebar-color-text-secondary);
+  color: var(--rebar-color-bg-raised);
+}
+.rebar-alert[data-rebar-type="info"] .rebar-alert-icon {
+  background: var(--rebar-color-primary);
+}
+.rebar-alert[data-rebar-type="success"] .rebar-alert-icon {
+  background: var(--rebar-color-success);
+}
+.rebar-alert[data-rebar-type="warning"] .rebar-alert-icon {
+  background: var(--rebar-color-warning);
+}
+.rebar-alert[data-rebar-type="error"] .rebar-alert-icon {
+  background: var(--rebar-color-danger);
+}
+.rebar-alert-close {
+  color: var(--rebar-color-text-secondary);
+  border-radius: 999px;
+}
+.rebar-alert-close:hover {
+  color: var(--rebar-color-text-primary);
+}
 .rebar-alert-title {
   font-size: 0.72rem;
   font-weight: var(--rebar-font-weight-semibold);
@@ -226,6 +253,32 @@ textarea.rebar-input {
 }
 .rebar-combobox-tag-input {
   min-height: 30px;
+}
+
+/* Invalid fields (the `invalid` prop on Input, Select, Combobox, MultiSelect, Checkbox, Radio):
+   a danger border plus a soft danger ring, kept on focus instead of the primary one. */
+.rebar-input[data-rebar-invalid="true"],
+.rebar-input[aria-invalid="true"],
+.rebar-select-trigger[data-rebar-invalid="true"],
+.rebar-select-trigger[aria-invalid="true"],
+.rebar-combobox-chips[data-rebar-invalid="true"] {
+  border-color: var(--rebar-color-danger);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--rebar-color-danger) 14%, transparent);
+}
+.rebar-input[data-rebar-invalid="true"]:focus,
+.rebar-input[aria-invalid="true"]:focus,
+.rebar-input[data-rebar-invalid="true"]:focus-visible,
+.rebar-input[aria-invalid="true"]:focus-visible,
+.rebar-select-trigger[data-rebar-invalid="true"]:focus-visible,
+.rebar-select-trigger[aria-invalid="true"]:focus-visible,
+.rebar-combobox-chips[data-rebar-invalid="true"]:focus-within {
+  border-color: var(--rebar-color-danger);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--rebar-color-danger) 24%, transparent);
+}
+.rebar-checkbox[data-rebar-invalid="true"],
+.rebar-radio[data-rebar-invalid="true"] {
+  border-color: var(--rebar-color-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rebar-color-danger) 18%, transparent);
 }
 
 /* MultiSelect: the option's box is a small checkbox */

@@ -8,13 +8,15 @@ import type { BionicOptions } from "../bionic";
 export interface CheckboxProps
   extends Omit<RadixCheckbox.CheckboxProps, "asChild"> {
   children?: ReactNode;
+  /** Marks the field as failing validation: sets `aria-invalid="true"` and `data-rebar-invalid`. */
+  invalid?: boolean;
   /** Force bionic reading on/off for the label, overriding the ambient data-rebar-bionic setting. */
   bionic?: boolean;
   bionicOptions?: BionicOptions;
 }
 
 export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(function Checkbox(
-  { className, children, bionic, bionicOptions, id, ...props },
+  { className, children, bionic, bionicOptions, id, invalid, ...props },
   ref,
 ) {
   const generatedId = id ?? undefined;
@@ -27,6 +29,8 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(function Ch
         id={generatedId}
         className={clsx("rebar-checkbox", className)}
         data-rebar-component="checkbox"
+        aria-invalid={invalid ? true : undefined}
+        data-rebar-invalid={invalid ? "true" : undefined}
         {...props}
       >
         <RadixCheckbox.Indicator className="rebar-checkbox-indicator" data-rebar-part="indicator">

@@ -10,6 +10,8 @@ export interface MultiSelectOption {
   value: string;
   label: string;
   disabled?: boolean;
+  /** Marks the field as failing validation: sets `aria-invalid="true"` and `data-rebar-invalid` on the trigger. */
+  invalid?: boolean;
 }
 
 export interface MultiSelectProps extends Omit<ComponentPropsWithoutRef<"button">, "onChange" | "defaultValue"> {
@@ -54,6 +56,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(funct
     bionic,
     bionicOptions,
     className,
+    invalid,
     ...props
   },
   ref,
@@ -102,6 +105,8 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(funct
           className={clsx("rebar-select-trigger", "rebar-multi-select-trigger", className)}
           data-rebar-component="multi-select"
           disabled={disabled}
+          aria-invalid={invalid ? true : undefined}
+          data-rebar-invalid={invalid ? "true" : undefined}
           {...props}
         >
           <span className="rebar-multi-select-trigger-value" data-rebar-part="value">
