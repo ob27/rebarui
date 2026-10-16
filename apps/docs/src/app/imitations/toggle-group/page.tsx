@@ -1,21 +1,33 @@
 "use client";
 
-import { Heading, Stack, Text, ToggleGroup } from "rebar-ui";
+import { Card, Heading, Stack, Text, ToggleGroup } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { useState } from "react";
+
+const STYLE = [
+  { value: "bold", label: "B", "aria-label": "Bold" },
+  { value: "italic", label: "I", "aria-label": "Italic" },
+  { value: "underline", label: "U", "aria-label": "Underline" },
+];
+const ALIGN = [
+  { value: "left", label: "Left" },
+  { value: "center", label: "Center" },
+  { value: "right", label: "Right" },
+];
+const VIEWS = [
+  { value: "list", label: "List" },
+  { value: "board", label: "Board" },
+  { value: "calendar", label: "Calendar" },
+];
+const CODE = `<ToggleGroup type="multiple" defaultValue={["bold"]} items={[
+  { value: "bold", label: "B", "aria-label": "Bold" },
+  { value: "italic", label: "I", "aria-label": "Italic" },
+]} />`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<ToggleGroup\n  type="multiple"\n  items={[\n    { value: "bold", label: "B", "aria-label": "Bold" },\n    { value: "italic", label: "I", "aria-label": "Italic" },\n  ]}\n/>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["ToggleGroup"] ?? [] },
   {
     type: "doc-section",
@@ -60,34 +72,29 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function ToggleGroupPage() {
+  const [view, setView] = useState("board");
+
   return (
     <Stack gap="lg">
       <Heading level={1}>ToggleGroup</Heading>
-      <Text color="secondary">
-        Several Toggles composed together — exclusive (single) or independent (multiple).
-      </Text>
+      <Text color="secondary">Several toggles in a row, exclusive or independent.</Text>
 
-      <Stack gap="md">
-        <ToggleGroup
-          type="multiple"
-          defaultValue={["bold"]}
-          items={[
-            { value: "bold", label: "B", "aria-label": "Bold" },
-            { value: "italic", label: "I", "aria-label": "Italic" },
-            { value: "underline", label: "U", "aria-label": "Underline" },
-          ]}
-        />
+      <DemoStage title="Text style" caption="Multiple: any number stay pressed" code={CODE} widths={false}
+        states={[
+          { label: "Single", node: <ToggleGroup type="single" defaultValue="center" items={ALIGN} /> },
+          { label: "Disabled", node: <ToggleGroup type="multiple" disabled defaultValue={["bold"]} items={STYLE} /> },
+          { label: "Large", node: <ToggleGroup type="single" size="lg" defaultValue="left" items={ALIGN} /> },
+        ]}
+      >
+        <ToggleGroup type="multiple" defaultValue={["bold"]} items={STYLE} />
+      </DemoStage>
 
-        <ToggleGroup
-          type="single"
-          defaultValue="left"
-          items={[
-            { value: "left", label: "Left" },
-            { value: "center", label: "Center" },
-            { value: "right", label: "Right" },
-          ]}
-        />
-      </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Board view" caption="One view at a time, shown as a toolbar" widths={false}>
+        <Card style={{ maxWidth: 480, margin: "0 auto" }} title="Tideline mobile" extra={<ToggleGroup type="single" value={view} onValueChange={(v: string) => setView(v || "board")} items={VIEWS} />}>
+          <Text size="sm" color="secondary">Showing the {view} view of 7 tasks, 2 in progress.</Text>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

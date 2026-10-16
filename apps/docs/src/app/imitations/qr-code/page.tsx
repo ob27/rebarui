@@ -1,34 +1,55 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { QRCodePictogramModule } from "rebar-ui";
-import { Box, Heading, Input, QRCode, SegmentedControl, Stack, Text } from "rebar-ui";
+import { Button, Card, Heading, Input, QRCode, SegmentedControl, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { project } from "@/fixtures/tideline";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { QRCodePictogramModule } from "rebar-ui";
+
+const LINK = "https://tideline.example/launch/harbour";
+const CODE = `<QRCode value="https://tideline.example/launch/harbour" size={160} errorCorrectionLevel="H" />`;
+
+// A small heart drawn in the code's own modules: 1 forces a module dark, 0 forces it light.
+const HEART_BITMAP = [
+  [0, 1, 1, 0, 0, 0, 1, 1, 0],
+  [1, 1, 1, 1, 0, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [0, 1, 1, 1, 1, 1, 1, 1, 0],
+  [0, 0, 1, 1, 1, 1, 1, 0, 0],
+  [0, 0, 0, 1, 1, 1, 0, 0, 0],
+  [0, 0, 0, 0, 1, 0, 0, 0, 0],
+];
+
+function buildHeartPictogram(moduleCount: number): QRCodePictogramModule[][] {
+  const grid: QRCodePictogramModule[][] = Array.from({ length: moduleCount }, () => Array<QRCodePictogramModule>(moduleCount).fill(undefined));
+  const rowOffset = Math.floor((moduleCount - HEART_BITMAP.length) / 2);
+  const colOffset = Math.floor((moduleCount - HEART_BITMAP[0].length) / 2);
+  HEART_BITMAP.forEach((row, r) => {
+    row.forEach((bit, c) => {
+      const tr = rowOffset + r;
+      const tc = colOffset + c;
+      if (tr >= 0 && tr < moduleCount && tc >= 0 && tc < moduleCount) grid[tr][tc] = bit === 1 ? "var(--rebar-color-error)" : false;
+    });
+  });
+  return grid;
+}
+
+// A plain two-tone dot logo on a 24x24 viewBox, passed as inline SVG content.
+const DOT_LOGO_ICON = (
+  <>
+    <circle cx={12} cy={12} r={11} fill="var(--rebar-color-primary)" />
+    <circle cx={12} cy={12} r={5} fill="var(--rebar-color-bg)" />
+  </>
+);
+
+type CenterMode = "none" | "icon" | "pictogram";
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<QRCode value="https://rebar-ui.dev" size={160} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["QRCode"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "A real, scannable code",
-    body: [
-      {
-        kind: "text",
-        text: "Encoded via the `qrcode` package's synchronous `create()` API, not hand-rolled — Reed-Solomon error correction and module placement are genuinely intricate to get right, and a code that *looks* right but doesn't scan is worse than not shipping one at all. This is the same \"small, correctness-critical dependency\" tradeoff `AspectRatio`'s Radix primitive already made. Rendered as real SVG rects, not a raster image, so it stays crisp at any size.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "Overlaying an icon",
@@ -71,138 +92,78 @@ const BLOCKS: Construct[] = [
   },
 ];
 
-// A small 9x8 heart bitmap, drawn using the code's own modules — 1 forces that module dark,
-// 0 forces it light (never left ambiguous), so the shape reads clearly regardless of what the
-// real encoded data happens to be underneath it.
-const HEART_BITMAP = [
-  [0, 1, 1, 0, 0, 0, 1, 1, 0],
-  [1, 1, 1, 1, 0, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [0, 1, 1, 1, 1, 1, 1, 1, 0],
-  [0, 0, 1, 1, 1, 1, 1, 0, 0],
-  [0, 0, 0, 1, 1, 1, 0, 0, 0],
-  [0, 0, 0, 0, 1, 0, 0, 0, 0],
-];
-
-function buildHeartPictogram(moduleCount: number): QRCodePictogramModule[][] {
-  const grid: QRCodePictogramModule[][] = Array.from({ length: moduleCount }, () =>
-    Array<QRCodePictogramModule>(moduleCount).fill(undefined),
-  );
-  const rowOffset = Math.floor((moduleCount - HEART_BITMAP.length) / 2);
-  const colOffset = Math.floor((moduleCount - HEART_BITMAP[0].length) / 2);
-  HEART_BITMAP.forEach((row, r) => {
-    row.forEach((bit, c) => {
-      const targetRow = rowOffset + r;
-      const targetCol = colOffset + c;
-      if (targetRow >= 0 && targetRow < moduleCount && targetCol >= 0 && targetCol < moduleCount) {
-        grid[targetRow][targetCol] = bit === 1 ? "#d32f2f" : false;
-      }
-    });
-  });
-  return grid;
-}
-
-// A plain two-tone dot logo, authored against a 24x24 viewBox — passed as inline SVG content
-// (not a URL), demonstrating the icon prop's other accepted shape.
-const DOT_LOGO_ICON = (
-  <>
-    <circle cx={12} cy={12} r={11} fill="#0066cc" />
-    <circle cx={12} cy={12} r={5} fill="#ffffff" />
-  </>
-);
-
-type CenterMode = "none" | "icon" | "pictogram";
-
 export default function QRCodePage() {
-  const [value, setValue] = useState("https://rebar-ui.dev");
+  const harbour = project("harbour");
+  const [value, setValue] = useState(LINK);
   const [level, setLevel] = useState<"L" | "M" | "Q" | "H">("H");
   const [centerMode, setCenterMode] = useState<CenterMode>("icon");
   const [moduleCount, setModuleCount] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Read the real module grid size back off the rendered svg — needed to size the pictogram
-  // grid to the actual code, which depends on `value`'s length and `level` (both change which
-  // QR version gets picked), not something computable ahead of render.
+  // The pictogram grid must match the real module count, which depends on the value and level.
   useEffect(() => {
     const svg = containerRef.current?.querySelector('[data-rebar-component="qrcode"]');
     const count = svg?.getAttribute("data-rebar-module-count");
     setModuleCount(count ? Number(count) : null);
   }, [value, level, centerMode]);
 
-  const pictogram = useMemo(() => {
-    if (centerMode !== "pictogram" || !moduleCount) return undefined;
-    return buildHeartPictogram(moduleCount);
-  }, [centerMode, moduleCount]);
+  const pictogram = useMemo(() => (centerMode === "pictogram" && moduleCount ? buildHeartPictogram(moduleCount) : undefined), [centerMode, moduleCount]);
 
   return (
     <Stack gap="lg">
       <Heading level={1}>QRCode</Heading>
-      <Text color="secondary">
-        A real, scannable QR code, rendered as SVG — play with the controls below.
-      </Text>
+      <Text color="secondary">A real, scannable QR code drawn as SVG.</Text>
 
-      <Stack gap="md" style={{ maxWidth: 420 }}>
-        <Input
-          aria-label="Value to encode"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-        />
-        <Stack gap="xs">
-          <Text size="sm" color="secondary">
-            Error correction level
-          </Text>
-          <SegmentedControl
-            value={level}
-            onValueChange={(v) => setLevel(v as "L" | "M" | "Q" | "H")}
-            options={[
-              { value: "L", label: "L" },
-              { value: "M", label: "M" },
-              { value: "Q", label: "Q" },
-              { value: "H", label: "H" },
-            ]}
-          />
-        </Stack>
-        <Stack gap="xs">
-          <Text size="sm" color="secondary">
-            Center decoration
-          </Text>
-          <SegmentedControl
-            value={centerMode}
-            onValueChange={(v) => setCenterMode(v as CenterMode)}
-            options={[
-              { value: "none", label: "None" },
-              { value: "icon", label: "Icon" },
-              { value: "pictogram", label: "Pictograph" },
-            ]}
-          />
-        </Stack>
-      </Stack>
-
-      <Box
-        ref={containerRef}
-        style={{
-          border: "1px solid var(--rebar-color-border, #e0e0e0)",
-          borderRadius: 4,
-          padding: "var(--rebar-space-lg)",
-          display: "flex",
-          justifyContent: "center",
-        }}
+      <DemoStage title="Crew check-in" caption="Edit the link, the error correction and the centre mark" code={CODE} widths={false}
+        states={[
+          { label: "Level L", node: <QRCode value={LINK} size={96} errorCorrectionLevel="L" /> },
+          { label: "Level H with logo", node: <QRCode value={LINK} size={96} errorCorrectionLevel="H" icon={DOT_LOGO_ICON} /> },
+          { label: "Tinted", node: <QRCode value={LINK} size={96} color="var(--rebar-color-primary)" /> },
+        ]}
       >
-        {value ? (
-          <QRCode
-            value={value}
-            size={200}
-            errorCorrectionLevel={level}
-            icon={centerMode === "icon" ? DOT_LOGO_ICON : undefined}
-            pictogram={pictogram}
-          />
-        ) : (
-          <Text size="sm" color="secondary">
-            Enter a value to encode.
-          </Text>
-        )}
-      </Box>
+        <Stack direction="row" gap="xl" align="center" style={{ flexWrap: "wrap", justifyContent: "center" }}>
+          <Stack gap="md" style={{ width: 300 }}>
+            <Input aria-label="Value to encode" value={value} onChange={(e) => setValue(e.target.value)} />
+            <Stack gap="xs">
+              <Text size="sm" color="secondary">Error correction</Text>
+              <SegmentedControl
+                value={level}
+                onValueChange={(v) => setLevel(v as "L" | "M" | "Q" | "H")}
+                options={(["L", "M", "Q", "H"] as const).map((l) => ({ value: l, label: l }))}
+              />
+            </Stack>
+            <Stack gap="xs">
+              <Text size="sm" color="secondary">Centre mark</Text>
+              <SegmentedControl
+                value={centerMode}
+                onValueChange={(v) => setCenterMode(v as CenterMode)}
+                options={[
+                  { value: "none", label: "None" },
+                  { value: "icon", label: "Logo" },
+                  { value: "pictogram", label: "Heart" },
+                ]}
+              />
+            </Stack>
+          </Stack>
+          <div ref={containerRef} style={{ padding: "var(--rebar-space-md)", background: "var(--rebar-color-bg)", borderRadius: 8 }}>
+            {value ? (
+              <QRCode value={value} size={200} errorCorrectionLevel={level} icon={centerMode === "icon" ? DOT_LOGO_ICON : undefined} pictogram={pictogram} />
+            ) : (
+              <Text size="sm" color="secondary">Enter a value to encode.</Text>
+            )}
+          </div>
+        </Stack>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Pass for the launch" caption="Scanned at the harbour gate" widths={false}>
+        <Card style={{ maxWidth: 360, margin: "0 auto" }} title={`${harbour.name} launch`} subtitle="24 Oct, 09:00" actions={[<Button key="save">Save to wallet</Button>, <Button key="share" variant="tertiary">Share</Button>]}>
+          <Stack gap="sm" align="center">
+            <QRCode value={LINK} size={160} errorCorrectionLevel="Q" />
+            <Text size="sm" color="secondary">Maya Chen, crew</Text>
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

@@ -196,3 +196,16 @@ export const INVOICES: Invoice[] = [
 export const INVOICE_TONE: Record<InvoiceStatus, "success" | "info" | "error" | "default"> = { Paid: "success", Due: "info", Overdue: "error", Draft: "default" };
 /** GBP with pence: `gbpPence(3860.5)` is "£3,860.50". */
 export const gbpPence = (n: number) => `£${n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+// ---- wave-bc-j: chart sample data (self-contained block) ----
+/** Tasks opened per week, aligned with WEEK_LABELS and WEEKLY_DONE. */
+export const OPENED_PER_WEEK = [18, 20, 21, 24, 22, 27, 26, 29, 30, 30, 32, 31];
+/** Days from start to done per person, as a five-number summary (min, q1, median, q3, max). */
+export const CYCLE_DAYS = [
+  { person: "maya", min: 1, q1: 2, median: 3, q3: 5, max: 9 },
+  { person: "jonas", min: 2, q1: 4, median: 6, q3: 9, max: 15 },
+  { person: "priya", min: 1, q1: 3, median: 4, q3: 6, max: 11 },
+  { person: "leo", min: 1, q1: 2, median: 3, q3: 4, max: 7 },
+];
+/** Hours logged per project this quarter. */
+export const PROJECT_HOURS: Record<string, number> = { harbour: 410, mobile: 760, interviews: 120, rota: 90, signage: 230 };

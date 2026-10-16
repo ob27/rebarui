@@ -1,30 +1,20 @@
-import { BubbleChart, Heading, Stack, Text } from "rebar-ui";
+"use client";
+
+import { BubbleChart, Card, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PROJECTS, PROJECT_HOURS, project } from "@/fixtures/tideline";
+
+const k = (v: number) => `£${Math.round(v)}k`;
+const point = (id: string) => ({ x: project(id).budget / 1000, y: project(id).done, size: PROJECT_HOURS[id] });
+const COLORS = ["var(--rebar-color-primary)", "var(--rebar-color-info)", "var(--rebar-color-warning)", "var(--rebar-color-success)", "var(--rebar-color-text-secondary)"];
+const SERIES = PROJECTS.map((p, i) => ({ label: p.name, color: COLORS[i], points: [point(p.id)] }));
+const CODE = `<BubbleChart title="Budget vs. progress, sized by hours" series={projects.map((p) => ({ label: p.name, points: [{ x: p.budget / 1000, y: p.done, size: hours[p.id] }] }))} />`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<BubbleChart title="Product lines: price vs. rating vs. volume" series={[{ label: "2026", points: [{ x: 12, y: 4.2, size: 800 }, { x: 25, y: 4.6, size: 2200 }, { x: 8, y: 3.9, size: 400 }] }]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["BubbleChart"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Sqrt scaling, not linear",
-    body: [
-      {
-        kind: "text",
-        text: "Marker radius scales with the square root of `size`, so *area* (what a viewer actually perceives) is proportional to the underlying value, not radius itself — a value 4x larger renders 2x the radius, not 4x, matching how human perception of circle size works. Radii are clamped to a fixed range so no point vanishes to nothing or overwhelms the chart.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "Trendline",
@@ -61,48 +51,25 @@ export default function BubbleChartPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>BubbleChart</Heading>
-      <Text color="secondary">
-        A scatter chart with a third dimension encoded as marker size — sqrt-scaled so area, not
-        radius, tracks the underlying value.
-      </Text>
+      <Text color="secondary">A scatter chart with a third value drawn as marker size.</Text>
 
-      <BubbleChart
-        title="Product lines: price vs. rating vs. sales volume"
-        series={[
-          {
-            label: "2026",
-            points: [
-              { x: 12, y: 4.2, size: 800 },
-              { x: 25, y: 4.6, size: 2200 },
-              { x: 8, y: 3.9, size: 400 },
-              { x: 18, y: 4.4, size: 1300 },
-              { x: 30, y: 4.1, size: 600 },
-            ],
-          },
+      <DemoStage title="Projects" caption="Budget (x), percent done (y), hours logged (size)" code={CODE} widths={false}
+        states={[
+          { label: "One series with trendline", node: <div style={{ width: 340 }}><BubbleChart title="All projects" height={200} trendline xFormat={k} series={[{ label: "Projects", color: "var(--rebar-color-primary)", points: PROJECTS.map((p) => point(p.id)) }]} /></div> },
         ]}
-      />
+      >
+        <BubbleChart title="Budget vs. progress, sized by hours" xFormat={k} yFormat={(v) => `${Math.round(v)}%`} series={SERIES} />
+      </DemoStage>
 
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          <code>trendline</code> fits a dashed OLS line per series over its real points.
-        </Text>
-        <BubbleChart
-          title="Product lines: price vs. rating vs. sales volume"
-          trendline
-          series={[
-            {
-              label: "2026",
-              points: [
-                { x: 12, y: 4.2, size: 800 },
-                { x: 25, y: 4.6, size: 2200 },
-                { x: 8, y: 3.9, size: 400 },
-                { x: 18, y: 4.4, size: 1300 },
-                { x: 30, y: 4.1, size: 600 },
-              ],
-            },
-          ]}
-        />
-      </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Portfolio" caption="Where the money and the hours are going" widths={false}>
+        <Card title="Portfolio" subtitle="Five projects, this quarter">
+          <Stack gap="sm">
+            <BubbleChart title="Budget vs. progress, sized by hours" xFormat={k} yFormat={(v) => `${Math.round(v)}%`} series={SERIES} height={240} />
+            <Text size="sm" color="secondary">Tideline mobile has the most hours and the second-largest budget; Crew interviews is small and behind.</Text>
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

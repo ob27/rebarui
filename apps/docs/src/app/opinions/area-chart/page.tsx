@@ -1,30 +1,23 @@
-import { AreaChart, Box, Heading, Stack, Text } from "rebar-ui";
+"use client";
+
+import { AreaChart, Card, Heading, Stack, Statistic, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { KPIS, OPENED_PER_WEEK, WEEKLY_DONE, WEEK_LABELS } from "@/fixtures/tideline";
+
+const CODE = `<AreaChart
+  title="Tasks per week"
+  xLabels={WEEK_LABELS}
+  series={[
+    { label: "Opened", values: OPENED_PER_WEEK },
+    { label: "Done", values: WEEKLY_DONE },
+  ]}
+/>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<AreaChart title="Weekly traffic" xLabels={["W1","W2","W3","W4"]} series={[{ label: "Visitors", values: [1200,1550,1420,1890] }]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["AreaChart"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "What it's for",
-    body: [
-      {
-        kind: "text",
-        text: "A multi-series area chart over an ordered x-axis — the same shape as `LineChart` (same scaling/label logic, reused exactly), with the area under each line filled using the series' own color at low opacity so overlapping series stay legible. `title` renders as a real, visible caption per [Design Heuristics](/about/agent) #16; a series' color defaults to a small built-in palette, cycled by series index, when omitted.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "Trendline",
@@ -61,44 +54,36 @@ export default function AreaChartPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>AreaChart</Heading>
-      <Text color="secondary">
-        A multi-series area chart over an ordered x-axis, with the area under each line filled at
-        low opacity.
-      </Text>
+      <Text color="secondary">A multi-series area chart over an ordered x-axis.</Text>
 
-      <Box
-        style={{
-          border: "1px solid var(--rebar-color-border, #e0e0e0)",
-          borderRadius: 4,
-          padding: "var(--rebar-space-lg)",
-        }}
+      <DemoStage title="Weekly throughput" caption="Tasks opened and done, 3 Aug to 19 Oct" code={CODE} widths={false}
+        states={[
+          { label: "Trendline", node: <div style={{ width: 300 }}><AreaChart title="Done, last six weeks" xLabels={WEEK_LABELS.slice(-6)} trendline series={[{ label: "Done", color: "var(--rebar-color-primary)", values: WEEKLY_DONE.slice(-6) }]} height={170} /></div> },
+          { label: "Short run", node: <div style={{ width: 240 }}><AreaChart title="Last four weeks" xLabels={WEEK_LABELS.slice(-4)} series={[{ label: "Done", color: "var(--rebar-color-primary)", values: WEEKLY_DONE.slice(-4) }]} height={170} /></div> },
+        ]}
       >
         <AreaChart
-          title="Weekly site traffic"
-          xLabels={["W1", "W2", "W3", "W4", "W5", "W6"]}
-          series={[{ label: "Visitors", values: [1200, 1550, 1420, 1890, 2100, 1975] }]}
+          title="Tasks per week"
+          xLabels={WEEK_LABELS}
+          labelStep={2}
+          series={[
+            { label: "Opened", color: "var(--rebar-color-info)", values: OPENED_PER_WEEK },
+            { label: "Done", color: "var(--rebar-color-primary)", values: WEEKLY_DONE },
+          ]}
         />
-      </Box>
+      </DemoStage>
 
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          <code>trendline</code> fits and draws a dashed OLS line per series.
-        </Text>
-        <Box
-          style={{
-            border: "1px solid var(--rebar-color-border, #e0e0e0)",
-            borderRadius: 4,
-            padding: "var(--rebar-space-lg)",
-          }}
-        >
-          <AreaChart
-            title="Noisy signal with trend"
-            xLabels={["W1", "W2", "W3", "W4", "W5", "W6"]}
-            trendline
-            series={[{ label: "Visitors", values: [1200, 1550, 1420, 1890, 1700, 2050] }]}
-          />
-        </Box>
-      </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Team page" caption="The chart under the headline figures" widths={false}>
+        <Card title="Throughput" subtitle="Quarter to date">
+          <Stack gap="lg">
+            <Stack direction="row" gap="xl" style={{ flexWrap: "wrap" }}>
+              {KPIS.map((k) => <Statistic key={k.label} title={k.label} value={k.value} />)}
+            </Stack>
+            <AreaChart title="Tasks done per week" xLabels={WEEK_LABELS} labelStep={2} series={[{ label: "Done", color: "var(--rebar-color-primary)", values: WEEKLY_DONE }]} />
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

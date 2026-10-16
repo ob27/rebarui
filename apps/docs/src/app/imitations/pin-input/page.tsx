@@ -1,15 +1,15 @@
-import { Heading, PinInput, Stack, Text } from "rebar-ui";
+"use client";
+
+import { Button, Card, Heading, PinInput, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
+const CODE = `<PinInput length={6} onComplete={(code) => verify(code)} />
+<PinInput length={4} mask />`;
+
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [{ kind: "code", code: '<PinInput length={6} onComplete={(code) => verify(code)} />' }],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["PinInput"] ?? [] },
   {
     type: "doc-section",
@@ -57,25 +57,27 @@ export default function PinInputPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>PinInput</Heading>
-      <Text color="secondary">
-        Segmented single-digit boxes for a confirmation code — a plain text input gives no visual
-        sense of how many digits are expected or how many have been entered so far.
-      </Text>
+      <Text color="secondary">Single-digit boxes for a confirmation code.</Text>
 
-      <LivePreview>
-        <PinInput length={6} />
-      </LivePreview>
+      <DemoStage title="Sign-in code" caption="Six digits, auto-advance, paste a whole code" code={CODE} widths={false}
+        states={[
+          { label: "Masked", node: <PinInput length={4} mask aria-label="Door PIN" /> },
+          { label: "Prefilled", node: <PinInput length={6} defaultValue="4829" aria-label="Partly entered code" /> },
+          { label: "Disabled", node: <PinInput length={6} disabled aria-label="Locked code" /> },
+        ]}
+      >
+        <PinInput length={6} aria-label="Sign-in code" />
+      </DemoStage>
 
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          Set <code>mask</code> for a PIN/security-code entry where the digits shouldn&apos;t stay
-          visible on screen (each box renders as a real <code>type=&quot;password&quot;</code>{" "}
-          input, not just a visually-obscured overlay).
-        </Text>
-        <LivePreview>
-          <PinInput length={4} mask />
-        </LivePreview>
-      </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Confirm it is you" caption="A code sent to Maya before the Harbour launch kit unlocks" widths={false}>
+        <Card style={{ maxWidth: 420, margin: "0 auto" }} title="Check your email" actions={[<Button key="verify">Verify</Button>, <Button key="resend" variant="tertiary">Send a new code</Button>]}>
+          <Stack gap="md">
+            <Text size="sm" color="secondary">We sent a six-digit code to maya@tideline.example. It lasts ten minutes.</Text>
+            <PinInput length={6} aria-label="Email code" />
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
