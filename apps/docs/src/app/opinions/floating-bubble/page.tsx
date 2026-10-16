@@ -3,31 +3,19 @@
 import { FloatingBubble, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TidelinePhone, PhoneList, PhoneRow } from "@/app/imitations/device-frame/TidelinePhone";
+import { TASKS, person, project } from "@/fixtures/tideline";
+
+const CODE = `<FloatingBubble axis="xy" magnetic="x" style={{ bottom: 24, right: 24 }} onClick={() => newTask()}>
+  +
+</FloatingBubble>`;
+
+const AREA = { position: "relative", height: 150, overflow: "hidden", border: "1px solid var(--rebar-color-border)", borderRadius: 12, background: "var(--rebar-color-tint-3)" } as const;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<FloatingBubble\n  axis="xy"\n  magnetic="x"\n  style={{ bottom: 24, right: 24 }}\n  onClick={() => console.log("tapped")}\n>\n  ?\n</FloatingBubble>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["FloatingBubble"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Position it with normal CSS — the drag offset layers on top",
-    body: [
-      {
-        kind: "text",
-        text: 'Set a base position with `style`/`className` (`position: fixed` is already applied — just add `bottom`/`right`/`top`/`left`); the drag offset is a `transform: translate()` on top of that, never replacing it. A real click and a drag are told apart by total pointer movement, not just release timing, so tapping still works fine after the bubble\'s been dragged around.',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -46,28 +34,47 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function FloatingBubblePage() {
+  const harbour = project("harbour");
   return (
     <Stack gap="lg">
       <Heading level={1}>FloatingBubble</Heading>
-      <Text color="secondary">
-        A single clickable bubble the user can drag anywhere on screen, optionally snapping
-        magnetically to the nearest edge on release.
-      </Text>
+      <Text color="secondary">A round button you can drag anywhere, optionally snapping to the nearest edge.</Text>
 
-      <LivePreview>
-        <div
-          style={{
-            position: "relative",
-            height: 160,
-            border: "1px solid var(--rebar-color-border)",
-            overflow: "hidden",
-          }}
-        >
-          <FloatingBubble axis="xy" magnetic="x" style={{ position: "absolute", top: 16, left: 16 }}>
-            ?
-          </FloatingBubble>
+      <DemoStage
+        title="Quick-add bubble"
+        caption="Drag it around; a tap still clicks"
+        code={CODE}
+        widths={false}
+        states={[
+          { label: "Horizontal only", node: <div style={AREA}><FloatingBubble axis="x" style={{ position: "absolute", bottom: 16, left: 16 }}>+</FloatingBubble></div> },
+          { label: "Vertical only, snaps to edge", node: <div style={AREA}><FloatingBubble axis="y" magnetic="y" style={{ position: "absolute", top: 16, right: 16 }}>+</FloatingBubble></div> },
+        ]}
+      >
+        <div style={{ ...AREA, height: 220 }}>
+          <Stack gap="xs" style={{ padding: 16 }}>
+            <Text style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>{harbour.name}</Text>
+            <Text size="sm" color="secondary">{harbour.summary}</Text>
+          </Stack>
+          <FloatingBubble axis="xy" magnetic="x" style={{ position: "absolute", bottom: 16, right: 16 }}>+</FloatingBubble>
         </div>
-      </LivePreview>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Tasks on a phone" caption="A quick-add bubble above the tab bar" padding="none" widths={false}>
+        <div style={{ display: "flex", justifyContent: "center", padding: 24 }}>
+          <TidelinePhone
+            title="My tasks"
+            tabs={1}
+            overlay={<FloatingBubble axis="xy" magnetic="x" style={{ position: "absolute", bottom: 80, right: 16 }}>+</FloatingBubble>}
+          >
+            <PhoneList>
+              {TASKS.slice(0, 5).map((t, i) => (
+                <PhoneRow key={t.id} title={t.title} meta={`${person(t.assignee).name} · ${project(t.project).name}`} tint={((i % 4) + 1) as 1 | 2 | 3 | 4} />
+              ))}
+            </PhoneList>
+          </TidelinePhone>
+        </div>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

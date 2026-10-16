@@ -1,28 +1,14 @@
-import { Editable, Heading, Stack, Text } from "rebar-ui";
+import { Avatar, Card, Editable, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { STATUS_TONE, TASKS, avatarOf, project } from "@/fixtures/tideline";
+
+const CODE = `<Editable defaultValue="Harbour rebrand" onSubmit={(name) => rename(name)} aria-label="Project name" />`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      { kind: "code", code: '<Editable defaultValue="Project Alpha" onSubmit={(v) => rename(v)} aria-label="Project name" />' },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Editable"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Enter commits, Escape reverts",
-    body: [
-      {
-        kind: "text",
-        text: "Escape restores the value the field had *before this edit started*, not just whatever's currently typed — so an accidental Escape after several undone keystrokes never loses more than the current edit session. A small `EnterOutlined` glyph shows in the field's right side by default while editing — a real reminder of the save gesture itself, not decoration — since a click-away isn't as obvious a \"save\" signal as pressing a labeled key. Set `showEnterHint={false}` to drop it in a denser UI (a table full of these, say) where the repeated hint becomes noise once the pattern is already known.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "Accessibility",
@@ -50,28 +36,45 @@ const BLOCKS: Construct[] = [
 ];
 
 export default function EditablePage() {
+  const harbour = project("harbour");
   return (
     <Stack gap="lg">
       <Heading level={1}>Editable</Heading>
-      <Text color="secondary">
-        Click-to-edit text: reads as plain text until activated, then becomes a real input — Enter
-        or blur commits, Escape reverts.
-      </Text>
+      <Text color="secondary">Text that turns into an input when you click it. Enter saves, Escape reverts.</Text>
 
-      <LivePreview>
-        <Editable defaultValue="Project Alpha" aria-label="Project name" />
-      </LivePreview>
+      <DemoStage
+        title="Project name"
+        caption="Click to edit"
+        code={CODE}
+        widths={false}
+        states={[
+          { label: "No Enter hint", node: <Editable defaultValue="Tideline mobile" showEnterHint={false} aria-label="Project name" /> },
+          { label: "Empty, placeholder", node: <Editable defaultValue="" placeholder="Name this project" aria-label="Empty name" /> },
+          { label: "Disabled", node: <Editable defaultValue="Rota export" disabled aria-label="Locked name" /> },
+          { label: "Long text", node: <div style={{ maxWidth: 260 }}><Editable defaultValue="Wayfinding for the three northern depots, second round" aria-label="Long name" /></div> },
+        ]}
+      >
+        <Editable defaultValue={harbour.name} aria-label="Project name" />
+      </DemoStage>
 
-      <Stack gap="sm">
-        <Heading level={3}>Example: showEnterHint=false</Heading>
-        <Text size="sm" color="secondary">
-          Click to edit — no Enter-to-save glyph shown, for a denser UI where the pattern is
-          already understood.
-        </Text>
-        <LivePreview>
-          <Editable defaultValue="Project Beta" aria-label="Project name" showEnterHint={false} />
-        </LivePreview>
-      </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Project header" caption="Rename the project and its tasks in place" widths={false}>
+        <Card style={{ maxWidth: 520, margin: "0 auto" }}>
+          <Stack gap="md">
+            <Stack direction="row" gap="sm" align="center">
+              <Heading level={3}><Editable defaultValue={harbour.name} aria-label="Project name" /></Heading>
+              <Tag tone={STATUS_TONE[harbour.status]}>{harbour.status}</Tag>
+            </Stack>
+            {TASKS.filter((t) => t.project === "harbour").map((t) => (
+              <Stack key={t.id} direction="row" gap="sm" align="center">
+                <Avatar {...avatarOf(t.assignee)} size="sm" />
+                <span style={{ flex: 1 }}><Editable defaultValue={t.title} showEnterHint={false} aria-label={`Task ${t.title}`} /></span>
+                <Tag>{t.tag}</Tag>
+              </Stack>
+            ))}
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
