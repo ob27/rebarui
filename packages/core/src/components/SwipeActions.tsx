@@ -14,6 +14,15 @@ export interface SwipeActionsProps extends Omit<ComponentPropsWithoutRef<"div">,
   /** Actions revealed by swiping the row left, right-aligned. */
   actions: SwipeAction[];
   disabled?: boolean;
+  /** Controlled reveal state. `"left"` is the row swiped left, showing `actions` (the only side
+   * that exists today); `"right"` is accepted for forward compatibility and currently shows
+   * nothing (there are no leading actions). `null` is closed. Omit for the original uncontrolled
+   * behavior. */
+  open?: "left" | "right" | null;
+  /** Initial state for uncontrolled use. Default `null` (closed). */
+  defaultOpen?: "left" | "right" | null;
+  /** Fires when a swipe, the kebab toggle, or an action selection changes the reveal state. */
+  onOpenChange?: (open: "left" | "right" | null) => void;
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -35,7 +44,16 @@ function clamp(value: number, min: number, max: number): number {
  * it never moves or disappears) that toggles the exact same open/closed state a completed swipe
  * would — a real, bidirectional (opens AND closes) non-drag path, not just a one-way escape hatch.
  */
-export function SwipeActions({ children, actions, disabled, className, ...props }: SwipeActionsProps) {
+export function SwipeActions({
+  children,
+  actions,
+  disabled,
+  className,
+  open: openProp,
+  defaultOpen = null,
+  onOpenChange,
+  ...props
+}: SwipeActionsProps) {
   const actionsRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
   const startXRef = useRef(0);
@@ -43,7 +61,16 @@ export function SwipeActions({ children, actions, disabled, className, ...props 
   const dragOffsetRef = useRef(0);
   const [dragOffset, setDragOffset] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState<"left" | "right" | null>(defaultOpen);
+  const isControlled = openProp !== undefined;
+  const openSide = isControlled ? openProp : internalOpen;
+  const open = openSide === "left";
+  const setOpen = (next: boolean | ((prev: boolean) => boolean)) => {
+    const nextOpen = typeof next === "function" ? next(open) : next;
+    const nextSide = nextOpen ? "left" : null;
+    if (!isControlled) setInternalOpen(nextSide);
+    if (nextSide !== openSide) onOpenChange?.(nextSide);
+  };
 
   const actionsWidth = () => actionsRef.current?.getBoundingClientRect().width ?? 0;
   const committedOffset = open && !disabled ? -actionsWidth() : 0;

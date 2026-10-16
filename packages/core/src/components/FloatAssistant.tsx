@@ -179,6 +179,14 @@ export interface FloatAssistantProps extends Omit<ComponentPropsWithoutRef<"div"
    * default to Markdown prose, same convention `ChatThread`'s own `markdown` prop already follows.
    * Default true; set false for a plain-text assistant that never emits Markdown syntax. */
   markdown?: boolean;
+  /** Controlled open state of the chat panel (the trigger orb is always shown). Omit for the
+   * original uncontrolled behavior, where the assistant opens/closes itself. */
+  open?: boolean;
+  /** Initial open state for uncontrolled use. Default false. */
+  defaultOpen?: boolean;
+  /** Fires whenever the panel opens or closes (double-click/Enter on the trigger, long-press voice
+   * open, or the panel's own close controls), in both controlled and uncontrolled use. */
+  onOpenChange?: (open: boolean) => void;
   className?: string;
   bionic?: boolean;
   bionicOptions?: BionicOptions;
@@ -238,6 +246,9 @@ export function FloatAssistant({
   onVoiceChange: _onVoiceChange,
   theme = "light",
   markdown = true,
+  open: openProp,
+  defaultOpen,
+  onOpenChange,
   className,
   bionic,
   bionicOptions,
@@ -245,7 +256,19 @@ export function FloatAssistant({
 }: FloatAssistantProps) {
   const ambientBionic = useAmbientBionic();
   const bionicEnabled = bionic ?? ambientBionic;
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(defaultOpen ?? false);
+  const isOpenControlled = openProp !== undefined;
+  const isOpen = isOpenControlled ? openProp : internalOpen;
+  // Kept in a ref so `setIsOpen` stays referentially stable (the long-press/activate callbacks
+  // below close over it with narrow dependency lists) while still seeing the latest values.
+  const openStateRef = useRef({ isOpen, isOpenControlled, onOpenChange });
+  openStateRef.current = { isOpen, isOpenControlled, onOpenChange };
+  const setIsOpen = useCallback((value: boolean | ((prev: boolean) => boolean)) => {
+    const { isOpen: current, isOpenControlled: controlled, onOpenChange: notify } = openStateRef.current;
+    const next = typeof value === "function" ? value(current) : value;
+    if (!controlled) setInternalOpen(next);
+    if (next !== current) notify?.(next);
+  }, []);
   const [isMinimized, setIsMinimized] = useState(false);
   const [internalMode, setInternalMode] = useState<"text" | "voice">("text");
   const [messages, setMessages] = useState<FloatAssistantMessage[]>([

@@ -146,3 +146,32 @@ describe("SwipeActions", () => {
     expect(document.querySelector('[data-rebar-part="actions"]')).toHaveAttribute("aria-hidden", "true");
   });
 });
+
+describe("SwipeActions controlled open", () => {
+  it("shows actions when open=\"left\" and hides them when null", () => {
+    const { rerender } = render(<SwipeActions open="left" actions={[{ label: "Archive", onSelect: () => {} }]}>Row</SwipeActions>);
+    expect(screen.getByRole("button", { name: "Hide actions" })).toBeInTheDocument();
+    expect(document.querySelector('[data-rebar-part="actions"]')).toHaveAttribute("aria-hidden", "false");
+    rerender(<SwipeActions open={null} actions={[{ label: "Archive", onSelect: () => {} }]}>Row</SwipeActions>);
+    expect(document.querySelector('[data-rebar-part="actions"]')).toHaveAttribute("aria-hidden", "true");
+  });
+
+  it("calls onOpenChange from the toggle and stays put when controlled", async () => {
+    const onOpenChange = vi.fn();
+    render(<SwipeActions open={null} onOpenChange={onOpenChange} actions={[{ label: "Archive", onSelect: () => {} }]}>Row</SwipeActions>);
+    await userEvent.click(screen.getByRole("button", { name: "More actions" }));
+    expect(onOpenChange).toHaveBeenCalledWith("left");
+    expect(document.querySelector('[data-rebar-part="actions"]')).toHaveAttribute("aria-hidden", "true");
+  });
+
+  it("uncontrolled: defaultOpen and onOpenChange work, selecting an action closes", async () => {
+    const onOpenChange = vi.fn();
+    const onSelect = vi.fn();
+    render(<SwipeActions defaultOpen="left" onOpenChange={onOpenChange} actions={[{ label: "Archive", onSelect }]}>Row</SwipeActions>);
+    expect(document.querySelector('[data-rebar-part="actions"]')).toHaveAttribute("aria-hidden", "false");
+    await userEvent.click(screen.getByRole("button", { name: "Archive" }));
+    expect(onSelect).toHaveBeenCalled();
+    expect(onOpenChange).toHaveBeenCalledWith(null);
+    expect(document.querySelector('[data-rebar-part="actions"]')).toHaveAttribute("aria-hidden", "true");
+  });
+});

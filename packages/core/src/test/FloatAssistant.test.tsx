@@ -189,3 +189,24 @@ describe("FloatAssistant sidebar dock button positioning", () => {
     expect(trigger.style.left).toBe("auto");
   });
 });
+
+describe("FloatAssistant open state", () => {
+  it("defaultOpen shows the panel and onOpenChange fires on toggle (uncontrolled)", () => {
+    const onOpenChange = vi.fn();
+    const { container } = render(<FloatAssistant defaultOpen onOpenChange={onOpenChange} />);
+    expect(screen.getByText("Hi! How can I help you today?", { exact: false })).toBeTruthy();
+    fireEvent.keyDown(container.querySelector('[data-rebar-part="trigger"]')!, { key: "Enter" });
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it("controlled open follows the prop and only reports requests", () => {
+    const onOpenChange = vi.fn();
+    const { container, rerender } = render(<FloatAssistant open={false} onOpenChange={onOpenChange} />);
+    expect(screen.queryByLabelText("Message input")).toBeNull();
+    fireEvent.keyDown(container.querySelector('[data-rebar-part="trigger"]')!, { key: "Enter" });
+    expect(onOpenChange).toHaveBeenCalledWith(true);
+    expect(screen.queryByLabelText("Message input")).toBeNull();
+    rerender(<FloatAssistant open onOpenChange={onOpenChange} />);
+    expect(screen.getByLabelText("Message input")).toBeTruthy();
+  });
+});
