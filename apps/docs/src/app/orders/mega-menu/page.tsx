@@ -1,66 +1,39 @@
-import { Box, Heading, Stack, Text } from "rebar-ui";
+import { Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PROJECTS } from "@/fixtures/tideline";
 
-const DEMO_BLOCKS: Construct[] = [
+const CODE = `{
+  type: "mega-menu",
+  columns: [
+    { heading: "Projects", items: [{ label: "Harbour rebrand", description: "Brand", href: "/harbour" }] },
+  ],
+  footer: { label: "All projects", href: "/projects" },
+}`;
+
+const item = (id: string) => {
+  const p = PROJECTS.find((x) => x.id === id)!;
+  return { label: p.name, description: `${p.kicker}, due ${p.due}`, href: `#${p.id}` };
+};
+
+const MAIN: Construct[] = [
   {
     type: "mega-menu",
     columns: [
-      {
-        heading: "Framework",
-        items: [
-          { label: "Orders", description: "Pick your Plenum", href: "/orders" },
-          { label: "Archetypes", description: "Construct studies", href: "/archetypes" },
-          { label: "Imitations", description: "Primitive Constructs", href: "/imitations" },
-        ],
-      },
-      {
-        heading: "",
-        items: [
-          { label: "Synthetics", description: "Complex Constructs", href: "/synthetics" },
-          { label: "Opinions", description: "Dynamic Constructs", href: "/opinions" },
-          { label: "Geneses", description: "Rebar alive", href: "/geneses" },
-        ],
-      },
-      {
-        heading: "Philosophy",
-        items: [
-          { label: "Heuristics", href: "/heuristics" },
-          { label: "Roadmap", href: "/roadmap" },
-          { label: "Rules", href: "/about/agent" },
-          { label: "Benchmarks", href: "/about/benchmarks" },
-          { label: "About", href: "/about" },
-        ],
-      },
+      { heading: "Projects", items: [item("harbour"), item("mobile"), item("signage")] },
+      { heading: "Research", items: [item("interviews"), { label: "Interview log", description: "Twelve calls", href: "#log" }] },
+      { heading: "Team", items: [{ label: "Maya Chen", href: "#maya" }, { label: "Jonas Weber", href: "#jonas" }, { label: "Priya Nair", href: "#priya" }, { label: "Leo Santos", href: "#leo" }] },
     ],
-    footer: { label: "Go to the GitHub Repo", href: "https://github.com/ob27/rebarui" },
+    footer: { label: "See all projects", href: "#projects" },
   },
 ];
 
+const SINGLE: Construct[] = [
+  { type: "mega-menu", columns: [{ heading: "", items: [item("rota"), { label: "Payroll cut-off", description: "28 Oct", href: "#payroll" }] }] },
+];
+
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: `{
-  type: "mega-menu",
-  columns: [
-    {
-      heading: "Framework",
-      items: [
-        { label: "Orders", description: "Pick your Plenum", href: "/orders" },
-        { label: "Archetypes", description: "Construct studies", href: "/archetypes" },
-      ],
-    },
-    // ...more columns
-  ],
-  footer: { label: "Go to the GitHub Repo", href: "https://github.com/..." },
-}`,
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "Shape",
@@ -69,10 +42,7 @@ const BLOCKS: Construct[] = [
         kind: "code",
         code: `{
   type: "mega-menu",
-  columns: {
-    heading: string,
-    items: { label: string; description?: string; href: string; icon?: IconName; external?: boolean }[],
-  }[],
+  columns: { heading: string, items: { label: string; description?: string; href: string; icon?: IconName; external?: boolean }[] }[],
   footer?: { label: string; href: string },
 }`,
       },
@@ -80,37 +50,13 @@ const BLOCKS: Construct[] = [
   },
   {
     type: "doc-section",
-    heading: "Usage",
-    body: [
-      {
-        kind: "text",
-        text: "MegaMenu is a multi-column navigation panel — typically rendered inside a Popover triggered from a NavBar item. Each column has an optional heading and a list of items (label + optional description + href). An optional footer link spans the full width at the bottom.",
-      },
-      {
-        kind: "text",
-        text: "The mega-menu has no chrome of its own — no border, background, or shadow on the popover container. The panel inside draws its own subtle shadow and rounded corners, so it floats cleanly above the page without a double-border effect.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
     heading: "Dismissal",
-    body: [
-      {
-        kind: "text",
-        text: "Clicking any link inside the mega-menu closes the popover. The trigger button uses controlled open state — `open`/`onOpenChange` — so the host component (usually NavBar) owns the open lifecycle.",
-      },
-    ],
+    body: [{ kind: "text", text: "Clicking a link closes the popover. The host (usually NavBar) owns `open` / `onOpenChange`." }],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-placement-block="mega-menu"` on the panel root, `data-rebar-part="mega-trigger"` on the trigger button.',
-      },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-placement-block="mega-menu"` on the panel root, `data-rebar-part="mega-trigger"` on the trigger button.' }],
   },
 ];
 
@@ -118,21 +64,38 @@ export default function MegaMenuPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>MegaMenu</Heading>
-      <Text color="secondary">
-        A multi-column navigation panel for dense site maps — renders inside a Popover with no
-        container chrome of its own. The panel draws its own subtle shadow and rounded corners.
-      </Text>
+      <Text color="secondary">A multi-column navigation panel for dense site maps, shown inside a Popover.</Text>
 
-      <Box
-        style={{
-          border: "1px solid var(--rebar-color-border, #e0e0e0)",
-          borderRadius: 4,
-          padding: "var(--rebar-space-lg)",
-          backgroundColor: "var(--rebar-color-bg-secondary, #f5f5f5)",
-        }}
+      <DemoStage
+        title="Projects menu"
+        caption="Three columns and a footer link"
+        code={CODE}
+        states={[{ label: "One column, no footer", node: <NextBlockRenderer blocks={SINGLE} /> }]}
       >
-        <NextBlockRenderer blocks={DEMO_BLOCKS} />
-      </Box>
+        <NextBlockRenderer blocks={MAIN} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Site header" caption="The panel opened from a nav item" widths={false}>
+        <NextBlockRenderer
+          blocks={[
+            {
+              type: "site-header",
+              logo: { label: "Tideline", href: "#" },
+              items: [
+                {
+                  label: "Projects",
+                  href: "#",
+                  megaMenu: { columns: [{ heading: "Open", items: [item("harbour"), item("mobile")] }], footer: { label: "See all projects", href: "#" } },
+                },
+                { label: "Calendar", href: "#" },
+                { label: "Files", href: "#" },
+              ],
+              trailing: { kind: "avatar", name: "Maya Chen", href: "#", placeholder: true },
+            },
+          ]}
+        />
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

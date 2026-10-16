@@ -1,59 +1,31 @@
-import { Box, Container, Heading, Stack, Text } from "rebar-ui";
+import { Avatar, Box, Card, Container, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { avatarOf, gbp, person, project, STATUS_TONE } from "@/fixtures/tideline";
+
+const CODE = `<Container maxWidth="lg" verticalPadding="var(--rebar-space-xl)">
+  <Heading level={1}>Harbour rebrand</Heading>
+  <Text>Identity, site and launch kit for the harbour trust.</Text>
+</Container>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Container maxWidth="lg">\n  <Heading level={1}>Page title</Heading>\n  <Text>Body copy...</Text>\n</Container>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Container"] ?? [] },
   {
     type: "doc-section",
-    heading: "One job, done once",
+    heading: "Width and padding",
     body: [
       {
         kind: "text",
-        text: 'Centers and width-constrains page content — before this existed, every bare content page on this site (`/about`, `/heuristics`, `/roadmap`) hand-rolled the exact same inline style (`maxWidth: 800, margin: "0 auto", padding: "var(--rebar-space-xl)"`) independently. Real page-level governance — how wide can content get, how is it centered — the same Order-tier role `AppShell`/`SidebarNav` already play for navigation, just for width instead of chrome.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Vertical padding is opt-in, not automatic",
-    body: [
-      {
-        kind: "text",
-        text: '`padding` (the default `--rebar-space-xl`) is horizontal only, on purpose — Container\'s own job is centering and width-constraint, not deciding a page\'s full spacing. A bare, no-sidebar page with nothing else providing vertical breathing room from the header/footer (exactly `/about`, `/heuristics`, and `/roadmap` above) sets `verticalPadding` explicitly for that. Leave it unset when Container nests inside something that already pads vertically (a `SidebarNav`-based `DocsShell`, an `AppShell`) — setting it there would double the gap.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Named presets, or a literal value",
-    body: [
-      {
-        kind: "text",
-        text: '`maxWidth` accepts `"sm"` (480px) / `"md"` (640px) / `"lg"` (800px, the default — matching every existing hand-rolled instance before this component shipped) / `"xl"` (1040px) / `"full"` (no constraint at all), a bare `number` (read as pixels), or any literal CSS length string (`"90vw"`, `"60ch"`).',
+        text: '`maxWidth` takes `"sm"` (480px), `"md"` (640px), `"lg"` (800px, the default), `"xl"` (1040px), `"full"`, a number of pixels, or any CSS length. `padding` is horizontal only; set `verticalPadding` when nothing else spaces the page from its header and footer.',
       },
     ],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="container"` on the root.',
-      },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-component="container"` on the root.' }],
   },
   {
     type: "doc-section",
@@ -61,65 +33,96 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Not codemod-covered — AntD's own `Layout.Content` doesn't itself width-constrain; a migration typically composes this same centering with whatever the target library's grid/layout primitive supplies, or keeps a plain CSS max-width rule.",
+        text: "Not codemod-covered. AntD's `Layout.Content` does not constrain width; keep a plain CSS max-width rule or compose the target library's grid.",
       },
     ],
   },
 ];
 
+const PAGE_BG = { background: "var(--rebar-color-bg-secondary)", borderRadius: 8 } as const;
+const BAND = {
+  background: "var(--rebar-color-bg-primary)",
+  border: "1px solid var(--rebar-color-border)",
+  borderRadius: 6,
+  padding: "var(--rebar-space-sm)",
+  textAlign: "center",
+} as const;
+
+function Band({ children }: { children: string }) {
+  return (
+    <Box style={BAND}>
+      <Text size="sm" color="secondary">{children}</Text>
+    </Box>
+  );
+}
+
+function Preset({ size }: { size: "sm" | "md" | "lg" | "xl" | "full" }) {
+  return (
+    <Box style={{ ...PAGE_BG, width: "100%" }}>
+      <Container maxWidth={size} padding="var(--rebar-space-sm)">
+        <Band>{`maxWidth="${size}"`}</Band>
+      </Container>
+    </Box>
+  );
+}
+
 export default function ContainerPage() {
+  const harbour = project("harbour");
+  const owner = person(harbour.owner);
   return (
     <Stack gap="lg">
       <Heading level={1}>Container</Heading>
-      <Text color="secondary">
-        Centers and width-constrains page content. Every preset below is the same component,
-        just a different <code>maxWidth</code>.
-      </Text>
+      <Text color="secondary">Centres page content and caps its width.</Text>
 
-      <Stack gap="sm">
-        <Text size="sm" color="secondary">
-          <code>verticalPadding</code> — unset (left) vs. set to <code>--rebar-space-xl</code>{" "}
-          (right). Both boxes below share the same outer background so the gap is visible.
-        </Text>
-        <Stack direction="row" gap="md">
-          <Box style={{ background: "var(--rebar-color-bg-secondary, #f5f5f5)", flex: 1 }}>
-            <Container maxWidth="full" padding="var(--rebar-space-sm)">
-              <Box style={{ background: "var(--rebar-color-bg-primary, #fff)", border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-sm)", textAlign: "center" }}>
-                <Text size="sm" color="secondary">no verticalPadding</Text>
+      <DemoStage
+        title="Project page"
+        caption="A centred column at the default width"
+        code={CODE}
+        states={[
+          { label: "sm", node: <Preset size="sm" /> },
+          { label: "md", node: <Preset size="md" /> },
+          { label: "xl", node: <Preset size="xl" /> },
+          { label: "full", node: <Preset size="full" /> },
+          {
+            label: "verticalPadding",
+            node: (
+              <Box style={{ ...PAGE_BG, width: "100%" }}>
+                <Container maxWidth="full" padding="var(--rebar-space-sm)" verticalPadding="var(--rebar-space-xl)">
+                  <Band>verticalPadding set</Band>
+                </Container>
               </Box>
-            </Container>
-          </Box>
-          <Box style={{ background: "var(--rebar-color-bg-secondary, #f5f5f5)", flex: 1 }}>
-            <Container maxWidth="full" padding="var(--rebar-space-sm)" verticalPadding="var(--rebar-space-xl)">
-              <Box style={{ background: "var(--rebar-color-bg-primary, #fff)", border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-sm)", textAlign: "center" }}>
-                <Text size="sm" color="secondary">verticalPadding=&quot;--rebar-space-xl&quot;</Text>
-              </Box>
-            </Container>
-          </Box>
-        </Stack>
-      </Stack>
+            ),
+          },
+        ]}
+      >
+        <Box style={PAGE_BG}>
+          <Container maxWidth="lg" verticalPadding="var(--rebar-space-xl)">
+            <Stack gap="sm">
+              <Heading level={2}>{harbour.name}</Heading>
+              <Text color="secondary">{harbour.summary}</Text>
+              <Stack direction="row" gap="sm" align="center">
+                <Avatar {...avatarOf(owner.id)} size="sm" />
+                <Text size="sm">{owner.name}, due {harbour.due}</Text>
+                <Tag tone={STATUS_TONE[harbour.status]}>{harbour.status}</Tag>
+              </Stack>
+            </Stack>
+          </Container>
+        </Box>
+      </DemoStage>
 
-      <Stack gap="md">
-        {(["sm", "md", "lg", "xl"] as const).map((size) => (
-          <Box key={size} style={{ background: "var(--rebar-color-bg-secondary, #f5f5f5)" }}>
-            <Container maxWidth={size} padding="var(--rebar-space-sm)">
-              <Box
-                style={{
-                  background: "var(--rebar-color-bg-primary, #fff)",
-                  border: "1px solid var(--rebar-color-border, #e0e0e0)",
-                  borderRadius: 4,
-                  padding: "var(--rebar-space-sm)",
-                  textAlign: "center",
-                }}
-              >
-                <Text size="sm" color="secondary">
-                  maxWidth=&quot;{size}&quot;
-                </Text>
-              </Box>
-            </Container>
-          </Box>
-        ))}
-      </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Settings page" caption="A narrow column keeps form lines readable" widths={false}>
+        <Box style={PAGE_BG}>
+          <Container maxWidth="md" verticalPadding="var(--rebar-space-lg)">
+            <Card title="Budget">
+              <Stack gap="xs">
+                <Text size="sm" color="secondary">Harbour rebrand</Text>
+                <Text>{gbp(harbour.budget)} agreed, {harbour.done}% complete.</Text>
+              </Stack>
+            </Card>
+          </Container>
+        </Box>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
