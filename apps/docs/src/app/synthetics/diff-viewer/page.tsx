@@ -1,54 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { DiffViewer, Heading, SegmentedControl, Stack, Text } from "rebar-ui";
+import { Button, Card, DiffViewer, Heading, SegmentedControl, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
-const OLD_TEXT = `function greet(name) {
-  console.log("Hello " + name);
+const OLD_TEXT = `export function syncTasks(crewId) {
+  const tasks = fetchTasks(crewId);
+  return tasks;
 }
 
-greet("world");`;
+syncTasks("harbour");`;
 
-const NEW_TEXT = `function greet(name, greeting = "Hello") {
-  console.log(\`\${greeting}, \${name}!\`);
+const NEW_TEXT = `export function syncTasks(crewId, offline = true) {
+  const tasks = offline ? readCache(crewId) : fetchTasks(crewId);
+  return tasks;
 }
 
-greet("world");
-greet("rebar");`;
+syncTasks("harbour");
+syncTasks("mobile");`;
+
+const CODE = `<DiffViewer oldText={before} newText={after} mode="split" oldLabel="main" newLabel="offline-sync" />`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<DiffViewer oldText={before} newText={after} mode="split" oldLabel="Before" newLabel="After" />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["DiffViewer"] ?? [] },
   {
     type: "doc-section",
-    heading: "A real LCS alignment, not a naive line-by-line compare",
+    heading: "A real line alignment",
     body: [
       {
         kind: "text",
-        text: "Computes an actual longest-common-subsequence alignment between the two texts' lines, so an insertion or deletion in the middle doesn't falsely mark every line after it as changed — try the demo above: only the function signature and its body line are marked, everything else aligns as unchanged even though a whole new line was added at the end.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Static, like CodeBlock",
-    body: [
-      {
-        kind: "text",
-        text: "No interactivity — the same Synthetic tier as `CodeBlock`, whose own scope deliberately stops at syntax display rather than a full editing surface. Fits this project's existing developer-tooling lean (`GitGraph`, `VersionHistory`).",
+        text: "It aligns the two texts with a longest-common-subsequence diff, so an insertion in the middle does not mark every later line as changed. Only the changed signature, the changed body line and the new last line are marked here. It is static, like `CodeBlock`.",
       },
     ],
   },
@@ -65,35 +49,56 @@ const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      {
-        kind: "text",
-        text: "Not codemod-covered — AntD ships no dedicated diff component; a migration typically keeps this exact LCS-diff logic and re-skins the rendering.",
-      },
-    ],
+    body: [{ kind: "text", text: "Not codemod-covered. AntD ships no diff component; a migration typically keeps this LCS-diff logic and re-skins the rendering." }],
   },
 ];
 
 export default function DiffViewerPage() {
   const [mode, setMode] = useState<"split" | "unified">("split");
+  const toggle = (
+    <SegmentedControl
+      options={[
+        { value: "split", label: "Split" },
+        { value: "unified", label: "Unified" },
+      ]}
+      value={mode}
+      onValueChange={(v) => setMode(v as "split" | "unified")}
+    />
+  );
 
   return (
     <Stack gap="lg">
       <Heading level={1}>DiffViewer</Heading>
-      <Text color="secondary">A real, computed line-level diff.</Text>
+      <Text color="secondary">Old and new text compared line by line.</Text>
 
-      <SegmentedControl
-        options={[
-          { value: "split", label: "Split" },
-          { value: "unified", label: "Unified" },
+      <DemoStage
+        title="Offline sync change"
+        caption="Switch between split and unified"
+        code={CODE}
+        states={[
+          { label: "No differences", node: <DiffViewer oldText="syncTasks(crew);" newText="syncTasks(crew);" mode="unified" /> },
+          { label: "All added", node: <DiffViewer oldText="" newText={"readCache(crew);\nsyncTasks(crew);"} mode="unified" /> },
+          { label: "Long line", node: <DiffViewer oldText="const note = 'Offline sync is in review.';" newText="const note = 'Offline sync is in review and the crew-interview notes are late.';" mode="unified" /> },
         ]}
-        value={mode}
-        onValueChange={(v) => setMode(v as "split" | "unified")}
-      />
+      >
+        <Stack gap="sm">
+          {toggle}
+          <DiffViewer oldText={OLD_TEXT} newText={NEW_TEXT} mode={mode} oldLabel="main" newLabel="offline-sync" />
+        </Stack>
+      </DemoStage>
 
-      <LivePreview>
-        <DiffViewer oldText={OLD_TEXT} newText={NEW_TEXT} mode={mode} />
-      </LivePreview>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Review" caption="A change awaiting Jonas Weber's approval" widths={false}>
+        <Card title="Offline sync" actions={[<Button key="a">Approve</Button>, <Button key="r" variant="secondary">Request changes</Button>]}>
+          <Stack gap="sm">
+            <Stack direction="row" gap="sm" align="center">
+              <Tag tone="info">Review</Tag>
+              <Text size="sm" color="secondary">Tideline mobile, due 7 Nov</Text>
+            </Stack>
+            <DiffViewer oldText={OLD_TEXT} newText={NEW_TEXT} mode="unified" />
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

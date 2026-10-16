@@ -1,55 +1,41 @@
-import { CodeBlock, Heading, Stack, Text } from "rebar-ui";
+import { Card, CodeBlock, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
-const SAMPLE_MARKDOWN = `# Release notes
+const SNIPPET = `import { syncTasks } from "./sync";
 
-A short summary paragraph with **bold**, *italic*, and \`inline code\`.
+export async function onReconnect(crewId: string) {
+  const pending = await syncTasks(crewId);
+  return pending.length;
+}`;
+
+const NOTES = `# Release notes
+
+Offline sync for **Tideline mobile** is in review.
 
 ## What changed
 
-- Added a real \`markdown\` toggle
-- Fixed a bug in the empty state
-- Docs page finally exists
+- Tasks keep working with no signal
+- The inbox sends one digest a day
 
-> Ship it.
-
-\`\`\`
-const shipped = true;
-\`\`\`
+> Ship it on 7 Nov.
 `;
 
+const CODE = `<CodeBlock language="tsx" code={snippet} />
+<CodeBlock markdown code={releaseNotes} />
+<CodeBlock language="bash" hideCopyButton code="tideline export --week 19-oct" />`;
+
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<CodeBlock code="const x = 1;" language="tsx" />\n\n<CodeBlock markdown code={"# Title\\n\\nSome **bold** text."} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["CodeBlock"] ?? [] },
   {
     type: "doc-section",
-    heading: "Deliberately minimal, no syntax highlighting",
+    heading: "Plain and markdown modes",
     body: [
       {
         kind: "text",
-        text: "See ref/HEURISTICS.md #39 (copyable code ships with a one-click copy button and visible confirmation) — that's the one thing this adds over a bare `<pre><code>`. No syntax highlighting, no line numbers, no language auto-detection: this project's own code samples are short and illustrative, and a heavier code-block library would be solving a problem this one doesn't have (see ref/HEURISTICS.md #8, aesthetic and minimalist design).",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "markdown: a real renderer, not a full CommonMark implementation",
-    body: [
-      {
-        kind: "text",
-        text: "`markdown` renders `code` as styled Markdown instead of plain preformatted text — headings, paragraphs, ordered/unordered lists, blockquotes, fenced code blocks, and inline bold/italic/code/links. It's a small, real parser (`packages/core/src/markdown.tsx`), not a full CommonMark implementation — no tables, no nested lists/blockquotes, no raw HTML passthrough. The copy button still copies the original raw Markdown source in this mode, not the rendered output, matching the same \"what you copy is what was authored\" contract plain-code mode already has. `language` is ignored when `markdown` is set — rendered Markdown has no single language the way a code sample does.",
+        text: "Plain mode is preformatted text with a one-click copy button and visible confirmation; there is no syntax highlighting. `markdown` renders headings, lists, blockquotes, fenced code and inline bold, italic, code and links with a small built-in parser (no tables, nested lists or raw HTML). The copy button always copies the original source. `language` is ignored when `markdown` is set.",
       },
     ],
   },
@@ -69,7 +55,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Not codemod-covered — AntD ships no code-block component of its own; a copy-to-clipboard code sample typically migrates to a small custom wrapper around AntD's `Typography.Text code` plus a manual clipboard button, or a dedicated syntax-highlighting library if that fidelity is actually needed.",
+        text: "Not codemod-covered. AntD ships no code-block component; a copyable sample typically migrates to a small wrapper around `Typography.Text code` plus a clipboard button, or a syntax-highlighting library.",
       },
     ],
   },
@@ -79,40 +65,30 @@ export default function CodeBlockPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>CodeBlock</Heading>
-      <Text color="secondary">
-        A real code-sample component — a one-click copy button with visible confirmation, or a
-        styled Markdown renderer via the same component.
-      </Text>
+      <Text color="secondary">A code sample with a copy button, or rendered Markdown.</Text>
 
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          Plain code (default)
-        </Text>
-        <LivePreview>
-          <CodeBlock
-            language="tsx"
-            code={'export function Greeting({ name }: { name: string }) {\n  return <p>Hello, {name}!</p>;\n}'}
-          />
-        </LivePreview>
-      </Stack>
+      <DemoStage
+        title="Reconnect handler"
+        caption="Language label, code and copy"
+        code={CODE}
+        states={[
+          { label: "Markdown", node: <CodeBlock markdown code={NOTES} /> },
+          { label: "No copy button", node: <CodeBlock language="bash" hideCopyButton code="tideline export --week 19-oct" /> },
+          { label: "Long line", node: <CodeBlock language="bash" code="tideline export --project harbour --from 3-aug --to 19-oct --format csv --out ./exports/harbour-rebrand-weekly.csv" /> },
+        ]}
+      >
+        <CodeBlock language="tsx" code={SNIPPET} />
+      </DemoStage>
 
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          markdown — styled Markdown instead of plain preformatted text
-        </Text>
-        <LivePreview>
-          <CodeBlock markdown code={SAMPLE_MARKDOWN} />
-        </LivePreview>
-      </Stack>
-
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          hideCopyButton — for an illustrative snippet not meant to be copy-pasted verbatim
-        </Text>
-        <LivePreview>
-          <CodeBlock language="bash" hideCopyButton code={"npm install ...\n# ... then configure your project"} />
-        </LivePreview>
-      </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Docs card" caption="An install step in a help card" widths={false}>
+        <Card title="Install the crew CLI" style={{ maxWidth: 560, margin: "0 auto" }}>
+          <Stack gap="sm">
+            <Text size="sm" color="secondary">Leo Santos uses it to export the rota to payroll.</Text>
+            <CodeBlock language="bash" code={"npm install -g @tideline/cli\ntideline login"} />
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

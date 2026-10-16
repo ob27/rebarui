@@ -1,27 +1,21 @@
-import { CandlestickChart, Heading, Stack, Text } from "rebar-ui";
+import { CandlestickChart, Card, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { OPEN_TASK_CANDLES } from "@/fixtures/tideline";
 
-const DATA = [
-  { label: "Mon", open: 42, high: 45, low: 40, close: 44 },
-  { label: "Tue", open: 44, high: 44.5, low: 39, close: 40 },
-  { label: "Wed", open: 40, high: 43, low: 39.5, close: 42.8 },
-  { label: "Thu", open: 42.8, high: 43, low: 38, close: 38.5 },
-  { label: "Fri", open: 38.5, high: 41, low: 38, close: 40.9 },
-];
+const CODE = `<CandlestickChart
+  title="Open tasks, week of 20 Oct"
+  data={[{ label: "Mon 20", open: 48, high: 50, low: 45, close: 47 }, /* ... */]}
+  upColor="var(--rebar-color-danger)"
+  downColor="var(--rebar-color-success)"
+/>`;
+
+// More open tasks is bad news, fewer is good.
+const COLORS = { upColor: "var(--rebar-color-danger)", downColor: "var(--rebar-color-success)" };
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<CandlestickChart title="Weekly close" data={[{ label: "Mon", open: 42, high: 45, low: 40, close: 44 }, /* ... */]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["CandlestickChart"] ?? [] },
   {
     type: "doc-section",
@@ -29,29 +23,14 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Each entry renders a thin wick spanning the full `high`/`low` range, and a filled body spanning `open`/`close`, colored `upColor` when the period closed at or above its open, `downColor` otherwise. The y-axis range and tick spacing reuse the same convention `LineChart`/`ScatterChart` already use — padded min/max, evenly spaced ticks — rather than a new axis approach invented for this chart alone.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "CandlestickChart vs. BoxPlot",
-    body: [
-      {
-        kind: "text",
-        text: 'Visually similar (both draw a wick plus a body per category) but answer different questions. `CandlestickChart` is a **time-ordered price record** — each candle is one period\'s literal open/high/low/close, and the body\'s two ends are exactly those two numbers, not a statistical measure. `BoxPlot` is a **statistical distribution summary** — its box spans the interquartile range (25th-75th percentile) around a visible median line, deliberately not the same thing as an "open" and "close." A candlestick\'s body doesn\'t mark a median at all, which is the concrete tell if the two ever look ambiguous side by side. Use `CandlestickChart` for a sequence of real periodic values (price, temperature range per day); use `BoxPlot` to summarize the spread of a dataset.',
+        text: "Each entry draws a thin wick from `low` to `high` and a body from `open` to `close`, in `upColor` when the period closed at or above its open and `downColor` otherwise. It is a record of real periodic values; for the spread of a dataset use `BoxPlot`.",
       },
     ],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="candlestick-chart"` on the root `<figure>`.',
-      },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-component="candlestick-chart"` on the root `<figure>`.' }],
   },
   {
     type: "doc-section",
@@ -59,7 +38,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Not codemod-covered — AntD ships no chart components of its own; a financial candlestick chart typically migrates to a dedicated library like `lightweight-charts` rather than an antd component.",
+        text: "Not codemod-covered. AntD ships no chart components of its own; a candlestick chart typically migrates to a dedicated library like `lightweight-charts`.",
       },
     ],
   },
@@ -69,11 +48,36 @@ export default function CandlestickChartPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>CandlestickChart</Heading>
-      <Text color="secondary">
-        A financial price-range chart — one wick-and-body candle per period.
-      </Text>
+      <Text color="secondary">One wick-and-body candle per period: open, high, low, close.</Text>
 
-      <CandlestickChart title="Weekly close" data={DATA} />
+      <DemoStage
+        title="Open tasks"
+        caption="Daily range of open tasks, 20 to 24 Oct"
+        code={CODE}
+        states={[
+          { label: "Two days", node: <CandlestickChart ariaLabel="Open tasks" data={OPEN_TASK_CANDLES.slice(0, 2)} height={160} {...COLORS} /> },
+          { label: "No data", node: <CandlestickChart ariaLabel="Open tasks" data={[]} height={160} {...COLORS} /> },
+          { label: "Default colours", node: <CandlestickChart ariaLabel="Open tasks" data={OPEN_TASK_CANDLES.slice(2)} height={160} /> },
+        ]}
+      >
+        <CandlestickChart title="Open tasks, week of 20 Oct" data={OPEN_TASK_CANDLES} {...COLORS} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Weekly review" caption="Next to the week's numbers" widths={false}>
+        <Stack direction="row" gap="md" style={{ flexWrap: "wrap" }}>
+          <Card title="Open tasks" style={{ flex: "1 1 420px" }}>
+            <CandlestickChart ariaLabel="Open tasks per day" data={OPEN_TASK_CANDLES} {...COLORS} />
+          </Card>
+          <Card title="This week" style={{ flex: "1 1 180px" }}>
+            <Stack gap="xs">
+              <Text size="sm" color="secondary">Closed Friday at</Text>
+              <Heading level={2}>43</Heading>
+              <Text size="sm" color="secondary">5 fewer than Monday&apos;s open.</Text>
+            </Stack>
+          </Card>
+        </Stack>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

@@ -1,63 +1,61 @@
 import { Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PROJECTS, STATUS_TONE } from "@/fixtures/tideline";
 
-const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Overview",
-    body: [{ kind: "text", text: "A wrapping grid of cards — title, optional body copy, optional status tags, optional link — for an index/directory of many similar named things (see the /components page, rebuilt through this block). Distinct from feature-grid (no link, no tags, meant for a handful of short callouts) and pillar-grid (a fixed small set with a mandatory CTA): card-grid is for an open-ended, possibly large list where each item may or may not have a description, a link, or a status yet — see \"Design Heuristics\" #41 (status is a pill, not label text) and #12 (every card needs its own title/content/action zones, not just a title)." }],
-  },
+const CODE = `{
+  type: "card-grid",
+  items: [
+    { title: "Harbour rebrand", body: "Identity, site and launch kit for the harbour trust.", href: "#", linkLabel: "Open project →" },
+    { title: "Depot signage", tags: [{ label: "In review", tone: "info" }] },
+  ],
+}`;
+
+const items = PROJECTS.map((p) => ({
+  title: p.name,
+  body: p.summary,
+  href: "#",
+  linkLabel: "Open project →",
+  tags: [{ label: p.status, tone: p.status === "Done" ? undefined : (STATUS_TONE[p.status] as "success" | "info" | "error") }],
+}));
+
+const SHAPE: Construct[] = [
   {
     type: "doc-section",
     heading: "Shape",
     body: [{ kind: "code", code: `{ type: "card-grid", items: { title: string, body?: string, href?: string, linkLabel?: string, tags?: { label: string, tone?: Tone }[] }[] }` }],
   },
-  {
-    type: "doc-section",
-    heading: "Example",
-    body: [{ kind: "text", text: "A live example of the card-grid block:" }],
-  },
-  {
-      type: "card-grid",
-      items: [
-        {
-          title: "Avatar",
-          body: "Illustrated placeholder art.",
-          href: "#",
-          linkLabel: "View reference →",
-        },
-        {
-          title: "Accordion",
-          tags: [
-            {
-              label: "No reference page",
-              tone: "warning",
-            },
-          ],
-        },
-        {
-          title: "DatePicker",
-          body: "Calendar popup for picking dates.",
-          href: "#",
-          linkLabel: "View reference →",
-          tags: [
-            {
-              label: "Mobile only",
-              tone: "info",
-            },
-          ],
-        },
-      ],
-    },
 ];
 
 export default function CardGridPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Card Grid</Heading>
-      <Text color="secondary">{"A wrapping grid of cards — title, optional body copy, optional status tags, optional link — for an index/directory of many similar named things (see the /components page, rebuilt through this block). Distinct from feature-grid (no link, no tags, meant for a handful of short callouts) and pillar-grid (a fixed small set with a mandatory CTA): card-grid is for an open-ended, possibly large list where each item may or may not have a description, a link, or a status yet — see \"Design Heuristics\" #41 (status is a pill, not label text) and #12 (every card needs its own title/content/action zones, not just a title)."}</Text>
-      <NextBlockRenderer blocks={BLOCKS} />
+      <Text color="secondary">A wrapping grid of cards for a directory of many similar things.</Text>
+
+      <DemoStage
+        title="Project directory"
+        caption="Title, summary, status tag and link"
+        code={CODE}
+        states={[
+          { label: "Title only", node: <NextBlockRenderer blocks={[{ type: "card-grid", items: [{ title: "Rota export" }] }]} /> },
+          { label: "With tag", node: <NextBlockRenderer blocks={[{ type: "card-grid", items: [{ title: "Depot signage", tags: [{ label: "Review", tone: "info" }] }] }]} /> },
+          { label: "Long text", node: <NextBlockRenderer blocks={[{ type: "card-grid", items: [{ title: "Offline sync for the Tideline mobile crew app", body: "Tasks, files and the quiet inbox keep working below deck, and catch up when the ferry reaches the quay.", href: "#", linkLabel: "Open project →" }] }]} /> },
+        ]}
+      >
+        <NextBlockRenderer blocks={[{ type: "card-grid", items: items.slice(0, 4) }]} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Projects index" caption="All five projects, one grid" widths={false}>
+        <Stack gap="md">
+          <Heading level={3}>Projects</Heading>
+          <NextBlockRenderer blocks={[{ type: "card-grid", items }]} />
+        </Stack>
+      </DemoStage>
+
+      <NextBlockRenderer blocks={SHAPE} />
     </Stack>
   );
 }

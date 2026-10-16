@@ -196,3 +196,20 @@ export const INVOICES: Invoice[] = [
 export const INVOICE_TONE: Record<InvoiceStatus, "success" | "info" | "error" | "default"> = { Paid: "success", Due: "info", Overdue: "error", Draft: "default" };
 /** GBP with pence: `gbpPence(3860.5)` is "£3,860.50". */
 export const gbpPence = (n: number) => `£${n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+/* ---- Wave G fixtures (candlestick and funnel pages) ---- */
+/** Open-task count per day, 20 to 24 Oct, as open/high/low/close candles. */
+export const OPEN_TASK_CANDLES = [
+  { label: "Mon 20", open: 48, high: 50, low: 45, close: 47 },
+  { label: "Tue 21", open: 47, high: 48, low: 43, close: 44 },
+  { label: "Wed 22", open: 44, high: 47, low: 43, close: 46 },
+  { label: "Thu 23", open: 46, high: 46, low: 41, close: 42 },
+  { label: "Fri 24", open: 42, high: 44, low: 40, close: 43 },
+];
+/** The crew interview recruitment funnel for the "Crew interviews" project. */
+export const CREW_FUNNEL = [
+  { label: "Contacted", value: 48 },
+  { label: "Replied", value: 31 },
+  { label: "Booked", value: 18 },
+  { label: "Interviewed", value: 12 },
+];
