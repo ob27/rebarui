@@ -1,104 +1,96 @@
 "use client";
 
 import { useRef } from "react";
-import { BackTop, Box, Heading, Stack, Text } from "rebar-ui";
+import { BackTop, Box, Card, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
+import { TASKS } from "@/fixtures/tideline";
+
+const CODE = `<div style={{ position: "relative", transform: "translateZ(0)" }}>
+  <div ref={scrollRef} style={{ height: 240, overflowY: "auto" }}>...</div>
+  <BackTop visibilityThreshold={80} target={() => scrollRef.current ?? window} />
+</div>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<BackTop visibilityThreshold={300} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["BackTop"] ?? [] },
   {
     type: "doc-section",
-    heading: "target is a real, accepted function-prop exception",
+    heading: "target",
     body: [
       {
         kind: "text",
-        text: '`target?: () => HTMLElement | Window` (default `() => window`) is a deliberate exception to this project\'s usual "avoid function props" guidance — there\'s no serializable way to reference "the window" or an arbitrary scroll container otherwise, the same call `Tour`\'s own `target` field makes.',
+        text: '`target?: () => HTMLElement | Window` (default `() => window`) is a deliberate function-prop exception: there is no serializable way to name the window or a scroll container. It chooses what is tracked and scrolled; the button itself is `position: fixed`, so a demo box needs a `transform` to contain it.',
       },
     ],
   },
   {
     type: "doc-section",
-    heading: "Respects prefers-reduced-motion",
-    body: [
-      {
-        kind: "text",
-        text: 'Scrolling back to the top uses real smooth scroll (`scrollTo({ behavior: "smooth" })`) unless the visitor has `prefers-reduced-motion` set, in which case it jumps instantly instead — checked directly via `matchMedia`, not assumed.',
-      },
-    ],
+    heading: "Reduced motion",
+    body: [{ kind: "text", text: 'Scrolling back uses smooth scroll unless `prefers-reduced-motion` is set, in which case it jumps. Checked via `matchMedia`.' }],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="back-top"` on the button.',
-      },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-component="back-top"` on the button.' }],
   },
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      {
-        kind: "text",
-        text: "AntD's own `BackTop` is a close direct equivalent — `visibilityThreshold`/`target`/`onClick` map directly across.",
-      },
-    ],
+    body: [{ kind: "text", text: "AntD's `BackTop` is a close direct equivalent: `visibilityThreshold`, `target` and `onClick` map directly." }],
   },
 ];
 
+const ROWS = [...TASKS, ...TASKS, ...TASKS];
+
 export default function BackTopPage() {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const phoneRef = useRef<HTMLDivElement>(null);
 
   return (
     <Stack gap="lg">
       <Heading level={1}>BackTop</Heading>
-      <Text color="secondary">
-        A floating button that appears after scrolling down, jumping back to the top.
-      </Text>
+      <Text color="secondary">A floating button that appears after scrolling down and jumps back to the top.</Text>
 
-      <Box
-        ref={scrollRef}
-        style={{
-          height: 200,
-          overflowY: "auto",
-          border: "1px solid var(--rebar-color-border, #e0e0e0)",
-          borderRadius: 4,
-          padding: "var(--rebar-space-md)",
-          position: "relative",
-        }}
+      <DemoStage
+        title="Task list"
+        caption="Scroll the list: the button appears after 80px"
+        code={CODE}
+        widths={false}
       >
-        <Stack gap="sm">
-          {Array.from({ length: 20 }, (_, i) => (
-            <Text key={i} size="sm">
-              Scroll content, row {i + 1}
-            </Text>
-          ))}
-        </Stack>
-        <BackTop visibilityThreshold={80} target={() => scrollRef.current ?? window} />
-      </Box>
-      <Text size="xs" color="secondary">
-        Scroll the box above — the button appears once you&apos;ve scrolled past ~80px.{" "}
-        <strong>It appears fixed to the real browser viewport&apos;s bottom-right corner, not
-        anchored inside this small demo box</strong> — `target` only controls which element&apos;s
-        scroll position is tracked and scrolled back to, not where the button itself is drawn
-        (it&apos;s always `position: fixed` to the page). In a real full-page use, that&apos;s
-        exactly the point; in this cropped demo it can read as the button appearing somewhere
-        unexpected rather than inside the box you just scrolled.
-      </Text>
+        <Box style={{ position: "relative", transform: "translateZ(0)", overflow: "hidden", borderRadius: 8, border: "1px solid var(--rebar-color-border)", background: "var(--rebar-color-bg-primary)" }}>
+          <Box ref={boxRef} style={{ height: 240, overflowY: "auto", padding: "var(--rebar-space-md)" }}>
+            <Stack gap="sm">
+              {ROWS.map((t, i) => (
+                <Stack key={`${t.id}-${i}`} direction="row" gap="sm" align="center" justify="between">
+                  <Text size="sm">{t.title}</Text>
+                  <Tag>{t.tag}</Tag>
+                </Stack>
+              ))}
+            </Stack>
+          </Box>
+          <BackTop visibilityThreshold={80} target={() => boxRef.current ?? window} />
+        </Box>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Inbox on a phone" caption="Scroll the screen: the button sits inside the bezel" widths={false}>
+        <TidelinePhone title="Inbox" tabs={0} height={420} width={260} padding={0}>
+          <Box ref={phoneRef} style={{ height: "100%", overflowY: "auto", padding: 14 }}>
+            <Stack gap="sm">
+              {ROWS.map((t, i) => (
+                <Card key={`${t.id}-${i}`}>
+                  <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>{t.title}</Text>
+                  <Text size="xs" color="secondary">{t.tag}, {t.due ?? "no due date"}</Text>
+                </Card>
+              ))}
+            </Stack>
+          </Box>
+          <BackTop visibilityThreshold={80} target={() => phoneRef.current ?? window} style={{ bottom: 80 }} />
+        </TidelinePhone>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

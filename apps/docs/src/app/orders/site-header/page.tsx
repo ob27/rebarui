@@ -1,185 +1,122 @@
-import { Heading, Stack, Text } from "rebar-ui";
+import { Box, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { CONSTRUCT_SEARCH_INDEX } from "@/data/constructSearchIndex";
+import { project } from "@/fixtures/tideline";
+
+const CODE = `{
+  type: "site-header",
+  logo: { label: "Tideline", href: "/" },
+  items: [{ label: "Projects", href: "/projects" }, { label: "Calendar", href: "/calendar" }],
+  trailing: { kind: "avatar", name: "Maya Chen", href: "/me", placeholder: true },
+  themeToggle: true,
+}`;
 
 const FIELDS_BLOCKS: Construct[] = [
   {
     type: "props-table",
     heading: "Fields",
     rows: [
-      {
-        name: "logo",
-        type: "{ label: string, href?: string, iconSrc?: string, iconPath?: string, iconViewBox?: string }",
-        required: true,
-        defaultValue: null,
-        description: "iconPath (an inline SVG path) reacts to a light/dark toggle; iconSrc (a plain <img>) can't. iconPath wins if both are set.",
-      },
-      {
-        name: "items",
-        type: "NavBarItem[]",
-        required: true,
-        defaultValue: null,
-        description: "Each item is { label, href, megaMenu? } — set megaMenu to turn an item into a dropdown trigger instead of a plain link.",
-      },
-      {
-        name: "ariaLabel",
-        type: "string",
-        required: false,
-        defaultValue: '"Main"',
-        description: null,
-      },
-      {
-        name: "trailing",
-        type: '{ kind: "text", text } | { kind: "login", label?, href? } | { kind: "avatar", name, avatarSrc?, href?, placeholder? }',
-        required: false,
-        defaultValue: null,
-        description: "Right-aligned content pushed to the header's far edge. Omit for a header that just ends after the nav.",
-      },
-      {
-        name: "themeToggle",
-        type: "boolean",
-        required: false,
-        defaultValue: "false",
-        description: 'Adds a "Theme" popover alongside trailing (not instead of it) — independent of it entirely.',
-      },
-      {
-        name: "constructSearch",
-        type: "{ source: string, placeholder?: string }",
-        required: false,
-        defaultValue: null,
-        description: "source is a key into BlockRenderer's data prop, resolving to a ConstructSearchResult[] — generated data, not literal inline content. Unresolved renders no search box.",
-      },
+      { name: "logo", type: "{ label: string, href?: string, iconSrc?: string, iconPath?: string, iconViewBox?: string }", required: true, defaultValue: null, description: "iconPath (an inline SVG path) reacts to a light/dark toggle; iconSrc (a plain <img>) can't. iconPath wins if both are set." },
+      { name: "items", type: "NavBarItem[]", required: true, defaultValue: null, description: "Each item is { label, href, megaMenu? }. Set megaMenu to turn an item into a dropdown trigger." },
+      { name: "ariaLabel", type: "string", required: false, defaultValue: '"Main"', description: null },
+      { name: "trailing", type: '{ kind: "text", text } | { kind: "login", label?, href? } | { kind: "avatar", name, avatarSrc?, href?, placeholder? }', required: false, defaultValue: null, description: "Right-aligned content at the header's far edge." },
+      { name: "themeToggle", type: "boolean", required: false, defaultValue: "false", description: 'Adds a "Theme" popover alongside trailing.' },
+      { name: "constructSearch", type: "{ source: string, placeholder?: string }", required: false, defaultValue: null, description: "source is a key into the renderer's data prop, resolving to a ConstructSearchResult[]. Unresolved renders no search box." },
     ],
-  },
-];
-
-const BASIC_EXAMPLE: Construct[] = [
-  {
-    type: "site-header",
-    logo: { label: "Acme", href: "#" },
-    items: [
-      { label: "Docs", href: "#" },
-      { label: "Pricing", href: "#" },
-    ],
-    trailing: { kind: "avatar", name: "Jane Doe", href: "#", placeholder: true },
-  },
-];
-
-const MEGA_MENU_EXAMPLE: Construct[] = [
-  {
-    type: "site-header",
-    logo: {
-      label: "Acme",
-      href: "#",
-      iconPath: "M12 2 2 7l10 5 10-5-10-5Zm0 8-10 5 10 5 10-5-10-5Z",
-    },
-    items: [
-      {
-        label: "Products",
-        href: "#",
-        megaMenu: {
-          columns: [
-            {
-              heading: "Platform",
-              items: [
-                { label: "Dashboard", description: "Live metrics", href: "#" },
-                { label: "Automations", description: "Rules and triggers", href: "#" },
-              ],
-            },
-          ],
-          footer: { label: "See all products", href: "#" },
-        },
-      },
-      { label: "Pricing", href: "#" },
-    ],
-    trailing: { kind: "text", text: "v2.4.0" },
-  },
-];
-
-const LOGIN_EXAMPLE: Construct[] = [
-  {
-    type: "site-header",
-    logo: { label: "Acme", href: "#" },
-    items: [
-      { label: "Docs", href: "#" },
-      { label: "Blog", href: "#" },
-    ],
-    trailing: { kind: "login", label: "Sign in", href: "#" },
-  },
-];
-
-const THEME_AND_SEARCH_EXAMPLE: Construct[] = [
-  {
-    type: "site-header",
-    logo: { label: "Acme", href: "#" },
-    items: [
-      { label: "Docs", href: "#" },
-      { label: "Pricing", href: "#" },
-    ],
-    themeToggle: true,
-    constructSearch: { source: "demoSearchIndex", placeholder: "Search..." },
-    trailing: { kind: "avatar", name: "Jane Doe", href: "#", placeholder: true },
-  },
-];
-
-const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Overview",
-    body: [{ kind: "text", text: "A real site nav bar: logo (optionally linked, optionally with an icon image or an inline theme-reactive SVG path), a nav-bar capped at half the header's own width per the 'Nav overflow' heuristic (the logo and trailing content always keep guaranteed room), an optional theme toggle, an optional live construct-search box, and optional trailing content pushed to the far edge — plain text (a version string), a login action, or a signed-in user's avatar. This project's own site header (above) is exactly this block, not hand-authored — see it at real scale there, with every one of these fields turned on at once." }],
   },
   {
     type: "doc-section",
     heading: "Shape",
-    body: [{ kind: "code", code: `{ type: "site-header", logo: { label: string, href?: string, iconSrc?: string, iconPath?: string, iconViewBox?: string }, items: NavBarItem[], ariaLabel?: string, trailing?: { kind: "text", text: string } | { kind: "login", label?: string, href?: string } | { kind: "avatar", name: string, avatarSrc?: string, href?: string, placeholder?: boolean }, themeToggle?: boolean, constructSearch?: { source: string, placeholder?: string } }` }],
+    body: [{ kind: "code", code: `{ type: "site-header", logo: {...}, items: NavBarItem[], ariaLabel?: string, trailing?: {...}, themeToggle?: boolean, constructSearch?: {...} }` }],
   },
 ];
 
-const BASIC_HEADING_BLOCKS: Construct[] = [
-  { type: "doc-section", heading: "Example: basic", body: [{ kind: "text", text: "logo + items + an avatar trailing." }] },
-];
-
-const MEGA_MENU_HEADING_BLOCKS: Construct[] = [
+const MAIN: Construct[] = [
   {
-    type: "doc-section",
-    heading: "Example: icon logo, mega-menu item, text trailing",
-    body: [{ kind: "text", text: "logo.iconPath (inline SVG, reacts to light/dark), a nav item with megaMenu turning it into a dropdown, and a plain text trailing instead of an avatar." }],
-  },
-];
-
-const LOGIN_HEADING_BLOCKS: Construct[] = [
-  { type: "doc-section", heading: "Example: login trailing", body: [{ kind: "text", text: 'trailing.kind = "login" for a signed-out header.' }] },
-];
-
-const THEME_AND_SEARCH_HEADING_BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Example: themeToggle + constructSearch",
-    body: [
+    type: "site-header",
+    logo: { label: "Tideline", href: "#", iconPath: "M12 2 2 7l10 5 10-5-10-5Zm0 8-10 5 10 5 10-5-10-5Z" },
+    items: [
       {
-        kind: "text",
-        text: "themeToggle and constructSearch are both independent, opt-in additions — combinable with any trailing kind, as this project's own header does. constructSearch.source resolves against whatever NextBlockRenderer's own data prop supplies (here, this exact page's own construct index) rather than literal inline data.",
+        label: "Projects",
+        href: "#",
+        megaMenu: {
+          columns: [
+            {
+              heading: "Open",
+              items: [
+                { label: "Harbour rebrand", description: "Brand, due 24 Oct", href: "#" },
+                { label: "Tideline mobile", description: "Product, due 7 Nov", href: "#" },
+              ],
+            },
+          ],
+          footer: { label: "See all projects", href: "#" },
+        },
       },
+      { label: "Calendar", href: "#" },
+      { label: "Files", href: "#" },
     ],
+    trailing: { kind: "avatar", name: "Maya Chen", href: "#", placeholder: true },
   },
 ];
+
+const LOGIN: Construct[] = [
+  { type: "site-header", logo: { label: "Tideline", href: "#" }, items: [{ label: "Docs", href: "#" }], trailing: { kind: "login", label: "Sign in", href: "#" } },
+];
+const TEXT: Construct[] = [
+  { type: "site-header", logo: { label: "Tideline", href: "#" }, items: [{ label: "Docs", href: "#" }], trailing: { kind: "text", text: "v0.9.0" } },
+];
+const NO_TRAIL: Construct[] = [{ type: "site-header", logo: { label: "Tideline", href: "#" }, items: [{ label: "Docs", href: "#" }, { label: "Blog", href: "#" }] }];
+
+const FULL: Construct[] = [
+  {
+    type: "site-header",
+    logo: { label: "Tideline", href: "#" },
+    items: [{ label: "Projects", href: "#" }, { label: "Calendar", href: "#" }],
+    themeToggle: true,
+    constructSearch: { source: "demoSearchIndex", placeholder: "Search..." },
+    trailing: { kind: "avatar", name: "Maya Chen", href: "#", placeholder: true },
+  },
+];
+
+function Surface({ children }: { children: React.ReactNode }) {
+  return <Box style={{ background: "var(--rebar-color-bg-primary)", border: "1px solid var(--rebar-color-border)", borderRadius: 8, padding: "0 var(--rebar-space-sm)" }}>{children}</Box>;
+}
 
 export default function SiteHeaderPage() {
+  const harbour = project("harbour");
   return (
     <Stack gap="lg">
       <Heading level={1}>Site Header</Heading>
-      <Text color="secondary">{"A real site nav bar: logo, a nav-bar capped at half the header's own width, an optional theme toggle, an optional live construct-search box, and optional trailing content pushed to the far edge — plain text, a login action, or a signed-in user's avatar. This project's own site header (above) is exactly this block, not hand-authored."}</Text>
-      <NextBlockRenderer blocks={BLOCKS} />
+      <Text color="secondary">A site nav bar: logo, links, an optional theme toggle and search, and trailing content.</Text>
+
+      <DemoStage
+        title="App header"
+        caption="Logo, a mega-menu item and a signed-in avatar"
+        code={CODE}
+      >
+        <Stack gap="md">
+          <Surface><NextBlockRenderer blocks={MAIN} /></Surface>
+          <Text size="xs" color="secondary">Signed out</Text>
+          <Surface><NextBlockRenderer blocks={LOGIN} /></Surface>
+          <Text size="xs" color="secondary">Text trailing</Text>
+          <Surface><NextBlockRenderer blocks={TEXT} /></Surface>
+          <Text size="xs" color="secondary">No trailing content</Text>
+          <Surface><NextBlockRenderer blocks={NO_TRAIL} /></Surface>
+        </Stack>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Project page" caption="Theme toggle and live search turned on" widths={false}>
+        <Stack gap="md">
+          <Surface><NextBlockRenderer blocks={FULL} data={{ demoSearchIndex: CONSTRUCT_SEARCH_INDEX }} /></Surface>
+          <Heading level={3}>{harbour.name}</Heading>
+          <Text color="secondary">{harbour.summary}</Text>
+        </Stack>
+      </DemoStage>
+
       <NextBlockRenderer blocks={FIELDS_BLOCKS} />
-      <NextBlockRenderer blocks={BASIC_HEADING_BLOCKS} />
-      <NextBlockRenderer blocks={BASIC_EXAMPLE} />
-      <NextBlockRenderer blocks={MEGA_MENU_HEADING_BLOCKS} />
-      <NextBlockRenderer blocks={MEGA_MENU_EXAMPLE} />
-      <NextBlockRenderer blocks={LOGIN_HEADING_BLOCKS} />
-      <NextBlockRenderer blocks={LOGIN_EXAMPLE} />
-      <NextBlockRenderer blocks={THEME_AND_SEARCH_HEADING_BLOCKS} />
-      <NextBlockRenderer blocks={THEME_AND_SEARCH_EXAMPLE} data={{ demoSearchIndex: CONSTRUCT_SEARCH_INDEX }} />
     </Stack>
   );
 }

@@ -1,80 +1,93 @@
-import { Affix, Box, Button, Heading, Stack, Text } from "rebar-ui";
+import { Affix, Box, Button, Card, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { project, PROJECTS, STATUS_TONE, TASKS } from "@/fixtures/tideline";
+
+const CODE = `<Affix offsetTop={96}>
+  <Button size="sm">Add task</Button>
+</Affix>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Affix offsetTop={16}>\n  <Button>Pinned once scrolled past</Button>\n</Affix>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Affix"] ?? [] },
   {
     type: "doc-section",
-    heading: "No layout jump when pinning",
+    heading: "Behaviour",
     body: [
       {
         kind: "text",
-        text: "A same-sized placeholder renders in the document flow the moment content becomes pinned, so nothing else on the page visually jumps — a well-known implementation detail of any real affix/sticky behavior. Measurement is rAF-throttled (at most once per animation frame regardless of scroll-event volume), matching `SectionNav`'s own existing scroll-measurement convention.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Watches the real page scroll",
-    body: [
-      {
-        kind: "text",
-        text: "This component listens to the real `window` scroll (not an arbitrary scrollable container's own), so the demo below is placed directly in this page's own normal flow, with spacer content around it — scroll this actual page to see it pin and un-pin, not a bounded demo box.",
+        text: "A same-sized placeholder keeps the layout from jumping when the content pins. Measurement is rAF-throttled. It listens to the real `window` scroll, not a scrollable container, so scroll this page to see it pin and un-pin.",
       },
     ],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="affix"` on the root; the pinned content and its placeholder each carry their own `data-rebar-part`.',
-      },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-component="affix"` on the root; the pinned content and its placeholder each carry their own `data-rebar-part`.' }],
   },
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      {
-        kind: "text",
-        text: "AntD's own `Affix` is a close direct equivalent — `offsetTop`/`onAffixChange` map directly across (`onChange` in AntD).",
-      },
-    ],
+    body: [{ kind: "text", text: "AntD's `Affix` is a close direct equivalent: `offsetTop` maps across, `onAffixChange` is `onChange`." }],
   },
 ];
 
 export default function AffixPage() {
+  const harbour = project("harbour");
   return (
     <Stack gap="lg">
       <Heading level={1}>Affix</Heading>
-      <Text color="secondary">
-        Pins its children in place once the page scrolls past them, un-pinning on the way back.
-      </Text>
+      <Text color="secondary">Pins its children in place once the page scrolls past them, and releases them on the way back.</Text>
 
-      <Text size="sm" color="secondary">
-        Scroll this page down — the button below pins to the top of the viewport, then un-pins
-        when you scroll back up past it.
-      </Text>
+      <DemoStage
+        title="Task list"
+        caption="Scroll the page: the Add task bar pins under the site header"
+        code={CODE}
+        widths={false}
+        states={[
+          { label: "Pinned look", node: <Card style={{ boxShadow: "var(--rebar-shadow-float)" }}><Stack direction="row" gap="sm" align="center"><Button size="sm">Add task</Button><Text size="sm" color="secondary">Pinned</Text></Stack></Card> },
+        ]}
+      >
+        <Stack gap="sm">
+          <Affix offsetTop={96}>
+            <Card>
+              <Stack direction="row" gap="sm" align="center">
+                <Button size="sm">Add task</Button>
+                <Text size="sm" color="secondary">{harbour.name}, {TASKS.length} tasks</Text>
+              </Stack>
+            </Card>
+          </Affix>
+          {[...TASKS, ...TASKS].map((t, i) => (
+            <Card key={`${t.id}-${i}`}>
+              <Stack direction="row" gap="sm" align="center" justify="between">
+                <Text>{t.title}</Text>
+                <Tag>{t.tag}</Tag>
+              </Stack>
+            </Card>
+          ))}
+        </Stack>
+      </DemoStage>
 
-      <Affix offsetTop={8}>
-        <Button size="sm">Pinned once scrolled past</Button>
-      </Affix>
-
-      <Box style={{ height: 600 }} aria-hidden="true" />
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Projects overview" caption="A pinned status strip above a long list" widths={false}>
+        <Stack gap="sm">
+          <Affix offsetTop={96}>
+            <Box style={{ background: "var(--rebar-color-bg-inverse)", color: "var(--rebar-color-text-inverse)", borderRadius: 8, padding: "var(--rebar-space-sm) var(--rebar-space-md)" }}>
+              <Text size="sm" style={{ color: "inherit" }}>5 projects, 1 late, launch on 24 Oct</Text>
+            </Box>
+          </Affix>
+          {PROJECTS.map((p) => (
+            <Card key={p.id} title={p.name}>
+              <Stack direction="row" gap="sm" align="center" justify="between">
+                <Text size="sm" color="secondary">{p.summary}</Text>
+                <Tag tone={STATUS_TONE[p.status]}>{p.status}</Tag>
+              </Stack>
+            </Card>
+          ))}
+          <Box style={{ height: 160 }} aria-hidden="true" />
+        </Stack>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

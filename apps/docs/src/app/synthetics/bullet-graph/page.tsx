@@ -1,46 +1,40 @@
-import { Box, BulletGraph, Heading, Stack, Text } from "rebar-ui";
+import { BulletGraph, Card, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
+const CODE = `<BulletGraph
+  title="October targets"
+  measures={[
+    { label: "Tasks done", value: 33, target: 30, ranges: [20, 30, 40] },
+    { label: "Hours logged", value: 109, target: 120, ranges: [80, 120, 160] },
+  ]}
+/>`;
+
+const INK = "var(--rebar-color-primary)";
+const MAIN = [
+  { label: "Tasks done", value: 33, target: 30, ranges: [20, 30, 40] as [number, number, number], color: INK },
+  { label: "Hours logged", value: 109, target: 120, ranges: [80, 120, 160] as [number, number, number], color: INK },
+  { label: "Harbour (%)", value: 84, target: 80, ranges: [50, 80, 100] as [number, number, number], color: INK },
+];
+
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<BulletGraph title="Q3 KPIs" measures={[{ label: "Revenue", value: 275, target: 250, ranges: [150, 225, 300] }, { label: "Profit margin", value: 40, target: 60, ranges: [30, 60, 90] }]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["BulletGraph"] ?? [] },
   {
     type: "doc-section",
-    heading: "What it's for",
-    body: [
-      {
-        kind: "text",
-        text: "Stephen Few's bullet graph — a single measure bar against a target tick, judged in context by three qualitative range bands (e.g. poor/satisfactory/good) instead of a full gauge/dial's worth of chrome. Several measures stack as rows in one chart, each independently scaled to its own `ranges`.",
-      },
-    ],
+    heading: "Reading it",
+    body: [{ kind: "text", text: "A bar for the value, a tick for the target, and three shaded bands for poor, satisfactory and good. Each measure is scaled to its own `ranges`." }],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      { kind: "text", text: '`data-rebar-component="bullet-graph"` on the root `<figure>`; `data-rebar-part="measure"` per row, `"measure-bar"` and `"target"` within it.' },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-component="bullet-graph"` on the root `<figure>`; `data-rebar-part="measure"` per row, `"measure-bar"` and `"target"` within it.' }],
   },
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      {
-        kind: "text",
-        text: "Not codemod-covered — AntD ships no bullet-graph component of its own; a migration typically composes a thin `Progress` bar with a custom target-tick overlay, or adopts a dedicated dataviz library.",
-      },
-    ],
+    body: [{ kind: "text", text: "Not codemod-covered. Compose a thin `Progress` bar with a target-tick overlay, or adopt a dataviz library." }],
   },
 ];
 
@@ -48,20 +42,26 @@ export default function BulletGraphPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>BulletGraph</Heading>
-      <Text color="secondary">
-        A single measure bar against a target tick, judged in context by three qualitative range
-        bands.
-      </Text>
+      <Text color="secondary">A measure bar against a target tick, read against three shaded bands.</Text>
 
-      <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-lg)" }}>
-        <BulletGraph
-          title="Q3 KPIs"
-          measures={[
-            { label: "Revenue", value: 275, target: 250, ranges: [150, 225, 300] },
-            { label: "Profit margin", value: 40, target: 60, ranges: [30, 60, 90] },
-          ]}
-        />
-      </Box>
+      <DemoStage
+        title="October targets"
+        caption="Tasks, hours and Harbour progress against plan"
+        code={CODE}
+        states={[
+          { label: "Below target", node: <BulletGraph ariaLabel="Interviews" measures={[{ label: "Interviews done", value: 9, target: 12, ranges: [6, 12, 15], color: INK }]} /> },
+          { label: "Over target", node: <BulletGraph ariaLabel="Rota" measures={[{ label: "Rota export runs", value: 14, target: 10, ranges: [5, 10, 12], color: INK }]} /> },
+        ]}
+      >
+        <BulletGraph title="October targets" measures={MAIN} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Studio dashboard" caption="One card of KPIs" widths={false}>
+        <Card title="This month" style={{ maxWidth: 560, margin: "0 auto" }}>
+          <BulletGraph ariaLabel="Month targets" measures={MAIN.slice(0, 2)} />
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
