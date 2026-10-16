@@ -4151,16 +4151,43 @@ body {
   border-color: var(--rebar-color-primary, #0066cc);
 }
 
-/* DatePicker — a compact day/month/year numeric triplet (three NumberInputs), not a popover
-   trigger — see the component's own doc comment for why this replaced the earlier
-   Popover+Calendar composition entirely. */
+/* DatePicker: a pill field that opens a Calendar in a Popover. The field reuses the Select trigger
+   look (.rebar-select-trigger) and adds the leading calendar icon and the value/placeholder text. */
 .rebar-date-picker {
   display: inline-flex;
   align-items: center;
-  gap: var(--rebar-space-xs, 4px);
 }
-.rebar-date-picker-separator {
+.rebar-date-picker-field {
+  min-width: 220px;
+}
+.rebar-date-picker-field > .rebar-date-picker-value {
+  flex: 1 1 auto;
+  text-align: start;
+  white-space: nowrap;
+}
+.rebar-date-picker-value[data-rebar-empty] {
   color: var(--rebar-color-text-secondary, #757575);
+}
+.rebar-date-picker-icon {
+  display: inline-flex;
+  color: var(--rebar-color-text-secondary, #757575);
+}
+.rebar-date-picker-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--rebar-space-xs, 4px);
+}
+/* The calendar inside the popover drops its own frame: the popover is the frame. */
+.rebar-popover-content > .rebar-calendar {
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Calendar range (used by DatePicker range mode): the days between the two ends are tinted. */
+.rebar-calendar-day[data-rebar-in-range] {
+  background: color-mix(in srgb, var(--rebar-color-primary, #0066cc) 14%, transparent);
+  border-radius: 0;
 }
 
 /* Image */

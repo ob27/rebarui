@@ -2036,6 +2036,42 @@ textarea.rebar-input {
   box-shadow: inset 0 0 0 1.5px var(--rebar-color-primary);
   font-weight: var(--rebar-font-weight-bold);
 }
+/* DatePicker: pill field (inherits the Select trigger pill) with the calendar in a raised popover */
+.rebar-date-picker-field {
+  gap: 10px;
+  font-size: var(--rebar-font-size-sm);
+  color: var(--rebar-color-text-primary);
+}
+.rebar-date-picker-field .rebar-date-picker-icon {
+  color: var(--rebar-color-text-secondary);
+}
+.rebar-date-picker-value[data-rebar-empty] {
+  color: var(--rebar-color-text-secondary);
+}
+.rebar-popover-content > .rebar-calendar {
+  background: transparent;
+}
+.rebar-popover-content:has(> .rebar-calendar) {
+  padding: 14px 16px 10px;
+  border-radius: 16px;
+}
+.rebar-popover-content:has(> .rebar-calendar) .rebar-popover-arrow {
+  display: none;
+}
+.rebar-calendar-day[data-rebar-in-range] {
+  background: var(--rebar-color-tint-3);
+  color: var(--rebar-color-text-primary);
+}
+.rebar-calendar-day[data-rebar-range-start],
+.rebar-calendar-day[data-rebar-range-end] {
+  /* the shared [data-rebar-selected] rule already paints the end caps in primary */
+  position: relative;
+}
+.rebar-date-picker-footer {
+  border-top: 1px solid var(--rebar-color-border);
+  margin-top: 6px;
+  padding-top: 6px;
+}
 .rebar-time-picker-panel {
   background: var(--rebar-color-bg-raised);
   border: 1px solid var(--rebar-color-border);
