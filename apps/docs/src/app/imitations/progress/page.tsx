@@ -1,25 +1,44 @@
-import { Heading, Progress, Stack, Text } from "rebar-ui";
+import { Card, Heading, Progress, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { FILES, project } from "@/fixtures/tideline";
+
+const CODE = `<Progress value={harbour.done} aria-label="Harbour rebrand" />
+<Progress value={interviews.done} aria-label="Crew interviews" />`;
+
+const harbour = project("harbour");
+const interviews = project("interviews");
+
+const UPLOADS = [
+  { file: FILES.find((f) => f.id === "mark")!, pct: 100 },
+  { file: FILES.find((f) => f.id === "fascia")!, pct: 62 },
+  { file: FILES.find((f) => f.id === "livery")!, pct: 0 },
+];
+
+function Labelled({ label, value, max = 100, right }: { label: string; value: number; max?: number; right: string }) {
+  return (
+    <Stack gap="xs">
+      <Stack direction="row" justify="between" align="center">
+        <Text as="span" size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
+          {label}
+        </Text>
+        <Text as="span" size="sm" color="secondary">
+          {right}
+        </Text>
+      </Stack>
+      <Progress value={value} max={max} aria-label={label} />
+    </Stack>
+  );
+}
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [{ kind: "code", code: '<Progress value={72} aria-label="Upload progress" />' }],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Progress"] ?? [] },
   {
     type: "doc-section",
-    heading: "A real Radix linear progress bar",
-    body: [
-      {
-        kind: "text",
-        text: '`value`/`max` (defaults to 100) — a plain horizontal bar. Distinct from `ProgressCircle` (the same underlying percentage, drawn as a ring instead of a bar) — reach for whichever shape fits the surrounding layout.',
-      },
-    ],
+    heading: "Accessibility",
+    body: [{ kind: "text", text: 'A real Radix `role="progressbar"` with `aria-valuenow`/`aria-valuemax`. Pass `aria-label`, and show the number as text next to it: the bar alone is not enough.' }],
   },
   {
     type: "doc-section",
@@ -29,9 +48,7 @@ const BLOCKS: Construct[] = [
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      { kind: "text", text: 'AntD\'s `Progress` (with `type="line"`, its default) takes the same `percent` value — a close, low-risk rename.' },
-    ],
+    body: [{ kind: "text", text: 'AntD\'s `Progress` (`type="line"`, its default) takes the same value as `percent`: a close, low-risk rename.' }],
   },
 ];
 
@@ -39,15 +56,41 @@ export default function ProgressPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Progress</Heading>
-      <Text color="secondary">A real Radix linear progress bar.</Text>
+      <Text color="secondary">A linear progress bar.</Text>
 
-      <LivePreview>
-        <Stack gap="md" style={{ maxWidth: 320 }}>
-          <Progress value={25} aria-label="25%" />
-          <Progress value={72} aria-label="72%" />
-          <Progress value={100} aria-label="Complete" />
+      <DemoStage
+        title="Progress"
+        caption="Linear progress"
+        code={CODE}
+        states={[
+          { label: "Empty", node: <Progress value={0} aria-label="Empty" /> },
+          { label: "Half", node: <Progress value={50} aria-label="Half" /> },
+          { label: "Complete", node: <Progress value={100} aria-label="Complete" /> },
+          { label: "Custom max", node: <Labelled label="Tasks" value={9} max={14} right="9 of 14" /> },
+        ]}
+      >
+        <Stack gap="lg" style={{ maxWidth: 480, margin: "0 auto" }}>
+          <Labelled label={harbour.name} value={harbour.done} right={`${harbour.done}% done`} />
+          <Labelled label={interviews.name} value={interviews.done} right={`${interviews.done}%`} />
         </Stack>
-      </LivePreview>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="File upload" caption="One bar per file, a count on top">
+        <Card style={{ maxWidth: 460, margin: "0 auto" }}>
+          <Stack gap="md">
+            <Stack direction="row" justify="between" align="center">
+              <Heading level={3}>Uploading {UPLOADS.length} files</Heading>
+              <Text as="span" size="sm" color="secondary">
+                {UPLOADS.filter((u) => u.pct > 0).length} of {UPLOADS.length}
+              </Text>
+            </Stack>
+            {UPLOADS.map((u) => (
+              <Labelled key={u.file.id} label={u.file.name} value={u.pct} right={u.pct === 0 ? "Waiting" : `${u.pct}%`} />
+            ))}
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

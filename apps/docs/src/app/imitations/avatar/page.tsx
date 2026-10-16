@@ -1,48 +1,45 @@
-import { Avatar, Box, Card, Heading, Stack, Text } from "rebar-ui";
+import { Avatar, AvatarGroup, Badge, Card, Heading, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PEOPLE, avatarOf, avatarsOf } from "@/fixtures/tideline";
 
-// Must match `AVATAR_PLACEHOLDERS.length` in packages/core/src/assets/avatarPlaceholders.ts —
-// not imported directly since that array is deliberately internal (kept out of the public
-// rebar-ui export surface so docgen doesn't pick it up as a component).
+// Must match `AVATAR_PLACEHOLDERS.length` in packages/core/src/assets/avatarPlaceholders.ts (kept internal, so not imported).
 const PORTRAIT_COUNT = 96;
 
-const CODE_AND_PROPS_BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: `<Avatar fallback="AL" />\n<Avatar fallback="Ada Lovelace" src="/photos/ada.jpg" />\n<Avatar fallback="Ada Lovelace" placeholder />\n<Avatar fallback="Ada Lovelace" placeholder={2} />`,
-      },
-    ],
-  },
-  { type: "props-table", heading: "Props", rows: componentProps["Avatar"] ?? [] },
-];
+const CODE = `<Avatar alt="Maya Chen" fallback="MC" placeholder={1} size="lg" />
+<Avatar alt="Jonas Weber" fallback="JW" placeholder={2} />
+<Avatar alt="Priya Nair" fallback="PN" placeholder={3} size="sm" />
+<Avatar fallback="LS" />`;
 
-const CLOSING_BLOCKS: Construct[] = [
+/** basilika gives Avatar the page's secondary background, which is also the stage's, so tint each person's circle. */
+const TINT: Record<string, string> = { maya: "var(--rebar-color-tint-3)", jonas: "var(--rebar-color-tint-1)", priya: "var(--rebar-color-tint-2)", leo: "var(--rebar-color-tint-4)" };
+const tinted = (id: string) => ({ ...avatarOf(id), style: { background: TINT[id] } });
+
+const PRESENCE: Record<string, { label: string; tone: "success" | "error" | "warning" }> = {
+  maya: { label: "Online", tone: "success" },
+  jonas: { label: "In a meeting", tone: "error" },
+  priya: { label: "Away", tone: "warning" },
+  leo: { label: "Online", tone: "success" },
+};
+
+const BLOCKS: Construct[] = [
+  { type: "props-table", heading: "Props", rows: componentProps["Avatar"] ?? [] },
   {
     type: "doc-section",
     heading: "Accessibility",
     body: [
       {
         kind: "text",
-        text: "The fallback text (initials) is always in the DOM as real text, readable by screen readers even before/if the image never loads. Pass a meaningful `alt` when using a real `src`; when only `fallback` or `placeholder` is set, the image is decorative and `alt` is left empty automatically.",
+        text: "The initials are real text in the DOM, read even when no image loads. Pass a meaningful `alt` with a real `src`; with only `fallback` or `placeholder` the image is decorative and `alt` stays empty.",
       },
     ],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="avatar"` on the root; `data-rebar-part="fallback"` on the initials element.',
-      },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-component="avatar"`, `data-rebar-size`; `data-rebar-part="fallback"` on the initials.' }],
   },
   {
     type: "doc-section",
@@ -50,7 +47,7 @@ const CLOSING_BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Not codemod-covered — AntD's `Avatar` takes its fallback content as `children`, while Rebar's is the `fallback` prop, a prop-to-children structural move a codemod won't attempt (see the antd adapter's README). `placeholder` has no AntD equivalent at all — AntD has no built-in illustrated-portrait fallback — so migrating a placeholder-using Avatar means supplying a real `src` (or dropping back to plain initials via `children`), not a mechanical rename.",
+        text: "Not codemod-covered: AntD's `Avatar` takes fallback content as `children`, not a `fallback` prop, and has no illustrated `placeholder`, so a placeholder avatar needs a real `src` or plain initials.",
       },
     ],
   },
@@ -60,115 +57,98 @@ export default function AvatarPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Avatar</Heading>
-      <Text color="secondary">
-        A circular image with a text fallback (Radix underneath). Plain initials by default —
-        Rebar stays low-fidelity until you supply a real <code>src</code>. Set{" "}
-        <code>placeholder</code> to show one of Rebar&apos;s built-in illustrated portraits
-        instead of bare initials while you don&apos;t have a real photo yet.
-      </Text>
+      <Text color="secondary">A person, as initials or a portrait.</Text>
 
-      <LivePreview>
-        <Stack direction="row" gap="lg" style={{ flexWrap: "wrap", alignItems: "flex-end" }}>
-          <Stack gap="xs" style={{ alignItems: "center" }}>
-            <Avatar fallback="AL" />
-            <Text size="xs" color="secondary">
-              default
-            </Text>
-          </Stack>
-          <Stack gap="xs" style={{ alignItems: "center" }}>
-            <Avatar fallback="Ada Lovelace" placeholder />
-            <Text size="xs" color="secondary">
-              placeholder
-            </Text>
-          </Stack>
-          <Stack gap="xs" style={{ alignItems: "center" }}>
-            <Avatar fallback="Grace Hopper" placeholder />
-            <Text size="xs" color="secondary">
-              placeholder
-            </Text>
-          </Stack>
-          <Stack gap="xs" style={{ alignItems: "center" }}>
-            <Avatar fallback="Katherine Johnson" placeholder />
-            <Text size="xs" color="secondary">
-              placeholder
-            </Text>
-          </Stack>
-          <Stack gap="xs" style={{ alignItems: "center" }}>
-            <Avatar fallback="Margaret Hamilton" placeholder />
-            <Text size="xs" color="secondary">
-              placeholder
-            </Text>
-          </Stack>
-        </Stack>
-      </LivePreview>
-      <Text size="xs" color="secondary">
-        Each name above always gets the same portrait — <code>placeholder</code> picks
-        deterministically from <code>fallback</code>, not randomly, so a given person&apos;s
-        avatar doesn&apos;t change between renders.
-      </Text>
-
-      <Stack gap="sm">
-        <Heading level={2}>The full portrait set</Heading>
-        <Text size="sm" color="secondary">
-          All {PORTRAIT_COUNT} illustrated portraits, shown deliberately across a range of ages and
-          ethnicities so the built-in default doesn&apos;t default to one look. Pass{" "}
-          <code>placeholder={"{"}n{"}"}</code> with a specific index to pick one directly instead of
-          relying on the name hash. Shown as a plain grid, not a <code>Carousel</code> — this is a
-          reference gallery meant to be scanned all at once (the same exception the
-          space-dense-content heuristic itself carves out for a dedicated gallery page — see
-          ref/HEURISTICS.md #49), not a one-at-a-time browsing experience.
-        </Text>
-        <LivePreview>
-          <Stack direction="row" gap="lg" style={{ flexWrap: "wrap" }} aria-label="All illustrated portraits">
-            {Array.from({ length: PORTRAIT_COUNT }, (_, i) => (
-              <Stack key={i} gap="xs" style={{ alignItems: "center" }}>
-                <Avatar fallback={String(i)} placeholder={i} />
-                <Text size="xs" color="secondary">
-                  placeholder={"{"}
-                  {i}
-                  {"}"}
-                </Text>
+      <DemoStage
+        title="Avatar"
+        caption="Portraits, initials, three sizes"
+        code={CODE}
+        states={[
+          {
+            label: "Initials",
+            node: (
+              <Stack direction="row" gap="sm">
+                {PEOPLE.map((p) => (
+                  <Avatar key={p.id} alt={p.name} fallback={p.initials} style={{ background: TINT[p.id] }} />
+                ))}
               </Stack>
-            ))}
-          </Stack>
-        </LivePreview>
-      </Stack>
-
-      <NextBlockRenderer blocks={CODE_AND_PROPS_BLOCKS} />
-
-      <Stack gap="sm">
-        <Heading level={2}>Composition: a profile card</Heading>
-        <Text size="sm" color="secondary">
-          Avatar composes with <code>Card</code> like anything else in Rebar — no special "media"
-          component needed. This also demonstrates the other half of the placeholder art set: the
-          same style, at wider aspect ratios, for whatever a card needs a real image for later.
-        </Text>
-        <LivePreview>
-          <Card style={{ maxWidth: 360, margin: "0 auto" }}>
-            <Stack gap="md">
+            ),
+          },
+          {
+            label: "Sizes",
+            node: (
               <Stack direction="row" gap="sm" align="center">
-                <Avatar fallback="Grace Hopper" placeholder />
-                <Stack gap="xs">
-                  <Text style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
-                    Grace Hopper
-                  </Text>
-                  <Text size="xs" color="secondary">
-                    Rear Admiral, USN
+                <Avatar {...tinted("maya")} size="sm" />
+                <Avatar {...tinted("maya")} />
+                <Avatar {...tinted("maya")} size="lg" />
+              </Stack>
+            ),
+          },
+          { label: "Group", node: <AvatarGroup avatars={avatarsOf(PEOPLE.map((p) => p.id))} /> },
+          { label: "Overflow", node: <AvatarGroup max={3} avatars={avatarsOf([...PEOPLE.map((p) => p.id), "maya", "jonas"])} /> },
+          {
+            label: "Presence",
+            node: (
+              <div>
+                <Badge dot tone="success">
+                  <Avatar {...tinted("maya")} />
+                </Badge>
+              </div>
+            ),
+          },
+          { label: "Fallback", node: <Avatar fallback="?" alt="Unknown" style={{ background: "var(--rebar-color-tint-2)" }} /> },
+        ]}
+      >
+        <Stack direction="row" gap="lg" align="center" justify="center" style={{ flexWrap: "wrap" }}>
+          {PEOPLE.map((p) => (
+            <Stack key={p.id} gap="xs" align="center">
+              <Avatar {...tinted(p.id)} size="lg" />
+              <Text size="xs" color="secondary">
+                {p.name}
+              </Text>
+            </Stack>
+          ))}
+        </Stack>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Crew list" caption="Portrait, name, role and presence">
+        <Card style={{ maxWidth: 480, margin: "0 auto" }}>
+          <Stack gap="md">
+            {PEOPLE.map((p, i) => {
+              const presence = PRESENCE[p.id] ?? PRESENCE.maya!;
+              return (
+                <Stack key={p.id} direction="row" gap="sm" align="center" style={{ paddingTop: i ? 16 : 0, borderTop: i ? "1px solid var(--rebar-color-border)" : undefined }}>
+                  <Badge dot tone={presence.tone}>
+                    <Avatar {...tinted(p.id)} />
+                  </Badge>
+                  <Stack gap="xs" style={{ flex: 1 }}>
+                    <Text as="span" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
+                      {p.name}
+                    </Text>
+                    <Text as="span" size="sm" color="secondary">
+                      {p.role}
+                    </Text>
+                  </Stack>
+                  <Text as="span" size="sm" color="secondary">
+                    {presence.label}
                   </Text>
                 </Stack>
-              </Stack>
-              <Box style={{ borderRadius: 4, overflow: "hidden" }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/placeholders/4-3-ratio-2.jpg"
-                  alt=""
-                  style={{ width: "100%", height: "auto", display: "block" }}
-                />
-              </Box>
-            </Stack>
-          </Card>
-        </LivePreview>
-      </Stack>
+              );
+            })}
+          </Stack>
+        </Card>
+      </DemoStage>
+
+      <DemoStage title="All portraits" caption={`${PORTRAIT_COUNT} built-in portraits; placeholder={n} picks one, placeholder picks by name`} widths={false}>
+        <Stack direction="row" gap="sm" style={{ flexWrap: "wrap", justifyContent: "center" }} aria-label="All illustrated portraits">
+          {Array.from({ length: PORTRAIT_COUNT }, (_, i) => (
+            <Avatar key={i} fallback={String(i)} alt={`Portrait ${i}`} placeholder={i} />
+          ))}
+        </Stack>
+      </DemoStage>
+
+      <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );
 }

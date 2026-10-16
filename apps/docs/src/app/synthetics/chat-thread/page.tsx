@@ -106,7 +106,7 @@ const BLOCKS: Construct[] = [
   },
 ];
 
-function Thread({ messages, height = 180, ...rest }: { messages: ChatMessage[]; height?: number; align?: "sides" | "start"; emptyMessage?: string; onRetry?: (m: ChatMessage) => void }) {
+function Thread({ messages, height = 220, ...rest }: { messages: ChatMessage[]; height?: number; align?: "sides" | "start"; emptyMessage?: string; onRetry?: (m: ChatMessage) => void }) {
   return (
     <div style={{ height }}>
       <ChatThread messages={messages} {...rest} />

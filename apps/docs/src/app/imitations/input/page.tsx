@@ -1,68 +1,122 @@
-"use client";
-
-import { useState } from "react";
-import { Heading, Input, Stack, Text } from "rebar-ui";
+import type { ReactNode } from "react";
+import { Button, Card, Heading, Input, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { person, project } from "@/fixtures/tideline";
+
+const CODE = `<label>
+  Project name
+  <Input defaultValue="Harbour rebrand" />
+</label>
+<Input type="search" placeholder="Search projects" aria-label="Search projects" />
+<Input mask="99999 999999" placeholder="07700 900123" aria-label="Phone" />`;
+
+const harbour = project("harbour");
+const signage = project("signage");
+const leo = person("leo");
+const email = (name: string) => `${name.toLowerCase().replace(" ", ".")}@tideline.studio`;
+
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <label style={{ display: "grid", gap: 6 }}>
+      <Text as="span" size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
+        {label}
+      </Text>
+      {children}
+    </label>
+  );
+}
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [{ kind: "code", code: '<Input mask="(999) 999-9999" placeholder="(555) 123-4567" />' }],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Input"] ?? [] },
   {
     type: "doc-section",
-    heading: "A real formatting mask, not just a validation pattern",
+    heading: "Accessibility",
     body: [
       {
         kind: "text",
-        text: '`mask` applies as the user types — `9` accepts a digit, `a` a letter, `*` any character, every other character in the mask is a literal auto-inserted at the right position (`"(999) 999-9999"`, `"aaa-9999"`). This is a real, common gap (formatted phone/card-number fields) closed as an `Input` prop rather than a new component. It shapes input, not validates it — pair with `pattern`/`required` for real constraint enforcement (ref/HEURISTICS.md #26: constraints are shown, not just silently enforced).',
+        text: "A plain `<input>`: wrap it in a `<label>` or pass `aria-label`. `mask` shapes what is typed (`9` digit, `a` letter, `*` any, other characters are literals); it does not validate, so pair it with `pattern` or `required` and say the constraint in words.",
       },
     ],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [{ kind: "text", text: 'None — a plain `<input>` with this library\'s own CSS class, carrying every native input attribute directly.' }],
+    body: [{ kind: "text", text: "`data-rebar-size` on the element; otherwise a native `<input>` with every native attribute passed through." }],
   },
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      {
-        kind: "text",
-        text: "Not codemod-covered — AntD's own `Input` has no built-in mask feature; migrating a masked field means reaching for a dedicated mask library alongside AntD's `Input`.",
-      },
-    ],
+    body: [{ kind: "text", text: "Not codemod-covered: AntD's `Input` has no mask. A masked field needs a mask library alongside AntD's `Input`." }],
   },
 ];
 
 export default function InputPage() {
-  const [phone, setPhone] = useState("");
-
   return (
     <Stack gap="lg">
       <Heading level={1}>Input</Heading>
-      <Text color="secondary">
-        A plain text input with one real extra: an optional typing-time formatting mask.
-      </Text>
+      <Text color="secondary">A text field.</Text>
 
-      <LivePreview>
-        <Stack gap="md" style={{ maxWidth: 320 }}>
-          <Input placeholder="Plain input" />
-          <Input
-            mask="(999) 999-9999"
-            placeholder="(555) 123-4567"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            aria-label="Phone number"
-          />
+      <DemoStage
+        title="Text field"
+        caption="Label, search, mask"
+        code={CODE}
+        states={[
+          { label: "Empty", node: <Input placeholder="Name" aria-label="Name" /> },
+          {
+            label: "Error",
+            node: (
+              <Stack gap="xs">
+                <Input defaultValue="32 Oct" aria-label="Due date" aria-invalid="true" style={{ borderColor: "var(--rebar-color-danger)" }} />
+                <Text size="xs" style={{ color: "var(--rebar-color-danger)" }}>
+                  Pick a date in October.
+                </Text>
+              </Stack>
+            ),
+          },
+          { label: "Disabled", node: <Input disabled defaultValue={harbour.name} aria-label="Project" /> },
+          { label: "Long text", node: <Input defaultValue="Crew interviews: synthesis notes for the autumn research round" aria-label="Title" /> },
+          {
+            label: "Sizes",
+            node: (
+              <Stack gap="xs">
+                <Input size="sm" placeholder="Small" aria-label="Small" />
+                <Input placeholder="Medium" aria-label="Medium" />
+                <Input size="lg" placeholder="Large" aria-label="Large" />
+              </Stack>
+            ),
+          },
+        ]}
+      >
+        <Stack gap="md" style={{ maxWidth: 420, margin: "0 auto" }}>
+          <Field label="Project name">
+            <Input defaultValue={harbour.name} />
+          </Field>
+          <Field label="Search">
+            <Input type="search" placeholder="Search projects" />
+          </Field>
+          <Field label="Phone">
+            <Input mask="99999 999999" placeholder="07700 900123" inputMode="numeric" />
+          </Field>
         </Stack>
-      </LivePreview>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Invite dialog" caption="Two fields and a primary action">
+        <Card style={{ maxWidth: 440, margin: "0 auto" }} actions={[<Button key="cancel" variant="secondary">Cancel</Button>, <Button key="send">Send invite</Button>]}>
+          <Stack gap="md">
+            <Heading level={3}>Invite to Tideline</Heading>
+            <Field label="Email">
+              <Input type="email" defaultValue={email(leo.name)} />
+            </Field>
+            <Field label="Message">
+              <Input defaultValue={`Join us on ${signage.name}.`} />
+            </Field>
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
