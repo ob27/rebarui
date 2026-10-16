@@ -53,9 +53,9 @@ export default function ImageCropperPage() {
         code={CODE}
         widths={false}
         states={[
-          { label: "Wide, 16:9", node: <ImageCropper src={PHOTO} alt="Van livery photo" width={260} height={170} aspectRatio={16 / 9} /> },
-          { label: "Disabled", node: <ImageCropper src={PHOTO} alt="Van livery photo" width={260} height={170} aspectRatio={1} disabled /> },
-          { label: "Custom label", node: <ImageCropper src={PHOTO} alt="Van livery photo" width={260} height={170} cropLabel="Use this crop" /> },
+          { label: "Wide, 16:9", node: <ImageCropper src={PHOTO} alt="Van livery photo" width={150} height={100} aspectRatio={16 / 9} /> },
+          { label: "Disabled", node: <ImageCropper src={PHOTO} alt="Van livery photo" width={150} height={100} aspectRatio={1} disabled /> },
+          { label: "Custom label", node: <ImageCropper src={PHOTO} alt="Van livery photo" width={150} height={100} cropLabel="Use this crop" /> },
         ]}
       >
         <Stack gap="sm" style={{ alignItems: "flex-start" }}>
@@ -73,7 +73,7 @@ export default function ImageCropperPage() {
           style={{ maxWidth: 520, margin: "0 auto" }}
         >
           <Stack gap="sm">
-            <ImageCropper src={PHOTO} alt="Harbour cover photo" aspectRatio={16 / 9} onCrop={setCover} />
+            <ImageCropper src={PHOTO} alt="Harbour cover photo" aspectRatio={16 / 9} width={440} height={250} onCrop={setCover} />
             {cover ? <img src={cover} alt="New cover" style={{ width: "100%", maxWidth: 240, borderRadius: "var(--rebar-radius-md)" }} /> : <Text size="sm" color="secondary">Crop to preview the new cover.</Text>}
           </Stack>
         </Card>

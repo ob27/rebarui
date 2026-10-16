@@ -15,9 +15,9 @@ const CODE = `<MindMap
 />`;
 
 const BRANCHES = [
-  { id: "brand", label: "Brand", children: [{ id: "palette", label: "Palette" }, { id: "icons", label: "Icon audit" }] },
-  { id: "site", label: "Site", children: [{ id: "home", label: "Homepage" }, { id: "checklist", label: "Launch checklist" }] },
-  { id: "signage", label: "Signage", children: [{ id: "fascia", label: "Depot fascia" }] },
+  { id: "brand", label: "Brand", children: [{ id: "palette", label: "Palette" }] },
+  { id: "site", label: "Site", children: [{ id: "home", label: "Homepage" }, { id: "checklist", label: "Checklist" }] },
+  { id: "signage", label: "Signage" },
   { id: "crew", label: "Crew comms" },
 ];
 
@@ -59,9 +59,8 @@ export default function MindMapPage() {
         caption="Topic, four branches, a few children"
         code={CODE}
         states={[
-          { label: "Topic only", node: <MindMap topic="Harbour launch" branches={[]} width={300} height={180} /> },
-          { label: "One branch", node: <MindMap topic="Harbour launch" branches={[BRANCHES[0]!]} width={300} height={180} /> },
-          { label: "Long label", node: <MindMap topic="Harbour launch" branches={[{ id: "x", label: "Wayfinding for the three northern depots" }]} width={300} height={180} /> },
+          { label: "Topic only", node: <MindMap topic="Harbour launch" branches={[]} width={190} height={130} /> },
+          { label: "Long label", node: <MindMap topic="Harbour launch" branches={[{ id: "x", label: "Wayfinding for the three northern depots" }]} width={190} height={130} /> },
         ]}
       >
         <MindMap topic="Harbour launch" branches={BRANCHES} />

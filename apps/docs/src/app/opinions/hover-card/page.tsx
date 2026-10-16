@@ -52,7 +52,7 @@ function PersonLink({ id }: { id: string }) {
   return (
     <HoverCard
       trigger={
-        <a href={`#${id}`} style={{ color: "var(--rebar-color-primary)" }}>
+        <a href={`#${id}`} style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: 3 }}>
           @{p.name.split(" ")[0]}
         </a>
       }
@@ -71,7 +71,7 @@ function PersonLink({ id }: { id: string }) {
 function ProjectLink({ id }: { id: string }) {
   const pr = project(id);
   return (
-    <HoverCard trigger={<a href={`#${id}`} style={{ color: "var(--rebar-color-primary)" }}>{pr.name}</a>}>
+    <HoverCard trigger={<a href={`#${id}`} style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: 3 }}>{pr.name}</a>}>
       <Stack gap="xs" style={{ minWidth: 220 }}>
         <Stack direction="row" gap="sm" align="center" style={{ justifyContent: "space-between" }}>
           <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>{pr.name}</Text>
@@ -100,7 +100,7 @@ export default function HoverCardPage() {
           {
             label: "File",
             node: (
-              <HoverCard trigger={<a href="#file" style={{ color: "var(--rebar-color-primary)" }}>{FILES[0]!.name}</a>}>
+              <HoverCard trigger={<a href="#file" style={{ color: "inherit", textDecoration: "underline", textUnderlineOffset: 3 }}>{FILES[0]!.name}</a>}>
                 <Stack gap="xs" style={{ minWidth: 200 }}>
                   <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>{FILES[0]!.name}</Text>
                   <Text size="xs" color="secondary">{FILES[0]!.size}, in {project(FILES[0]!.project).name}</Text>

@@ -55,19 +55,18 @@ export default function OrgChartPage() {
         code={CODE}
         widths={false}
         states={[
-          { label: "One person", node: <OrgChart title="Solo" width={260} height={150} people={[TEAM[3]!]} /> },
-          { label: "Two levels", node: <OrgChart title="Design" width={260} height={190} people={[TEAM[3]!, TEAM[0]!, { id: "icons", name: "Icon audit freelancer", role: "Contract design", parentId: "maya" }]} /> },
-          { label: "Long role", node: <OrgChart title="Long role" width={260} height={150} people={[{ id: "ben", name: "Ben Okafor", role: "Pilot boat skipper, northern depots" }]} /> },
+          { label: "One person", node: <OrgChart title="Solo" width={190} height={120} people={[TEAM[3]!]} /> },
+          { label: "Long role", node: <OrgChart title="Long role" width={190} height={120} people={[{ id: "ben", name: "Ben Okafor", role: "Pilot boat skipper, northern depots" }]} /> },
         ]}
       >
-        <OrgChart title="Tideline team" people={TEAM} />
+        <OrgChart title="Tideline team" people={TEAM} width={600} height={300} />
       </DemoStage>
 
       <Heading level={2}>In context</Heading>
       <DemoStage title="Team page" caption="The chart with a person's card beside it" widths={false}>
         <Stack direction="row" gap="md" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
           <Card title="Who reports to whom" subtitle="Four people, one studio" style={{ flex: "2 1 360px" }}>
-            <OrgChart title="Tideline team" people={TEAM} height={260} />
+            <OrgChart title="Tideline team" people={TEAM} width={520} height={280} />
           </Card>
           <Card title={maya.name} subtitle={maya.role} avatar={<Avatar {...avatarOf("maya")} />} actions={[<Button key="msg" variant="secondary">Message</Button>]} style={{ flex: "1 1 220px" }}>
             <Text size="sm" color="secondary">Reports to Leo Santos. Leads the Harbour rebrand and Depot signage.</Text>

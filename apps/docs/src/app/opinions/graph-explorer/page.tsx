@@ -89,17 +89,16 @@ export default function GraphExplorerPage() {
         code={CODE}
         widths={false}
         states={[
-          { label: "Empty", node: <GraphExplorer nodes={[]} edges={[]} width={260} height={170} title="Nothing yet" /> },
-          { label: "Quiet", node: <GraphExplorer nodes={quiet.nodes} edges={quiet.edges} width={260} height={170} legend={false} searchable={false} /> },
-          { label: "Two nodes", node: <GraphExplorer nodes={[{ id: "a", label: "Maya Chen", category: "Person" }, { id: "b", label: "Harbour rebrand", category: "Project" }]} edges={[{ source: "a", target: "b" }]} width={260} height={170} /> },
+          { label: "Empty", node: <GraphExplorer nodes={[]} edges={[]} width={190} height={150} title="Nothing yet" /> },
+          { label: "Quiet", node: <GraphExplorer nodes={quiet.nodes} edges={quiet.edges} width={190} height={150} legend={false} searchable={false} /> },
         ]}
       >
         <GraphExplorer
           nodes={graph.nodes}
           edges={graph.edges}
           title="Who is on what"
-          width={640}
-          height={440}
+          width={560}
+          height={400}
           nodeActions={() => [{ label: "Expand", onClick: expandCrew }]}
         />
       </DemoStage>
@@ -108,7 +107,7 @@ export default function GraphExplorerPage() {
       <DemoStage title="Project network" caption="The graph beside the project it is showing" widths={false}>
         <Stack direction="row" gap="md" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
           <Card title="Who is on what" subtitle="People, projects and files">
-            <GraphExplorer nodes={graph.nodes} edges={graph.edges} width={480} height={300} />
+            <GraphExplorer nodes={graph.nodes} edges={graph.edges} width={400} height={300} />
           </Card>
           <Card
             title={harbour.name}

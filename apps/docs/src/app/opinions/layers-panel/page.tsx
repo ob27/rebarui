@@ -86,8 +86,7 @@ export default function LayersPanelPage() {
         widths={false}
         states={[
           { label: "Empty", node: <LayersPanel layers={[]} aria-label="Empty layers" /> },
-          { label: "Locked and hidden", node: <LayersPanel aria-label="Locked layers" layers={[{ id: "a", name: "Logo mark", locked: true }, { id: "b", name: "Background wash", hidden: true }, { id: "c", name: "Links", locked: true, hidden: true }]} /> },
-          { label: "Long names", node: <LayersPanel aria-label="Long names" layers={[{ id: "a", name: "Harbour trust launch hero photograph, wide crop" }, { id: "b", name: "Call to action: book a harbour tour" }]} /> },
+          { label: "Locked and hidden", node: <LayersPanel aria-label="Locked layers" layers={[{ id: "a", name: "Logo", locked: true }, { id: "b", name: "Wash", hidden: true }]} /> },
         ]}
       >
         <div style={{ maxWidth: 340 }}>

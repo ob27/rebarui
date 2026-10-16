@@ -24,7 +24,6 @@ const MAIN: Construct = {
   title: "Tasks per week",
   xLabels: WEEK_LABELS,
   labelStep: 2,
-  crossoverIndex: 11,
   series: [
     { label: "Done", values: WEEKLY_DONE },
     { label: "Opened", values: OPENED, dashed: true },

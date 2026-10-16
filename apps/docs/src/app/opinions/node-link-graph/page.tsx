@@ -58,19 +58,18 @@ export default function NodeLinkGraphPage() {
         code={CODE}
         widths={false}
         states={[
-          { label: "Circular", node: <NodeLinkGraph layout="circular" width={280} height={190} nodes={NODES.slice(1, 6)} edges={[]} /> },
-          { label: "Two nodes", node: <NodeLinkGraph layout="hierarchical" width={280} height={190} nodes={[{ id: "a", label: "Maya Chen" }, { id: "b", label: "Harbour rebrand", parentId: "a" }]} edges={[{ source: "a", target: "b" }]} /> },
-          { label: "No nodes", node: <NodeLinkGraph layout="hierarchical" width={280} height={190} nodes={[]} edges={[]} /> },
+          { label: "Two nodes", node: <NodeLinkGraph layout="hierarchical" width={190} height={130} nodes={[{ id: "a", label: "Maya Chen" }, { id: "b", label: "Harbour rebrand", parentId: "a" }]} edges={[{ source: "a", target: "b" }]} /> },
+          { label: "No nodes", node: <NodeLinkGraph layout="hierarchical" width={190} height={130} nodes={[]} edges={[]} /> },
         ]}
       >
-        <NodeLinkGraph layout="hierarchical" title="Studio structure" nodes={NODES} edges={EDGES} />
+        <NodeLinkGraph layout="hierarchical" title="Studio structure" nodes={NODES} edges={EDGES} width={600} height={340} />
       </DemoStage>
 
       <Heading level={2}>In context</Heading>
       <DemoStage title="Studio map" caption="The structure beside a project's details" widths={false}>
         <Stack direction="row" gap="md" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
           <Card title="Who leads what" subtitle="Tideline, October" style={{ flex: "2 1 360px" }}>
-            <NodeLinkGraph layout="hierarchical" nodes={NODES} edges={EDGES} height={300} />
+            <NodeLinkGraph layout="hierarchical" nodes={NODES} edges={EDGES} width={560} height={320} />
           </Card>
           <Card
             title={harbour.name}

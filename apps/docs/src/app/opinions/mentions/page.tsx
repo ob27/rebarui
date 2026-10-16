@@ -58,7 +58,7 @@ export default function MentionsPage() {
         code={CODE}
         widths={false}
         states={[
-          { label: "With a mention", node: <Mentions options={OPTIONS} defaultValue="Thanks @Maya Chen, the palette is perfect." rows={2} /> },
+          { label: "With a mention", node: <Mentions options={OPTIONS} defaultValue="Thanks @Maya Chen, the palette is perfect." /> },
           { label: "Two rows", node: <Mentions options={OPTIONS} placeholder="Add a note" rows={2} /> },
           { label: "No people", node: <Mentions options={[]} placeholder="Nobody to mention" rows={2} /> },
         ]}

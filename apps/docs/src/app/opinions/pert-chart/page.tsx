@@ -86,9 +86,8 @@ export default function PertChartPage() {
         code={CODE}
         widths={false}
         states={[
-          { label: "One task", node: <PertChart title="One task" width={260} height={140} tasks={[{ id: "a", label: "Brand palette", duration: 3 }]} /> },
-          { label: "Parallel", node: <PertChart title="Parallel" width={260} height={170} tasks={[{ id: "a", label: "Homepage", duration: 4 }, { id: "b", label: "Van livery", duration: 2 }]} /> },
-          { label: "Empty", node: <PertChart title="No tasks" width={260} height={140} tasks={[]} /> },
+          { label: "One task", node: <PertChart title="One task" width={190} height={120} tasks={[{ id: "a", label: "Brand palette", duration: 3 }]} /> },
+          { label: "Empty", node: <PertChart title="No tasks" width={190} height={120} tasks={[]} /> },
         ]}
       >
         <Stack gap="sm">
@@ -101,7 +100,7 @@ export default function PertChartPage() {
       <DemoStage title="Launch planning" caption={`${harbour.name}, due ${harbour.due}`} widths={false}>
         <Card title="Launch path" subtitle="Nine days end to end" extra={<Tag tone="success">{harbour.status}</Tag>} style={{ maxWidth: 640, margin: "0 auto" }}>
           <Stack gap="sm">
-            <PertChart title="Harbour launch" tasks={TASKS} height={240} />
+            <PertChart title="Harbour launch" tasks={TASKS} width={560} height={300} />
             <Text size="sm" color="secondary">The homepage is the critical path; the van livery can slip two days without moving launch.</Text>
           </Stack>
         </Card>

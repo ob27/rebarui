@@ -45,10 +45,9 @@ export default function ImagePage() {
 
       <DemoStage
         title="Van livery"
-        caption="Loads, falls back if the source fails"
+        caption="Loads with a spinner, and shows a fallback if the source fails"
         code={CODE}
         states={[
-          { label: "Broken source", node: <Image src="/art/missing-livery.svg" alt="Van livery photo" width={200} height={130} /> },
           { label: "No source yet", node: <Image alt="Livery photo, not uploaded yet" width={200} height={130} /> },
           { label: "Small", node: <Image src="/art/grain-sand.svg" alt="Mark, stacked" width={96} height={64} /> },
         ]}
@@ -62,7 +61,7 @@ export default function ImagePage() {
       </DemoStage>
 
       <Heading level={2}>In context</Heading>
-      <DemoStage title="Project card" caption="A cover image, with the fallback if it is missing" widths={false}>
+      <DemoStage title="Project card" caption="A cover image, and the empty state when there is none" widths={false}>
         <Stack direction="row" gap="md" style={{ flexWrap: "wrap", justifyContent: "center" }}>
           <Card
             cover={<Image src="/art/grain-sand.svg" alt={`${harbour.name} cover`} width={280} height={150} />}
@@ -74,12 +73,12 @@ export default function ImagePage() {
             <Text size="sm" color="secondary">{harbour.summary}</Text>
           </Card>
           <Card
-            cover={<Image src="/art/missing-cover.svg" alt="Cover not found" width={280} height={150} />}
+            cover={<Image alt="No cover yet" width={280} height={150} />}
             title={FILES[1]!.name}
             subtitle={FILES[1]!.size}
             style={{ width: 280 }}
           >
-            <Tag>Cover missing</Tag>
+            <Tag>No cover yet</Tag>
           </Card>
         </Stack>
       </DemoStage>
