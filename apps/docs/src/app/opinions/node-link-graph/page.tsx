@@ -1,71 +1,27 @@
-import { Heading, NodeLinkGraph, Stack, Text } from "rebar-ui";
+import { Avatar, Button, Card, Heading, NodeLinkGraph, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PEOPLE, PROJECTS, STATUS_TONE, avatarOf, project } from "@/fixtures/tideline";
+
+const CODE = `<NodeLinkGraph
+  layout="hierarchical"
+  title="Studio structure"
+  nodes={[{ id: "studio", label: "Tideline" }, { id: "maya", label: "Maya Chen", parentId: "studio" }, { id: "harbour", label: "Harbour rebrand", parentId: "maya" }]}
+  edges={[{ source: "studio", target: "maya" }, { source: "maya", target: "harbour" }]}
+/>`;
+
+// The studio, who leads which project, hierarchical: Tideline > people > their projects.
+const NODES = [
+  { id: "studio", label: "Tideline" },
+  ...PEOPLE.map((p) => ({ id: p.id, label: p.name, parentId: "studio" })),
+  ...PROJECTS.map((p) => ({ id: p.id, label: p.name, parentId: p.owner })),
+];
+const EDGES = NODES.filter((n) => "parentId" in n && n.parentId).map((n) => ({ source: (n as { parentId: string }).parentId, target: n.id }));
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<NodeLinkGraph\n  layout="hierarchical"\n  nodes={[{ id: "ceo", label: "CEO" }, { id: "cto", label: "CTO", parentId: "ceo" }, { id: "cfo", label: "CFO", parentId: "ceo" }]}\n  edges={[{ source: "ceo", target: "cto" }, { source: "ceo", target: "cfo" }]}\n/>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["NodeLinkGraph"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Deterministic layouts, not force-directed physics",
-    body: [
-      {
-        kind: "text",
-        text: '`layout` picks one of three deterministic algorithms — `"hierarchical"` (a top-down tree from each node\'s own `parentId`), `"circular"` (evenly spaced by array index), or `"manual"` (the caller supplies explicit `x`/`y`, e.g. after a drag). This deliberately does not implement real force-directed physics simulation — a genuinely hard, iterative algorithm out of scope for this project\'s low-fidelity philosophy. Node-drag repositioning only applies in `"manual"` layout — dragging in the other two modes would just get overwritten by the deterministic layout on the next render, so it\'s disabled there rather than silently fighting itself.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "A \"floaty\" default node look — visual only, not a layout change",
-    body: [
-      {
-        kind: "text",
-        text: 'The default node renders as a solid-colored circle with a soft drop shadow and its label below it — closer to the Neo4j Bloom convention people actually expect from a node-link graph specifically, replacing the earlier bordered white box with centered text. This is purely cosmetic: positioning is exactly as deterministic as before (see the layout section above); a caller-supplied `renderNode` (as `OrgChart`/`Flowchart` both use for their own box/diamond/pill shapes) is completely unaffected.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "A real non-gesture zoom fallback",
-    body: [
-      {
-        kind: "text",
-        text: "Zoom works via mouse-wheel and via two real, always-visible +/- buttons (ref/HEURISTICS.md #38 — a scroll-only zoom would be inaccessible). Panning drags the background; dragging a node (in manual layout) is ignored on the background pan handler so the two never conflict.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "The foundation for other diagram archetypes",
-    body: [
-      {
-        kind: "text",
-        text: "`OrgChart`, `MindMap`, `Flowchart`, and `DiagramMinimap` are all built on top of this component rather than reimplementing pan/zoom/drag/layout each time — see their own reference pages for how each one specializes `NodeLinkGraph` for its own shape.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Bionic reading on node/edge labels",
-    body: [
-      {
-        kind: "text",
-        text: 'Node/edge labels render as SVG `<text>`, which the ordinary `useBionicChildren` hook can\'t target at all — a plain HTML `<span>` is invalid content inside SVG `<text>`. The default label rendering is wired through a dedicated SVG-aware renderer instead (`renderBionicSvgText`, from the same `bionic.tsx` module), splitting each word into real `<tspan>` elements. A caller-supplied `renderNode` draws its own `<text>` and is responsible for its own bionic wiring — this only covers the default node rendering, which is what `MindMap` (no custom `renderNode`) relies on; `OrgChart`/`Flowchart` wire it themselves in their own `renderNode`.',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -88,34 +44,49 @@ const BLOCKS: Construct[] = [
   },
 ];
 
+
 export default function NodeLinkGraphPage() {
+  const harbour = project("harbour");
   return (
     <Stack gap="lg">
       <Heading level={1}>NodeLinkGraph</Heading>
-      <Text color="secondary">
-        An interactive canvas of nodes and edges — pan, zoom, and (in manual layout) drag — with
-        deterministic hierarchical/circular/manual layouts, not force-directed physics.
-      </Text>
+      <Text color="secondary">An SVG canvas of nodes and edges you can pan and zoom, with hierarchical, circular or manual layout.</Text>
 
-      <LivePreview>
-        <NodeLinkGraph
-          layout="hierarchical"
-          title="Reporting structure"
-          nodes={[
-            { id: "ceo", label: "CEO" },
-            { id: "cto", label: "CTO", parentId: "ceo" },
-            { id: "cfo", label: "CFO", parentId: "ceo" },
-            { id: "eng1", label: "Eng Lead", parentId: "cto" },
-            { id: "eng2", label: "Platform Lead", parentId: "cto" },
-          ]}
-          edges={[
-            { source: "ceo", target: "cto" },
-            { source: "ceo", target: "cfo" },
-            { source: "cto", target: "eng1" },
-            { source: "cto", target: "eng2" },
-          ]}
-        />
-      </LivePreview>
+      <DemoStage
+        title="Studio structure"
+        caption="Who leads which project"
+        code={CODE}
+        widths={false}
+        states={[
+          { label: "Circular", node: <NodeLinkGraph layout="circular" width={280} height={190} nodes={NODES.slice(1, 6)} edges={[]} /> },
+          { label: "Two nodes", node: <NodeLinkGraph layout="hierarchical" width={280} height={190} nodes={[{ id: "a", label: "Maya Chen" }, { id: "b", label: "Harbour rebrand", parentId: "a" }]} edges={[{ source: "a", target: "b" }]} /> },
+          { label: "No nodes", node: <NodeLinkGraph layout="hierarchical" width={280} height={190} nodes={[]} edges={[]} /> },
+        ]}
+      >
+        <NodeLinkGraph layout="hierarchical" title="Studio structure" nodes={NODES} edges={EDGES} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Studio map" caption="The structure beside a project's details" widths={false}>
+        <Stack direction="row" gap="md" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
+          <Card title="Who leads what" subtitle="Tideline, October" style={{ flex: "2 1 360px" }}>
+            <NodeLinkGraph layout="hierarchical" nodes={NODES} edges={EDGES} height={300} />
+          </Card>
+          <Card
+            title={harbour.name}
+            subtitle={harbour.kicker}
+            labels={[{ label: harbour.status, tone: STATUS_TONE[harbour.status] }]}
+            actions={[<Button key="open" variant="secondary">Open project</Button>]}
+            style={{ flex: "1 1 220px" }}
+          >
+            <Stack direction="row" gap="sm" align="center">
+              <Avatar {...avatarOf(harbour.owner)} size="sm" />
+              <Text size="sm" color="secondary">Led by Maya Chen, due {harbour.due}</Text>
+            </Stack>
+            <Tag>{harbour.done}% done</Tag>
+          </Card>
+        </Stack>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

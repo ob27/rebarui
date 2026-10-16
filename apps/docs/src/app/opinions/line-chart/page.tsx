@@ -1,64 +1,77 @@
-import { Heading, Stack, Text } from "rebar-ui";
+import { Card, Heading, LineChart, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { KPIS, WEEKLY_DONE, WEEK_LABELS } from "@/fixtures/tideline";
+
+const CODE = `{
+  type: "line-chart",
+  title: "Tasks per week",
+  xLabels: WEEK_LABELS,
+  labelStep: 2,
+  series: [
+    { label: "Done", values: WEEKLY_DONE },
+    { label: "Opened", values: OPENED, dashed: true },
+  ],
+}`;
+
+// Tasks opened per week, to set against WEEKLY_DONE.
+const OPENED = [18, 20, 19, 24, 23, 24, 26, 27, 29, 30, 31, 30];
+
+const MAIN: Construct = {
+  type: "line-chart",
+  title: "Tasks per week",
+  xLabels: WEEK_LABELS,
+  labelStep: 2,
+  crossoverIndex: 11,
+  series: [
+    { label: "Done", values: WEEKLY_DONE },
+    { label: "Opened", values: OPENED, dashed: true },
+  ],
+};
 
 const BLOCKS: Construct[] = [
   { type: "props-table", heading: "Props", rows: componentProps["LineChart"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "Overview",
-    body: [{ kind: "text", text: "A multi-series line chart over an ordered x-axis — for cumulative cost/measurement comparisons where one series may overtake another partway through, hence the optional crossoverIndex marker (a dashed vertical line labeled 'crossover'). Wraps the real LineChart component with the same series-toggle filter footer as scatter-chart. Promoted from this project's own /benchmarks iteration experiment." }],
-  },
-  {
-    type: "doc-section",
-    heading: "Shape",
-    body: [{ kind: "code", code: `{ type: "line-chart", title?: string, ariaLabel?: string, height?: number, xLabels: string[], labelStep?: number, crossoverIndex?: number, series: { label: string, color?: string, values: number[], dashed?: boolean }[] }` }],
-  },
-  {
-    type: "doc-section",
-    heading: "Example",
-    body: [{ kind: "text", text: "A live example of the line-chart block:" }],
-  },
-  {
-      type: "line-chart",
-      title: "Cumulative cost per round",
-      xLabels: [
-        "R0",
-        "R1",
-        "R2",
-        "R3",
-      ],
-      crossoverIndex: 3,
-      series: [
-        {
-          label: "antd",
-          values: [
-            10,
-            20,
-            30,
-            42,
-          ],
-        },
-        {
-          label: "rebar-ui + migration",
-          values: [
-            22,
-            28,
-            35,
-            40,
-          ],
-          dashed: true,
-        },
-      ],
-    },
 ];
+
 
 export default function LineChartPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Line Chart</Heading>
-      <Text color="secondary">{"A multi-series line chart over an ordered x-axis — for cumulative cost/measurement comparisons where one series may overtake another partway through, hence the optional crossoverIndex marker (a dashed vertical line labeled 'crossover'). Wraps the real LineChart component with the same series-toggle filter footer as scatter-chart. Promoted from this project's own /benchmarks iteration experiment."}</Text>
+      <Text color="secondary">A multi-series line chart over an ordered x-axis, with an optional crossover marker.</Text>
+
+      <DemoStage
+        title="Tasks per week"
+        caption="Done against opened, 3 Aug to 19 Oct"
+        code={CODE}
+        states={[
+          { label: "One series", node: <LineChart title="Done" height={170} xLabels={WEEK_LABELS} labelStep={3} series={[{ label: "Done", values: WEEKLY_DONE }]} /> },
+          { label: "Few points", node: <LineChart title="Last four weeks" height={170} xLabels={WEEK_LABELS.slice(-4)} series={[{ label: "Done", values: WEEKLY_DONE.slice(-4) }]} /> },
+          { label: "Trendline", node: <LineChart title="With trend" height={170} xLabels={WEEK_LABELS} labelStep={3} trendline series={[{ label: "Done", values: WEEKLY_DONE }]} /> },
+        ]}
+      >
+        <NextBlockRenderer blocks={[MAIN]} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Weekly review" caption="The chart under the headline numbers" widths={false}>
+        <Card title="Throughput" subtitle="Last 12 weeks" extra={<Tag tone="success">{KPIS[2]!.delta}</Tag>} style={{ maxWidth: 600, margin: "0 auto" }}>
+          <Stack gap="sm">
+            <Stack direction="row" gap="lg">
+              {KPIS.map((k) => (
+                <Stack key={k.label} gap="xs">
+                  <Text size="xs" color="secondary">{k.label}</Text>
+                  <Text style={{ fontWeight: "var(--rebar-font-weight-semibold)", fontSize: 22 }}>{k.value}</Text>
+                </Stack>
+              ))}
+            </Stack>
+            <LineChart title="Tasks per week" height={210} xLabels={WEEK_LABELS} labelStep={2} series={[{ label: "Done", values: WEEKLY_DONE }, { label: "Opened", values: OPENED, dashed: true }]} />
+          </Stack>
+        </Card>
+      </DemoStage>
+
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

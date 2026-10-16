@@ -1,41 +1,19 @@
-import { Heading, HoverCard, Stack, Text } from "rebar-ui";
+import { Avatar, Card, Heading, HoverCard, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { FILES, STATUS_TONE, TASKS, avatarOf, person, project } from "@/fixtures/tideline";
+
+const CODE = `<HoverCard trigger={<a href="#maya">@maya</a>}>
+  <Stack gap="xs">
+    <Avatar alt="Maya Chen" fallback="MC" placeholder={1} />
+    <Text>Maya Chen, Design</Text>
+  </Stack>
+</HoverCard>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<HoverCard trigger={<a href="/about">@tom</a>}>\n  <p>Full profile preview</p>\n</HoverCard>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["HoverCard"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "HoverCard vs. Popover",
-    body: [
-      {
-        kind: "text",
-        text: 'Opens on hover (or focus, for keyboard users) and auto-dismisses a short delay after the pointer leaves both the trigger and the content — the grace period lets someone move their pointer from one to the other without it vanishing mid-move. This is the right choice for supplementary content someone is *previewing*, not actively operating: a footnote, a profile preview, extra detail on a term. For something a viewer deliberately clicked open and is actively using — a filter panel, a menu — use [Popover](/opinions/popover) instead; a hover-dismissing panel for content someone clicked to open is a real usability bug, not a stylistic choice.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "No explicit dismiss icon, on purpose",
-    body: [
-      {
-        kind: "text",
-        text: 'Per heuristic #3 (user control and freedom), a dismissible surface generally needs multiple ways out — but that\'s aimed at surfaces someone deliberately opened and is actively operating (see [Popover](/opinions/popover), which does have a real close affordance for exactly that reason). A `HoverCard` was never "opened" in that sense: it appears as a byproduct of where the pointer/focus already is, and closes the same way — moving the pointer or focus away, the thing the viewer is already doing anyway. A dismiss icon would add a control for a situation the component\'s own trigger already resolves the instant the viewer looks away, and would need its own hit target *inside* a hover-only surface, which is exactly the kind of interaction #48 is skeptical of.',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "Accessibility",
@@ -68,34 +46,87 @@ const BLOCKS: Construct[] = [
   },
 ];
 
+
+function PersonLink({ id }: { id: string }) {
+  const p = person(id);
+  return (
+    <HoverCard
+      trigger={
+        <a href={`#${id}`} style={{ color: "var(--rebar-color-primary)" }}>
+          @{p.name.split(" ")[0]}
+        </a>
+      }
+    >
+      <Stack direction="row" gap="sm" align="center" style={{ minWidth: 200 }}>
+        <Avatar {...avatarOf(id)} />
+        <Stack gap="xs">
+          <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>{p.name}</Text>
+          <Text size="xs" color="secondary">{p.role}</Text>
+        </Stack>
+      </Stack>
+    </HoverCard>
+  );
+}
+
+function ProjectLink({ id }: { id: string }) {
+  const pr = project(id);
+  return (
+    <HoverCard trigger={<a href={`#${id}`} style={{ color: "var(--rebar-color-primary)" }}>{pr.name}</a>}>
+      <Stack gap="xs" style={{ minWidth: 220 }}>
+        <Stack direction="row" gap="sm" align="center" style={{ justifyContent: "space-between" }}>
+          <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>{pr.name}</Text>
+          <Tag tone={STATUS_TONE[pr.status]}>{pr.status}</Tag>
+        </Stack>
+        <Text size="sm" color="secondary">{pr.summary}</Text>
+        <Text size="xs" color="secondary">Due {pr.due}, {pr.done}% done</Text>
+      </Stack>
+    </HoverCard>
+  );
+}
+
 export default function HoverCardPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>HoverCard</Heading>
-      <Text color="secondary">
-        A hover-triggered floating panel that auto-dismisses shortly after the pointer leaves —
-        real Radix HoverCard underneath. A genuinely distinct component from <code>Popover</code>,
-        not a variant of it.
-      </Text>
+      <Text color="secondary">A preview that opens on hover or focus and closes when the pointer leaves.</Text>
 
-      <LivePreview>
-        <HoverCard
-          trigger={
-            <a href="#profile">
-              <Text as="span">@tom</Text>
-            </a>
-          }
-        >
-          <Stack gap="xs" style={{ minWidth: 180 }}>
-            <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>
-              Tom
-            </Text>
-            <Text size="sm" color="secondary">
-              Building Rebar UI.
-            </Text>
+      <DemoStage
+        title="Mention preview"
+        caption="Hover or Tab to @Maya"
+        code={CODE}
+        states={[
+          { label: "Person", node: <PersonLink id="jonas" /> },
+          { label: "Project", node: <ProjectLink id="mobile" /> },
+          {
+            label: "File",
+            node: (
+              <HoverCard trigger={<a href="#file" style={{ color: "var(--rebar-color-primary)" }}>{FILES[0]!.name}</a>}>
+                <Stack gap="xs" style={{ minWidth: 200 }}>
+                  <Text size="sm" style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>{FILES[0]!.name}</Text>
+                  <Text size="xs" color="secondary">{FILES[0]!.size}, in {project(FILES[0]!.project).name}</Text>
+                </Stack>
+              </HoverCard>
+            ),
+          },
+        ]}
+      >
+        <Text>
+          Handed the icon audit to <PersonLink id="maya" /> for the <ProjectLink id="harbour" /> launch.
+        </Text>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Activity feed" caption="Names and projects preview in place" widths={false}>
+        <Card title="Today" style={{ maxWidth: 520, margin: "0 auto" }}>
+          <Stack gap="sm">
+            {TASKS.slice(3, 6).map((t) => (
+              <Text key={t.id} size="sm">
+                <PersonLink id={t.assignee} /> moved <b>{t.title}</b> in <ProjectLink id={t.project} />
+              </Text>
+            ))}
           </Stack>
-        </HoverCard>
-      </LivePreview>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

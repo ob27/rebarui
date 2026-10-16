@@ -1,41 +1,24 @@
-import { Heading, OrgChart, Stack, Text } from "rebar-ui";
+import { Avatar, Button, Card, Heading, OrgChart, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PEOPLE, avatarOf, person } from "@/fixtures/tideline";
+
+const CODE = `<OrgChart
+  title="Tideline team"
+  people={[
+    { id: "leo", name: "Leo Santos", role: "Operations" },
+    { id: "maya", name: "Maya Chen", role: "Design", parentId: "leo" },
+    { id: "jonas", name: "Jonas Weber", role: "Engineering", parentId: "leo" },
+  ]}
+/>`;
+
+// Leo runs the studio; the other three report to him.
+const TEAM = PEOPLE.map((p) => (p.id === "leo" ? { id: p.id, name: p.name, role: p.role } : { id: p.id, name: p.name, role: p.role, parentId: "leo" }));
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<OrgChart title="Leadership" people={[{ id: "ceo", name: "Amara Diallo", role: "CEO" }, { id: "cto", name: "Sam Ortiz", role: "CTO", parentId: "ceo" }]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["OrgChart"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "role, not title — on purpose",
-    body: [
-      {
-        kind: "text",
-        text: 'Each person\'s job title is named `role`, not `title` — `OrgChartProps` already has its own `title` (the chart\'s visible caption, per ref/HEURISTICS.md #16), and reusing the word for a person-level field would make "title" ambiguous depending on which object you\'re reading. A thin, opinionated `NodeLinkGraph` specialization: `layout` is hardcoded to `"hierarchical"` (an org chart is always top-down), and one edge is generated automatically per non-root person — callers never supply `edges` directly.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Bionic reading on name/role labels",
-    body: [
-      {
-        kind: "text",
-        text: 'Each person\'s name/role render as SVG `<text>` via a custom `renderNode`, which the ordinary `useBionicChildren` hook can\'t target — a plain HTML `<span>` isn\'t valid inside SVG `<text>` at all. Both fields are split through the SVG-specific `renderBionicSvgText` instead, into real `<tspan>` elements, so bionic reading applies here too, not just to the figcaption title.',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -58,26 +41,39 @@ const BLOCKS: Construct[] = [
   },
 ];
 
+
 export default function OrgChartPage() {
+  const maya = person("maya");
   return (
     <Stack gap="lg">
       <Heading level={1}>OrgChart</Heading>
-      <Text color="secondary">
-        A tree-shaped hierarchy diagram — always top-down, edges generated automatically from each
-        person's own manager.
-      </Text>
+      <Text color="secondary">A top-down reporting chart: give each person a manager and the lines are drawn for you.</Text>
 
-      <LivePreview>
-        <OrgChart
-          title="Leadership"
-          people={[
-            { id: "ceo", name: "Amara Diallo", role: "CEO" },
-            { id: "cto", name: "Sam Ortiz", role: "CTO", parentId: "ceo" },
-            { id: "cfo", name: "Priya Shah", role: "CFO", parentId: "ceo" },
-            { id: "eng", name: "Jordan Lee", role: "Eng Lead", parentId: "cto" },
-          ]}
-        />
-      </LivePreview>
+      <DemoStage
+        title="Tideline team"
+        caption="Leo and the three who report to him"
+        code={CODE}
+        widths={false}
+        states={[
+          { label: "One person", node: <OrgChart title="Solo" width={260} height={150} people={[TEAM[3]!]} /> },
+          { label: "Two levels", node: <OrgChart title="Design" width={260} height={190} people={[TEAM[3]!, TEAM[0]!, { id: "icons", name: "Icon audit freelancer", role: "Contract design", parentId: "maya" }]} /> },
+          { label: "Long role", node: <OrgChart title="Long role" width={260} height={150} people={[{ id: "ben", name: "Ben Okafor", role: "Pilot boat skipper, northern depots" }]} /> },
+        ]}
+      >
+        <OrgChart title="Tideline team" people={TEAM} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Team page" caption="The chart with a person's card beside it" widths={false}>
+        <Stack direction="row" gap="md" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
+          <Card title="Who reports to whom" subtitle="Four people, one studio" style={{ flex: "2 1 360px" }}>
+            <OrgChart title="Tideline team" people={TEAM} height={260} />
+          </Card>
+          <Card title={maya.name} subtitle={maya.role} avatar={<Avatar {...avatarOf("maya")} />} actions={[<Button key="msg" variant="secondary">Message</Button>]} style={{ flex: "1 1 220px" }}>
+            <Text size="sm" color="secondary">Reports to Leo Santos. Leads the Harbour rebrand and Depot signage.</Text>
+          </Card>
+        </Stack>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

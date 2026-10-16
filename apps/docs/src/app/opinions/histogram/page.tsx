@@ -1,36 +1,22 @@
-import { Box, Heading, Histogram, Stack, Text } from "rebar-ui";
+import { Card, Heading, Histogram, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { KPIS } from "@/fixtures/tideline";
 
-const SAMPLE = [62, 68, 71, 74, 75, 75, 78, 80, 81, 82, 83, 84, 85, 85, 86, 88, 90, 91, 93, 96];
+const CODE = `<Histogram
+  title="Days from To do to Done"
+  series={[{ label: "All tasks", values: [1, 1, 2, 2, 3, 3, 4, 5, 6, 9, 14] }]}
+/>`;
+
+// Days each finished task spent between To do and Done.
+const ALL = [1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7, 9, 12, 14];
+const DESIGN = [1, 2, 2, 3, 3, 4, 4, 5, 6];
+const ENG = [2, 3, 4, 4, 5, 6, 7, 9, 12, 14];
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Histogram title="Score distribution" series={[{ label: "Class A", values: [62, 75, 80, 85, 91] }]} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Histogram"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "What it's for",
-    body: [
-      {
-        kind: "text",
-        text: '`series` takes real raw sample values — binned internally into `binCount` equal-width buckets (defaulting to Sturges\' rule, `ceil(log2(n) + 1)`, off the combined sample count) and plotted as touching bars, the standard histogram silhouette. Distinct from `DistributionChart`, which plots a *parametric* normal curve from an already-computed `mean`/`stdDev` — this is the raw-data counterpart for when a caller has the actual measurements, not just their summary statistics.',
-      },
-      {
-        kind: "text",
-        text: "Multiple series share one set of bin edges (computed from the combined range of all of them) so their bars line up, rendered as semi-transparent overlapping bars rather than grouped side-by-side ones — the standard way to compare overlapping distributions.",
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
@@ -50,18 +36,35 @@ const BLOCKS: Construct[] = [
   },
 ];
 
+
 export default function HistogramPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>Histogram</Heading>
-      <Text color="secondary">
-        Bins raw sample values into equal-width buckets and plots each bucket&apos;s count as a
-        touching bar.
-      </Text>
+      <Text color="secondary">Bins raw values into equal-width buckets and draws the count in each.</Text>
 
-      <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-lg)" }}>
-        <Histogram title="Test score distribution" series={[{ label: "Class A", values: SAMPLE }]} />
-      </Box>
+      <DemoStage
+        title="Cycle time"
+        caption="Days from To do to Done, 20 finished tasks"
+        code={CODE}
+        states={[
+          { label: "Two series", node: <Histogram title="Design and Eng" height={170} series={[{ label: "Design", values: DESIGN }, { label: "Eng", values: ENG }]} /> },
+          { label: "Few values", node: <Histogram title="Last week" height={170} series={[{ label: "Done", values: [2, 3, 3, 5, 8] }]} /> },
+          { label: "Four bins", node: <Histogram title="Coarse" height={170} binCount={4} series={[{ label: "All tasks", values: ALL }]} /> },
+        ]}
+      >
+        <Histogram title="Days from To do to Done" series={[{ label: "All tasks", values: ALL }]} />
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Delivery review" caption="The spread behind the weekly numbers" widths={false}>
+        <Card title="How long tasks take" subtitle="Last 12 weeks" extra={<Tag tone="success">{KPIS[2]!.delta}</Tag>} style={{ maxWidth: 560, margin: "0 auto" }}>
+          <Stack gap="sm">
+            <Histogram title="Days from To do to Done" height={200} series={[{ label: "All tasks", values: ALL }]} />
+            <Text size="sm" color="secondary">Most tasks close within four days; a few long ones pull the tail out to two weeks.</Text>
+          </Stack>
+        </Card>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
