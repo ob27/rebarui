@@ -1,121 +1,122 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Avatar, Heading, IndexBar, Stack, Text } from "rebar-ui";
 import type { IndexBarGroup } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { CREW, PEOPLE } from "@/fixtures/tideline";
+import type { CrewMember, Person } from "@/fixtures/tideline";
+import { TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
 
-interface Contact {
-  name: string;
-  role: string;
-}
-
-const NAMES: [string, string][] = [
-  ["Ada Lovelace", "Mathematician"],
-  ["Alan Turing", "Computer scientist"],
-  ["Barbara Liskov", "Computer scientist"],
-  ["Betty Holberton", "Programmer"],
-  ["Charles Babbage", "Inventor"],
-  ["Donald Knuth", "Computer scientist"],
-  ["Edsger Dijkstra", "Computer scientist"],
-  ["Frances Allen", "Computer scientist"],
-  ["Grace Hopper", "Rear admiral"],
-  ["Hedy Lamarr", "Inventor"],
-  ["Ida Rhodes", "Mathematician"],
-  ["Katherine Johnson", "Mathematician"],
-  ["Margaret Hamilton", "Computer scientist"],
-  ["Radia Perlman", "Computer scientist"],
-  ["Shafi Goldwasser", "Cryptographer"],
-  ["Tim Berners-Lee", "Inventor"],
-];
-
-const GROUPS: IndexBarGroup<Contact>[] = Array.from(
-  NAMES.reduce((byLetter, [name, role]) => {
-    const letter = name[0]!.toUpperCase();
-    const list = byLetter.get(letter) ?? [];
-    list.push({ name, role });
-    byLetter.set(letter, list);
-    return byLetter;
-  }, new Map<string, Contact[]>()),
-)
-  .sort(([a], [b]) => a.localeCompare(b))
-  .map(([key, items]) => ({ key, items }));
+const CODE = `<IndexBar
+  groups={byLetter(CREW)}
+  height={400}
+  renderItem={(member) => <MemberRow member={member} />}
+/>`;
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<IndexBar groups={groups} renderItem={(contact) => <ContactRow contact={contact} />} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["IndexBar"] ?? [] },
   {
     type: "doc-section",
-    heading: "A continuous drag rail, not 26 precise taps",
+    heading: "Accessibility",
     body: [
       {
         kind: "text",
-        text: 'With one letter per group, no single rail button can realistically meet a real 44×44 touch target on its own (ref/HEURISTICS.md #19) — the standard resolution this component family uses industry-wide (iOS Contacts, antd-mobile\'s own `IndexBar`) is to treat the *whole rail* as one continuous touch surface: press down anywhere on it and drag, and the component tracks which letter your finger is over and jumps the list live. A floating bubble shows the current letter so a finger covering the rail doesn\'t lose track of where it is (ref/HEURISTICS.md #1). A plain click on one letter, with no drag, still works too, and every letter stays keyboard-focusable.',
+        text: "The whole rail is one touch surface: press anywhere and drag, and the list jumps live while a bubble shows the letter under your finger. A plain tap on a letter works too, and every letter is a real, keyboard-focusable button.",
       },
     ],
   },
   {
     type: "doc-section",
     heading: "data-rebar-* attributes",
-    body: [
-      {
-        kind: "text",
-        text: '`data-rebar-component="index-bar"` on the root; parts: `list`, `group`, `group-header`, `item`, `rail`, `rail-letter` (each carrying `data-index-key`, and `data-rebar-active` while it\'s the one currently being dragged over), `bubble`.',
-      },
-    ],
+    body: [{ kind: "text", text: '`data-rebar-component="index-bar"` on the root; parts: `list`, `group`, `group-header`, `item`, `rail`, `rail-letter` (each with `data-index-key`, and `data-rebar-active` while dragged over), `bubble`.' }],
   },
   {
     type: "doc-section",
     heading: "Migrating to Ant Design",
-    body: [
-      {
-        kind: "text",
-        text: "Not codemod-covered — this pattern is specific to antd-mobile (`IndexBar`), not the desktop `antd` package this project's codemod targets. Migrating means either pulling in `antd-mobile` directly for a mobile build, or dropping the jump-rail entirely in favor of a plain scrollable list with a search box for a desktop one.",
-      },
-    ],
+    body: [{ kind: "text", text: "Not codemod-covered: the pattern is antd-mobile's `IndexBar`, not the desktop `antd` package. A desktop migration usually means a plain list with a search box." }],
   },
 ];
 
-function ContactRow({ contact }: { contact: Contact }) {
+interface Entry {
+  name: string;
+  detail: string;
+  placeholder: number;
+}
+
+const initials = (name: string) => name.split(" ").map((w) => w[0]).join("").toUpperCase();
+
+function byLetter(entries: Entry[]): IndexBarGroup<Entry>[] {
+  const map = new Map<string, Entry[]>();
+  for (const e of [...entries].sort((a, b) => a.name.localeCompare(b.name))) {
+    const key = e.name[0]!.toUpperCase();
+    map.set(key, [...(map.get(key) ?? []), e]);
+  }
+  return [...map.entries()].map(([key, items]) => ({ key, items }));
+}
+
+const CREW_ENTRIES: Entry[] = CREW.map((m: CrewMember, i) => ({ name: m.name, detail: m.role, placeholder: i + 5 }));
+const TEAM_ENTRIES: Entry[] = PEOPLE.map((p: Person) => ({ name: p.name, detail: p.role, placeholder: p.placeholder }));
+
+function MemberRow({ entry }: { entry: Entry }) {
   return (
-    <Stack direction="row" gap="sm" align="center" style={{ padding: "8px 4px" }}>
-      <Avatar fallback={contact.name} placeholder />
-      <Stack gap="xs">
-        <Text style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>{contact.name}</Text>
-        <Text color="secondary" size="sm">
-          {contact.role}
+    <Stack direction="row" gap="sm" align="center" style={{ padding: "8px 12px", boxShadow: "0 1px 0 var(--rebar-color-border)" }}>
+      <Avatar size="sm" alt={entry.name} fallback={initials(entry.name)} placeholder={entry.placeholder} />
+      <span style={{ minWidth: 0 }}>
+        <Text size="sm" style={{ display: "block", fontWeight: "var(--rebar-font-weight-semibold)" }}>
+          {entry.name}
         </Text>
-      </Stack>
+        <Text size="xs" color="secondary" style={{ display: "block" }}>
+          {entry.detail}
+        </Text>
+      </span>
     </Stack>
   );
 }
+
+const Box = ({ children, height }: { children: ReactNode; height?: number }) => (
+  <div style={{ position: "relative", border: "1px solid var(--rebar-color-border)", borderRadius: 14, overflow: "hidden", background: "var(--rebar-color-bg-raised, var(--rebar-color-bg-primary))", height }}>{children}</div>
+);
 
 export default function IndexBarPage() {
   return (
     <Stack gap="lg">
       <Heading level={1}>IndexBar</Heading>
-      <Text color="secondary">
-        An alphabetical jump-list for a long grouped collection — group a contact list, a
-        directory, or a glossary by first letter and let the side rail scrub straight to any
-        group, either by tapping a letter or dragging down the rail continuously.
-      </Text>
+      <Text color="secondary">A letter rail for jumping through a long list.</Text>
 
-      <LivePreview>
-        <div style={{ maxWidth: 320 }}>
-          <IndexBar groups={GROUPS} renderItem={(contact) => <ContactRow contact={contact} />} />
+      <DemoStage
+        title="Crew directory"
+        caption="Tap a letter or drag along the rail"
+        code={CODE}
+        states={[
+          { label: "Short list", node: <Box><IndexBar groups={byLetter(TEAM_ENTRIES)} height={160} renderItem={(e) => <MemberRow entry={e} />} /></Box> },
+          { label: "Empty", node: <Box height={120}><IndexBar groups={[]} height={118} renderItem={(e: Entry) => <MemberRow entry={e} />} /><Text size="sm" color="secondary" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", margin: 0 }}>No people yet</Text></Box> },
+          { label: "Group headers", node: <Box><IndexBar groups={byLetter(TEAM_ENTRIES)} height={160} renderGroupHeader={(k) => `${k} · ${byLetter(TEAM_ENTRIES).find((g) => g.key === k)?.items.length ?? 0}`} renderItem={(e) => <MemberRow entry={e} />} /></Box> },
+        ]}
+      >
+        <div style={{ maxWidth: 360, margin: "0 auto" }}>
+          <Box>
+            <IndexBar groups={byLetter(CREW_ENTRIES)} height={380} renderItem={(e) => <MemberRow entry={e} />} />
+          </Box>
         </div>
-      </LivePreview>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Team on the phone" caption="The crew directory and the studio team" widths={false}>
+        <div className="cs-grain" style={{ padding: "28px 20px" }}>
+          <Stack direction="row" gap="md" justify="center" style={{ flexWrap: "wrap" }}>
+            <TidelinePhone title="Crew" tabs={3} height={460} width={250} padding={0}>
+              <IndexBar groups={byLetter(CREW_ENTRIES)} height={390} renderItem={(e) => <MemberRow entry={e} />} />
+            </TidelinePhone>
+            <TidelinePhone title="Team" tabs={3} height={460} width={250} padding={0}>
+              <IndexBar groups={byLetter(TEAM_ENTRIES)} height={390} renderItem={(e) => <MemberRow entry={e} />} />
+            </TidelinePhone>
+          </Stack>
+        </div>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

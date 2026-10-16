@@ -152,3 +152,27 @@ export const CHAT: Message[] = [
 export const TAGS = ["Design", "Eng", "Research", "Ops"] as const;
 export const TAG_OPTIONS = TAGS.map((t) => ({ value: t.toLowerCase(), label: t }));
 export const PROJECT_OPTIONS = PROJECTS.map((p) => ({ value: p.id, label: p.name }));
+
+export interface CrewMember {
+  id: string;
+  name: string;
+  /** Where they work on the harbour. */
+  role: string;
+  /** Interview slot, or "Booked" if not yet done. */
+  interviewed: string;
+}
+/** The twelve harbour crew interviewed for the "Crew interviews" project: a long list, for directories and index rails. */
+export const CREW: CrewMember[] = [
+  { id: "aisha", name: "Aisha Bello", role: "Ferry deckhand", interviewed: "6 Oct" },
+  { id: "ben", name: "Ben Okafor", role: "Pilot boat skipper", interviewed: "6 Oct" },
+  { id: "carys", name: "Carys Hughes", role: "Harbour office", interviewed: "8 Oct" },
+  { id: "dev", name: "Dev Patel", role: "Marine engineer", interviewed: "8 Oct" },
+  { id: "erin", name: "Erin Walsh", role: "Ferry deckhand", interviewed: "9 Oct" },
+  { id: "fatima", name: "Fatima Khan", role: "Dispatcher", interviewed: "13 Oct" },
+  { id: "gareth", name: "Gareth Pryce", role: "Crane operator", interviewed: "13 Oct" },
+  { id: "hana", name: "Hana Sato", role: "Ferry crew", interviewed: "15 Oct" },
+  { id: "ivan", name: "Ivan Petrov", role: "Tug crew", interviewed: "15 Oct" },
+  { id: "kwame", name: "Kwame Mensah", role: "Dock supervisor", interviewed: "20 Oct" },
+  { id: "niamh", name: "Niamh Byrne", role: "Ferry crew", interviewed: "Booked, 21 Oct" },
+  { id: "tomas", name: "Tomas Larsen", role: "Night watch", interviewed: "Booked, 21 Oct" },
+];
