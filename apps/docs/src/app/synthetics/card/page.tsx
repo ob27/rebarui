@@ -1,42 +1,76 @@
-import { Avatar, Button, Card, Heading, Stack, Tag, Text } from "rebar-ui";
+import type { CSSProperties } from "react";
+import { AvatarGroup, Button, Card, Heading, Skeleton, Stack, Tag, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { KPIS, PROJECTS, STATUS_TONE, avatarsOf, project } from "@/fixtures/tideline";
+
+const CODE = `<Card cover={<div className="cover cover-brand" />}>
+  <Stack gap="xs">
+    <Text size="xs" color="secondary" style={KICKER}>{harbour.kicker}</Text>
+    <Heading level={3}>{harbour.name}</Heading>
+    <Text size="sm" color="secondary">{harbour.summary}</Text>
+    <Stack direction="row" justify="between" align="center">
+      <AvatarGroup size="sm" avatars={avatarsOf(["maya", "jonas", "priya"])} />
+      <Tag tone="success">{harbour.status}</Tag>
+    </Stack>
+  </Stack>
+</Card>`;
+
+const KICKER: CSSProperties = {
+  fontSize: "0.68rem",
+  fontWeight: "var(--rebar-font-weight-semibold)",
+  letterSpacing: "0.12em",
+  textTransform: "uppercase",
+};
+
+const GRID: CSSProperties = { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 };
+
+/** Who is on each project, owner first. */
+const CREW: Record<string, string[]> = { harbour: ["maya", "jonas", "priya"], mobile: ["jonas", "maya"], interviews: ["priya"] };
+const DEFAULT_COVER = { className: "cs-grain", background: "var(--rebar-color-tint-1)" };
+const COVER: Record<string, { className?: string; background: string }> = {
+  harbour: DEFAULT_COVER,
+  mobile: { background: "var(--rebar-color-tint-4)" },
+  interviews: { className: "cs-grain cs-grain--sand", background: "var(--rebar-color-tint-3)" },
+};
+
+function Cover({ id }: { id: string }) {
+  const c = COVER[id] ?? DEFAULT_COVER;
+  return <div className={c.className} aria-hidden="true" style={{ height: 120, borderRadius: 0, backgroundColor: c.background }} />;
+}
+
+function ProjectCard({ id }: { id: string }) {
+  const p = project(id);
+  return (
+    <Card cover={<Cover id={id} />}>
+      <Stack gap="xs">
+        <Text size="xs" color="secondary" style={KICKER}>
+          {p.kicker}
+        </Text>
+        <Heading level={3}>{p.name}</Heading>
+        <Text size="sm" color="secondary">
+          {p.summary}
+        </Text>
+        <Stack direction="row" justify="between" align="center" style={{ marginTop: 8 }}>
+          <AvatarGroup size="sm" avatars={avatarsOf(CREW[id] ?? [p.owner])} />
+          <Tag tone={STATUS_TONE[p.status]}>{p.status}</Tag>
+        </Stack>
+      </Stack>
+    </Card>
+  );
+}
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<Card\n  title="Pro plan"\n  extra={<Tag tone="success">Popular</Tag>}\n  actions={[<Button key="buy" variant="primary">Subscribe</Button>]}\n>\n  $19/month, billed annually\n</Card>',
-      },
-      {
-        kind: "code",
-        code: '<Card\n  cornerBadge={<span className="priority-dot" />}\n  labels={[{ label: "Bug", tone: "error" }, { label: "P1", tone: "warning" }]}\n  title="Investigate flaky checkout test on CI"\n  titleLines={2}\n  subtitle="ENG-142"\n  footer={<><Avatar fallback="MW" placeholder /><Text size="xs">💬 3</Text></>}\n/>',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["Card"] ?? [] },
-  {
-    type: "doc-section",
-    heading: "One component, not a family of near-duplicates",
-    body: [
-      {
-        kind: "text",
-        text: 'Cards come in enough real shapes (product, pricing, profile, plain grouping, kanban) that a single rudimentary `<div>` primitive falls short — but the answer is slot props on this one component, not separate `ProductCard`/`PricingCard`/`ProfileCard`/`KanbanCard` components each reimplementing the same border/radius/zone structure. Grounded directly in the research corpus (`ref/research/component-inventories/`): Tailwind UI\'s Product Card and React Native Elements\' Pricing Card both need a `cover` image; AntD\'s `Card.Meta` and MUI\'s `CardHeader avatar` both need an `avatar` beside a title; AntD\'s `extra` and MUI\'s `CardHeader action` both need a top-right slot; AntD\'s `actions` and MUI\'s `CardActions` both need an even-split bottom row. The kanban shape (Trello, Jira, Linear, GitHub Projects, Asana) needed four more: `labels` (colored pills, real `Tag`s), `cornerBadge` (a priority flag/unread dot inset in the corner), `footer` (assignee avatar, due date, comment/attachment counts — read-only context, distinct from `actions`\' clickable buttons), and `titleLines` (clamps a title instead of letting one long one grow taller than its column neighbors).',
-      },
-    ],
-  },
   {
     type: "doc-section",
     heading: "Accessibility",
     body: [
       {
         kind: "text",
-        text: "A plain, unstyled-semantics `<div>` on purpose — `Card` is a visual grouping, not an interactive or landmark role. Forwards `aria-*`/`data-*` props to its root, so a consumer adds a real role (e.g. `role=\"article\"` for a self-contained piece of content in a feed) when the surrounding context calls for one, rather than this component guessing at one.",
+        text: 'A plain `<div>`: a visual grouping, not an interactive or landmark role. `aria-*` and `data-*` props pass through to the root, so add `role="article"` (or whatever the context calls for) yourself.',
       },
     ],
   },
@@ -46,7 +80,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: '`data-rebar-component="card"` on the root; `data-rebar-part` is `"corner-badge"`, `"cover"`, `"header"`, `"avatar"`, `"title"`, `"subtitle"`, `"extra"`, `"labels"`, `"body"`, `"footer"`, `"actions"`, or `"action"` (per item) — only the parts actually in use render, so a plain `<Card>children</Card>` with none of the new props renders exactly the single `body`-wrapped div it always did.',
+        text: '`data-rebar-component="card"` on the root; `data-rebar-part` is `"corner-badge"`, `"cover"`, `"header"`, `"avatar"`, `"title"`, `"subtitle"`, `"extra"`, `"labels"`, `"body"`, `"footer"`, `"actions"` or `"action"` (per item). Only the parts in use render.',
       },
     ],
   },
@@ -56,124 +90,112 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "A close, low-risk rename for the original four slots — `cover`/`title`/`extra`/`actions` match AntD's own `Card` prop names directly. `avatar` doesn't: AntD nests that inside `Card.Meta` instead of a top-level prop, so that one slot needs a small structural adjustment, not just a rename. Of the four kanban-card additions, checked directly against AntD's own docs rather than assumed: `labels` and `footer` have no `Card` equivalent (recompose by hand — a `Tag` row, a plain footer row) and `titleLines` has none either (a CSS `line-clamp` utility class instead); `cornerBadge` does have a real AntD counterpart, just not on `Card` itself — `Badge.Ribbon`, which wraps a card to render a corner ribbon, is the closer migration target than reinventing absolute positioning.",
+        text: "`cover`, `title`, `extra` and `actions` match AntD's `Card` props directly. `avatar` moves inside `Card.Meta`. `labels`, `footer` and `titleLines` have no AntD equivalent (recompose by hand; a CSS `line-clamp` for the title). `cornerBadge` maps to `Badge.Ribbon` wrapping the card.",
       },
     ],
   },
 ];
 
 export default function CardPage() {
+  const signage = project("signage");
   return (
     <Stack gap="lg">
       <Heading level={1}>Card</Heading>
-      <Text color="secondary">
-        A bordered container with slot props for every real card shape this project has cross-
-        referenced against the component-inventory research — <code>cover</code> (full-bleed
-        media), <code>avatar</code>/<code>title</code>/<code>subtitle</code>/<code>extra</code>{" "}
-        (header row), <code>labels</code> (a row of colored pills), <code>cornerBadge</code> (a
-        small badge overlapping the top-right corner), <code>footer</code> (a compact meta row),
-        and <code>actions</code> (an even-split footer row) — on top of the plain padded box every
-        block in <code>@rebar-ui/placement</code> already composes internally. The last four
-        (<code>labels</code>/<code>cornerBadge</code>/<code>footer</code>/<code>titleLines</code>)
-        close the &quot;kanban card&quot; shape (Trello, Jira, Linear, GitHub Projects) — pills,
-        a status dot, an assignee avatar and comment count, and a title that clamps instead of
-        growing a fixed-width column tile without limit.
-      </Text>
+      <Text color="secondary">A surface for one thing.</Text>
 
-      <LivePreview>
-        <Stack direction="row" gap="md" style={{ flexWrap: "wrap" }}>
-          <Card style={{ width: 220 }}>
-            <Stack gap="xs">
-              <Text style={{ fontWeight: "var(--rebar-font-weight-semibold)" }}>Plain</Text>
-              <Text size="sm" color="secondary">
-                Just children — no new props used, identical to before.
-              </Text>
-            </Stack>
-          </Card>
-
-          <Card
-            style={{ width: 220 }}
-            title="Pro plan"
-            extra={<Tag tone="success">Popular</Tag>}
-            actions={[
-              <Button key="buy" variant="primary" size="sm">
-                Subscribe
-              </Button>,
-            ]}
-          >
-            <Text size="sm" color="secondary">
-              $19/month, billed annually
-            </Text>
-          </Card>
-
-          <Card
-            style={{ width: 220 }}
-            avatar={<Avatar fallback="PS" placeholder />}
-            title="Priya Shah"
-          >
-            <Text size="sm" color="secondary">
-              Engineering lead
-            </Text>
-          </Card>
-
-          <Card
-            style={{ width: 220 }}
-            cover={
-              <div
-                style={{
-                  height: 100,
-                  background: "var(--rebar-color-bg-secondary, #f5f5f5)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "var(--rebar-color-text-secondary)",
-                  fontSize: "var(--rebar-font-size-xs)",
-                }}
+      <DemoStage
+        title="Project cards"
+        caption="Media, kicker, title, meta"
+        code={CODE}
+        states={[
+          {
+            label: "Empty",
+            node: (
+              <Card>
+                <Stack gap="sm" align="center" style={{ textAlign: "center" }}>
+                  <Heading level={3}>No projects yet</Heading>
+                  <Text size="sm" color="secondary">
+                    Start with a template.
+                  </Text>
+                  <Button size="sm">New project</Button>
+                </Stack>
+              </Card>
+            ),
+          },
+          {
+            label: "Loading",
+            node: (
+              <Card>
+                <Skeleton lines={3} />
+              </Card>
+            ),
+          },
+          {
+            label: "Long title",
+            node: (
+              <Card>
+                <Heading level={3}>Quarterly crew wellbeing and rota review for the northern depots</Heading>
+              </Card>
+            ),
+          },
+          {
+            label: "Selected",
+            node: (
+              <Card aria-selected="true" style={{ borderColor: "var(--rebar-color-primary)", boxShadow: "0 0 0 1px var(--rebar-color-primary)" }}>
+                <Heading level={3}>{project("harbour").name}</Heading>
+              </Card>
+            ),
+          },
+          {
+            label: "Slots",
+            node: (
+              <Card
+                title={signage.name}
+                subtitle={`Due ${signage.due}`}
+                actions={[
+                  <Button key="open" variant="tertiary" size="sm">
+                    Open
+                  </Button>,
+                  <Button key="share" variant="tertiary" size="sm">
+                    Share
+                  </Button>,
+                ]}
               >
-                Product photo
-              </div>
-            }
-            title="Rebar Mug"
-            actions={[
-              <Button key="cart" variant="secondary" size="sm">
-                Add to cart
-              </Button>,
-            ]}
-          />
-
-          <Card
-            style={{ width: 220 }}
-            cornerBadge={
-              <span
-                aria-label="High priority"
-                title="High priority"
-                style={{
-                  display: "block",
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  background: "var(--rebar-color-error, #c62828)",
-                }}
-              />
-            }
-            labels={[
-              { label: "Bug", tone: "error" },
-              { label: "P1", tone: "warning" },
-            ]}
-            title="Investigate flaky checkout test on CI"
-            titleLines={2}
-            subtitle="ENG-142"
-            footer={
-              <>
-                <Avatar fallback="MW" placeholder />
-                <Text size="xs" color="secondary">
-                  💬 3
+                <Text size="sm" color="secondary">
+                  {signage.summary}
                 </Text>
-              </>
-            }
-          />
-        </Stack>
-      </LivePreview>
+              </Card>
+            ),
+          },
+        ]}
+      >
+        <div style={GRID}>
+          {PROJECTS.slice(0, 3).map((p) => (
+            <ProjectCard key={p.id} id={p.id} />
+          ))}
+        </div>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="KPI row" caption="Three numbers, one card each">
+        <div style={GRID}>
+          {KPIS.map((k) => (
+            <Card key={k.label}>
+              <Stack gap="xs">
+                <Text size="xs" color="secondary" style={KICKER}>
+                  {k.label}
+                </Text>
+                <span style={{ fontFamily: "var(--rebar-font-family-display)", fontSize: "var(--rebar-font-size-2xl)", fontWeight: "var(--rebar-font-weight-semibold)", lineHeight: 1.1 }}>
+                  {k.value}
+                </span>
+                <Text size="sm" color="secondary">
+                  {k.delta}
+                </Text>
+              </Stack>
+            </Card>
+          ))}
+        </div>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

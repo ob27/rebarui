@@ -1,52 +1,56 @@
 "use client";
 
 import { useState } from "react";
-import { AiChatInput, Box, ChatThread, Heading, Stack, Text } from "rebar-ui";
+import type { CSSProperties, ReactNode } from "react";
+import { AiChatInput, ChatThread, DeviceFrame, Heading, Stack, Text } from "rebar-ui";
 import type { AiChatInputIntent, ChatMessage } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
-import { LivePreview } from "@/components/LivePreview";
+import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { EVENTS, TASKS, person, project } from "@/fixtures/tideline";
+
+const CODE = `<AiChatInput
+  value={draft}
+  onValueChange={setDraft}
+  onSend={ask}
+  intent={draft.startsWith("/") ? "command" : "message"}
+  placeholder="Ask about Tideline"
+  dictation
+  dictating={listening}
+  onDictationToggle={setListening}
+/>`;
+
+const launch = EVENTS[0]!;
+const sync = TASKS.find((t) => t.id === "sync")!;
+
+const PHONE_STYLE = {
+  margin: "0 auto",
+  "--rebar-device-frame-max-width": "300px",
+  "--rebar-device-frame-bezel-color": "var(--rebar-color-bg-inverse)",
+  "--rebar-device-frame-status-bg": "var(--rebar-color-bg-inverse)",
+} as CSSProperties;
+
+function Phone({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <DeviceFrame variant="phone" style={PHONE_STYLE}>
+      <div style={{ display: "flex", flexDirection: "column", minHeight: 460, background: "var(--rebar-color-bg-primary)" }}>
+        <div style={{ background: "var(--rebar-color-bg-inverse)", color: "var(--rebar-color-text-inverse)", padding: "8px 18px 14px", fontFamily: "var(--rebar-font-family-display)", fontWeight: "var(--rebar-font-weight-semibold)", fontSize: "1.1rem" }}>{title}</div>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>{children}</div>
+      </div>
+    </DeviceFrame>
+  );
+}
 
 const BLOCKS: Construct[] = [
-  {
-    type: "doc-section",
-    heading: "Code",
-    body: [
-      {
-        kind: "code",
-        code: '<AiChatInput value={draft} onValueChange={setDraft} onSend={sendMessage} dictation dictating={isDictating} onDictationToggle={setIsDictating} intent={inferredIntent} />',
-      },
-    ],
-  },
   { type: "props-table", heading: "Props", rows: componentProps["AiChatInput"] ?? [] },
   {
     type: "doc-section",
-    heading: "Distinct from ChatThread, composed alongside it",
+    heading: "Accessibility",
     body: [
       {
         kind: "text",
-        text: "`ChatThread` renders an existing conversation; it has no compose control of its own. This is the compose half — a multi-line field that grows with its own content, plus a primary action button — specific enough to an LLM-chat interaction shape (dictation, intent-aware sending) to deserve its own component rather than folding into `ChatThread`. The two compose together in whatever surrounding chat layout a caller builds, shown live below.",
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "intent: real behavior change, not a cosmetic label",
-    body: [
-      {
-        kind: "text",
-        text: 'This component does no intent inference itself — that\'s a caller/LLM concern, the same "report intent, caller owns the real operation" convention `FileManager`\'s own `actions` already follows. `intent` (`"message"` | `"command"` | `"search"`, caller-supplied from whatever classification they already have) changes the primary button\'s real icon and label to match: a plain message sends, a detected command runs, a detected search searches — genuinely different affordances, not the same button relabeled for its own sake.',
-      },
-    ],
-  },
-  {
-    type: "doc-section",
-    heading: "Dictation is a toggle, not a recording engine",
-    body: [
-      {
-        kind: "text",
-        text: '`dictation` shows a mic/stop toggle button; `dictating`/`onDictationToggle` are the caller\'s hook to start/stop whatever real speech-to-text they\'re using (the same accepted "caller owns the real work" exception `VoiceComposer`\'s own `state` already documents) — transcribed text then flows back through the ordinary `value`/`onValueChange`, the ordinary way any typed text does.',
+        text: "A real `<textarea>` (labelled by `aria-label`, default \"Chat message\") that grows to `maxRows` then scrolls. Enter sends, Shift+Enter breaks a line. The send and dictation controls are real buttons with text labels; `onSend` never fires for an empty draft.",
       },
     ],
   },
@@ -66,80 +70,77 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Not codemod-covered — AntD ships no dedicated AI-chat input of its own; a migration typically composes AntD's plain `Input.TextArea` (autoSize) with a custom send button, or reaches for Ant Design X's own chat components if that package is already in use.",
+        text: "Not codemod-covered: AntD has no AI chat input. Compose `Input.TextArea` (autoSize) with a send button, or use Ant Design X's `Sender`.",
       },
     ],
   },
 ];
 
-let messageId = 0;
-function nextId() {
-  messageId += 1;
-  return `m${messageId}`;
+function Composer() {
+  const [draft, setDraft] = useState(`What is due before the ${launch.title.toLowerCase()} on ${launch.date}?`);
+  const [listening, setListening] = useState(false);
+  const intent: AiChatInputIntent = draft.trim().startsWith("/") ? "command" : draft.trim().startsWith("?") ? "search" : "message";
+  return (
+    <AiChatInput
+      value={draft}
+      onValueChange={setDraft}
+      onSend={() => setDraft("")}
+      intent={intent}
+      placeholder="Ask about Tideline"
+      aria-label="Ask about Tideline"
+      dictation
+      dictating={listening}
+      onDictationToggle={setListening}
+    />
+  );
+}
+
+function PhoneChat() {
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { id: "a1", role: "user", content: `Who owns ${sync.title.toLowerCase()}?`, status: "sent" },
+    { id: "a2", role: "assistant", content: `${person(sync.assignee).name}. It is in ${project(sync.project).status.toLowerCase()}.`, status: "sent" },
+  ]);
+  return (
+    <Phone title="Assistant">
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <ChatThread messages={messages} />
+      </div>
+      <div style={{ padding: 12 }}>
+        <AiChatInput
+          placeholder="Ask about Tideline"
+          aria-label="Ask about Tideline"
+          onSend={(text) => setMessages((prev) => [...prev, { id: `a${prev.length + 1}`, role: "user", content: text, status: "sent" }])}
+        />
+      </div>
+    </Phone>
+  );
 }
 
 export default function AiChatInputPage() {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: nextId(), role: "assistant", content: "Ask me anything, or type / for a command." },
-  ]);
-  const [draft, setDraft] = useState("");
-  const [dictating, setDictating] = useState(false);
-  const intent: AiChatInputIntent = draft.trim().startsWith("/") ? "command" : draft.trim().startsWith("?") ? "search" : "message";
-
-  const handleSend = (text: string) => {
-    setMessages((prev) => [...prev, { id: nextId(), role: "user", content: text }]);
-    setDraft("");
-  };
-
   return (
     <Stack gap="lg">
       <Heading level={1}>AiChatInput</Heading>
-      <Text color="secondary">
-        A chat message composer — a growing multi-line field, an intent-aware primary button, and
-        an optional dictation toggle.
-      </Text>
+      <Text color="secondary">A composer that grows with the message.</Text>
 
-      <Stack gap="xs">
-        <Text size="sm" color="secondary">
-          Composed with ChatThread — type a plain message, or start with <code>/</code> (command)
-          or <code>?</code> (search) to see the button change
-        </Text>
-        <Box style={{ border: "1px solid var(--rebar-color-border, #e0e0e0)", borderRadius: 4, padding: "var(--rebar-space-md)" }}>
-          <Stack gap="sm">
-            <div style={{ height: 220, overflowY: "auto" }}>
-              <ChatThread messages={messages} />
-            </div>
-            <AiChatInput
-              value={draft}
-              onValueChange={setDraft}
-              onSend={handleSend}
-              intent={intent}
-              dictation
-              dictating={dictating}
-              onDictationToggle={setDictating}
-            />
-          </Stack>
-        </Box>
-      </Stack>
+      <DemoStage
+        title="Project assistant"
+        caption="Send, dictate, intent"
+        code={CODE}
+        states={[
+          { label: "Command", node: <AiChatInput intent="command" defaultValue="/export" aria-label="Command" /> },
+          { label: "Dictating", node: <AiChatInput dictation dictating placeholder="Listening" aria-label="Dictating" /> },
+          { label: "Disabled", node: <AiChatInput disabled placeholder="Ask Tideline" aria-label="Disabled" /> },
+        ]}
+      >
+        <Composer />
+      </DemoStage>
 
-      <Stack direction="row" gap="lg" style={{ flexWrap: "wrap", alignItems: "flex-start" }}>
-        <Stack gap="xs">
-          <Text size="sm" color="secondary">
-            intent=&quot;command&quot;
-          </Text>
-          <LivePreview>
-            <AiChatInput intent="command" defaultValue="/deploy staging" />
-          </LivePreview>
-        </Stack>
-        <Stack gap="xs">
-          <Text size="sm" color="secondary">
-            intent=&quot;search&quot;
-          </Text>
-          <LivePreview>
-            <AiChatInput intent="search" defaultValue="pricing docs" />
-          </LivePreview>
-        </Stack>
-      </Stack>
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Assistant on a phone" caption="Composer pinned under the thread" padding="none" widths={false}>
+        <div className="cs-grain" style={{ padding: 32, borderRadius: 0 }}>
+          <PhoneChat />
+        </div>
+      </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
