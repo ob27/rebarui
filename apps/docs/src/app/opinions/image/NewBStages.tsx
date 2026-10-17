@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button, Heading, Image, Stack, Text } from "rebar-ui";
 import { DemoStage } from "@/components/DemoStage";
-import { athicArt } from "@/fixtures/athic";
+import { athicArt } from "@/fixtures/athic-mobile";
 
 const CODE = `<Image src={cover.src} thumbSrc={cover.thumb} alt="Cross at dusk" lazy lazyMargin={300}
   fallbackColor="var(--rebar-color-tint-1)" onStateChange={(s) => cache(cover.id, s)} />`;

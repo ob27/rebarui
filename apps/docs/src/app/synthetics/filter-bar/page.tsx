@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Empty, FilterBar, Heading, Stack, Text } from "rebar-ui";
 import componentProps from "@/generated/component-props.json";
 import { PerspectiveGrid } from "@/fixtures/AthicBits";
-import { PERSPECTIVES, PERSPECTIVE_CATEGORIES, PERSPECTIVE_SORT } from "@/fixtures/athic";
+import { PERSPECTIVES, PERSPECTIVE_CATEGORIES, PERSPECTIVE_SORT } from "@/fixtures/athic-marketing";
 import type { Construct } from "@rebar-ui/placement";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";

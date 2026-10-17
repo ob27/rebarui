@@ -5,10 +5,11 @@ const css = readFileSync("src/theme.css", "utf8");
 const bad = [];
 for (const m of css.matchAll(/url\("\.\/(fonts\/[^"]+)"\)/g)) if (!existsSync(`src/${m[1]}`)) bad.push(`missing font ${m[1]}`);
 
-const block = (start) => { const i = css.indexOf(start); const j = css.indexOf("\n}\n", i); return css.slice(i, j); };
+// The first rule whose selector (possibly spread over several lines) matches `re`, up to its closing brace.
+const block = (re) => { const m = re.exec(css); if (!m) return ""; const j = css.indexOf("\n}\n", m.index); return css.slice(m.index, j); };
 const tokens = (b) => Object.fromEntries([...b.matchAll(/--rebar-([a-z0-9-]+):\s*([^;]+);/g)].map((x) => [x[1], x[2].trim()]));
-const light = tokens(block(":where(:root, [data-rebar-theme"));
-const dark = tokens(block(':where([data-theme="dark"]'));
+const light = tokens(block(/:where\(:root, \[data-rebar-theme="basilika"\][^{]*\{/));
+const dark = tokens(block(/:where\(\s*\[data-theme="dark"\][^{]*\{/));
 for (const k of ["color-primary", "color-text-primary", "color-bg-primary", "color-danger", "color-tint-1"]) if (!dark[k]) bad.push(`dark mode lacks ${k}`);
 
 const rgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));

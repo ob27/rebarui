@@ -3,8 +3,8 @@
 import type { CSSProperties, ReactNode } from "react";
 import { Button, DeviceStage, Heading, Text } from "rebar-ui";
 import { TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
-import { APP_TODAY, HERO_CHIPS, perspectiveArt } from "@/fixtures/athic";
-import type { Perspective } from "@/fixtures/athic";
+import { APP_TODAY, HERO_CHIPS, perspectiveArt } from "@/fixtures/athic-marketing";
+import type { Perspective } from "@/fixtures/athic-marketing";
 
 /** Shared pieces of the Athic marketing demos: the app on a phone, and a linked Perspective card. */
 

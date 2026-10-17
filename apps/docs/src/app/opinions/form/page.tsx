@@ -8,7 +8,7 @@ import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { PEOPLE, avatarOf, person, project } from "@/fixtures/tideline";
-import { CONTACT_ASIDE, CONTACT_TOPICS } from "@/fixtures/athic";
+import { CONTACT_ASIDE, CONTACT_TOPICS } from "@/fixtures/athic-marketing";
 
 const CODE = `<Form defaultValues={{ name: "Harbour rebrand", owner: "Maya Chen", due: "24 Oct" }} onSubmit={save}>
   <FormItem name="name" label="Project name" required>

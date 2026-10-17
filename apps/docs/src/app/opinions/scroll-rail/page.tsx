@@ -7,7 +7,7 @@ import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { FILES, PROJECTS, STATUS_TONE, project } from "@/fixtures/tideline";
 import { PerspectiveCard } from "@/fixtures/AthicBits";
-import { PERSPECTIVES } from "@/fixtures/athic";
+import { PERSPECTIVES } from "@/fixtures/athic-marketing";
 
 const RAIL = { "--rebar-scroll-rail-item-width": "15rem" } as React.CSSProperties;
 

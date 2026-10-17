@@ -7,7 +7,7 @@ import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { PhoneSheet, TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
-import { APP_ICONS, CHAT_ANSWER, CHAT_QUESTION, COVERS, COVER_TAGS } from "@/fixtures/athic";
+import { APP_ICONS, CHAT_ANSWER, CHAT_QUESTION, COVERS, COVER_TAGS } from "@/fixtures/athic-mobile";
 
 const CODE = `const [cover, setCover] = useState<string | null>("cover-4");
 const [tag, setTag] = useState<string | null>(null);

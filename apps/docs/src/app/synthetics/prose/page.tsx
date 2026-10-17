@@ -6,7 +6,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
-import { ARTICLE_MARKDOWN, ART_BLUE, PRIVACY_MARKDOWN, athicArt } from "@/fixtures/athic";
+import { ARTICLE_MARKDOWN, ART_BLUE, PRIVACY_MARKDOWN, athicArt } from "@/fixtures/athic-marketing";
 
 const CODE = `<Markdown source={privacyText} />
 

@@ -5,7 +5,7 @@ import { Button, ChatThread, Heading, Text } from "rebar-ui";
 import type { ChatMessage } from "rebar-ui";
 import { DemoStage } from "@/components/DemoStage";
 import { TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
-import { CHAT_ANSWER, CHAT_CITATIONS, CHAT_QUESTION, CRISIS_REPLY } from "@/fixtures/athic";
+import { CHAT_ANSWER, CHAT_CITATIONS, CHAT_QUESTION, CRISIS_REPLY } from "@/fixtures/athic-mobile";
 
 const CODE = `<ChatThread scrollToLatest onReachLatest={() => setUnread(0)} messages={[
   { id: "a", role: "assistant", content, citations, footer: <Button size="sm" variant="tertiary">Share answer</Button> },

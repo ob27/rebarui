@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CalendarHeatmap, Heading, Text } from "rebar-ui";
 import { DemoStage } from "@/components/DemoStage";
 import { TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
-import { ATTENDANCE_WEEKS } from "@/fixtures/athic";
+import { ATTENDANCE_WEEKS } from "@/fixtures/athic-mobile";
 
 const CODE = `<CalendarHeatmap layout="month-rows" cells={weeks} selected={picked} onCellPress={(c) => setPicked(c.date)}
   legend={{ on: "Attended Mass", off: "No record" }} aria-label="Mass attendance, past 52 weeks" />`;

@@ -7,7 +7,7 @@ import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
-import { ONBOARDING_SLIDES } from "@/fixtures/athic";
+import { ONBOARDING_SLIDES } from "@/fixtures/athic-mobile";
 
 const CODE = `<Onboarding
   slides={[{ icon: <CalendarIcon />, title: "Today’s readings", description: "Open Athic each day…", tint: "tint-1" }]}

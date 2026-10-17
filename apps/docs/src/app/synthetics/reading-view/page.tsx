@@ -7,7 +7,7 @@ import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
-import { BIBLE_CREDIT, GALATIANS_3, MASS_DAY, MASS_FIRST_READING, MASS_FIRST_READING_CITATION } from "@/fixtures/athic";
+import { BIBLE_CREDIT, GALATIANS_3, MASS_DAY, MASS_FIRST_READING, MASS_FIRST_READING_CITATION } from "@/fixtures/athic-mobile";
 
 const CODE = `<ReadingView title="Galatians 3" verses={verses} highlight={2}
   onVerseAction={(v) => addNote(v.num)} notedVerses={[1]} footer="Douay-Rheims translation (Challoner Revision)." />`;

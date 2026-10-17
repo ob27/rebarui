@@ -6,7 +6,7 @@ import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { AthicHeroMedia } from "@/fixtures/AthicBits";
-import { ART_NAVY, ATHIC_PITCH, ATHIC_SUB, athicArt } from "@/fixtures/athic";
+import { ART_NAVY, ATHIC_PITCH, ATHIC_SUB, athicArt } from "@/fixtures/athic-marketing";
 
 const CODE = `<HeroSplit
   eyebrow="Daily Catholic practice"

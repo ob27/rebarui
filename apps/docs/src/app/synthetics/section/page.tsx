@@ -5,7 +5,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
-import { HOME_CARDS } from "@/fixtures/athic";
+import { HOME_CARDS } from "@/fixtures/athic-marketing";
 
 const CODE = `<Section eyebrow="Every day" title="Your daily practice, in one place.">…</Section>
 <Section tone="tint" eyebrow="Perspectives" title="Reflections worth sitting with." lede="Essays, dialogues and letters on the Faith.">…</Section>

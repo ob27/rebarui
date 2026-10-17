@@ -5,7 +5,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
-import { ART_BLUE, ART_CRIMSON, athicArt } from "@/fixtures/athic";
+import { ART_BLUE, ART_CRIMSON, athicArt } from "@/fixtures/athic-marketing";
 
 const CODE = `<PageHeader kicker="Perspectives" title="Reflections worth sitting with." lede="Essays, dialogues and letters on the Faith." />
 

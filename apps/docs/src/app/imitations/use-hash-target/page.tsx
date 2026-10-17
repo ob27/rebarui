@@ -4,7 +4,7 @@ import { Accordion, AccordionItem, Heading, Stack, Text, useHashTarget } from "r
 import type { Construct } from "@rebar-ui/placement";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
-import { TRANSPARENCY } from "@/fixtures/athic";
+import { TRANSPARENCY } from "@/fixtures/athic-marketing";
 
 const CODE = `const ids = ["model", "journal", "data", "regions", "age"];
 const { target, open, setOpen } = useHashTarget(ids, { offset: "auto", focus: true });

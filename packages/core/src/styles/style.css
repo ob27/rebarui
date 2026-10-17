@@ -10461,6 +10461,7 @@ a.rebar-list-item-main {
   border: 2.5px solid currentColor;
   border-right-color: transparent;
   animation: rebar-new-a-spin 0.9s linear infinite;
+}
 /* ---- new-b: ThemeScope, AuthScreen, ImagePicker, ReadingView, Onboarding, additions ---- */
 
 /* ThemeScope: the theme re-declares the tokens; the wrapper only repaints its own surface. */
@@ -11164,6 +11165,7 @@ a.rebar-list-item-main {
 .rebar-onboarding-buttons > * { flex: 1; min-height: 48px; }
 @media (prefers-reduced-motion: reduce) {
   .rebar-onboarding-track, .rebar-onboarding-dot::after { transition: none; }
+}
 /* ---- new-c: marketing group (Section, HeroSplit, PageHeader, Prose/Markdown, FilterBar, ScrollRail itemWidth, Form status, hash target) ---- */
 
 /* Small-caps kicker shared by Section, HeroSplit and PageHeader. */
