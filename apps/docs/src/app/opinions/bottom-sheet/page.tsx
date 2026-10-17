@@ -45,6 +45,20 @@ const BLOCKS: Construct[] = [
     heading: "Migrating to Ant Design",
     body: [{ kind: "text", text: 'AntD has no direct equivalent. Migrate to antd\'s `Drawer` with `placement="bottom"` and drop the handle.' }],
   },
+  {
+    type: "doc-section",
+    heading: "Auto height and non-dismissible",
+    body: [
+      {
+        "kind": "text",
+        "text": "Pass `size=\"auto\"` to fit the content (up to `maxHeight`, default `85vh`; the body scrolls past that) instead of a fixed pixel height. `Drawer` takes the same props. `dismissible={false}` removes the grab bar and close button, disables drag-to-dismiss and ignores Esc and backdrop clicks, so only your own controls close it."
+      },
+      {
+        "kind": "code",
+        "code": "<BottomSheet open title=\"Pick one\" size=\"auto\" maxHeight=\"70vh\">...</BottomSheet>\\n<BottomSheet open title=\"Confirm\" dismissible={false} footer={<Button onClick={done}>Done</Button>} />"
+      }
+    ],
+  },
 ];
 
 const COLUMNS = (Object.keys(COLUMN_TITLES) as TaskColumn[]).map((id) => ({ id, title: COLUMN_TITLES[id] }));

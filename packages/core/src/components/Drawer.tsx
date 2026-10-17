@@ -23,8 +23,16 @@ export interface DrawerProps {
   className?: string;
   /** Which screen edge the panel slides in from. Defaults to "right". */
   side?: DrawerSide;
-  /** The panel's width in px for left/right, height in px for top/bottom. Defaults to 360. */
-  size?: number;
+  /** The panel's width in px for left/right, height in px for top/bottom. Defaults to 360. `"auto"`
+   * fits the content (up to `maxHeight` for top/bottom, 85vw for left/right) and the body scrolls
+   * past that. */
+  size?: number | "auto";
+  /** With `size="auto"` on top/bottom: the tallest the panel grows (a px number or any CSS length).
+   * Defaults to `85vh`. Ignored for a fixed `size`. */
+  maxHeight?: number | string;
+  /** When `false` the panel can only be closed by your own controls: no close button, no grab bar,
+   * no drag-to-dismiss, and Esc / a backdrop click do nothing. Defaults to `true`. */
+  dismissible?: boolean;
   /** Renders the overlay and panel inside this element (forwarded to the Radix portal) instead of
    * `document.body` -- e.g. a `DeviceFrame` screen, so the sheet stays within the frame. The
    * element should be positioned (`position: relative`); the overlay and panel then lay out
@@ -77,6 +85,8 @@ export function DrawerPanel({
   className,
   side = "right",
   size = 360,
+  maxHeight = "85vh",
+  dismissible = true,
   dataComponent,
   handle,
   dragToDismiss,
@@ -96,10 +106,19 @@ export function DrawerPanel({
   };
 
   const isHorizontal = side === "left" || side === "right";
-  const sizeStyle = isHorizontal ? { width: size } : { height: size };
+  const isAuto = size === "auto";
+  const sizeStyle = isAuto
+    ? isHorizontal
+      ? { maxWidth: "85vw" }
+      : { maxHeight }
+    : isHorizontal
+      ? { width: size }
+      : { height: size };
+  const contentRef = useRef<HTMLDivElement>(null);
+  const panelSize = () => (isAuto ? contentRef.current?.offsetHeight || 360 : (size as number));
   const hasVisibleTitle = title !== undefined && title !== null && title !== "";
 
-  const dragEnabled = Boolean(dragToDismiss) && side === "bottom";
+  const dragEnabled = Boolean(dragToDismiss) && side === "bottom" && dismissible;
   const [dragOffset, setDragOffset] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const draggingRef = useRef(false);
@@ -114,12 +133,13 @@ export function DrawerPanel({
     setIsDragging(true);
     setDragOffset(0);
     let latestDelta = 0;
+    const extent = panelSize();
 
     const handleMove = (moveEvent: PointerEvent) => {
       if (!draggingRef.current) return;
       // Only downward drag moves the sheet — dragging up shouldn't pull it past its resting
       // (fully open) position.
-      latestDelta = clamp(moveEvent.clientY - startYRef.current, 0, size * 1.5);
+      latestDelta = clamp(moveEvent.clientY - startYRef.current, 0, extent * 1.5);
       setDragOffset(latestDelta);
     };
     const handleUp = () => {
@@ -128,7 +148,7 @@ export function DrawerPanel({
       window.removeEventListener("pointerup", handleUp);
       setIsDragging(false);
       setDragOffset(null);
-      if (latestDelta >= size * 0.25) {
+      if (latestDelta >= extent * 0.25) {
         handleOpenChange(false);
       }
     };
@@ -159,8 +179,14 @@ export function DrawerPanel({
           data-rebar-contained={container ? "true" : undefined}
           style={{ ...sizeStyle, ...dragStyle }}
           aria-modal="true"
+          ref={contentRef}
+          data-rebar-size={isAuto ? "auto" : undefined}
+          data-rebar-dismissible={dismissible ? undefined : "false"}
+          onEscapeKeyDown={dismissible ? undefined : (e) => e.preventDefault()}
+          onPointerDownOutside={dismissible ? undefined : (e) => e.preventDefault()}
+          onInteractOutside={dismissible ? undefined : (e) => e.preventDefault()}
         >
-          {dragEnabled ? (
+          {!dismissible ? null : dragEnabled ? (
             <div
               className="rebar-drawer-drag-handle"
               data-rebar-part="drag-handle"
@@ -182,6 +208,7 @@ export function DrawerPanel({
                 {hasVisibleTitle ? title : defaultAccessibleLabel(dataComponent)}
               </Heading>
             </RadixDialog.Title>
+            {dismissible ? (
             <RadixDialog.Close
               className="rebar-drawer-close"
               data-rebar-part="close"
@@ -192,6 +219,7 @@ export function DrawerPanel({
                 <path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             </RadixDialog.Close>
+            ) : null}
           </div>
           {description ? (
             <RadixDialog.Description data-rebar-part="description">

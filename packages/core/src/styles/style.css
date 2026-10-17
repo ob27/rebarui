@@ -11880,3 +11880,22 @@ a.rebar-list-item-main {
 .rebar-mobile-tab-bar:not([data-rebar-position="static"]) {
   padding-bottom: calc(var(--rebar-tab-bar-padding-bottom, var(--rebar-space-xs, 4px)) + var(--rebar-tab-bar-safe-area, env(safe-area-inset-bottom, 0px)));
 }
+
+/* ---- fixes-2 ---- */
+/* Drawer / BottomSheet size="auto": fit the content up to maxHeight; the body scrolls past that. */
+.rebar-drawer-content[data-rebar-size="auto"] {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: auto;
+}
+.rebar-drawer-content[data-rebar-size="auto"] > .rebar-dialog-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.rebar-drawer-content[data-rebar-size="auto"] > .rebar-dialog-header,
+.rebar-drawer-content[data-rebar-size="auto"] > .rebar-dialog-footer,
+.rebar-drawer-content[data-rebar-size="auto"] > .rebar-drawer-drag-handle {
+  flex: 0 0 auto;
+}
