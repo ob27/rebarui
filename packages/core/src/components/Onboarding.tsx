@@ -41,6 +41,9 @@ export interface OnboardingProps extends Omit<ComponentPropsWithoutRef<"section"
   finishing?: boolean;
   /** Fills the viewport with safe-area padding. */
   fullscreen?: boolean;
+  /** `"classic"`: a 480px column with a round filled icon, a plain title and copy, small round dots and compact pill buttons (tokens:
+   * `--rebar-onboarding-*`, `--rebar-classic-button-*`). Default `"default"`. */
+  appearance?: "default" | "classic";
 }
 
 const SWIPE_THRESHOLD_PX = 48;
@@ -68,6 +71,7 @@ export function Onboarding({
   header,
   finishing = false,
   fullscreen = false,
+  appearance,
   className,
   ...props
 }: OnboardingProps) {
@@ -121,6 +125,7 @@ export function Onboarding({
       className={clsx("rebar-onboarding", className)}
       data-rebar-component="onboarding"
       data-rebar-fullscreen={fullscreen || undefined}
+      data-rebar-appearance={appearance === "classic" ? "classic" : undefined}
       data-rebar-state={finishing ? "finishing" : undefined}
       aria-roledescription="carousel"
       aria-label="Introduction"
@@ -208,11 +213,12 @@ export function Onboarding({
         </div>
         <div className="rebar-onboarding-buttons" data-rebar-part="buttons">
           {current > 0 && !finishing ? (
-            <Button variant="secondary" onClick={() => go(current - 1)}>
+            <Button variant="secondary" appearance={appearance === "classic" ? "classic" : undefined} onClick={() => go(current - 1)}>
               {L.back}
             </Button>
           ) : null}
           <Button
+            appearance={appearance === "classic" ? "classic" : undefined}
             loading={finishing && isLast}
             disabled={finishing && !isLast}
             onClick={() => (isLast ? onDone?.() : go(current + 1))}

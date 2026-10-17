@@ -23,16 +23,21 @@ export interface ImagePickerProps extends Omit<ComponentPropsWithoutRef<"div">, 
   onSelect?: (item: ImagePickerItem) => void;
   /** This tile shows a spinner and every tile ignores presses until it clears. */
   busyId?: string | null;
-  /** Default 3. */
-  columns?: 3 | 4;
+  /** Default 3. `"auto"` fits as many tiles as the width allows (each at least `--rebar-image-picker-tile-min`, default 90px). */
+  columns?: 3 | 4 | "auto";
+  /** `"classic"`: the plain mobile-UI picker. Tiles are square 10px-radius thumbnails with a 3px border (the selected or busy one gets the
+   * bright primary border, no badge or spinner, the rest fade when the picker is disabled), a 10px gap and an optional scroll height
+   * (`--rebar-image-picker-max-height`); tag chips are flat square-cornered chips with a corner tick when on; the empty message is plain
+   * left-aligned text. Default `"default"`. */
+  appearance?: "default" | "classic";
   /** Renders the tag chip row above the grid, with an "All" chip first. Omit for no filter. */
   tags?: string[];
   /** Controlled tag (`null` = all). Items are filtered to it. */
   activeTag?: string | null;
   defaultActiveTag?: string | null;
   onTagChange?: (tag: string | null) => void;
-  /** Label of the first chip. Default "All". */
-  allLabel?: string;
+  /** Label of the first chip. Default "All"; `null` leaves the chip out (turn a tag off by pressing it again; needs `multiTag`). */
+  allLabel?: string | null;
   /** `"icon"`: 22% superellipse tiles for app icons. */
   shape?: "square" | "icon";
   loading?: boolean;
@@ -65,6 +70,7 @@ export function ImagePicker({
   onSelect,
   busyId = null,
   columns = 3,
+  appearance,
   tags,
   activeTag,
   defaultActiveTag = null,
@@ -136,7 +142,7 @@ export function ImagePicker({
   } else if (loading) {
     body = (
       <div className="rebar-image-picker-grid" data-rebar-part="grid" data-rebar-loading="true" aria-busy="true">
-        {Array.from({ length: columns * 3 }, (_, i) => (
+        {Array.from({ length: (columns === "auto" ? 3 : columns) * 3 }, (_, i) => (
           <span key={i} className="rebar-image-picker-tile" data-rebar-skeleton="true" aria-hidden="true" />
         ))}
       </div>
@@ -195,12 +201,13 @@ export function ImagePicker({
       data-rebar-component="image-picker"
       data-rebar-shape={shape}
       data-rebar-columns={columns}
+      data-rebar-appearance={appearance === "classic" ? "classic" : undefined}
       data-rebar-disabled={disabled ? "true" : undefined}
       {...props}
     >
       {tags ? (
         <div className="rebar-image-picker-tags" data-rebar-part="tags" role="group" aria-label="Filter by tag">
-          {[null, ...tags].map((t) => (
+          {(allLabel === null ? tags : [null, ...tags]).map((t) => (
             <button
               key={t ?? "__all"}
               type="button"

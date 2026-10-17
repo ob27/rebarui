@@ -42,6 +42,11 @@ const BLOCKS: Construct[] = [
     heading: "Migrating to Ant Design",
     body: [{ kind: "text", text: "AntD Mobile's `Swiper` plus `Steps`-style dots is the closest match. Map `slides` to `Swiper.Item`s and keep `onDone` on the last item's button." }],
   },
+  {
+    type: "doc-section",
+    heading: 'appearance="classic"',
+    body: [{ kind: "text", text: '`appearance="classic"` is a 480px column with a round filled icon, plain title and copy, 8px dots and compact pill buttons. Tokens: `--rebar-onboarding-max-width / -icon-bg / -title-color / -description-color / -muted / -dot / -dot-on` plus the classic button tokens.' }],
+  },
 ];
 
 const heart = (

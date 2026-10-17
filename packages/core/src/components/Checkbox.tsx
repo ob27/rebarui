@@ -1,5 +1,4 @@
 import { forwardRef, useEffect, useId, useRef } from "react";
-import type { Ref } from "react";
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
 import type { ReactNode } from "react";
 import clsx from "clsx";
@@ -18,7 +17,9 @@ export interface CheckboxProps
    * box and tick, sized by `--rebar-checkbox-native-size` and tinted by `--rebar-checkbox-accent`). The label, `variant`,
    * `description`, `checked` / `onCheckedChange` and `invalid` work the same; the ref then points at the `<input>`.
    */
-  appearance?: "custom" | "native";
+  appearance?: "custom" | "default" | "native";
+  /** `className` for the label element (with `appearance="native"`, where `className` goes to the input). */
+  labelClassName?: string;
   /** Marks the field as failing validation: sets `aria-invalid="true"` and `data-rebar-invalid`. */
   invalid?: boolean;
   /** Force bionic reading on/off for the label, overriding the ambient data-rebar-bionic setting. */
@@ -27,7 +28,7 @@ export interface CheckboxProps
 }
 
 export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(function Checkbox(
-  { className, children, bionic, bionicOptions, id, invalid, description, variant = "default", appearance = "custom", "aria-describedby": describedBy, ...props },
+  { className, children, bionic, bionicOptions, id, invalid, description, variant = "default", appearance = "custom", labelClassName, "aria-describedby": describedBy, ...props },
   ref,
 ) {
   const nativeRef = useRef<HTMLInputElement | null>(null);
@@ -43,7 +44,7 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(function Ch
   if (appearance === "native") {
     const { checked, defaultChecked, onCheckedChange, disabled, required, name, value, form, ...rest } = props;
     return (
-      <label className="rebar-checkbox-label" htmlFor={generatedId} data-rebar-variant={variant === "card" ? "card" : undefined} data-rebar-appearance="native">
+      <label className={clsx("rebar-checkbox-label", labelClassName)} htmlFor={generatedId} data-rebar-variant={variant === "card" ? "card" : undefined} data-rebar-appearance="native">
         <input
           {...(rest as object)}
           ref={(node) => {

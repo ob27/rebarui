@@ -59,6 +59,11 @@ const BLOCKS: Construct[] = [
       }
     ],
   },
+  {
+    type: "doc-section",
+    heading: 'appearance="popup"',
+    body: [{ kind: "text", text: '`appearance="popup"` is the flat mobile-UI popup: no close button (kept, visually hidden), no grab bar unless `showHandle`, an eyebrow title (or `titleStyle="heading"`), a body that scrolls between header and footer, content height by default, and popups stack in the order they opened. Tokens: `--rebar-popup-bg / -text / -radius / -padding / -title-color / -title-padding / -hairline / -footer-padding / -handle-bg / -handle-margin / -bleed`.' }],
+  },
 ];
 
 const COLUMNS = (Object.keys(COLUMN_TITLES) as TaskColumn[]).map((id) => ({ id, title: COLUMN_TITLES[id] }));

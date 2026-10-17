@@ -39,6 +39,11 @@ const BLOCKS: Construct[] = [
     heading: "Migrating to Ant Design",
     body: [{ kind: "text", text: "AntD's `message` and `notification` are imperative calls rather than a mounted, controlled component: a structural difference, not a prop rename." }],
   },
+  {
+    type: "doc-section",
+    heading: 'appearance="classic"',
+    body: [{ kind: "text", text: '`toast(msg, { appearance: "classic" })` (and the `success` / `error` / `info` / `loading` shortcuts) draws the plain centred dark pill: text only, 204px max, one at a time, 2s. `confirm({ appearance: "classic", closeOnMaskClick: false })` draws the compact alert with two split text buttons.' }],
+  },
 ];
 
 type Kind = "success" | "error" | "warning" | "info";

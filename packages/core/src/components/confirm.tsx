@@ -19,6 +19,11 @@ export interface ConfirmOptions {
   destructive?: boolean;
   /** `"inline"`: two equal buttons. `"stacked"`: full width with confirm on top, for long labels. Default `"inline"`. */
   layout?: "inline" | "stacked";
+  /** `"classic"`: the mobile-UI alert (a compact 8px-radius card, bold sans title, a split row of two text buttons under a hairline,
+   * confirm bold on the right). Default `"default"`. */
+  appearance?: "default" | "classic";
+  /** `false`: a tap on the dim layer does not dismiss (Escape still cancels). Default `true`. */
+  closeOnMaskClick?: boolean;
   /** Keeps the dialog open, confirm loading and cancel disabled, until this settles. A rejection shows an error toast and stays open. */
   onConfirm?: () => Promise<void> | void;
 }
@@ -101,12 +106,13 @@ export function ConfirmHost() {
       }}
     >
       <RadixDialog.Portal>
-        <RadixDialog.Overlay className="rebar-dialog-overlay" data-rebar-part="overlay" />
+        <RadixDialog.Overlay className="rebar-dialog-overlay" data-rebar-part="overlay" data-rebar-appearance={options?.appearance === "classic" ? "classic" : undefined} />
         <RadixDialog.Content
           className={clsx("rebar-confirm")}
           data-rebar-component="confirm"
           data-rebar-destructive={destructive ? "true" : undefined}
           data-rebar-layout={options?.layout === "stacked" ? "stacked" : "inline"}
+          data-rebar-appearance={options?.appearance === "classic" ? "classic" : undefined}
           aria-busy={busy || undefined}
           onOpenAutoFocus={(event) => {
             if (destructive && cancelRef.current) {
@@ -115,7 +121,7 @@ export function ConfirmHost() {
             }
           }}
           onEscapeKeyDown={(e) => busy && e.preventDefault()}
-          onInteractOutside={(e) => busy && e.preventDefault()}
+          onInteractOutside={(e) => (busy || options?.closeOnMaskClick === false) && e.preventDefault()}
         >
           <RadixDialog.Title className="rebar-confirm-title" data-rebar-part="title">
             {options?.title}

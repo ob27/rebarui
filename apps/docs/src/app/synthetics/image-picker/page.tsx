@@ -56,6 +56,11 @@ const BLOCKS: Construct[] = [
       }
     ],
   },
+  {
+    type: "doc-section",
+    heading: 'appearance="classic", columns="auto"',
+    body: [{ kind: "text", text: '`appearance="classic"` draws 10px-radius square tiles with a 3px border (bright primary when selected or busy), flat chips with a corner tick, and a plain empty message; `columns="auto"` fits tiles at least `--rebar-image-picker-tile-min` wide; `allLabel={null}` drops the All chip. Tokens: `--rebar-image-picker-gap / -max-height / -tile-radius / -tile-bg`, `--rebar-classic-chip-*`.' }],
+  },
 ];
 
 export default function ImagePickerPage() {

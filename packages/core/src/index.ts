@@ -883,3 +883,5 @@ export type { UseHashTargetOptions, UseHashTargetResult } from "./useHashTarget"
 
 export { Chip } from "./components/Chip";
 export type { ChipProps } from "./components/Chip";
+// parity-a4
+export type { ToastAppearance } from "./components/toaster";

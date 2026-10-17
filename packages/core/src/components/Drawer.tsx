@@ -1,9 +1,26 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { useSchemeAttr } from "./ThemeScope";
 import type { PointerEvent as ReactPointerEvent, ReactNode } from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { Heading } from "./Heading";
+
+// Popup sheets stack in the order they were opened (a menu keeps showing under the dialog or sheet it opened, each dimmed by the one
+// above): every open popup takes the next level and its overlay and panel z-index rise with it. Opt-in: only `appearance="popup"` uses it.
+let popupDepth = 0;
+function usePopupLevel(active: boolean): number {
+  const [level, setLevel] = useState(0);
+  useEffect(() => {
+    if (!active) return;
+    popupDepth += 1;
+    setLevel(popupDepth);
+    return () => {
+      popupDepth -= 1;
+      setLevel(0);
+    };
+  }, [active]);
+  return level;
+}
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
@@ -38,6 +55,15 @@ export interface DrawerProps {
    * element should be positioned (`position: relative`); the overlay and panel then lay out
    * `position: absolute` within it (`data-rebar-contained="true"`). */
   container?: HTMLElement | null;
+  /** `"popup"` (bottom sheets): the flat mobile-UI popup. A plain panel (radius, fill and padding from the
+   * `--rebar-popup-*` tokens), no close button (kept for assistive tech, visually hidden) and no grab bar unless
+   * `showHandle`; the header is just the title (see `titleStyle`), the body scrolls between a fixed header and footer.
+   * Default `"default"`: unchanged. */
+  appearance?: "default" | "popup";
+  /** With `appearance="popup"`: shows the grab bar above the title. Default `false`. */
+  showHandle?: boolean;
+  /** With `appearance="popup"`: `"eyebrow"` (default, small uppercase muted label) or `"heading"` (a serif display title). */
+  titleStyle?: "eyebrow" | "heading";
 }
 
 /**
@@ -84,13 +110,16 @@ export function DrawerPanel({
   children,
   className,
   side = "right",
-  size = 360,
+  size: sizeProp,
   maxHeight = "85vh",
   dismissible = true,
   dataComponent,
   handle,
   dragToDismiss,
   container,
+  appearance,
+  showHandle,
+  titleStyle,
 }: DrawerPanelProps) {
   const schemeAttr = useSchemeAttr();
   // Same controlled/uncontrolled pattern as Dialog: internally managed regardless of whether the
@@ -105,6 +134,8 @@ export function DrawerPanel({
     onOpenChange?.(next);
   };
 
+  // A popup bottom sheet defaults to its content height; every other panel to 360px.
+  const size = sizeProp ?? (appearance === "popup" && side === "bottom" ? "auto" : 360);
   const isHorizontal = side === "left" || side === "right";
   const isAuto = size === "auto";
   const sizeStyle = isAuto
@@ -116,6 +147,8 @@ export function DrawerPanel({
       : { height: size };
   const contentRef = useRef<HTMLDivElement>(null);
   const panelSize = () => (isAuto ? contentRef.current?.offsetHeight || 360 : (size as number));
+  const popup = appearance === "popup";
+  const popupLevel = usePopupLevel(popup && currentOpen);
   const hasVisibleTitle = title !== undefined && title !== null && title !== "";
 
   const dragEnabled = Boolean(dragToDismiss) && side === "bottom" && dismissible;
@@ -169,15 +202,20 @@ export function DrawerPanel({
             {...schemeAttr}
           className="rebar-dialog-overlay"
           data-rebar-part="overlay"
+          data-rebar-appearance={popup ? "popup" : undefined}
           data-rebar-contained={container ? "true" : undefined}
+          style={popupLevel ? { zIndex: 1000 + popupLevel * 10 } : undefined}
         />
         <RadixDialog.Content
             {...schemeAttr}
           className={clsx("rebar-drawer-content", `rebar-drawer-content-${side}`, className)}
           data-rebar-component={dataComponent}
           data-rebar-side={side}
+          data-rebar-appearance={popup ? "popup" : undefined}
+          data-rebar-title-style={popup && titleStyle === "heading" ? "heading" : undefined}
+          data-rebar-handle={popup && showHandle ? "true" : undefined}
           data-rebar-contained={container ? "true" : undefined}
-          style={{ ...sizeStyle, ...dragStyle }}
+          style={{ ...sizeStyle, ...dragStyle, ...(popupLevel ? { zIndex: 1001 + popupLevel * 10 } : null) }}
           aria-modal="true"
           ref={contentRef}
           data-rebar-size={isAuto ? "auto" : undefined}

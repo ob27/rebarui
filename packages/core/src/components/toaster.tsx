@@ -4,6 +4,8 @@ import clsx from "clsx";
 
 export type ToastKind = "info" | "success" | "error" | "loading";
 export type ToastPosition = "top" | "center" | "bottom";
+/** `"classic"`: the mobile-UI toast: a compact dark pill centred on the screen, text only (no icon, no tint per type), one at a time, 2s. */
+export type ToastAppearance = "default" | "classic";
 
 export interface ToastOptions {
   /** Icon and colour. Default `"info"` (the shortcuts set it for you). */
@@ -16,6 +18,8 @@ export interface ToastOptions {
   action?: { label: string; onClick: () => void };
   /** The same id replaces the toast instead of stacking a new one. */
   id?: string;
+  /** `"classic"` draws the plain centred pill (see `ToastAppearance`); `position` is ignored. Default `"default"`. */
+  appearance?: ToastAppearance;
 }
 
 interface ToastEntry {
@@ -24,6 +28,7 @@ interface ToastEntry {
   type: ToastKind;
   duration: number | null;
   position: ToastPosition;
+  appearance: ToastAppearance;
   action?: { label: string; onClick: () => void };
   /** Bumped when an entry is replaced, to restart its timer. */
   version: number;
@@ -39,9 +44,10 @@ const subscribe = (l: () => void) => {
 };
 const snapshot = () => entries;
 
-const defaultDuration = (type: ToastKind, given: number | null | undefined): number | null => {
+const defaultDuration = (type: ToastKind, given: number | null | undefined, appearance?: ToastAppearance): number | null => {
   if (given !== undefined) return given;
   if (type === "loading") return null;
+  if (appearance === "classic") return 2000;
   return type === "error" ? 4000 : 2500;
 };
 
@@ -53,8 +59,9 @@ function show(message: ReactNode, options: ToastOptions = {}): string {
     id,
     message,
     type,
-    duration: defaultDuration(type, options.duration),
+    duration: defaultDuration(type, options.duration, options.appearance),
     position: options.position ?? "bottom",
+    appearance: options.appearance ?? "default",
     action: options.action,
     version: (existing?.version ?? 0) + 1,
   };
@@ -126,7 +133,15 @@ export function __resetToasts() {
   emit();
 }
 
-function ToastGlyph({ type }: { type: ToastKind }) {
+function ToastGlyph({ type, appearance }: { type: ToastKind; appearance?: ToastAppearance }) {
+  if (appearance === "classic") {
+    // Text only, except loading: a 48px ring above the text.
+    return type === "loading" ? (
+      <svg className="rebar-toaster-ring" data-rebar-part="spinner" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <circle cx="16" cy="16" r="15" fill="transparent" strokeWidth="2" strokeLinecap="square" />
+      </svg>
+    ) : null;
+  }
   if (type === "loading") return <span className="rebar-toaster-spinner" data-rebar-part="spinner" aria-hidden="true" />;
   return (
     <span className="rebar-toaster-icon" data-rebar-part="icon" aria-hidden="true">
@@ -145,11 +160,12 @@ export interface ToastViewProps {
   position?: ToastPosition;
   /** Draws the toast as an older one in a stack (smaller, faded). */
   stacked?: boolean;
+  appearance?: ToastAppearance;
   className?: string;
 }
 
 /** One toast, drawn. The provider renders these; use it directly for static illustrations and tests. */
-export function ToastView({ message, type = "info", action, position = "bottom", stacked, className }: ToastViewProps) {
+export function ToastView({ message, type = "info", action, position = "bottom", stacked, appearance, className }: ToastViewProps) {
   return (
     <div
       className={clsx("rebar-toaster-toast", className)}
@@ -157,10 +173,11 @@ export function ToastView({ message, type = "info", action, position = "bottom",
       data-rebar-type={type}
       data-rebar-position={position}
       data-rebar-stacked={stacked ? "true" : undefined}
+      data-rebar-appearance={appearance === "classic" ? "classic" : undefined}
       role={type === "error" ? "alert" : "status"}
       aria-live={type === "error" ? "assertive" : "polite"}
     >
-      <ToastGlyph type={type} />
+      <ToastGlyph type={type} appearance={appearance} />
       <span className="rebar-toaster-message" data-rebar-part="message">
         {message}
       </span>
@@ -194,6 +211,7 @@ function TimedToast({ entry, stacked }: { entry: ToastEntry; stacked: boolean })
         message={entry.message}
         type={entry.type}
         position={entry.position}
+        appearance={entry.appearance}
         stacked={stacked}
         action={
           entry.action
@@ -218,10 +236,11 @@ export const ToasterHostedContext = createContext(false);
 export function ToasterHost({ max = 3 }: { max?: number }) {
   const list = useSyncExternalStore(subscribe, snapshot, snapshot);
   const positions: ToastPosition[] = ["top", "center", "bottom"];
+  const classic = list.filter((e) => e.appearance === "classic").slice(-1);
   return (
     <>
       {positions.map((position) => {
-        const inPosition = list.filter((e) => e.position === position);
+        const inPosition = list.filter((e) => e.position === position && e.appearance !== "classic");
         if (inPosition.length === 0) return null;
         const visible = inPosition.slice(-max);
         return (
@@ -232,6 +251,13 @@ export function ToasterHost({ max = 3 }: { max?: number }) {
           </div>
         );
       })}
+      {classic.length ? (
+        <div key="classic" className="rebar-toaster" data-rebar-component="toaster" data-rebar-position="center" data-rebar-appearance="classic" role="region" aria-label="Notifications">
+          {classic.map((entry) => (
+            <TimedToast key={entry.id} entry={entry} stacked={false} />
+          ))}
+        </div>
+      ) : null}
     </>
   );
 }

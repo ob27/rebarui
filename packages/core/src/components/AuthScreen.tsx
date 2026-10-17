@@ -32,6 +32,30 @@ export interface AuthScreenProps extends Omit<ComponentPropsWithoutRef<"section"
   progress?: AuthScreenProgress;
   /** Locks the form (fields disabled, footer links inert) while a request runs. */
   busy?: boolean;
+  /** Opt-in photo backdrop: `image` is painted `cover` and centred behind the screen, and `overlay` (any
+   * CSS `background` value, usually a gradient) is laid over it. The same values are exposed as
+   * `--rebar-auth-backdrop-image` / `--rebar-auth-backdrop-overlay` on the root. Default: none. */
+  backdrop?: { image: string; overlay?: string };
+  /** `"translucent"`: glass fields (a tinted fill and hairline in the inverse text colour, no focus ring,
+   * sized by the `--rebar-auth-field-*` tokens) for use over a backdrop. Default `"solid"`: the themed pill field. */
+  fieldStyle?: "solid" | "translucent";
+  /** `"classic"`: compact buttons in the form column (7px 12px, 17px / 1.4, 1px border; the primary is the
+   * inverse (cream) fill, the secondary an outline), with a pressed overlay and a dots-only loading state. Default `"default"`. */
+  buttonStyle?: "default" | "classic";
+  /** `"plain"`: ghost links (tertiary buttons in the form column and the footer) render as small plain
+   * text, 13px at reduced opacity, no hit-area padding or hover fill. Default `"default"`. */
+  linkStyle?: "default" | "plain";
+  /** Content above the title in the column (a notice, a disclaimer). */
+  lead?: ReactNode;
+  /** Caps the column (logo, lead, title, description and form each at this width, centred) for a reading column on a wide screen:
+   * a CSS length or a number of px. Default: the full width of the screen. */
+  columnWidth?: string | number;
+  /** `"column"`: the screen is a centred column (`--rebar-auth-frame-width`, default 480px) on `--rebar-auth-frame-bg` instead of the
+   * full width, so on a wide viewport the page behind shows either side. Default `"full"`. */
+  frame?: "full" | "column";
+  /** `"inline"`: the footer follows the form in the same centred column (with the column gap) instead of
+   * sitting pinned to the bottom edge. Default `"pinned"`. */
+  footerPlacement?: "pinned" | "inline";
 }
 
 /**
@@ -52,7 +76,16 @@ export const AuthScreen = forwardRef<HTMLElement, AuthScreenProps>(function Auth
     header,
     progress,
     busy = false,
+    backdrop,
+    fieldStyle,
+    buttonStyle,
+    linkStyle,
+    footerPlacement,
+    frame,
+    lead,
+    columnWidth,
     className,
+    style,
     ...props
   },
   ref,
@@ -62,6 +95,24 @@ export const AuthScreen = forwardRef<HTMLElement, AuthScreenProps>(function Auth
     event.preventDefault();
     event.stopPropagation();
   };
+  const footerNode = footer ? (
+    <div
+      className="rebar-auth-screen-footer"
+      data-rebar-part="footer"
+      aria-disabled={busy || undefined}
+      onClickCapture={blockWhenBusy}
+    >
+      {footer}
+    </div>
+  ) : null;
+  const inlineFooter = footerPlacement === "inline";
+  const columnStyle = columnWidth !== undefined ? ({ "--rebar-auth-column-width": typeof columnWidth === "number" ? `${columnWidth}px` : columnWidth } as Record<string, string>) : undefined;
+  const backdropStyle = backdrop
+    ? ({
+        "--rebar-auth-backdrop-image": `url(${JSON.stringify(backdrop.image)})`,
+        ...(backdrop.overlay ? { "--rebar-auth-backdrop-overlay": backdrop.overlay } : null),
+      } as Record<string, string>)
+    : undefined;
   return (
     <section
       ref={ref}
@@ -70,9 +121,18 @@ export const AuthScreen = forwardRef<HTMLElement, AuthScreenProps>(function Auth
       data-rebar-tone={tone}
       data-rebar-align={align}
       data-rebar-busy={busy || undefined}
+      data-rebar-backdrop={backdrop ? "photo" : undefined}
+      data-rebar-field-style={fieldStyle && fieldStyle !== "solid" ? fieldStyle : undefined}
+      data-rebar-button-style={buttonStyle && buttonStyle !== "default" ? buttonStyle : undefined}
+      data-rebar-link-style={linkStyle && linkStyle !== "default" ? linkStyle : undefined}
+      data-rebar-footer={inlineFooter ? "inline" : undefined}
+      data-rebar-frame={frame === "column" ? "column" : undefined}
+      data-rebar-column={columnWidth !== undefined ? "true" : undefined}
       aria-busy={busy || undefined}
+      style={backdropStyle || columnStyle ? { ...backdropStyle, ...columnStyle, ...style } : style}
       {...props}
     >
+      {backdrop ? <div className="rebar-auth-screen-backdrop" data-rebar-part="backdrop" aria-hidden="true" /> : null}
       {header ? (
         <div className="rebar-auth-screen-header" data-rebar-part="header">
           {header}
@@ -82,6 +142,11 @@ export const AuthScreen = forwardRef<HTMLElement, AuthScreenProps>(function Auth
         {logo ? (
           <div className="rebar-auth-screen-logo" data-rebar-part="logo">
             {logo}
+          </div>
+        ) : null}
+        {lead ? (
+          <div className="rebar-auth-screen-lead" data-rebar-part="lead">
+            {lead}
           </div>
         ) : null}
         {progress ? (
@@ -122,17 +187,9 @@ export const AuthScreen = forwardRef<HTMLElement, AuthScreenProps>(function Auth
             {children}
           </fieldset>
         ) : null}
+        {inlineFooter ? footerNode : null}
       </div>
-      {footer ? (
-        <div
-          className="rebar-auth-screen-footer"
-          data-rebar-part="footer"
-          aria-disabled={busy || undefined}
-          onClickCapture={blockWhenBusy}
-        >
-          {footer}
-        </div>
-      ) : null}
+      {inlineFooter ? null : footerNode}
     </section>
   );
 });
