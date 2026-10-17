@@ -2952,3 +2952,5 @@ textarea.rebar-input {
   transition: none;
 }
 .rebar-radio.rebar-radio-native:focus-visible { outline: var(--rebar-radio-native-focus-outline, -webkit-focus-ring-color auto 1px); outline-offset: var(--rebar-radio-native-focus-outline-offset, 0px); }
+.rebar-checkbox-label { align-items: var(--rebar-checkbox-label-align, center); }
+.rebar-radio.rebar-radio-native { margin: var(--rebar-radio-native-margin, 3px 3px 0 5px); }
