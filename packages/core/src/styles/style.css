@@ -13330,3 +13330,40 @@ a.rebar-list-item-main {
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-buttons { gap: 10px; }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-buttons > * { min-height: 0; }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-brand { display: flex; }
+
+/* ---- parity-r1: grouped lists as a warm panel, ListSection label and footer type (opt-in properties; every default is the previous value) ---- */
+.rebar-list[data-rebar-variant="grouped"] {
+  background: var(--rebar-list-grouped-bg, var(--rebar-color-bg-raised, var(--rebar-color-bg-primary, #ffffff)));
+  border-width: var(--rebar-list-grouped-border-width, 1px);
+  border-radius: var(--rebar-list-grouped-radius, 22px);
+  padding: var(--rebar-list-grouped-padding, 0);
+}
+.rebar-list[data-rebar-variant="grouped"] > .rebar-list-item {
+  background: var(--rebar-list-grouped-item-bg, var(--rebar-color-bg-raised, var(--rebar-color-bg-primary, #ffffff)));
+}
+.rebar-list[data-rebar-variant="grouped"] > .rebar-list-item + .rebar-list-item {
+  border-top-width: var(--rebar-list-grouped-divider-width, 1px);
+  border-top-color: var(--rebar-list-grouped-divider-color, var(--rebar-color-border, #e0e0e0));
+}
+.rebar-list-item-chevron { font-size: var(--rebar-list-item-chevron-size, inherit); color: var(--rebar-list-item-chevron-color, var(--rebar-color-text-secondary, #757575)); }
+.rebar-list-item-chevron svg { width: var(--rebar-list-item-chevron-size, 1.2em); height: var(--rebar-list-item-chevron-size, 1.2em); }
+.rebar-list-item-description, .rebar-list-item-meta { color: var(--rebar-list-item-meta-color, var(--rebar-color-text-secondary, #757575)); }
+.rebar-list-section > .rebar-list-section-title.rebar-text {
+  font-size: var(--rebar-list-section-title-size, 12px);
+  font-weight: var(--rebar-list-section-title-weight, 700);
+  line-height: var(--rebar-list-section-title-line-height, 1.2);
+  letter-spacing: var(--rebar-list-section-title-letter-spacing, 0.16em);
+  color: var(--rebar-list-section-title-color, var(--rebar-color-primary-text-ink, var(--rebar-color-primary, #b53824)));
+  padding: var(--rebar-list-section-title-padding, 0 4px 10px);
+}
+.rebar-list-section > .rebar-list-section-footer.rebar-text {
+  font-size: var(--rebar-list-section-footer-size, var(--rebar-font-size-sm, 14px));
+  line-height: var(--rebar-list-section-footer-line-height, var(--rebar-line-height, 1.5));
+  color: var(--rebar-list-section-footer-color, var(--rebar-color-text-secondary, #757575));
+  padding: var(--rebar-list-section-footer-padding, 10px 4px 0);
+}
+/* Avatar: clip the picture itself (as a bare rounded <img> does) instead of the box around it */
+.rebar-avatar {
+  overflow: var(--rebar-avatar-overflow, hidden);
+}
+.rebar-avatar-image { border-radius: var(--rebar-avatar-image-radius, 0); }
