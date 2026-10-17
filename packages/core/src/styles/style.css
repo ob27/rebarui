@@ -13330,3 +13330,19 @@ a.rebar-list-item-main {
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-buttons { gap: 10px; }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-buttons > * { min-height: 0; }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-brand { display: flex; }
+
+/* ---- parity-r2: Today, Pray, Library, Perspectives, Topics, discussions, Ask starter (opt-in properties; every default is the previous value) ---- */
+
+/* Card: border width (tone cards draw a transparent border; the original tinted panels had none) */
+.rebar-card {
+  border-width: var(--rebar-card-border-width, var(--rebar-border-width, 1px));
+}
+
+/* Text eyebrow / section-label: size, weight, line height and tracking */
+.rebar-text[data-rebar-variant="eyebrow"],
+.rebar-text[data-rebar-variant="section-label"] {
+  font-size: var(--rebar-eyebrow-size, 12px);
+  font-weight: var(--rebar-eyebrow-weight, 700);
+  line-height: var(--rebar-eyebrow-line-height, 1.2);
+  letter-spacing: var(--rebar-eyebrow-letter-spacing, 0.16em);
+}
