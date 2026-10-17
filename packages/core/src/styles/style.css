@@ -11930,3 +11930,42 @@ a.rebar-list-item-main {
 /* ImagePicker: disabled */
 .rebar-image-picker[data-rebar-disabled="true"] .rebar-image-picker-chip,
 .rebar-image-picker-tile[data-rebar-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
+
+/* WaveformAudioPlayer: icon controls, compact size, readable error */
+.rebar-waveform-audio-player[data-rebar-controls="icons"] .rebar-button {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  justify-content: center;
+}
+.rebar-waveform-audio-player[data-rebar-controls="icons"] .rebar-button svg { width: 22px; height: 22px; }
+.rebar-waveform-audio-player[data-rebar-controls="icons"] .rebar-button[data-rebar-part="skip-back"] svg,
+.rebar-waveform-audio-player[data-rebar-controls="icons"] .rebar-button[data-rebar-part="skip-forward"] svg { width: 26px; height: 26px; }
+.rebar-waveform-audio-player[data-rebar-size="compact"] { gap: var(--rebar-space-xs, 4px); }
+.rebar-waveform-audio-player[data-rebar-size="compact"] .rebar-waveform-audio-player-controls { gap: var(--rebar-space-xs, 4px); }
+.rebar-waveform-audio-player[data-rebar-size="compact"] .rebar-button {
+  min-height: 36px;
+  font-size: var(--rebar-font-size-sm, 14px);
+  padding-inline: 12px;
+}
+.rebar-waveform-audio-player[data-rebar-size="compact"][data-rebar-controls="icons"] .rebar-button {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+}
+.rebar-waveform-audio-player[data-rebar-size="compact"][data-rebar-controls="icons"] .rebar-button svg { width: 18px; height: 18px; }
+.rebar-waveform-audio-player[data-rebar-size="compact"] .rebar-waveform-audio-player-waveform { height: 28px; }
+.rebar-waveform-audio-player .rebar-waveform-audio-player-message,
+.rebar-waveform-audio-player .rebar-waveform-audio-player-error {
+  color: color-mix(in srgb, var(--rebar-color-danger, #b3261e) 82%, var(--rebar-color-text-primary, #212121));
+  font-weight: var(--rebar-font-weight-medium, 500);
+}
+.rebar-waveform-audio-player[data-rebar-tone="onDark"] .rebar-waveform-audio-player-message,
+.rebar-waveform-audio-player[data-rebar-tone="onDark"] .rebar-waveform-audio-player-error {
+  color: color-mix(in srgb, var(--rebar-color-danger, #b3261e) 45%, #ffffff);
+}

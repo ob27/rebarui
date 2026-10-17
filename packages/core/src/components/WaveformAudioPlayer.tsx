@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ComponentPropsWithoutRef, KeyboardEvent, MouseEvent as ReactMouseEvent, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, KeyboardEvent, MouseEvent as ReactMouseEvent, MutableRefObject, ReactNode, Ref } from "react";
 import clsx from "clsx";
 import { Button } from "./Button";
 import { Text } from "./Text";
@@ -30,6 +30,60 @@ export interface WaveformAudioPlayerProps extends Omit<ComponentPropsWithoutRef<
   loading?: boolean;
   /** `"onDark"` for art cards such as a prayer detail. */
   tone?: "default" | "onDark";
+  /** Ref (object or callback) to the underlying `<audio>` element, e.g. to read `currentTime` or hook Media Session. */
+  audioRef?: Ref<HTMLAudioElement>;
+  /** Forwarded to the `<audio>` element (`"anonymous"` for CORS-enabled sources). */
+  crossOrigin?: "anonymous" | "use-credentials" | "";
+  /** `"text"` (default) draws the labelled Play/Pause and skip buttons. `"icons"` draws round glyph buttons (play, pause, replay, skip) as in the Athic mock; each keeps its accessible name. */
+  controls?: "text" | "icons";
+  /** `"compact"` tightens the bar for lists and cards: smaller buttons, shorter waveform, smaller gaps. */
+  size?: "default" | "compact";
+}
+
+function IconGlyph({ name, seconds }: { name: "play" | "pause" | "replay" | "retry" | "back" | "forward"; seconds?: number }) {
+  const common = { viewBox: "0 0 24 24", "aria-hidden": true, focusable: false } as const;
+  if (name === "play") return <svg {...common}><path d="M7 4.5v15l13-7.5z" fill="currentColor" /></svg>;
+  if (name === "pause")
+    return (
+      <svg {...common}>
+        <rect x="6" y="4.5" width="4" height="15" rx="1" fill="currentColor" />
+        <rect x="14" y="4.5" width="4" height="15" rx="1" fill="currentColor" />
+      </svg>
+    );
+  if (name === "replay" || name === "retry")
+    return (
+      <svg {...common}>
+        <path d="M5 12a7 7 0 1 0 2.2-5.1M5 4v4.5h4.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  const back = name === "back";
+  return (
+    <svg {...common}>
+      <path
+        d={back ? "M4.5 11a7.5 7.5 0 1 1 2 5.2M4.5 5v6h6" : "M19.5 11a7.5 7.5 0 1 0-2 5.2M19.5 5v6h-6"}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {seconds ? (
+        <text x="12" y="15.2" textAnchor="middle" fontSize="7.5" fontWeight="700" fill="currentColor">
+          {seconds}
+        </text>
+      ) : null}
+    </svg>
+  );
+}
+
+function mergeAudioRefs(...refs: (Ref<HTMLAudioElement> | undefined)[]) {
+  return (node: HTMLAudioElement | null) => {
+    for (const ref of refs) {
+      if (!ref) continue;
+      if (typeof ref === "function") ref(node);
+      else (ref as MutableRefObject<HTMLAudioElement | null>).current = node;
+    }
+  };
 }
 
 // Same seeded-hash technique Sticky's rotation/color pick and Avatar's placeholder selection
@@ -91,11 +145,16 @@ export function WaveformAudioPlayer({
   onRetry,
   loading,
   tone = "default",
+  audioRef: audioRefProp,
+  crossOrigin,
+  controls = "text",
+  size = "default",
   className,
   "aria-label": ariaLabel = "Audio player",
   ...props
 }: WaveformAudioPlayerProps) {
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const setAudioRef = useMemo(() => mergeAudioRefs(audioRef, audioRefProp), [audioRefProp]);
   const waveformRef = useRef<HTMLDivElement>(null);
   const [internalPlaying, setInternalPlaying] = useState(false);
   const isControlled = playingProp !== undefined;
@@ -260,14 +319,17 @@ export function WaveformAudioPlayer({
       className={clsx("rebar-waveform-audio-player", className)}
       data-rebar-component="waveform-audio-player"
       data-rebar-tone={tone === "onDark" ? "onDark" : undefined}
+      data-rebar-size={size === "compact" ? "compact" : undefined}
+      data-rebar-controls={controls === "icons" ? "icons" : undefined}
       data-rebar-state={hasError ? "error" : isLoading ? "loading" : ended ? "ended" : playing ? "playing" : undefined}
       role="group"
       aria-label={ariaLabel}
       {...props}
     >
       <audio
-        ref={audioRef}
+        ref={setAudioRef}
         src={src}
+        crossOrigin={crossOrigin}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={handleEnded}
@@ -291,7 +353,7 @@ export function WaveformAudioPlayer({
             variant="secondary"
             onClick={() => skip(-skipSeconds)}
           >
-            «{skipSeconds}
+            {controls === "icons" ? <IconGlyph name="back" seconds={skipSeconds} /> : <>«{skipSeconds}</>}
           </Button>
           ) : null}
           <Button
@@ -302,7 +364,19 @@ export function WaveformAudioPlayer({
             onClick={togglePlay}
           >
             {isLoading ? <span className="rebar-waveform-audio-player-spinner" aria-hidden="true" /> : null}
-            {isLoading ? <span className="rebar-visually-hidden">Buffering</span> : playing ? "Pause" : ended ? "Replay" : hasError ? "Retry" : "Play"}
+            {isLoading ? (
+              <span className="rebar-visually-hidden">Buffering</span>
+            ) : controls === "icons" ? (
+              <IconGlyph name={playing ? "pause" : ended ? "replay" : hasError ? "retry" : "play"} />
+            ) : playing ? (
+              "Pause"
+            ) : ended ? (
+              "Replay"
+            ) : hasError ? (
+              "Retry"
+            ) : (
+              "Play"
+            )}
           </Button>
           {skipSeconds > 0 ? (
           <Button
@@ -311,7 +385,7 @@ export function WaveformAudioPlayer({
             variant="secondary"
             onClick={() => skip(skipSeconds)}
           >
-            {skipSeconds}»
+            {controls === "icons" ? <IconGlyph name="forward" seconds={skipSeconds} /> : <>{skipSeconds}»</>}
           </Button>
           ) : null}
           <div

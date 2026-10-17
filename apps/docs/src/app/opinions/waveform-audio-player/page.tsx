@@ -29,6 +29,20 @@ const BLOCKS: Construct[] = [
     heading: "Migrating to Ant Design",
     body: [{ kind: "text", text: "Not codemod-covered. AntD has no audio player; use a dedicated library or a native `<audio controls>` if you do not need the waveform." }],
   },
+  {
+    type: "doc-section",
+    heading: "Icon controls, compact size, audioRef",
+    body: [
+      {
+        "kind": "text",
+        "text": "`controls=\"icons\"` draws round glyph buttons (play, pause, replay, skip back/forward with the seconds) instead of the labelled text buttons; each keeps its accessible name. `size=\"compact\"` tightens the bar for lists and cards. `audioRef` gives you the underlying `<audio>` element (object or callback ref) and `crossOrigin` is forwarded to it. The error message uses a danger tone mixed toward the text colour, at least 6:1 on the page and tints in light and dark, and a lighter one on `tone=\"onDark\"`."
+      },
+      {
+        "kind": "code",
+        "code": "<WaveformAudioPlayer src={url} controls=\"icons\" size=\"compact\" audioRef={audio} crossOrigin=\"anonymous\" />"
+      }
+    ],
+  },
 ];
 
 export default function WaveformAudioPlayerPage() {
