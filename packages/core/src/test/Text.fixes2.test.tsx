@@ -45,7 +45,7 @@ describe("Heading base size rules", () => {
     }
   });
   it("does not set a font-size on a normal-specificity heading selector", () => {
-    const m = css.match(/(?<!:where\()\.rebar-heading\[data-rebar-level="[123]"\]\)? \{[^}]*font-size/g);
+    const m = css.match(/^\.rebar-heading\[data-rebar-level="[123]"\] \{[^}]*font-size/gm);
     expect(m).toBeNull();
   });
   it("still renders the level data attribute", () => {
