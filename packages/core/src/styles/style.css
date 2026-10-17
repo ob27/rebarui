@@ -12087,3 +12087,11 @@ a.rebar-list-item-main {
 /* A dark scope inside a light page (ThemeScope scheme="dark") gets the same swap */
 [data-rebar-scheme="dark"] .rebar-empty-icon-raster { display: none; }
 [data-rebar-scheme="dark"] .rebar-empty-icon-vector { display: block; }
+
+/* ---- parity-a1: typography and form controls ---- */
+/* Button, variant "tonal": a soft filled chip. The theme refines the colours. */
+.rebar-button[data-rebar-variant="tonal"] {
+  background: var(--rebar-color-tint-3, #e6ecfa);
+  color: var(--rebar-color-text-primary, #212121);
+  border-color: transparent;
+}

@@ -8,7 +8,8 @@ import { defaultRenderLink, useRenderLink } from "./linkAdapter";
 import type { RenderLink } from "./linkAdapter";
 
 export interface ButtonProps extends Omit<ComponentPropsWithoutRef<"button">, "children"> {
-  variant?: "primary" | "secondary" | "tertiary" | "destructive";
+  /** `"tonal"`: a soft filled chip (tint fill, no outline) for a secondary action beside a primary one. */
+  variant?: "primary" | "secondary" | "tertiary" | "destructive" | "tonal";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
   children?: ReactNode;

@@ -15,6 +15,8 @@ export interface TextareaProps extends Omit<ComponentPropsWithoutRef<"textarea">
   size?: "md" | "lg";
   /** `"none"` or `"vertical"`. Default none on touch, vertical with a mouse. */
   resize?: "none" | "vertical";
+  /** What sits between the length and the limit in the counter: `" / "` ("142 / 600", the default) or `"/"` ("142/600"). */
+  countSeparator?: string;
 }
 
 /**
@@ -22,7 +24,7 @@ export interface TextareaProps extends Omit<ComponentPropsWithoutRef<"textarea">
  * `<textarea>` that mirrors a controlled or uncontrolled value.
  */
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
-  { rows = 3, autoSize, showCount, invalid, size = "md", resize, className, value, defaultValue, onChange, maxLength, id, "aria-describedby": describedBy, style, ...props },
+  { rows = 3, autoSize, showCount, invalid, size = "md", resize, countSeparator = " / ", className, value, defaultValue, onChange, maxLength, id, "aria-describedby": describedBy, style, ...props },
   ref,
 ) {
   const uid = useId();
@@ -88,7 +90,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
       />
       {showCount ? (
         <div className="rebar-textarea-count" id={countId} data-rebar-part="count" data-rebar-at-limit={atLimit ? "true" : undefined}>
-          {maxLength !== undefined ? `${text.length} / ${maxLength}` : String(text.length)}
+          {maxLength !== undefined ? `${text.length}${countSeparator}${maxLength}` : String(text.length)}
         </div>
       ) : null}
     </div>

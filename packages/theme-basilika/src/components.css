@@ -2636,3 +2636,147 @@ a.rebar-button[data-rebar-variant="tertiary"]:hover {
 /* Carousel: controls and a long dot row wrap instead of pushing a phone page sideways */
 .rebar-carousel-controls { flex-wrap: wrap; max-width: 100%; }
 .rebar-carousel-dots { flex-wrap: wrap; justify-content: center; max-width: 100%; }
+
+/* ---- parity-a1: typography and form controls ---- */
+/* Every rule below reads an opt-in custom property and falls back to the value the rule above it already had,
+   so an app that sets none of them looks exactly as before. An app opts in with a class (or :root) that sets them. */
+
+/* Input and Textarea: size, shape, colour, focus and disabled treatment */
+.rebar-input {
+  min-height: var(--rebar-input-min-height, 46px);
+  padding: var(--rebar-input-padding, 0 18px);
+  border-width: var(--rebar-input-border-width, 1.5px);
+  border-color: var(--rebar-input-border-color, var(--rebar-color-border, #e0e0e0));
+  border-radius: var(--rebar-input-radius, 999px);
+  background: var(--rebar-input-background, var(--rebar-color-bg-raised, var(--rebar-color-bg-primary)));
+  font-size: var(--rebar-input-font-size, var(--rebar-font-size-sm, 14px));
+  line-height: var(--rebar-input-line-height, normal);
+  font-weight: var(--rebar-input-font-weight, 400);
+}
+.rebar-input[data-rebar-size="sm"] { min-height: var(--rebar-input-min-height-sm, 36px); }
+.rebar-input[data-rebar-size="lg"] { min-height: var(--rebar-input-min-height-lg, 54px); }
+textarea.rebar-input {
+  border-radius: var(--rebar-input-radius, var(--rebar-radius));
+  padding: var(--rebar-input-padding, 12px 18px);
+}
+.rebar-input::placeholder { color: var(--rebar-input-placeholder-color, var(--rebar-color-text-secondary)); }
+.rebar-input:focus { border-color: var(--rebar-input-focus-border-color, var(--rebar-color-primary)); }
+.rebar-input:focus-visible {
+  outline: var(--rebar-input-focus-outline, none);
+  outline-offset: var(--rebar-input-focus-outline-offset, 2px);
+  box-shadow: var(--rebar-input-focus-shadow, 0 0 0 4px color-mix(in srgb, var(--rebar-color-primary) 18%, transparent));
+}
+.rebar-input:disabled {
+  opacity: var(--rebar-input-disabled-opacity, 0.6);
+  color: var(--rebar-input-disabled-color, var(--rebar-color-text-primary, #212121));
+  background: var(--rebar-input-disabled-background, var(--rebar-input-background, var(--rebar-color-bg-raised, var(--rebar-color-bg-primary))));
+}
+
+.rebar-textarea-field { gap: var(--rebar-textarea-gap, 6px); }
+.rebar-textarea {
+  min-height: var(--rebar-textarea-min-height, 96px);
+  padding: var(--rebar-textarea-padding, 14px 16px);
+  font-size: var(--rebar-textarea-font-size, 1rem);
+  line-height: var(--rebar-textarea-line-height, 1.55);
+  border-width: var(--rebar-textarea-border-width, 1.5px);
+  border-color: var(--rebar-textarea-border-color, var(--rebar-color-border, #e0e0e0));
+  border-radius: var(--rebar-textarea-radius, 20px);
+  background: var(--rebar-textarea-background, var(--rebar-color-bg-raised, var(--rebar-color-bg-primary, #ffffff)));
+}
+.rebar-textarea::placeholder { color: var(--rebar-textarea-placeholder-color, var(--rebar-color-text-secondary, #757575)); }
+.rebar-textarea:focus {
+  outline: var(--rebar-textarea-focus-outline, none);
+  outline-offset: var(--rebar-textarea-focus-outline-offset, 0px);
+  border-color: var(--rebar-textarea-focus-border-color, var(--rebar-color-primary, #b53824));
+  box-shadow: var(--rebar-textarea-focus-shadow, 0 0 0 4px color-mix(in srgb, var(--rebar-color-primary, #b53824) 18%, transparent));
+}
+.rebar-textarea-count {
+  padding: var(--rebar-textarea-count-padding, 0 8px);
+  font-size: var(--rebar-textarea-count-font-size, 0.8rem);
+  line-height: var(--rebar-textarea-count-line-height, normal);
+  color: var(--rebar-textarea-count-color, var(--rebar-color-text-secondary, #757575));
+}
+
+/* Button: size, weight, border, per-variant colours and hover, disabled, focus. Defaults are the values above. */
+.rebar-button {
+  gap: var(--rebar-button-gap, var(--rebar-space-sm, 8px));
+  border-width: var(--rebar-button-border-width, 1.5px);
+  min-height: var(--rebar-button-min-height, 44px);
+  padding: var(--rebar-button-padding, 0 22px);
+  font-size: var(--rebar-button-font-size, var(--rebar-font-size-sm, 14px));
+  font-weight: var(--rebar-button-font-weight, var(--rebar-font-weight-semibold));
+  line-height: var(--rebar-button-line-height, normal);
+}
+.rebar-button[data-rebar-size="sm"] {
+  min-height: var(--rebar-button-min-height-sm, 34px);
+  padding: var(--rebar-button-padding-sm, 0 15px);
+  font-size: var(--rebar-button-font-size-sm, var(--rebar-button-font-size, var(--rebar-font-size-sm, 14px)));
+}
+.rebar-button[data-rebar-size="lg"] {
+  min-height: var(--rebar-button-min-height-lg, 52px);
+  padding: var(--rebar-button-padding-lg, 0 30px);
+  font-size: var(--rebar-button-font-size-lg, var(--rebar-font-size-md));
+}
+.rebar-button[data-rebar-variant="primary"] {
+  background: var(--rebar-button-primary-bg, var(--rebar-color-primary, #0066cc));
+  color: var(--rebar-button-primary-color, var(--rebar-color-primary-text, #ffffff));
+  border-color: var(--rebar-button-primary-border-color, var(--rebar-color-primary, #0066cc));
+  border-width: var(--rebar-button-primary-border-width, var(--rebar-button-border-width, 1.5px));
+}
+.rebar-button[data-rebar-variant="primary"]:hover:not(:disabled) {
+  background: var(--rebar-button-primary-hover-bg, var(--rebar-color-primary-hover));
+  border-color: var(--rebar-button-primary-hover-bg, var(--rebar-color-primary-hover));
+}
+.rebar-button[data-rebar-variant="secondary"] {
+  background: var(--rebar-button-secondary-bg, transparent);
+  color: var(--rebar-button-secondary-color, inherit);
+  border-color: var(--rebar-button-secondary-border-color, color-mix(in srgb, currentColor 40%, transparent));
+  border-width: var(--rebar-button-secondary-border-width, var(--rebar-button-border-width, 1.5px));
+}
+.rebar-button[data-rebar-variant="secondary"]:hover:not(:disabled) {
+  background: var(--rebar-button-secondary-hover-bg, color-mix(in srgb, currentColor 10%, transparent));
+}
+.rebar-button[data-rebar-variant="tertiary"] {
+  color: var(--rebar-button-tertiary-color, inherit);
+}
+.rebar-button[data-rebar-variant="tertiary"]:hover:not(:disabled) {
+  background: var(--rebar-button-tertiary-hover-bg, color-mix(in srgb, currentColor 10%, transparent));
+}
+.rebar-button[data-rebar-variant="destructive"] {
+  background: var(--rebar-button-destructive-bg, transparent);
+  color: var(--rebar-button-destructive-color, var(--rebar-color-danger));
+  border-color: var(--rebar-button-destructive-border-color, color-mix(in srgb, var(--rebar-color-danger) 55%, transparent));
+  border-width: var(--rebar-button-destructive-border-width, var(--rebar-button-border-width, 1.5px));
+}
+.rebar-button[data-rebar-variant="destructive"]:hover:not(:disabled) {
+  background: var(--rebar-button-destructive-hover-bg, var(--rebar-color-danger-bg));
+}
+/* tonal: a soft filled chip (tint-3 fill, ink text, no outline), for secondary actions beside a primary one */
+.rebar-button[data-rebar-variant="tonal"] {
+  background: var(--rebar-button-tonal-bg, var(--rebar-color-tint-3));
+  color: var(--rebar-button-tonal-color, var(--rebar-color-text-primary));
+  border-color: var(--rebar-button-tonal-border-color, transparent);
+  border-width: var(--rebar-button-tonal-border-width, var(--rebar-button-border-width, 1.5px));
+}
+.rebar-button[data-rebar-variant="tonal"]:hover:not(:disabled) {
+  background: var(--rebar-button-tonal-hover-bg, color-mix(in srgb, currentColor 8%, var(--rebar-color-tint-3)));
+}
+.rebar-button:disabled { opacity: var(--rebar-button-disabled-opacity, 0.6); }
+.rebar-button:focus-visible {
+  outline: var(--rebar-button-focus-outline, 3px solid color-mix(in srgb, var(--rebar-color-primary) 45%, transparent));
+  outline-offset: var(--rebar-button-focus-outline-offset, 2px);
+}
+.rebar-button[data-rebar-block] + .rebar-button[data-rebar-block] { margin-top: var(--rebar-button-block-gap, var(--rebar-space-md, 12px)); }
+.rebar-button[data-rebar-icon-only] { border-radius: var(--rebar-button-icon-radius, 50%); }
+.rebar-button[data-rebar-variant="primary"] { font-weight: var(--rebar-button-primary-font-weight, var(--rebar-button-font-weight, var(--rebar-font-weight-semibold))); }
+.rebar-button[data-rebar-variant="secondary"] { font-weight: var(--rebar-button-secondary-font-weight, var(--rebar-button-font-weight, var(--rebar-font-weight-semibold))); }
+.rebar-button[data-rebar-variant="tertiary"] { font-weight: var(--rebar-button-tertiary-font-weight, var(--rebar-button-font-weight, var(--rebar-font-weight-semibold))); }
+/* AuthScreen (navy): the outlined button's fill, text and outline are opt-in too */
+.rebar-auth-screen[data-rebar-tone="navy"] .rebar-button[data-rebar-variant="secondary"] {
+  background: var(--rebar-auth-secondary-bg, var(--rebar-color-text-primary));
+  color: var(--rebar-auth-secondary-color, var(--rebar-color-bg-primary));
+  border-color: var(--rebar-auth-secondary-border-color, transparent);
+}
+.rebar-input { color: var(--rebar-input-color, var(--rebar-color-text-primary, #212121)); }
+.rebar-textarea { color: var(--rebar-textarea-color, var(--rebar-color-text-primary, #212121)); }
+.rebar-input { text-overflow: var(--rebar-input-text-overflow, ellipsis); }
