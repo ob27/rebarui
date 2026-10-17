@@ -47,6 +47,20 @@ const BLOCKS: Construct[] = [
       },
     ],
   },
+  {
+    type: "doc-section",
+    heading: "Leading control, inline edit and section spacing",
+    body: [
+      {
+        "kind": "text",
+        "text": "`leadingControl` puts an independent control (a round check button) before the main area, beside the row link or button and never inside it, so pressing it does not trigger the row. For inline renaming set `editing` with a `renderEditor` that returns an `Input`: the title is replaced by the editor and the main area becomes a plain element, so the row semantics stay valid (`onEdit` fires on F2 or a double-click of the title; the app owns the value and commits on Enter or blur). Consecutive `ListSection`s are spaced by `--rebar-list-section-gap` (24px), or a section's `gap` prop."
+      },
+      {
+        "kind": "code",
+        "code": "<ListItem title={task.title} leadingControl={<CheckButton aria-label=\"Done\" />} editing={editingId === task.id} onEdit={() => setEditingId(task.id)} renderEditor={() => <Input aria-label=\"Rename\" defaultValue={task.title} onBlur={commit} />} />"
+      }
+    ],
+  },
 ];
 
 const thumb = (n: number) => <span style={{ display: "block", background: ART[n] }} />;

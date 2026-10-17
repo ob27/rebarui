@@ -1,5 +1,5 @@
 import { Children, createContext, forwardRef, useContext, useEffect, useId, useState } from "react";
-import type { ComponentPropsWithoutRef, MouseEvent, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, CSSProperties, KeyboardEvent, MouseEvent, ReactNode } from "react";
 import clsx from "clsx";
 import { Text } from "./Text";
 import { defaultRenderLink, useRenderLink } from "./linkAdapter";
@@ -58,17 +58,20 @@ export interface ListSectionProps extends Omit<ComponentPropsWithoutRef<"section
   title?: ReactNode;
   /** A helper paragraph under the group. */
   footer?: ReactNode;
+  /** Space above this section when it follows another `ListSection`: any CSS length, or a number in px. Default 24px, also set app-wide with `--rebar-list-section-gap`. `0` removes it. */
+  gap?: number | string;
   children?: ReactNode;
 }
 
 /** A titled group of rows: an eyebrow, a `List`, an optional footer paragraph. */
-export function ListSection({ title, footer, className, children, ...props }: ListSectionProps) {
+export function ListSection({ title, footer, gap, className, style, children, ...props }: ListSectionProps) {
   const uid = useId();
   return (
     <section
       className={clsx("rebar-list-section", className)}
       data-rebar-component="list-section"
       aria-labelledby={title ? `${uid}-title` : undefined}
+      style={gap === undefined ? style : ({ "--rebar-list-section-gap": typeof gap === "number" ? `${gap}px` : gap, ...style } as CSSProperties)}
       {...props}
     >
       {title ? (
@@ -99,6 +102,14 @@ export interface ListItemProps extends Omit<ComponentPropsWithoutRef<"li">, "tit
   media?: ReactNode;
   /** An icon tile (a navigation card) when you do not need a thumbnail: a node, or `{ icon, tone }` with a tint 1 to 4. */
   leading?: ReactNode | { icon: ReactNode; tone?: 1 | 2 | 3 | 4 };
+  /** An independent control before the main area, such as a round check button. It sits beside the row's link or button, never inside it, so pressing it does not trigger the row. Give it its own accessible name. */
+  leadingControl?: ReactNode;
+  /** Inline edit mode: while `true` and `renderEditor` is given, the title is replaced by the editor and the row's main area is a plain element (not a link or button), so an `Input` inside it is valid. */
+  editing?: boolean;
+  /** Asked to start editing: F2 on the focused row, or double-clicking the title. Set `editing` in response. Only fires when `renderEditor` is given. */
+  onEdit?: () => void;
+  /** The editor shown in place of the title while `editing` (an `Input`; the app owns the value and commits on Enter/blur). */
+  renderEditor?: () => ReactNode;
   /** `"chevron"`, `"more"` (a round ••• button, handled by `onMore`), or any node: a `Switch`, a `RadioGroup` item, a value pill, an `ActionSheet` trigger. A trailing control never triggers the row. */
   trailing?: ReactNode | "chevron" | "more";
   /** Called by the `"more"` trailing button. */
@@ -164,6 +175,10 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
     meta,
     media,
     leading,
+    leadingControl,
+    editing,
+    onEdit,
+    renderEditor,
     trailing,
     onMore,
     moreLabel = "More actions",
@@ -198,13 +213,15 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
   }, [highlight, highlightPinned]);
 
   const style = titleStyle ?? (media ? "serif" : "sans");
-  const interactive = !skeleton && !disabled && !loading && (href !== undefined || onClick !== undefined);
+  const isEditing = Boolean(editing && renderEditor);
+  const interactive = !isEditing && !skeleton && !disabled && !loading && (href !== undefined || onClick !== undefined);
   const rootMarks = {
     "data-rebar-component": "list-item",
     "data-rebar-variant": variant,
     "data-rebar-title-style": style,
     "data-rebar-selected": selected ? "true" : undefined,
     "data-rebar-highlight": highlightOn ? "true" : undefined,
+    "data-rebar-editing": isEditing ? "true" : undefined,
     "data-rebar-state": skeleton ? "skeleton" : loading ? "loading" : disabled ? "disabled" : undefined,
     "aria-busy": loading || undefined,
   };
@@ -244,8 +261,12 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
       ) : null}
       {lead}
       <span className="rebar-list-item-body" data-rebar-part="body">
-        <span className="rebar-list-item-title" data-rebar-part="title">
-          {title}
+        <span
+          className="rebar-list-item-title"
+          data-rebar-part="title"
+          onDoubleClick={renderEditor && onEdit && !isEditing ? () => onEdit() : undefined}
+        >
+          {isEditing ? renderEditor!() : title}
           {highlightOn && highlight === "new" ? (
             <span className="rebar-list-item-chip" data-rebar-part="chip">
               New
@@ -271,10 +292,17 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
     </>
   );
 
+  const handleEditKey = renderEditor && onEdit && !isEditing ? (e: KeyboardEvent<HTMLElement>) => {
+    if (e.key === "F2" && e.target === e.currentTarget) {
+      e.preventDefault();
+      onEdit();
+    }
+  } : undefined;
   const mainProps = {
     className: "rebar-list-item-main",
     "data-rebar-part": "main",
     "aria-current": selected ? ("true" as const) : undefined,
+    onKeyDown: handleEditKey,
   };
   let main: ReactNode;
   if (interactive && href !== undefined) {
@@ -318,6 +346,11 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
 
   return (
     <li ref={ref} className={clsx("rebar-list-item", className)} {...rootMarks} {...props}>
+      {leadingControl ? (
+        <span className="rebar-list-item-leading-control" data-rebar-part="leading-control">
+          {leadingControl}
+        </span>
+      ) : null}
       {main}
       {end}
     </li>

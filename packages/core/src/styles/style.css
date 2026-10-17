@@ -12018,3 +12018,17 @@ a.rebar-list-item-main {
   outline-offset: 2px;
 }
 .rebar-checkbox-label[data-rebar-variant="card"]:has(.rebar-checkbox:disabled) { opacity: 0.55; cursor: not-allowed; }
+
+/* ListItem: leadingControl and inline editor; ListSection: spacing between sections */
+.rebar-list-item-leading-control {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  min-width: 44px;
+  padding-inline-start: 8px;
+}
+.rebar-list-item-leading-control + .rebar-list-item-main { padding-inline-start: 6px; }
+.rebar-list-item[data-rebar-editing] .rebar-list-item-title { display: block; flex: 1; min-width: 0; }
+.rebar-list-section + .rebar-list-section { margin-top: var(--rebar-list-section-gap, 24px); }
