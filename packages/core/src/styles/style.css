@@ -13346,3 +13346,13 @@ a.rebar-list-item-main {
   line-height: var(--rebar-eyebrow-line-height, 1.2);
   letter-spacing: var(--rebar-eyebrow-letter-spacing, 0.16em);
 }
+
+/* BackdropSection imageMode="background": the art is the section's own background (the <img> stays for alt text, unpainted) */
+.rebar-backdrop-section[data-rebar-image-mode="background"] {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.rebar-backdrop-section[data-rebar-image-mode="background"] > .rebar-backdrop-section-image {
+  visibility: hidden;
+}

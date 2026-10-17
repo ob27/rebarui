@@ -82,4 +82,28 @@ describe("BackdropSection", () => {
   it("colours text with the inverse token", () => {
     expect(rule(".rebar-backdrop-section")).toMatch(/--rebar-color-text-inverse/);
   });
+
+  it('imageMode="background" paints the art as the section background and leaves the img unpainted', () => {
+    render(
+      <BackdropSection image={{ src: "/bg.jpg" }} imageMode="background" data-testid="bs">
+        x
+      </BackdropSection>,
+    );
+    const root = screen.getByTestId("bs");
+    expect(root).toHaveAttribute("data-rebar-image-mode", "background");
+    expect(root.style.backgroundImage).toContain("/bg.jpg");
+    const full = readFileSync(resolve(__dirname, "../styles/style.css"), "utf8");
+    expect(full).toMatch(/\[data-rebar-image-mode="background"\] > \.rebar-backdrop-section-image \{\s*visibility: hidden/);
+  });
+
+  it("defaults to the img (no background style, no image-mode attribute)", () => {
+    render(
+      <BackdropSection image={{ src: "/bg.jpg" }} data-testid="bs">
+        x
+      </BackdropSection>,
+    );
+    const root = screen.getByTestId("bs");
+    expect(root).not.toHaveAttribute("data-rebar-image-mode");
+    expect(root.style.backgroundImage).toBe("");
+  });
 });
