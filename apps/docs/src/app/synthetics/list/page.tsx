@@ -61,6 +61,11 @@ const BLOCKS: Construct[] = [
       }
     ],
   },
+  {
+    "type": "doc-section",
+    "heading": "Panel tokens and chevronIcon",
+    "body": [{ "kind": "text", "text": '`ListItem chevronIcon` swaps the chevron glyph for your own. A grouped `List` can read as a warm panel through tokens: `--rebar-list-grouped-bg / -item-bg / -border-width / -radius / -padding / -divider-width / -divider-color`; row type through `--rebar-list-item-chevron-size / -chevron-color / -meta-color`; and the `ListSection` label and footer through `--rebar-list-section-title-size / -weight / -line-height / -letter-spacing / -color / -padding` and `--rebar-list-section-footer-size / -line-height / -color / -padding`. Every default is the previous look.' }],
+  },
 ];
 
 const thumb = (n: number) => <span style={{ display: "block", background: ART[n] }} />;
