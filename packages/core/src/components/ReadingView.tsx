@@ -37,6 +37,8 @@ export interface ReadingViewProps extends Omit<ComponentPropsWithoutRef<"article
   verseFont?: "sans" | "serif";
   /** Verses whose pill reads "Note added" (filled). */
   notedVerses?: number[];
+  /** Where each verse's action pill and `extra` sit: `"inline"` (default) in the text column under the verse, or `"below"` on a row of their own under the number and the text, offset by `--rebar-reading-view-pill-margin-start`. */
+  verseActions?: "inline" | "below";
   /** Slot above the text for the narration bar (`WaveformAudioPlayer`). */
   media?: ReactNode;
   /** Slot below the text: Reflect, Share, Discuss as small outlined pills. */
@@ -74,6 +76,7 @@ export function ReadingView({
   onVerseAction,
   verseActionLabel = "Add Note",
   notedVerses = [],
+  verseActions = "inline",
   renderVerse,
   verseFont,
   media,
@@ -178,6 +181,7 @@ export function ReadingView({
       data-rebar-component="reading-view"
       data-rebar-tone={tone}
       data-rebar-verse-font={verseFont}
+      data-rebar-verse-actions={verseActions === "below" ? "below" : undefined}
       data-rebar-state={error ? "error" : loading ? "loading" : undefined}
       {...props}
     >

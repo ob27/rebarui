@@ -13439,3 +13439,67 @@ a.rebar-list-item-main {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* ListItem: the description can be one clipped line (an ellipsis at the box edge) instead of wrapping */
+.rebar-list-item-description {
+  min-width: 0;
+  white-space: var(--rebar-list-item-description-white-space, normal);
+  overflow: var(--rebar-list-item-description-overflow, visible);
+  text-overflow: var(--rebar-list-item-description-text-overflow, clip);
+}
+
+/* List variant="plain": the gap between rows can be set by an app (default none) */
+.rebar-list[data-rebar-variant="plain"] {
+  gap: var(--rebar-list-plain-gap, 0);
+}
+
+/* Button: face font family and variation settings can be set by an app (default: inherited) */
+.rebar-button {
+  font-family: var(--rebar-button-font-family, inherit);
+  font-variation-settings: var(--rebar-button-font-variation, inherit);
+}
+
+/* ReadingView: verse rows (columns, gap, padding, number type, highlight) and the action pill can be set by an app */
+.rebar-reading-view-verses {
+  gap: var(--rebar-reading-view-verses-gap, var(--rebar-space-sm));
+}
+.rebar-reading-view-verse {
+  grid-template-columns: var(--rebar-reading-view-verse-columns, 1.6em 1fr);
+  gap: var(--rebar-reading-view-verse-gap, var(--rebar-space-xs));
+  padding: var(--rebar-reading-view-verse-padding, var(--rebar-space-xs));
+  margin: var(--rebar-reading-view-verse-margin, 0 calc(-1 * var(--rebar-space-xs)));
+  border-radius: var(--rebar-reading-view-verse-radius, var(--rebar-radius-sm));
+}
+.rebar-reading-view-verse[data-rebar-highlighted] {
+  padding: var(--rebar-reading-view-highlight-padding, var(--rebar-reading-view-verse-padding, var(--rebar-space-xs)));
+  background: var(--rebar-reading-view-highlight-background, color-mix(in srgb, var(--rebar-color-primary) 16%, transparent));
+}
+.rebar-reading-view-num {
+  font-size: var(--rebar-reading-view-num-size, var(--rebar-font-size-xs));
+  font-weight: var(--rebar-reading-view-num-weight, var(--rebar-font-weight-semibold));
+  line-height: var(--rebar-reading-view-num-line-height, 2.4);
+  margin-top: var(--rebar-reading-view-num-margin-top, 0);
+}
+.rebar-reading-view-pill {
+  min-height: var(--rebar-reading-view-pill-min-height, 44px);
+  padding: var(--rebar-reading-view-pill-padding, 0 var(--rebar-space-sm));
+  background: var(--rebar-reading-view-pill-background, transparent);
+  color: var(--rebar-reading-view-pill-color, var(--rebar-color-text-secondary));
+  border-radius: var(--rebar-reading-view-pill-radius, 0);
+  font-size: var(--rebar-reading-view-pill-size, var(--rebar-font-size-xs));
+  text-decoration: var(--rebar-reading-view-pill-decoration, underline);
+}
+.rebar-reading-view-pill[data-rebar-state="done"] {
+  color: var(--rebar-reading-view-pill-done-color, var(--rebar-color-text-primary));
+  text-decoration: none;
+}
+.rebar-reading-view[data-rebar-verse-actions="below"] .rebar-reading-view-verse > div { display: contents; }
+.rebar-reading-view[data-rebar-verse-actions="below"] .rebar-reading-view-verse > .rebar-reading-view-num { grid-column: 1; grid-row: 1; }
+.rebar-reading-view[data-rebar-verse-actions="below"] .rebar-reading-view-verse > div > .rebar-reading-view-text { grid-column: 2; grid-row: 1; }
+.rebar-reading-view[data-rebar-verse-actions="below"] .rebar-reading-view-verse > div > div:not(.rebar-reading-view-extra) {
+  grid-column: 1 / -1;
+  display: flex;
+  margin: var(--rebar-reading-view-pill-margin-top, 0) 0 0 var(--rebar-reading-view-pill-margin-start, 0);
+}
+.rebar-reading-view[data-rebar-verse-actions="below"] .rebar-reading-view-verse > div > .rebar-reading-view-extra { grid-column: 1 / -1; }
+.rebar-reading-view[data-rebar-verse-actions="below"] .rebar-reading-view-verse { row-gap: 0; }
