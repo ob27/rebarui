@@ -11969,3 +11969,14 @@ a.rebar-list-item-main {
 .rebar-waveform-audio-player[data-rebar-tone="onDark"] .rebar-waveform-audio-player-error {
   color: color-mix(in srgb, var(--rebar-color-danger, #b3261e) 45%, #ffffff);
 }
+
+/* ReadingView: verseFont and the per-verse extra slot */
+.rebar-reading-view[data-rebar-verse-font="sans"] .rebar-reading-view-verses,
+.rebar-reading-view[data-rebar-verse-font="sans"] .rebar-reading-view-body {
+  font-family: var(--rebar-font-family-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+}
+.rebar-reading-view[data-rebar-verse-font="serif"] .rebar-reading-view-verses,
+.rebar-reading-view[data-rebar-verse-font="serif"] .rebar-reading-view-body {
+  font-family: var(--rebar-font-family-display, var(--rebar-font-family-serif, Georgia, "Times New Roman", serif));
+}
+.rebar-reading-view-extra { margin-top: var(--rebar-space-xs, 4px); }

@@ -39,6 +39,20 @@ const BLOCKS: Construct[] = [
     heading: "Migrating to Ant Design",
     body: [{ kind: "text", text: "No equivalent. Use `Typography.Paragraph` inside a `Card` with a tinted background; the verse numbering and per-verse actions are the part to keep." }],
   },
+  {
+    type: "doc-section",
+    heading: "Custom verse rows, extra slot and verse font",
+    body: [
+      {
+        "kind": "text",
+        "text": "A verse may carry `extra`, rendered under its text and pill inside the same row (an inline note composer). `renderVerse(verse, { highlighted, noted, content })` replaces what follows the verse number (the number, highlight and noted marks stay); `content` is the default text, pill and extra to wrap. `verseFont=\"sans\"` switches the verse text from the theme serif to the sans face."
+      },
+      {
+        "kind": "code",
+        "code": "<ReadingView verses={[{ num: 1, text: \"In the beginning\", extra: <NoteComposer /> }]} verseFont=\"sans\" />"
+      }
+    ],
+  },
 ];
 
 const pill = { minHeight: 44 } as const;

@@ -5,6 +5,16 @@ import { Heading } from "./Heading";
 export interface ReadingVerse {
   num: number;
   text: ReactNode;
+  /** Rendered under this verse's text and action pill, inside the verse row (an inline note composer, a cross-reference). */
+  extra?: ReactNode;
+}
+
+/** What `renderVerse` receives besides the verse. */
+export interface ReadingVerseContext {
+  highlighted: boolean;
+  noted: boolean;
+  /** The verse's default content (text, action pill and `extra`), to wrap or extend. */
+  content: ReactNode;
 }
 
 export interface ReadingViewProps extends Omit<ComponentPropsWithoutRef<"article">, "title"> {
@@ -21,6 +31,10 @@ export interface ReadingViewProps extends Omit<ComponentPropsWithoutRef<"article
   /** Per-verse action pill (for example "Add Note"). Omit for no pills. */
   onVerseAction?: (verse: ReadingVerse) => void;
   verseActionLabel?: string;
+  /** Replaces what is inside each verse row after the number. The row keeps its number, highlight and noted marks. */
+  renderVerse?: (verse: ReadingVerse, context: ReadingVerseContext) => ReactNode;
+  /** Font of the verse text: `"serif"` (the theme's display face, default) or `"sans"`. */
+  verseFont?: "sans" | "serif";
   /** Verses whose pill reads "Note added" (filled). */
   notedVerses?: number[];
   /** Slot above the text for the narration bar (`WaveformAudioPlayer`). */
@@ -58,6 +72,8 @@ export function ReadingView({
   onVerseAction,
   verseActionLabel = "Add Note",
   notedVerses = [],
+  renderVerse,
+  verseFont,
   media,
   actions,
   footer,
@@ -96,34 +112,43 @@ export function ReadingView({
           <div className="rebar-reading-view-verses" data-rebar-part="verses">
             {verses.map((verse) => {
               const noted = notedVerses.includes(verse.num);
+              const highlighted = isHighlighted(verse.num, highlight);
+              const content = (
+                <div>
+                  <span className="rebar-reading-view-text">{verse.text}</span>
+                  {onVerseAction ? (
+                    <div>
+                      <button
+                        type="button"
+                        className="rebar-reading-view-pill"
+                        data-rebar-part="verse-action"
+                        data-rebar-state={noted ? "done" : undefined}
+                        aria-label={`${noted ? "Note added" : verseActionLabel}, verse ${verse.num}`}
+                        onClick={() => onVerseAction(verse)}
+                      >
+                        {noted ? "Note added" : verseActionLabel}
+                      </button>
+                    </div>
+                  ) : null}
+                  {verse.extra ? (
+                    <div className="rebar-reading-view-extra" data-rebar-part="verse-extra">
+                      {verse.extra}
+                    </div>
+                  ) : null}
+                </div>
+              );
               return (
                 <div
                   key={verse.num}
                   className="rebar-reading-view-verse"
                   data-rebar-part="verse"
-                  data-rebar-highlighted={isHighlighted(verse.num, highlight) || undefined}
+                  data-rebar-highlighted={highlighted || undefined}
                   data-rebar-noted={noted || undefined}
                 >
                   <sup className="rebar-reading-view-num" data-rebar-part="verse-number">
                     {verse.num}
                   </sup>
-                  <div>
-                    <span className="rebar-reading-view-text">{verse.text}</span>
-                    {onVerseAction ? (
-                      <div>
-                        <button
-                          type="button"
-                          className="rebar-reading-view-pill"
-                          data-rebar-part="verse-action"
-                          data-rebar-state={noted ? "done" : undefined}
-                          aria-label={`${noted ? "Note added" : verseActionLabel}, verse ${verse.num}`}
-                          onClick={() => onVerseAction(verse)}
-                        >
-                          {noted ? "Note added" : verseActionLabel}
-                        </button>
-                      </div>
-                    ) : null}
-                  </div>
+                  {renderVerse ? renderVerse(verse, { highlighted, noted, content }) : content}
                 </div>
               );
             })}
@@ -143,6 +168,7 @@ export function ReadingView({
       className={clsx("rebar-reading-view", className)}
       data-rebar-component="reading-view"
       data-rebar-tone={tone}
+      data-rebar-verse-font={verseFont}
       data-rebar-state={error ? "error" : loading ? "loading" : undefined}
       {...props}
     >
