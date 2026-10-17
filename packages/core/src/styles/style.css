@@ -11980,3 +11980,41 @@ a.rebar-list-item-main {
   font-family: var(--rebar-font-family-display, var(--rebar-font-family-serif, Georgia, "Times New Roman", serif));
 }
 .rebar-reading-view-extra { margin-top: var(--rebar-space-xs, 4px); }
+
+/* Select option groups */
+.rebar-select-group-label {
+  padding: var(--rebar-space-sm, 8px) var(--rebar-space-md, 16px) var(--rebar-space-xs, 4px);
+  font-size: var(--rebar-font-size-xs, 12px);
+  font-weight: var(--rebar-font-weight-semibold, 600);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rebar-color-text-secondary, #757575);
+}
+.rebar-select-group + .rebar-select-group { border-top: var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0); }
+/* Checkbox: description and card variant */
+.rebar-checkbox-text { display: inline-flex; flex-direction: column; gap: 2px; min-width: 0; }
+.rebar-checkbox-description {
+  font-size: var(--rebar-font-size-sm, 14px);
+  color: var(--rebar-color-text-secondary, #757575);
+  line-height: 1.4;
+}
+.rebar-checkbox-label:has(.rebar-checkbox-description) { align-items: flex-start; }
+.rebar-checkbox-label[data-rebar-variant="card"] {
+  display: flex;
+  align-items: flex-start;
+  box-sizing: border-box;
+  padding: var(--rebar-space-md, 16px);
+  border: var(--rebar-border-width, 1px) solid var(--rebar-color-border, #e0e0e0);
+  border-radius: var(--rebar-radius-lg, var(--rebar-radius, 4px));
+  background: var(--rebar-color-bg-primary, #ffffff);
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.rebar-checkbox-label[data-rebar-variant="card"]:has(.rebar-checkbox[data-state="checked"]) {
+  border-color: var(--rebar-color-primary, #0066cc);
+  background: color-mix(in srgb, var(--rebar-color-primary, #0066cc) 8%, var(--rebar-color-bg-primary, #ffffff));
+}
+.rebar-checkbox-label[data-rebar-variant="card"]:has(.rebar-checkbox:focus-visible) {
+  outline: 2px solid var(--rebar-color-border-focus, #0066cc);
+  outline-offset: 2px;
+}
+.rebar-checkbox-label[data-rebar-variant="card"]:has(.rebar-checkbox:disabled) { opacity: 0.55; cursor: not-allowed; }

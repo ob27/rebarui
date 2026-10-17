@@ -35,6 +35,20 @@ const BLOCKS: Construct[] = [
     heading: "Migrating to Ant Design",
     body: [{ kind: "text", text: "AntD's `Checkbox` takes the same `checked`/`onChange` shape (event-based) and `children` as its label: a close, low-risk rename." }],
   },
+  {
+    type: "doc-section",
+    heading: "Description and card variant",
+    body: [
+      {
+        "kind": "text",
+        "text": "`description` adds a secondary line under the label, linked to the checkbox with `aria-describedby`. `variant=\"card\"` makes the whole label a bordered card that tints when checked, for option lists such as plans or permissions."
+      },
+      {
+        "kind": "code",
+        "code": "<Checkbox variant=\"card\" description=\"Billed monthly\">Pro plan</Checkbox>"
+      }
+    ],
+  },
 ];
 
 export default function CheckboxPage() {

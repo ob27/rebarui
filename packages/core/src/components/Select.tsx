@@ -10,8 +10,19 @@ export interface SelectOption {
   disabled?: boolean;
 }
 
-export interface SelectProps {
+/** A labelled group of options; the label renders as a non-selectable heading above them. */
+export interface SelectOptionGroup {
+  label: string;
   options: SelectOption[];
+}
+
+function isGroup(entry: SelectOption | SelectOptionGroup): entry is SelectOptionGroup {
+  return "options" in entry;
+}
+
+export interface SelectProps {
+  /** Options, or `{ label, options }` groups (mixed is fine). Group labels render above their options. */
+  options: (SelectOption | SelectOptionGroup)[];
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
@@ -33,6 +44,20 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select
   ref,
 ) {
   const schemeAttr = useSchemeAttr();
+  const renderItem = (option: SelectOption) => (
+    <RadixSelect.Item
+      key={option.value}
+      value={option.value}
+      disabled={option.disabled}
+      className="rebar-select-item"
+      data-rebar-part="item"
+    >
+      <RadixSelect.ItemText>{option.label}</RadixSelect.ItemText>
+      <RadixSelect.ItemIndicator className="rebar-select-item-indicator">
+        ✓
+      </RadixSelect.ItemIndicator>
+    </RadixSelect.Item>
+  );
   return (
     <RadixSelect.Root
       value={value}
@@ -57,20 +82,18 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select
       <RadixSelect.Portal>
         <RadixSelect.Content {...schemeAttr} className="rebar-select-content" data-rebar-part="content">
           <RadixSelect.Viewport>
-            {options.map((option) => (
-              <RadixSelect.Item
-                key={option.value}
-                value={option.value}
-                disabled={option.disabled}
-                className="rebar-select-item"
-                data-rebar-part="item"
-              >
-                <RadixSelect.ItemText>{option.label}</RadixSelect.ItemText>
-                <RadixSelect.ItemIndicator className="rebar-select-item-indicator">
-                  ✓
-                </RadixSelect.ItemIndicator>
-              </RadixSelect.Item>
-            ))}
+            {options.map((entry, index) =>
+              isGroup(entry) ? (
+                <RadixSelect.Group key={`group-${index}`} className="rebar-select-group" data-rebar-part="group">
+                  <RadixSelect.Label className="rebar-select-group-label" data-rebar-part="group-label">
+                    {entry.label}
+                  </RadixSelect.Label>
+                  {entry.options.map((option) => renderItem(option))}
+                </RadixSelect.Group>
+              ) : (
+                renderItem(entry)
+              ),
+            )}
           </RadixSelect.Viewport>
         </RadixSelect.Content>
       </RadixSelect.Portal>
