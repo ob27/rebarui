@@ -6,8 +6,8 @@ export interface ProgressProps {
   /** Current value. Optional (ignored) when `indeterminate`. */
   value?: number;
   max?: number;
-  /** Colors the bar: `"error"` in the danger tone, `"success"` in the success tone. Default `"normal"`. */
-  status?: "normal" | "error" | "success";
+  /** Colors the bar: `"error"` in the danger tone, `"success"` in the success tone, `"warning"` in the warning tone. Default `"normal"`. */
+  status?: "normal" | "error" | "success" | "warning";
   /** Unknown duration: no value is reported (`aria-valuenow` omitted) and the bar animates. */
   indeterminate?: boolean;
   /** Track thickness: `sm` 4px, `md` 8px (default), `lg` 12px. */

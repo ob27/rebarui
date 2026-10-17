@@ -15,6 +15,20 @@ const UPLOADS = [
   { file: FILES.find((f) => f.id === "mark")!, pct: 100 },
   { file: FILES.find((f) => f.id === "fascia")!, pct: 62 },
   { file: FILES.find((f) => f.id === "livery")!, pct: 0 },
+  {
+    type: "doc-section",
+    heading: "Warning status",
+    body: [
+      {
+        "kind": "text",
+        "text": "`status=\"warning\"` colours the bar in the warning tone, for a quota that is nearly used or a step that needs attention."
+      },
+      {
+        "kind": "code",
+        "code": "<Progress value={85} status=\"warning\" aria-label=\"Storage\" />"
+      }
+    ],
+  },
 ];
 
 function Labelled({ label, value, max = 100, right }: { label: string; value: number; max?: number; right: string }) {

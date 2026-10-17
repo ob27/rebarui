@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ComponentPropsWithoutRef, KeyboardEvent, ReactNode } from "react";
 import clsx from "clsx";
 import { renderBionicChildren, useAmbientBionic } from "../bionic";
@@ -16,6 +16,8 @@ export interface SegmentedControlProps extends Omit<ComponentPropsWithoutRef<"di
   defaultValue?: string;
   onValueChange?: (value: string) => void;
   disabled?: boolean;
+  /** One row that scrolls horizontally with snap instead of wrapping or squeezing, for many or long labels. The selected segment is kept in view. */
+  scrollable?: boolean;
   /** Force bionic reading on/off for option labels, overriding the ambient data-rebar-bionic setting. */
   bionic?: boolean;
   bionicOptions?: BionicOptions;
@@ -34,6 +36,7 @@ export function SegmentedControl({
   defaultValue,
   onValueChange,
   disabled,
+  scrollable = false,
   bionic,
   bionicOptions,
   className,
@@ -44,6 +47,13 @@ export function SegmentedControl({
   const [internalValue, setInternalValue] = useState(defaultValue ?? options[0]?.value);
   const isControlled = value !== undefined;
   const current = isControlled ? value : internalValue;
+
+  const groupRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!scrollable) return;
+    const active = groupRef.current?.querySelector<HTMLElement>("[data-rebar-active]");
+    if (active && typeof active.scrollIntoView === "function") active.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [scrollable, current]);
 
   const select = (next: string) => {
     if (!isControlled) setInternalValue(next);
@@ -75,6 +85,8 @@ export function SegmentedControl({
     <div
       className={clsx("rebar-segmented-control", className)}
       data-rebar-component="segmented-control"
+      data-rebar-scrollable={scrollable ? "true" : undefined}
+      ref={groupRef}
       role="radiogroup"
       {...props}
     >

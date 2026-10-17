@@ -75,6 +75,20 @@ const BLOCKS: Construct[] = [
       },
     ],
   },
+  {
+    type: "doc-section",
+    heading: "maxLength, counter and Enter behaviour",
+    body: [
+      {
+        "kind": "text",
+        "text": "`maxLength` caps the message (typing and pasting stop at it); `showCounter` adds a live \"n / max\" counter that turns to the danger tone at 90%. `submitOnEnter={false}` makes Enter add a line so sending happens only from the button (default `true`: Enter sends, Shift+Enter adds a line)."
+      },
+      {
+        "kind": "code",
+        "code": "<AiChatInput maxLength={500} showCounter submitOnEnter={false} onSend={send} />"
+      }
+    ],
+  },
 ];
 
 function Composer() {

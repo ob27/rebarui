@@ -59,6 +59,12 @@ export interface AiChatInputProps {
   /** Caps how tall the field grows before it scrolls internally instead of growing further.
    * Default `6`. */
   maxRows?: number;
+  /** Caps the message length (native `maxLength`: typing and pasting stop at it). */
+  maxLength?: number;
+  /** With `maxLength`, shows a live "n / max" counter under the field; it turns to the danger tone at 90%. Default `false`. */
+  showCounter?: boolean;
+  /** Enter sends (Shift+Enter adds a line). Pass `false` to make Enter add a line and send only from the button, as chat apps for long messages do. Default `true`. */
+  submitOnEnter?: boolean;
   "aria-label"?: string;
   className?: string;
 }
@@ -89,6 +95,9 @@ export function AiChatInput({
   sendIcon,
   micIcon,
   maxRows = 6,
+  maxLength,
+  showCounter = false,
+  submitOnEnter = true,
   "aria-label": ariaLabel,
   className,
 }: AiChatInputProps) {
@@ -125,13 +134,24 @@ export function AiChatInput({
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Enter" && !event.shiftKey) {
+    if (submitOnEnter && event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       handleSend();
     }
   };
 
   const { label, placeholder: defaultPlaceholder } = INTENT_CONFIG[intent];
+  const counter =
+    showCounter && maxLength !== undefined ? (
+      <span
+        className="rebar-ai-chat-input-counter"
+        data-rebar-part="counter"
+        data-rebar-near-limit={current.length >= maxLength * 0.9 ? "true" : undefined}
+        aria-live="polite"
+      >
+        {current.length} / {maxLength}
+      </span>
+    ) : null;
 
   const isDisabled = Boolean(disabled);
   const disabledPlaceholder = typeof disabled === "object" || typeof disabled === "string" ? disabled : null;
@@ -192,6 +212,7 @@ export function AiChatInput({
                 aria-label={ariaLabel ?? "Chat message"}
                 aria-busy={transcribing || undefined}
                 rows={1}
+                maxLength={maxLength}
               />
               {transcribing ? <span className="rebar-ai-chat-input-spinner" data-rebar-part="spinner" aria-hidden="true" /> : null}
             </div>
@@ -231,6 +252,7 @@ export function AiChatInput({
             </button>
           )}
         </div>
+        {counter}
       </div>
     );
   }
@@ -253,7 +275,9 @@ export function AiChatInput({
         disabled={isDisabled}
         aria-label={ariaLabel ?? "Chat message"}
         rows={1}
+        maxLength={maxLength}
       />
+      {counter}
       <div className="rebar-ai-chat-input-actions" data-rebar-part="actions">
         {dictation ? (
           <Button

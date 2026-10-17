@@ -9,6 +9,8 @@ export interface BackdropSectionProps extends ComponentPropsWithoutRef<"section"
   scrim?: "none" | "soft" | "strong" | "start";
   /** An inset rounded panel instead of a full-bleed band. Default `false`. */
   rounded?: boolean;
+  /** Keep the section's own side margin (when `rounded`) and padding. Pass `false` to drop both when the app lays the section out itself, e.g. full-bleed. Default `true`. */
+  inset?: boolean;
   children: ReactNode;
 }
 
@@ -16,6 +18,7 @@ export function BackdropSection({
   image,
   scrim = "soft",
   rounded = false,
+  inset = true,
   children,
   className,
   ...props
@@ -27,6 +30,7 @@ export function BackdropSection({
       data-rebar-component="backdrop-section"
       data-rebar-scrim={scrim}
       data-rebar-rounded={rounded ? "true" : "false"}
+      data-rebar-inset={inset ? undefined : "false"}
       {...props}
     >
       <img

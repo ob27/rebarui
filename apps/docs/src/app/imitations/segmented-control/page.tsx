@@ -12,6 +12,20 @@ const OPTIONS = [
   { value: "day", label: "Day" },
   { value: "week", label: "Week" },
   { value: "month", label: "Month" },
+  {
+    type: "doc-section",
+    heading: "Scrollable",
+    body: [
+      {
+        "kind": "text",
+        "text": "`scrollable` keeps one row that scrolls horizontally with snap (no wrapping, no squeezing) for many or long labels; the selected segment is scrolled into view."
+      },
+      {
+        "kind": "code",
+        "code": "<SegmentedControl scrollable options={months} />"
+      }
+    ],
+  },
 ];
 const VIEWS = [
   { value: "me", label: "Me" },

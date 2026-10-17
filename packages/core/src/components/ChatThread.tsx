@@ -88,6 +88,8 @@ export interface ChatThreadProps extends ComponentPropsWithoutRef<"div"> {
   /** Shows a floating "Latest" pill (44px) whenever the reader has scrolled above the newest
    * message. Pass `{ label }` to rename it. Pressing it scrolls to the newest message. */
   scrollToLatest?: boolean | { label: string };
+  /** Rendered inside the scroller below the last message (and the typing indicator): suggested replies, a follow-up row, a "get help" card. Scrolls with the transcript. */
+  afterMessages?: ReactNode;
   /** Fires when the reader reaches the newest message again (by scrolling or via the pill). */
   onReachLatest?: () => void;
 }
@@ -344,7 +346,7 @@ function MessageBubble({
  * button, which itself scrolls to bottom and resumes auto-scroll on click.
  */
 export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function ChatThread(
-  { messages, isTyping, onRetry, emptyMessage, bionic, bionicOptions, markdown = true, align = "sides", scrollToLatest, onReachLatest, className, ...props },
+  { messages, isTyping, onRetry, emptyMessage, bionic, bionicOptions, markdown = true, align = "sides", scrollToLatest, onReachLatest, afterMessages, className, ...props },
   ref,
 ) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -430,6 +432,11 @@ export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function C
               />
             ))}
             {isTyping ? <TypingIndicator listItem={multiSpeaker} /> : null}
+            {afterMessages ? (
+              <div className="rebar-chat-thread-after" data-rebar-part="after-messages" role={multiSpeaker ? "listitem" : undefined}>
+                {afterMessages}
+              </div>
+            ) : null}
           </div>
           {scrollToLatest && awayFromLatest ? (
             <button

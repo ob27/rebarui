@@ -34,6 +34,20 @@ const BLOCKS: Construct[] = [
     heading: "Migrating to Ant Design",
     body: [{ kind: "text", text: "Not codemod-covered. Ant Design has no equivalent; this is a bespoke section." }],
   },
+  {
+    type: "doc-section",
+    heading: "inset",
+    body: [
+      {
+        "kind": "text",
+        "text": "`inset={false}` drops the section's own side margin (when `rounded`) and padding, so an app can lay it out full-bleed and pad it itself. Default `true` keeps the current spacing."
+      },
+      {
+        "kind": "code",
+        "code": "<BackdropSection image={{ src }} inset={false}>...</BackdropSection>"
+      }
+    ],
+  },
 ];
 
 export default function BackdropSectionPage() {
