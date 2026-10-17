@@ -13354,3 +13354,9 @@ a.rebar-list-item-main {
 .rebar-toaster-toast[data-rebar-appearance="classic"][data-rebar-type="loading"] { text-align: var(--rebar-toaster-loading-text-align, center); }
 /* popup action sheet: the divider has its own colour token (defaults to the hairline) */
 .rebar-drawer-content[data-rebar-appearance="popup"] .rebar-action-sheet-divider { background: var(--rebar-popup-divider, var(--rebar-popup-hairline, var(--rebar-color-border))); }
+/* list item title on one line with an ellipsis (tokens; defaults keep the line clamp) */
+.rebar-list-item-title {
+  display: var(--rebar-list-item-title-display, -webkit-box);
+  white-space: var(--rebar-list-item-title-white-space, normal);
+  text-overflow: var(--rebar-list-item-title-overflow, clip);
+}
