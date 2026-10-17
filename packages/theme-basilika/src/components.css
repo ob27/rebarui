@@ -2642,3 +2642,5 @@ a.rebar-button[data-rebar-variant="tertiary"]:hover {
   font-size: var(--rebar-auth-title-size, 1.7rem);
   line-height: var(--rebar-auth-title-line-height, 1.15);
 }
+.rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-icon { border-radius: 50%; }
+.rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-title.rebar-heading { font-size: 26px; }
