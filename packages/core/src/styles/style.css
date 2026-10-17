@@ -9599,7 +9599,7 @@ a.rebar-button[aria-disabled="true"] {
   display: flex;
   align-items: center;
   gap: 2px;
-  min-height: 60px;
+  min-height: var(--rebar-top-bar-height, 56px);
   padding: 0 6px;
 }
 .rebar-top-bar-button,
@@ -11795,4 +11795,77 @@ a.rebar-list-item-main {
 }
 @media (prefers-reduced-motion: no-preference) {
   [data-hash-target] { transition: outline-color 0.3s; }
+}
+
+/* ---- fixes ---- */
+
+/* TopBar: icon buttons an app drops into the trailing slot (a bare <button> holding one svg, or a
+   Rebar Button iconOnly) are 44px, round, in the bar's text colour. Text actions keep their style. */
+.rebar-top-bar-trailing > button:not(.rebar-button):has(> svg:only-child),
+.rebar-top-bar-trailing > button:not(.rebar-button)[data-rebar-icon-only] {
+  flex: none;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  color: inherit;
+  background: transparent;
+  border: 0;
+}
+.rebar-top-bar-trailing .rebar-button[data-rebar-icon-only] {
+  flex: none;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  color: inherit;
+  border-color: transparent;
+}
+.rebar-top-bar-trailing .rebar-button[data-rebar-icon-only]:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--rebar-color-primary-bright, var(--rebar-color-primary, #b53824)) 75%, transparent);
+  outline-offset: -3px;
+}
+.rebar-top-bar[data-rebar-tone="overlay"] .rebar-top-bar-trailing > button:not(.rebar-button):has(> svg:only-child),
+.rebar-top-bar[data-rebar-tone="overlay"] .rebar-top-bar-trailing > button:not(.rebar-button)[data-rebar-icon-only] {
+  background: color-mix(in srgb, var(--rebar-color-bg-inverse, #1d2040) 45%, transparent);
+  margin: 0 4px;
+}
+
+/* TopBar logo slot: a link, an image or an svg (or a mix) sits at 24px high on one line, no app CSS needed. */
+.rebar-top-bar-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1;
+}
+.rebar-top-bar[data-rebar-align="center"] .rebar-top-bar-logo {
+  justify-content: center;
+}
+.rebar-top-bar-logo a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 6px;
+}
+.rebar-top-bar-logo img,
+.rebar-top-bar-logo svg {
+  flex: none;
+  display: block;
+  height: 24px;
+  width: auto;
+  max-width: 100%;
+}
+.rebar-top-bar-logo a:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--rebar-color-primary-bright, var(--rebar-color-primary, #b53824)) 75%, transparent);
+  outline-offset: 2px;
 }

@@ -36,7 +36,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: '`data-rebar-component="top-bar"`, `data-rebar-tone="solid" | "overlay"`, `data-rebar-align`, `data-rebar-sticky`; parts `safe-area`, `bar`, `leading`, `title`, `logo`, `trailing`, `badge`, `edit`. Set `--rebar-top-bar-safe-area` to override `env(safe-area-inset-top)`.',
+        text: '`data-rebar-component="top-bar"`, `data-rebar-tone="solid" | "overlay"`, `data-rebar-align`, `data-rebar-sticky`; parts `safe-area`, `bar`, `leading`, `title`, `logo`, `trailing`, `badge`, `edit`. Set `--rebar-top-bar-safe-area` to override `env(safe-area-inset-top)` and `--rebar-top-bar-height` (default 56px) to resize the bar. A bare `<button>` holding one svg in `trailing` is sized, rounded and recoloured by the bar.',
       },
     ],
   },
@@ -91,6 +91,8 @@ export default function TopBarPage() {
           { label: "Tab root (no leading)", node: bar({ title: "Your Profile" }) },
           { label: "Trailing text action", node: bar({ leading: "back", title: "Your Details", trailing: <button type="button">Save</button> }) },
           { label: "Two trailing icons", node: bar({ leading: "back", title: "Library", trailing: <>{iconBtn("Search", SEARCH)}{iconBtn("More", MORE)}</> }) },
+          { label: "Bare icon buttons (sized and recoloured by the bar)", node: bar({ leading: "back", title: "Library", trailing: <><button type="button" aria-label="Search">{SEARCH}</button><button type="button" aria-label="Share">{SHARE}</button></> }) },
+          { label: "Logo with a link and mark", node: bar({ leading: "menu", logo: <a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M12 3v18M6 9h12" /></svg>Athic</a>, trailing: iconBtn("Notifications", BELL) }) },
           { label: "Editable title", node: bar({ leading: "back", title: { editable: true, value: name, onSave: setName, label: "Discussion title" } }) },
           { label: "Status-bar strip (28px)", node: <div style={{ background: "var(--rebar-color-bg-inverse)", borderRadius: 14, overflow: "hidden", "--rebar-top-bar-safe-area": "28px" } as React.CSSProperties}><TopBar leading="back" title="Ask" trailing={iconBtn("New discussion", PLUS)} /></div> },
           { label: "Overlay on a banner", node: <div style={{ position: "relative", borderRadius: 14, overflow: "hidden" }}><TopBar tone="overlay" safeArea={false} leading="back" trailing={iconBtn("More", MORE)} /><Banner height={170}>{ARTICLE.title}</Banner></div> },
