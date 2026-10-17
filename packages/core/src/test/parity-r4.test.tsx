@@ -48,3 +48,24 @@ describe("parity-r4: popup title scope", () => {
     expect(css).not.toContain('[data-rebar-title-style="heading"] [data-rebar-part="title"] {');
   });
 });
+
+const themeCss = readFileSync(resolve(__dirname, "../../../theme-basilika/src/components.css"), "utf8");
+
+describe("parity-r4: toast ring, popup divider, select disabled opacity", () => {
+  it("settles the reduced-motion ring on a token (default 44)", () => {
+    expect(block).toContain("--rebar-toaster-ring-still-offset, 44");
+    expect(block).toContain("@media (prefers-reduced-motion: reduce)");
+  });
+  it("centres the loading toast label unless the token says otherwise", () => {
+    expect(block).toContain('[data-rebar-type="loading"] { text-align: var(--rebar-toaster-loading-text-align, center); }');
+  });
+  it("gives the popup divider its own colour token that defaults to the hairline", () => {
+    expect(block).toContain("var(--rebar-popup-divider, var(--rebar-popup-hairline, var(--rebar-color-border)))");
+  });
+  it("makes the list item border width a token (default 1px)", () => {
+    expect(block).toContain("border-width: var(--rebar-list-item-border-width, 1px)");
+  });
+  it("makes the disabled select opacity a token in the theme (default 0.5)", () => {
+    expect(themeCss).toContain(".rebar-select-trigger:disabled { opacity: var(--rebar-select-disabled-opacity, 0.5); }");
+  });
+});

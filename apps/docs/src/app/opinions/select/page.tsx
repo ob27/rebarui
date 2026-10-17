@@ -116,6 +116,7 @@ export default function SelectPage() {
         caption="Native feel, custom list"
         code={CODE}
         states={[
+          { label: "Native, disabled at the platform opacity (--rebar-select-disabled-opacity)", node: <div style={{ "--rebar-select-disabled-opacity": "0.7" } as React.CSSProperties}><Select native disabled options={STATUS_OPTIONS} aria-label="Status (disabled)" /></div> },
           { label: "Placeholder", node: <Select options={STATUS_OPTIONS} placeholder="Select a status" aria-label="Status" /> },
           {
             label: "Error",
