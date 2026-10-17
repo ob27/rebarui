@@ -30,6 +30,9 @@ describe("parity-r1: grouped list panel and ListSection type tokens", () => {
     expect(block).toContain("var(--rebar-list-item-chevron-size, 1.2em)");
     expect(block).toContain("var(--rebar-avatar-overflow, hidden)");
     expect(block).toContain("var(--rebar-popup-heading-size, 22px)");
+    expect(block).toContain("var(--rebar-button-tertiary-color, var(--rebar-color-primary-text-ink");
+    expect(block).toContain("var(--rebar-backdrop-image-repeat, no-repeat)");
+    expect(block).toContain("var(--rebar-backdrop-image-bg, var(--rebar-color-bg-inverse, #1e1e1e))");
     expect(block).toContain("var(--rebar-classic-button-bg, var(--rebar-color-primary))");
     expect(block).toContain("var(--rebar-list-item-title-wrap, pretty)");
     expect(block).toContain("var(--rebar-avatar-image-radius, 0)");
