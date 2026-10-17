@@ -3001,3 +3001,8 @@ textarea.rebar-input {
   font-size: var(--rebar-tag-close-font-size, inherit);
 }
 .rebar-tag { text-transform: var(--rebar-tag-text-transform, none); }
+.rebar-search-input-control {
+  height: var(--rebar-search-input-control-height, 100%);
+  background: var(--rebar-search-input-control-background, transparent);
+  border-radius: var(--rebar-search-input-control-radius, 0);
+}
