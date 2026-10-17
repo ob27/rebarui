@@ -11899,3 +11899,28 @@ a.rebar-list-item-main {
 .rebar-drawer-content[data-rebar-size="auto"] > .rebar-drawer-drag-handle {
   flex: 0 0 auto;
 }
+
+/* Image: tinted empty state without the dashed frame */
+.rebar-image-empty[data-rebar-bare="true"] {
+  background: transparent;
+  border: 0;
+  border-radius: inherit;
+}
+/* Avatar: thumbSrc blur-up */
+.rebar-avatar-thumb {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(6px);
+  transform: scale(1.15);
+}
+.rebar-avatar[data-rebar-thumb="blur"] .rebar-avatar-fallback { visibility: hidden; }
+.rebar-avatar[data-rebar-thumb] .rebar-avatar-image { position: relative; animation: rebar-avatar-thumb-in 250ms ease; }
+.rebar-avatar[data-rebar-thumb="settled"] .rebar-avatar-thumb { opacity: 0; }
+@keyframes rebar-avatar-thumb-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .rebar-avatar[data-rebar-thumb] .rebar-avatar-image { animation: none; } }
+/* ImagePicker: disabled */
+.rebar-image-picker[data-rebar-disabled="true"] .rebar-image-picker-chip,
+.rebar-image-picker-tile[data-rebar-disabled="true"] { opacity: 0.5; cursor: not-allowed; }

@@ -52,6 +52,20 @@ const BLOCKS: Construct[] = [
       },
     ],
   },
+  {
+    type: "doc-section",
+    heading: "thumbSrc blur-up",
+    body: [
+      {
+        "kind": "text",
+        "text": "Pass `thumbSrc` (a tiny image) to show it blurred straight away while `src` loads, then fade the real image in, the same blur-up as `Image`. The initials stay hidden behind the thumb unless the image fails."
+      },
+      {
+        "kind": "code",
+        "code": "<Avatar src={photo} thumbSrc={photoTiny} fallback=\"MK\" />"
+      }
+    ],
+  },
 ];
 
 export default function AvatarPage() {

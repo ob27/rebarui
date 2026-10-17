@@ -40,6 +40,9 @@ export interface ImageProps
    * distinct from the `error` fallback (a real, different problem: nothing supplied yet, vs. a
    * real src that failed). */
   emptyIndicator?: ReactNode;
+  /** With `fallbackColor` and no `src`, the empty state is just the tint (no dashed "No image"
+   * frame). Set this to keep the labelled placeholder as well. Ignored without `fallbackColor`. */
+  showPlaceholderLabel?: boolean;
   /** Shown while the image is loading. Defaults to a real Spin. */
   loadingIndicator?: ReactNode;
   /** A tiny placeholder shown immediately, blurred, then faded out once `src` has painted. Never the
@@ -122,6 +125,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
     lazy = false,
     lazyMargin = 300,
     fallbackColor,
+    showPlaceholderLabel = false,
     onStateChange,
     className,
     style,
@@ -215,16 +219,18 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
   };
 
   if (!src) {
+    const bare = Boolean(fallbackColor) && !showPlaceholderLabel && emptyIndicator === undefined;
     return (
       <span
         ref={rootRef}
         className={clsx("rebar-image", className)}
         data-rebar-component="image"
         data-rebar-image-status="empty"
+        data-rebar-image-tinted={fallbackColor ? "true" : undefined}
         style={fallbackColor ? { ...style, "--rebar-image-fallback-color": fallbackColor } as CSSProperties : style}
       >
-        <span className="rebar-image-empty" data-rebar-part="empty" role="img" aria-label={alt}>
-          {emptyIndicator ?? <DefaultEmpty />}
+        <span className="rebar-image-empty" data-rebar-part="empty" data-rebar-bare={bare ? "true" : undefined} role="img" aria-label={alt}>
+          {bare ? null : (emptyIndicator ?? <DefaultEmpty />)}
         </span>
       </span>
     );

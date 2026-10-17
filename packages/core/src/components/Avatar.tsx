@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 import type { ComponentPropsWithoutRef, CSSProperties, KeyboardEvent, ReactNode } from "react";
 import * as RadixAvatar from "@radix-ui/react-avatar";
 import clsx from "clsx";
@@ -6,6 +6,8 @@ import { useAvatarPlaceholderSrc } from "./avatarPlaceholder";
 
 export interface AvatarProps extends Omit<ComponentPropsWithoutRef<"span">, "className"> {
   src?: string;
+  /** A tiny placeholder shown blurred immediately while `src` loads, then replaced by it (the same blur-up as `Image`'s `thumbSrc`). */
+  thumbSrc?: string;
   alt?: string;
   fallback: string;
   className?: string;
@@ -29,11 +31,13 @@ export interface AvatarProps extends Omit<ComponentPropsWithoutRef<"span">, "cla
 }
 
 export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
-  { src, alt, fallback, className, placeholder, size = "md", overlay, badge, loading, invalid, onClick, style, ...props },
+  { src, thumbSrc, alt, fallback, className, placeholder, size = "md", overlay, badge, loading, invalid, onClick, style, ...props },
   ref,
 ) {
   const placeholderSrc = useAvatarPlaceholderSrc(src ? undefined : placeholder, fallback);
   const imageSrc = src ?? placeholderSrc;
+  const [imageStatus, setImageStatus] = useState<"idle" | "loading" | "loaded" | "error">("idle");
+  const thumbActive = Boolean(thumbSrc && src && imageStatus !== "error");
   const interactive = overlay !== undefined && overlay !== false && overlay !== null ? true : Boolean(onClick);
   const numeric = typeof size === "number";
   const sizeStyle: CSSProperties | undefined = numeric
@@ -56,6 +60,7 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
       data-rebar-size={numeric ? "custom" : size}
       data-rebar-loading={loading ? "true" : undefined}
       data-rebar-invalid={invalid ? "true" : undefined}
+      data-rebar-thumb={thumbActive ? (imageStatus === "loaded" ? "settled" : "blur") : undefined}
       role={interactive ? "button" : undefined}
       tabIndex={interactive && !loading ? 0 : undefined}
       aria-busy={loading || undefined}
@@ -65,8 +70,9 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
       style={{ ...sizeStyle, ...style }}
       {...props}
     >
+      {thumbActive ? <img className="rebar-avatar-thumb" data-rebar-part="thumb" src={thumbSrc} alt="" aria-hidden="true" /> : null}
       {imageSrc ? (
-        <RadixAvatar.Image className="rebar-avatar-image" src={imageSrc} alt={alt ?? ""} />
+        <RadixAvatar.Image className="rebar-avatar-image" src={imageSrc} alt={alt ?? ""} onLoadingStatusChange={setImageStatus} />
       ) : null}
       <RadixAvatar.Fallback className="rebar-avatar-fallback" data-rebar-part="fallback">
         {fallback}

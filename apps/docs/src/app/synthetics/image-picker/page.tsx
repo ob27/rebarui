@@ -42,6 +42,20 @@ const BLOCKS: Construct[] = [
     heading: "Migrating to Ant Design",
     body: [{ kind: "text", text: "No direct equivalent. Use `Radio.Group` with `optionType=\"button\"` over `Image` previews, or `Upload` in `picture-card` mode when choosing a file is the point." }],
   },
+  {
+    type: "doc-section",
+    heading: "Multi-tag filter and disabled",
+    body: [
+      {
+        "kind": "text",
+        "text": "Pass `multiTag` and the chips toggle independently; the grid shows items carrying every active tag (`tagMatch=\"any\"` for any of them), \"All\" clears them (`activeTags`/`onActiveTagsChange` to control). `disabled` on the picker, or `disabled: true` on an `ImagePickerItem`, makes tiles ignore presses (`aria-disabled`). Each tile is named by its item `alt`."
+      },
+      {
+        "kind": "code",
+        "code": "<ImagePicker items={items} tags={[\"Scripture\", \"Saints\"]} multiTag onSelect={pick} />"
+      }
+    ],
+  },
 ];
 
 export default function ImagePickerPage() {

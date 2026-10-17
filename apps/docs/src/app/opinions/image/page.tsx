@@ -33,6 +33,20 @@ const BLOCKS: Construct[] = [
       },
     ],
   },
+  {
+    type: "doc-section",
+    heading: "Tint-only empty state",
+    body: [
+      {
+        "kind": "text",
+        "text": "With `fallbackColor` and no `src` the empty state is just the tint, with no dashed \"No image\" frame. Pass `showPlaceholderLabel` to keep the labelled placeholder."
+      },
+      {
+        "kind": "code",
+        "code": "<Image alt=\"Cover\" fallbackColor=\"var(--rebar-color-tint-2)\" />"
+      }
+    ],
+  },
 ];
 
 

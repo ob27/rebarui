@@ -10,6 +10,8 @@ export interface ImagePickerItem {
   thumbSrc?: string;
   alt: string;
   tags?: string[];
+  /** This tile can't be chosen. */
+  disabled?: boolean;
 }
 
 export interface ImagePickerProps extends Omit<ComponentPropsWithoutRef<"div">, "onSelect"> {
@@ -34,6 +36,16 @@ export interface ImagePickerProps extends Omit<ComponentPropsWithoutRef<"div">, 
   /** `"icon"`: 22% superellipse tiles for app icons. */
   shape?: "square" | "icon";
   loading?: boolean;
+  /** Tags toggle independently (several can be on at once) and the grid shows items that carry every active tag (or any of them with `tagMatch="any"`). "All" clears them. */
+  multiTag?: boolean;
+  /** Controlled active tags for `multiTag`. */
+  activeTags?: string[];
+  defaultActiveTags?: string[];
+  onActiveTagsChange?: (tags: string[]) => void;
+  /** How `multiTag` combines tags. Default `"all"`. */
+  tagMatch?: "all" | "any";
+  /** Every tile (and the tag chips) ignores presses and reads as disabled. */
+  disabled?: boolean;
   /** Shown instead of the grid, with a retry button when `onRetry` is passed. */
   error?: ReactNode;
   onRetry?: () => void;
@@ -58,6 +70,12 @@ export function ImagePicker({
   defaultActiveTag = null,
   onTagChange,
   allLabel = "All",
+  multiTag = false,
+  activeTags,
+  defaultActiveTags = [],
+  onActiveTagsChange,
+  tagMatch = "all",
+  disabled = false,
   shape = "square",
   loading,
   error,
@@ -71,17 +89,37 @@ export function ImagePicker({
   const selected = selectedId !== undefined ? selectedId : internalSelected;
   const tag = activeTag !== undefined ? activeTag : internalTag;
 
+  const [internalTags, setInternalTags] = useState<string[]>(defaultActiveTags);
+  const tagList = activeTags !== undefined ? activeTags : internalTags;
+  const setTagList = (next: string[]) => {
+    if (activeTags === undefined) setInternalTags(next);
+    onActiveTagsChange?.(next);
+  };
+  const toggleTag = (t: string | null) => {
+    if (disabled) return;
+    if (t === null) return setTagList([]);
+    setTagList(tagList.includes(t) ? tagList.filter((x) => x !== t) : [...tagList, t]);
+  };
   const setTag = (next: string | null) => {
     if (activeTag === undefined) setInternalTag(next);
     onTagChange?.(next);
   };
   const choose = (item: ImagePickerItem) => {
-    if (busyId) return;
+    if (busyId || disabled || item.disabled) return;
     if (selectedId === undefined) setInternalSelected(item.id);
     onSelect?.(item);
   };
 
-  const visible = tags && tag ? items.filter((i) => i.tags?.includes(tag)) : items;
+  const filtering = multiTag ? tagList.length > 0 : Boolean(tag);
+  const visible =
+    !tags || !filtering
+      ? items
+      : multiTag
+        ? items.filter((i) =>
+            tagMatch === "any" ? tagList.some((t) => i.tags?.includes(t)) : tagList.every((t) => i.tags?.includes(t)),
+          )
+        : items.filter((i) => i.tags?.includes(tag as string));
+  const filterLabel = multiTag ? tagList.join(" + ") : tag;
 
   let body: ReactNode;
   if (error) {
@@ -106,9 +144,9 @@ export function ImagePicker({
   } else if (visible.length === 0) {
     body = (
       <div className="rebar-image-picker-message" data-rebar-part="empty">
-        {empty ?? <b>{tag ? `No images for “${tag}”` : "No images"}</b>}
-        {!empty && tag ? (
-          <button type="button" className="rebar-image-picker-action" onClick={() => setTag(null)}>
+        {empty ?? <b>{filtering ? `No images for “${filterLabel}”` : "No images"}</b>}
+        {!empty && filtering ? (
+          <button type="button" className="rebar-image-picker-action" onClick={() => (multiTag ? toggleTag(null) : setTag(null))}>
             Clear filter
           </button>
         ) : null}
@@ -120,6 +158,7 @@ export function ImagePicker({
         {visible.map((item) => {
           const isSel = selected === item.id;
           const isBusy = busyId === item.id;
+          const isOff = disabled || item.disabled;
           return (
             <button
               key={item.id}
@@ -130,7 +169,8 @@ export function ImagePicker({
               aria-pressed={isSel}
               aria-label={item.alt}
               aria-busy={isBusy || undefined}
-              aria-disabled={busyId && !isBusy ? true : undefined}
+              aria-disabled={(busyId && !isBusy) || isOff ? true : undefined}
+              data-rebar-disabled={isOff ? "true" : undefined}
               onClick={() => choose(item)}
             >
               <Image src={item.src} thumbSrc={item.thumbSrc} alt="" fallbackColor="var(--rebar-color-tint-2)" />
@@ -155,6 +195,7 @@ export function ImagePicker({
       data-rebar-component="image-picker"
       data-rebar-shape={shape}
       data-rebar-columns={columns}
+      data-rebar-disabled={disabled ? "true" : undefined}
       {...props}
     >
       {tags ? (
@@ -165,8 +206,9 @@ export function ImagePicker({
               type="button"
               className="rebar-image-picker-chip"
               data-rebar-part="chip"
-              aria-pressed={tag === t}
-              onClick={() => setTag(t)}
+              aria-pressed={multiTag ? (t === null ? tagList.length === 0 : tagList.includes(t)) : tag === t}
+              aria-disabled={disabled || undefined}
+              onClick={() => (disabled ? undefined : multiTag ? toggleTag(t) : setTag(t))}
             >
               {t ?? allLabel}
             </button>
