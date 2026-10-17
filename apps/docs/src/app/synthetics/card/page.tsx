@@ -178,6 +178,14 @@ export default function CardPage() {
             ),
           },
           {
+            label: "Flat panel from the tone tokens (--rebar-card-tone-bg, --rebar-card-tone-border-width)",
+            node: (
+              <div style={{ "--rebar-card-tone-bg": "var(--rebar-color-bg-secondary)", "--rebar-card-tone-border-width": "0px" } as React.CSSProperties}>
+                <Card tone={2}><Text>A plenary indulgence for the Rosary prayed in a church or family.</Text></Card>
+              </div>
+            ),
+          },
+          {
             label: "Panel from --rebar-card-* properties (26px radius, 20px padding)",
             node: (
               <div style={{ "--rebar-card-radius": "26px", "--rebar-card-header-padding": "20px 20px 10px", "--rebar-card-body-padding": "20px", "--rebar-card-body-padding-top": "0px", "--rebar-card-eyebrow-gap": "0px" } as React.CSSProperties}>

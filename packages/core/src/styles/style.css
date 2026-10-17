@@ -13346,3 +13346,11 @@ a.rebar-list-item-main {
 }
 .rebar-checkbox-label { color: var(--rebar-checkbox-label-color, inherit); }
 .rebar-list[data-rebar-variant="cards"] > .rebar-list-item { border-width: var(--rebar-list-item-border-width, 1px); }
+/* loading toast, reduced motion: the still ring is the 3/4 arc the original settled on (its spring's end value), not the 80-offset start */
+@media (prefers-reduced-motion: reduce) {
+  .rebar-toaster-ring circle { stroke-dashoffset: var(--rebar-toaster-ring-still-offset, 44); }
+}
+/* loading toast: the label sits centred under the ring (the original's icon toasts centred their text) */
+.rebar-toaster-toast[data-rebar-appearance="classic"][data-rebar-type="loading"] { text-align: var(--rebar-toaster-loading-text-align, center); }
+/* popup action sheet: the divider has its own colour token (defaults to the hairline) */
+.rebar-drawer-content[data-rebar-appearance="popup"] .rebar-action-sheet-divider { background: var(--rebar-popup-divider, var(--rebar-popup-hairline, var(--rebar-color-border))); }

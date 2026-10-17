@@ -3063,3 +3063,6 @@ textarea.rebar-input {
 }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-icon { border-radius: 50%; }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-title.rebar-heading { font-size: 26px; }
+
+/* ---- parity-r4: select disabled opacity token (default = the previous value) ---- */
+.rebar-select-trigger:disabled { opacity: var(--rebar-select-disabled-opacity, 0.5); }

@@ -61,6 +61,7 @@ export default function TextPage() {
       <DemoStage title="Sizes and colours" caption="Default, helper text, and an inline span" code={CODE} widths={false}
         states={[
           { label: "As a span", node: <Text as="span" size="sm">Due <Text as="span" size="sm" color="secondary">24 Oct</Text></Text> },
+          { label: "Eyebrow, tuned (--rebar-text-eyebrow-size / -line-height / -letter-spacing)", node: <div style={{ "--rebar-text-eyebrow-size": "11.5px", "--rebar-text-eyebrow-line-height": "normal", "--rebar-text-eyebrow-letter-spacing": "0.12em" } as React.CSSProperties}><Text variant="eyebrow" tone="muted">Applied to</Text></div> },
           { label: "Long text", node: <Text size="sm" style={{ maxWidth: 260 }}>Offline sync keeps tasks readable on the ferry, then catches up with the server as soon as the crew reaches the quay.</Text> },
         ]}
       >
