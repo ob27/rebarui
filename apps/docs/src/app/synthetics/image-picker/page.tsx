@@ -61,6 +61,11 @@ const BLOCKS: Construct[] = [
     heading: 'appearance="classic", columns="auto"',
     body: [{ kind: "text", text: '`appearance="classic"` draws 10px-radius square tiles with a 3px border (bright primary when selected or busy), flat chips with a corner tick, and a plain empty message; `columns="auto"` fits tiles at least `--rebar-image-picker-tile-min` wide; `allLabel={null}` drops the All chip. Tokens: `--rebar-image-picker-gap / -max-height / -tile-radius / -tile-bg`, `--rebar-classic-chip-*`.' }],
   },
+  {
+    type: "doc-section",
+    heading: 'appearance="ring"',
+    body: [{ kind: "text", text: '`appearance="ring"` draws soft-shadow tiles (`--rebar-image-picker-tile-radius` 18px, `-shadow`, `-gap` 14px); the selected tile wears a bright ring (`--rebar-image-picker-ring`) and a corner badge (`checkIcon` replaces the glyph; `-check-size`, `-check-inset`, `-check-bg`, `-check-icon-size`), and a busy tile just fades (`--rebar-image-picker-busy-opacity`, no spinner). A tile can be selected and busy at once.' }],
+  },
 ];
 
 export default function ImagePickerPage() {

@@ -29,6 +29,7 @@ describe("parity-r1: grouped list panel and ListSection type tokens", () => {
     expect(block).toContain("var(--rebar-list-section-footer-padding, 10px 4px 0)");
     expect(block).toContain("var(--rebar-list-item-chevron-size, 1.2em)");
     expect(block).toContain("var(--rebar-avatar-overflow, hidden)");
+    expect(block).toContain("var(--rebar-popup-heading-size, 22px)");
     expect(block).toContain("var(--rebar-avatar-image-radius, 0)");
   });
 
@@ -72,5 +73,24 @@ describe("parity-r1: ImagePicker appearance=ring", () => {
   it("css keeps the ring defaults", () => {
     expect(block).toContain("var(--rebar-image-picker-tile-radius, 18px)");
     expect(block).toContain("var(--rebar-image-picker-gap, 14px)");
+  });
+});
+
+import { Avatar } from "../components/Avatar";
+
+describe("parity-r1: Avatar overlayStyle=full", () => {
+  it("marks the style and swaps the label for the spinner while loading (no separate scrim)", () => {
+    const { container, rerender } = render(<Avatar fallback="A" size={64} overlay="edit" overlayStyle="full" aria-label="Change" />);
+    const root = container.querySelector('[data-rebar-component="avatar"]')!;
+    expect(root).toHaveAttribute("data-rebar-overlay-style", "full");
+    expect(container.querySelector('[data-rebar-part="overlay"]')).toHaveTextContent("Edit");
+    rerender(<Avatar fallback="A" size={64} overlay="edit" overlayStyle="full" aria-label="Change" loading spinner={<i data-testid="spin" />} />);
+    expect(container.querySelector('[data-rebar-part="overlay"] [data-testid="spin"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-rebar-part="scrim"]')).toBeNull();
+  });
+  it("keeps the band overlay and scrim by default", () => {
+    const { container } = render(<Avatar fallback="A" size={64} overlay="edit" loading aria-label="Change" />);
+    expect(container.querySelector('[data-rebar-component="avatar"]')).not.toHaveAttribute("data-rebar-overlay-style");
+    expect(container.querySelector('[data-rebar-part="scrim"]')).toBeInTheDocument();
   });
 });

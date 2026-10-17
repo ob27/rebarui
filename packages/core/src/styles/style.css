@@ -13398,3 +13398,23 @@ a.rebar-list-item-main {
   font-size: var(--rebar-image-picker-check-icon-size, 13px);
 }
 .rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-check svg { width: 1em; height: 1em; }
+
+/* Avatar overlayStyle="full": a dim layer over the whole picture with a centred label (tokens: --rebar-avatar-overlay-bg / -size / -weight) */
+.rebar-avatar[data-rebar-overlay-style="full"] .rebar-avatar-overlay {
+  inset: 0;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--rebar-avatar-overlay-bg, rgba(10, 11, 22, 0.35));
+  color: #fff;
+  font-size: var(--rebar-avatar-overlay-size, 11px);
+  font-weight: var(--rebar-avatar-overlay-weight, 700);
+  letter-spacing: normal;
+  border-radius: 50%;
+}
+
+/* BottomSheet appearance="popup" titleStyle="heading": the heading size can be set by an app (default unchanged) */
+.rebar-drawer-content[data-rebar-appearance="popup"][data-rebar-title-style="heading"] [data-rebar-part="title"] {
+  font-size: var(--rebar-popup-heading-size, 22px);
+}
