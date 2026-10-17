@@ -12170,7 +12170,7 @@ a.rebar-list-item-main {
 @media (prefers-reduced-motion: reduce) { .rebar-ai-chat-input[data-rebar-variant="boxed"] .rebar-ai-chat-input-round[data-rebar-tone="stop"] { animation: none; } }
 
 /* ChatThread variant="bubbles": the classic messenger look. Tokens: --rebar-chat-* */
-.rebar-chat-thread[data-rebar-variant="bubbles"] .rebar-chat-thread-scroll { gap: var(--rebar-chat-gap, 12px); padding: var(--rebar-chat-padding, 16px); }
+.rebar-chat-thread[data-rebar-variant="bubbles"] .rebar-chat-thread-scroll { gap: var(--rebar-chat-gap, 12px); padding: var(--rebar-chat-padding, 16px); padding-bottom: calc(var(--rebar-chat-padding, 16px) + var(--rebar-chat-gap, 12px)); }
 .rebar-chat-thread[data-rebar-variant="bubbles"] .rebar-chat-message { max-width: 100%; align-self: stretch; gap: 6px; }
 .rebar-chat-thread[data-rebar-variant="bubbles"] .rebar-chat-message-user { align-items: flex-end; }
 .rebar-chat-thread[data-rebar-variant="bubbles"] .rebar-chat-message-assistant { align-items: flex-start; }
@@ -12215,7 +12215,9 @@ a.rebar-list-item-main {
   right: -14px;
   z-index: 1;
 }
-.rebar-chat-thread[data-rebar-variant="bubbles"] .rebar-chat-message-body-footer { white-space: normal; }
+.rebar-chat-thread[data-rebar-variant="bubbles"] .rebar-chat-message-body-footer { white-space: normal; display: flex; flex-direction: column; align-items: flex-start; }
+/* A toggle inside the bubble (Read more) inherits the bubble's line height */
+.rebar-chat-thread[data-rebar-variant="bubbles"] .rebar-chat-message-body-footer .rebar-chip { padding: var(--rebar-chat-more-padding, 6px 14px); line-height: inherit; margin-top: var(--rebar-chat-body-footer-gap, 8px); }
 /* Waiting dots (the typing indicator inside the bubble) */
 .rebar-chat-thread[data-rebar-variant="bubbles"] .rebar-chat-message-waiting { display: inline-flex; align-items: center; gap: 4px; height: 15px; }
 .rebar-chat-thread[data-rebar-variant="bubbles"] .rebar-chat-typing-dot {
@@ -12323,3 +12325,19 @@ a.rebar-list-item-main {
   border-radius: 50%;
 }
 .rebar-chip:disabled { cursor: default; }
+
+/* NoticeBar variant="banner": centred status strip. Tokens: --rebar-notice-bar-banner-* */
+.rebar-notice-bar[data-rebar-variant="banner"][data-rebar-tone] {
+  display: block;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  text-align: center;
+  padding: var(--rebar-notice-bar-banner-padding, 8px 14px);
+  font-size: var(--rebar-notice-bar-banner-font-size, 13px);
+  line-height: var(--rebar-notice-bar-banner-line-height, 1.4);
+  background: var(--rebar-notice-bar-banner-bg, var(--rebar-color-warning-bg, #fff3e0));
+  color: var(--rebar-notice-bar-banner-color, var(--rebar-color-warning, #f57c00));
+}
+.rebar-notice-bar[data-rebar-variant="banner"] .rebar-notice-bar-content { display: block; white-space: normal; }
+.rebar-notice-bar[data-rebar-variant="banner"] .rebar-notice-bar-text { display: inline; }

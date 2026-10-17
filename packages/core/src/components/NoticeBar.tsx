@@ -21,6 +21,9 @@ export interface NoticeBarProps {
   onClick?: () => void;
   /** Wraps onto multiple lines instead of a single-line auto-scrolling marquee. Default `false`. */
   wrap?: boolean;
+  /** `"banner"`: a plain full-width strip with centred text (padding, size and line-height from the `--rebar-notice-bar-banner-*`
+   * properties, colours from `-bg` / `-color`), for status lines such as "You're offline". Default `"default"`. */
+  variant?: "default" | "banner";
   className?: string;
   bionic?: boolean;
   bionicOptions?: BionicOptions;
@@ -43,6 +46,7 @@ export function NoticeBar({
   onClose,
   onClick,
   wrap = false,
+  variant = "default",
   className,
   bionic,
   bionicOptions,
@@ -74,6 +78,7 @@ export function NoticeBar({
       className={clsx("rebar-notice-bar", wrap && "rebar-notice-bar-wrap", className)}
       data-rebar-component="notice-bar"
       data-rebar-tone={tone}
+      data-rebar-variant={variant === "banner" ? "banner" : undefined}
       role={tone === "error" || tone === "warning" ? "alert" : "status"}
       onClick={onClick}
     >
