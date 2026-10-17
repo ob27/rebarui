@@ -5,6 +5,8 @@
 
   Zero config: the tokens apply to :root and to any element carrying data-rebar-theme="basilika", at
   specificity 0, so an app's own rules always win. Dark mode follows data-theme="dark" on any ancestor.
+  Scheme lock: data-rebar-scheme="light" | "dark" on any wrapper re-declares the whole token set for that
+  subtree, whatever the page scheme (the ThemeScope construct sets it and carries it to portaled overlays).
 
   Contrast: white on the bright coral #e9705c is only 3.0:1, so the light theme's action colour is the
   deep coral #c4402a (5.1:1) and the bright coral is kept for large display text, art, and dark mode,
@@ -26,7 +28,7 @@
   font-display: swap;
 }
 
-:where(:root, [data-rebar-theme="basilika"]) {
+:where(:root, [data-rebar-theme="basilika"], [data-rebar-scheme="light"]) {
   --rebar-font-family-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --rebar-font-family-display: "Fraunces", Georgia, "Times New Roman", serif;
 
@@ -120,7 +122,12 @@
   --rebar-chart-down: #b3261e;
 }
 
-:where([data-theme="dark"], [data-theme="dark"] [data-rebar-theme="basilika"]) {
+:where(
+  [data-theme="dark"]:not([data-rebar-scheme="light"]),
+  [data-theme="dark"] [data-rebar-theme="basilika"]:not([data-rebar-scheme="light"]),
+  [data-rebar-scheme="dark"],
+  .rebar-auth-screen[data-rebar-tone="navy"]
+) {
   --rebar-color-primary: #e9705c;
   --rebar-color-primary-hover: #f08a78;
   --rebar-color-primary-text: #0a0b16;

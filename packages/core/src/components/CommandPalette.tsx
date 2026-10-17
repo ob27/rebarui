@@ -1,4 +1,5 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
+import { useSchemeAttr } from "./ThemeScope";
 import type { ComponentPropsWithoutRef, KeyboardEvent } from "react";
 import { Fragment, useEffect, useId, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
@@ -56,6 +57,7 @@ export function CommandPalette({
   "aria-label": ariaLabel = "Command palette",
   ...rest
 }: CommandPaletteProps) {
+  const schemeAttr = useSchemeAttr();
   const listId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -134,8 +136,9 @@ export function CommandPalette({
   return (
     <RadixDialog.Root open={currentOpen} onOpenChange={handleOpenChange}>
       <RadixDialog.Portal>
-        <RadixDialog.Overlay className="rebar-command-palette-overlay" data-rebar-part="overlay" />
+        <RadixDialog.Overlay {...schemeAttr} className="rebar-command-palette-overlay" data-rebar-part="overlay" />
         <RadixDialog.Content
+            {...schemeAttr}
           className={clsx("rebar-command-palette-content", className)}
           data-rebar-component="command-palette"
           aria-label={ariaLabel}

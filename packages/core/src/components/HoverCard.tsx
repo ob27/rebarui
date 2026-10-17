@@ -1,4 +1,5 @@
 import * as RadixHoverCard from "@radix-ui/react-hover-card";
+import { useSchemeAttr } from "./ThemeScope";
 import type { ReactElement, ReactNode } from "react";
 
 export interface HoverCardProps {
@@ -35,6 +36,7 @@ export function HoverCard({
   open,
   onOpenChange,
 }: HoverCardProps) {
+  const schemeAttr = useSchemeAttr();
   return (
     <RadixHoverCard.Root
       open={open}
@@ -45,6 +47,7 @@ export function HoverCard({
       <RadixHoverCard.Trigger asChild>{trigger}</RadixHoverCard.Trigger>
       <RadixHoverCard.Portal>
         <RadixHoverCard.Content
+            {...schemeAttr}
           className="rebar-hover-card-content"
           data-rebar-component="hover-card"
           sideOffset={4}

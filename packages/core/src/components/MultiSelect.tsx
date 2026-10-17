@@ -1,4 +1,5 @@
 import { forwardRef, useState } from "react";
+import { useSchemeAttr } from "./ThemeScope";
 import type { ComponentPropsWithoutRef } from "react";
 import * as RadixDropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
@@ -61,6 +62,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(funct
   },
   ref,
 ) {
+  const schemeAttr = useSchemeAttr();
   const ambientBionic = useAmbientBionic();
   const bionicEnabled = bionic ?? ambientBionic;
   const [internalValues, setInternalValues] = useState<string[]>(defaultValues ?? []);
@@ -119,6 +121,7 @@ export const MultiSelect = forwardRef<HTMLButtonElement, MultiSelectProps>(funct
       </RadixDropdownMenu.Trigger>
       <RadixDropdownMenu.Portal>
         <RadixDropdownMenu.Content
+            {...schemeAttr}
           className="rebar-dropdown-content rebar-multi-select-content"
           data-rebar-part="content"
           sideOffset={4}
