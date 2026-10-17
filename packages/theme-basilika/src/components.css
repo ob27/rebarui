@@ -2632,3 +2632,7 @@ a.rebar-button[data-rebar-variant="tertiary"]:hover {
 .rebar-mobile-tab-bar {
   --rebar-tab-bar-padding-bottom: 10px;
 }
+
+/* Carousel: controls and a long dot row wrap instead of pushing a phone page sideways */
+.rebar-carousel-controls { flex-wrap: wrap; max-width: 100%; }
+.rebar-carousel-dots { flex-wrap: wrap; justify-content: center; max-width: 100%; }
