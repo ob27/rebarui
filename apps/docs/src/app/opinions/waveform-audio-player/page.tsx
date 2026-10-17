@@ -31,6 +31,13 @@ const BLOCKS: Construct[] = [
   },
   {
     type: "doc-section",
+    heading: "Track appearance",
+    body: [
+      { kind: "text", text: "`appearance=\"track\"` is the plain mobile player: a bare round play/pause glyph, a thin seek rail with a progress fill, and `m:ss / m:ss`. There are no bars and no skip buttons; the rail is still the `role=\"slider\"` named Seek. Set `--rebar-waveform-track-fill`, `-rail`, `-glyph-size`, `-gap`, `-height`, `-rail-height`, `-time-size`, `-time-opacity` and `--rebar-waveform-glyph-ink` to match a brand." },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Icon controls, compact size, audioRef",
     body: [
       {
@@ -58,6 +65,13 @@ export default function WaveformAudioPlayerPage() {
         ]}>
         <div style={{ maxWidth: 480, overflowX: "auto" }}>
           <WaveformAudioPlayer src={SRC} aria-label="Voice note from Priya" />
+        </div>
+      </DemoStage>
+
+      <DemoStage title="Track appearance" caption="appearance=&quot;track&quot;: a bare round play glyph, a thin seek rail with a fill and m:ss / m:ss (the plain mobile player)" code={"<WaveformAudioPlayer src={url} appearance=\"track\" />"} widths={false}
+        states={[{ label: "On dark art", node: <div style={{ background: "#0a0b16", color: "#fdfaf5", padding: 14, borderRadius: 16 }}><WaveformAudioPlayer src={SRC} appearance="track" tone="onDark" aria-label="Track on dark" /></div> }]}>
+        <div style={{ maxWidth: 480 }}>
+          <WaveformAudioPlayer src={SRC} appearance="track" aria-label="Track player" />
         </div>
       </DemoStage>
 

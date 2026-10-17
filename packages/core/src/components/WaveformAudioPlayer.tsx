@@ -38,6 +38,8 @@ export interface WaveformAudioPlayerProps extends Omit<ComponentPropsWithoutRef<
   controls?: "text" | "icons";
   /** `"compact"` tightens the bar for lists and cards: smaller buttons, shorter waveform, smaller gaps. */
   size?: "default" | "compact";
+  /** `"track"` is the plain mobile player: a bare round play/pause glyph, a thin seek rail with a progress fill (no waveform bars, no skip buttons) and `m:ss / m:ss`. Sized by the `--rebar-waveform-track-*` properties. Default `"default"`. */
+  appearance?: "default" | "track";
 }
 
 function IconGlyph({ name, seconds }: { name: "play" | "pause" | "replay" | "retry" | "back" | "forward"; seconds?: number }) {
@@ -72,6 +74,22 @@ function IconGlyph({ name, seconds }: { name: "play" | "pause" | "replay" | "ret
           {seconds}
         </text>
       ) : null}
+    </svg>
+  );
+}
+
+function TrackGlyph({ pause }: { pause?: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor" data-rebar-part="track-glyph">
+      <circle cx="12" cy="12" r="10" />
+      {pause ? (
+        <>
+          <rect x="9" y="7.5" width="2" height="9" fill="var(--rebar-waveform-glyph-ink, var(--rebar-color-bg-inverse, #12142b))" />
+          <rect x="13" y="7.5" width="2" height="9" fill="var(--rebar-waveform-glyph-ink, var(--rebar-color-bg-inverse, #12142b))" />
+        </>
+      ) : (
+        <path d="M10 8.5v7l6-3.5z" fill="var(--rebar-waveform-glyph-ink, var(--rebar-color-bg-inverse, #12142b))" />
+      )}
     </svg>
   );
 }
@@ -149,6 +167,7 @@ export function WaveformAudioPlayer({
   crossOrigin,
   controls = "text",
   size = "default",
+  appearance = "default",
   className,
   "aria-label": ariaLabel = "Audio player",
   ...props
@@ -321,6 +340,7 @@ export function WaveformAudioPlayer({
       data-rebar-tone={tone === "onDark" ? "onDark" : undefined}
       data-rebar-size={size === "compact" ? "compact" : undefined}
       data-rebar-controls={controls === "icons" ? "icons" : undefined}
+      data-rebar-appearance={appearance === "track" ? "track" : undefined}
       data-rebar-state={hasError ? "error" : isLoading ? "loading" : ended ? "ended" : playing ? "playing" : undefined}
       role="group"
       aria-label={ariaLabel}
@@ -346,7 +366,7 @@ export function WaveformAudioPlayer({
         </Text>
       ) : (
         <div className="rebar-waveform-audio-player-controls" data-rebar-part="controls">
-          {skipSeconds > 0 ? (
+          {skipSeconds > 0 && appearance !== "track" ? (
           <Button
             aria-label="Skip back"
             data-rebar-part="skip-back"
@@ -366,6 +386,8 @@ export function WaveformAudioPlayer({
             {isLoading ? <span className="rebar-waveform-audio-player-spinner" aria-hidden="true" /> : null}
             {isLoading ? (
               <span className="rebar-visually-hidden">Buffering</span>
+            ) : appearance === "track" ? (
+              <TrackGlyph pause={playing} />
             ) : controls === "icons" ? (
               <IconGlyph name={playing ? "pause" : ended ? "replay" : hasError ? "retry" : "play"} />
             ) : playing ? (
@@ -378,7 +400,7 @@ export function WaveformAudioPlayer({
               "Play"
             )}
           </Button>
-          {skipSeconds > 0 ? (
+          {skipSeconds > 0 && appearance !== "track" ? (
           <Button
             aria-label="Skip forward"
             data-rebar-part="skip-forward"
@@ -402,7 +424,14 @@ export function WaveformAudioPlayer({
             onClick={handleWaveformClick}
             onKeyDown={handleWaveformKeyDown}
           >
-            {barHeights.map((height, i) => (
+            {appearance === "track" ? (
+              <span
+                className="rebar-waveform-audio-player-fill"
+                data-rebar-part="fill"
+                style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
+              />
+            ) : null}
+            {appearance === "track" ? null : barHeights.map((height, i) => (
               <span
                 key={i}
                 className="rebar-waveform-audio-player-bar"

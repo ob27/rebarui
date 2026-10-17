@@ -13345,6 +13345,7 @@ a.rebar-list-item-main {
   font-weight: var(--rebar-eyebrow-weight, 700);
   line-height: var(--rebar-eyebrow-line-height, 1.2);
   letter-spacing: var(--rebar-eyebrow-letter-spacing, 0.16em);
+  color: var(--rebar-eyebrow-color, var(--rebar-color-primary-text-ink, var(--rebar-color-primary, #b53824)));
 }
 
 /* BackdropSection imageMode="background": the art is the section's own background (the <img> stays for alt text, unpainted) */
@@ -13355,4 +13356,133 @@ a.rebar-list-item-main {
 }
 .rebar-backdrop-section[data-rebar-image-mode="background"] > .rebar-backdrop-section-image {
   visibility: hidden;
+}
+
+/* WaveformAudioPlayer appearance="track": a bare round play glyph, a thin seek rail with a fill, m:ss / m:ss */
+.rebar-waveform-audio-player[data-rebar-appearance="track"] { gap: 0; color: var(--rebar-waveform-track-color, inherit); }
+.rebar-waveform-audio-player[data-rebar-appearance="track"] .rebar-waveform-audio-player-controls {
+  flex-wrap: nowrap;
+  gap: var(--rebar-waveform-track-gap, 12px);
+}
+.rebar-waveform-audio-player[data-rebar-appearance="track"] .rebar-button[data-rebar-part="play-button"],
+.rebar-waveform-audio-player[data-rebar-appearance="track"] .rebar-button[data-rebar-part="play-button"]:hover:not(:disabled),
+.rebar-waveform-audio-player[data-rebar-appearance="track"] .rebar-button[data-rebar-part="play-button"]:active:not(:disabled) {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  min-height: 0;
+  min-width: 0;
+  width: auto;
+  height: auto;
+  display: block;
+  font-size: var(--rebar-waveform-track-button-font-size, 13.3333px);
+  line-height: var(--rebar-waveform-track-button-line-height, 1);
+  color: inherit;
+  flex-shrink: 0;
+}
+.rebar-waveform-audio-player[data-rebar-appearance="track"] .rebar-button[data-rebar-part="play-button"] svg {
+  display: inline;
+  width: var(--rebar-waveform-track-glyph-size, 44px);
+  height: var(--rebar-waveform-track-glyph-size, 44px);
+}
+.rebar-waveform-audio-player[data-rebar-appearance="track"] .rebar-waveform-audio-player-waveform {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 0;
+  height: var(--rebar-waveform-track-height, 22px);
+  padding: 0;
+  overflow: visible;
+  border-radius: 0;
+}
+.rebar-waveform-audio-player[data-rebar-appearance="track"] .rebar-waveform-audio-player-waveform::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--rebar-waveform-track-rail-height, 4px);
+  border-radius: 999px;
+  background: var(--rebar-waveform-track-rail, color-mix(in srgb, currentColor 25%, transparent));
+}
+.rebar-waveform-audio-player-fill {
+  position: relative;
+  display: block;
+  height: var(--rebar-waveform-track-rail-height, 4px);
+  border-radius: 999px;
+  background: var(--rebar-waveform-track-fill, var(--rebar-color-primary, #0066cc));
+}
+.rebar-waveform-audio-player[data-rebar-appearance="track"] .rebar-waveform-audio-player-time {
+  font-size: var(--rebar-waveform-track-time-size, 12px);
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+  opacity: var(--rebar-waveform-track-time-opacity, 0.85);
+  line-height: var(--rebar-waveform-track-time-line-height, inherit);
+}
+
+/* Card (untinted): surface colour */
+.rebar-card:not([data-rebar-tone]) {
+  background: var(--rebar-card-background, var(--rebar-color-bg-raised, var(--rebar-color-bg-primary, #ffffff)));
+}
+
+/* Card orientation="feature": the bare media card (square framed cover, pill kicker, title, body) */
+.rebar-card[data-rebar-orientation="feature"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rebar-card-feature-gap, 12px);
+  background: none;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  color: inherit;
+  text-decoration: none;
+}
+.rebar-card[data-rebar-orientation="feature"][data-rebar-link]:hover {
+  transform: none;
+  box-shadow: none;
+}
+.rebar-card[data-rebar-orientation="feature"] > .rebar-card-cover {
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  line-height: normal;
+  border-radius: var(--rebar-card-feature-cover-radius, 26px);
+  border: var(--rebar-card-feature-cover-border, 1px solid var(--rebar-color-border));
+  background: var(--rebar-card-feature-cover-background, var(--rebar-color-bg-secondary));
+}
+.rebar-card[data-rebar-orientation="feature"] > .rebar-card-header,
+.rebar-card[data-rebar-orientation="feature"] > .rebar-card-header:last-child {
+  padding: 0;
+  border: 0;
+}
+.rebar-card[data-rebar-orientation="feature"] > .rebar-card-body,
+.rebar-card[data-rebar-orientation="feature"] > .rebar-card-header + .rebar-card-body {
+  padding: 0;
+}
+.rebar-card[data-rebar-orientation="feature"] .rebar-card-title-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--rebar-card-feature-gap, 12px);
+  min-width: 0;
+}
+.rebar-card[data-rebar-orientation="feature"] .rebar-card-title {
+  display: block;
+  line-height: var(--rebar-card-feature-title-line-height, 1.2);
+}
+.rebar-card[data-rebar-orientation="feature"] .rebar-card-title-group > [data-rebar-variant="eyebrow"],
+.rebar-card[data-rebar-orientation="feature"] .rebar-card-subtitle {
+  display: inline-block;
+  margin: 0;
+  padding: var(--rebar-card-feature-chip-padding, 3px 10px);
+  border-radius: 999px;
+  background: var(--rebar-card-feature-chip-background, var(--rebar-color-tint-3));
+  color: var(--rebar-card-feature-chip-color, var(--rebar-color-text-secondary));
+  font-size: var(--rebar-card-feature-chip-size, 11px);
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: var(--rebar-card-feature-chip-letter-spacing, 0.1em);
+  text-transform: uppercase;
+  white-space: normal;
 }

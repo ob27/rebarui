@@ -65,6 +65,7 @@ export default function BackdropSectionPage() {
           { label: "Soft scrim", node: <BackdropSection image={{ src: BACKDROP_ART }} scrim="soft" rounded><Text>Soft</Text></BackdropSection> },
           { label: "Strong scrim", node: <BackdropSection image={{ src: BACKDROP_ART }} scrim="strong" rounded><Text>Strong</Text></BackdropSection> },
           { label: "No scrim", node: <BackdropSection image={{ src: BACKDROP_ART }} scrim="none" rounded><Text>None</Text></BackdropSection> },
+          { label: "Art as the section background (imageMode=\"background\")", node: <BackdropSection image={{ src: BACKDROP_ART }} scrim="soft" rounded imageMode="background"><Text>Painted as a CSS background</Text></BackdropSection> },
           { label: "Full-bleed", node: <BackdropSection image={{ src: BACKDROP_ART }} scrim="soft"><Text>Square corners</Text></BackdropSection> },
         ]}
       >
