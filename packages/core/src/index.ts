@@ -838,8 +838,8 @@ export { toast, useToast, ToastView } from "./components/toaster";
 export type { ToastOptions, ToastKind, ToastPosition, ToastFunction, ToastViewProps } from "./components/toaster";
 export { confirm, useConfirm } from "./components/confirm";
 export type { ConfirmOptions, ConfirmFunction } from "./components/confirm";
-export { defaultRenderLink } from "./components/linkAdapter";
-export type { RenderLink, RenderLinkProps } from "./components/linkAdapter";
+export { defaultRenderLink, RebarLinkProvider } from "./components/linkAdapter";
+export type { RenderLink, RenderLinkProps, RebarLinkProviderProps } from "./components/linkAdapter";
 /* ---- new-b: mobile features ---- */
 export { ThemeScope, useSchemeAttr } from "./components/ThemeScope";
 export type { ThemeScopeProps, RebarScheme } from "./components/ThemeScope";

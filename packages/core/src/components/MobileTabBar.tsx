@@ -5,6 +5,7 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import clsx from "clsx";
 import { renderBionicChildren, useAmbientBionic } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { useRenderLink } from "./linkAdapter";
 
 export interface MobileTabBarItem {
   label: string;
@@ -78,7 +79,7 @@ export function MobileTabBar({
   activeIndex,
   defaultActiveIndex = 0,
   onActiveChange,
-  renderLink = defaultRenderLink,
+  renderLink: renderLinkProp,
   bionic,
   bionicOptions,
   className,
@@ -86,6 +87,7 @@ export function MobileTabBar({
   "aria-label": ariaLabel = "Primary",
   ...props
 }: MobileTabBarProps) {
+  const renderLink = useRenderLink(renderLinkProp, defaultRenderLink);
   const ambientBionic = useAmbientBionic();
   const bionicEnabled = bionic ?? ambientBionic;
   const isControlled = activeIndex !== undefined;

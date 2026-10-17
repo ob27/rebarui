@@ -15,6 +15,20 @@ const BLOCKS: Construct[] = [
   { type: "props-table", heading: "Props", rows: componentProps["Button"] ?? [] },
   {
     type: "doc-section",
+    heading: "Client-side routing",
+    body: [
+      {
+        kind: "text",
+        text: "`href` renders a plain `<a>` (a full page load). Wrap your app once in `<RebarLinkProvider renderLink={fn}>` with your router's link adapter and every link-capable component (`Button`, `Card`, `ListItem`, `ActionSheet` items, `Breadcrumb`, `NavBar`, `MobileTabBar`, `SidebarNav`, `NavIndex`, `Footer`, `ConstructSearch`) navigates client-side. A `renderLink` prop on a component still wins.",
+      },
+      {
+        kind: "code",
+        code: `<RebarLinkProvider renderLink={({ href, children, ...rest }) => <Link to={href} {...rest}>{children}</Link>}>\n  <Button href="/settings">Settings</Button>\n</RebarLinkProvider>`,
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Accessibility",
     body: [
       {

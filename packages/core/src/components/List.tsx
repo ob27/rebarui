@@ -2,7 +2,7 @@ import { Children, createContext, forwardRef, useContext, useEffect, useId, useS
 import type { ComponentPropsWithoutRef, MouseEvent, ReactNode } from "react";
 import clsx from "clsx";
 import { Text } from "./Text";
-import { defaultRenderLink } from "./linkAdapter";
+import { defaultRenderLink, useRenderLink } from "./linkAdapter";
 import type { RenderLink } from "./linkAdapter";
 
 export type ListVariant = "cards" | "grouped" | "plain";
@@ -169,7 +169,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
     moreLabel = "More actions",
     href,
     target,
-    renderLink = defaultRenderLink,
+    renderLink: renderLinkProp,
     onClick,
     selected,
     highlight,
@@ -183,6 +183,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
   },
   ref,
 ) {
+  const renderLink = useRenderLink(renderLinkProp, defaultRenderLink);
   const variant = useContext(ListContext);
   const [highlightOn, setHighlightOn] = useState(Boolean(highlight));
   useEffect(() => {

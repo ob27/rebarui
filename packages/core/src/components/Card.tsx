@@ -8,7 +8,7 @@ import { Tag } from "./Tag";
 import type { TagTone } from "./Tag";
 import { Watermark } from "./Watermark";
 import { Text } from "./Text";
-import { defaultRenderLink } from "./linkAdapter";
+import { defaultRenderLink, useRenderLink } from "./linkAdapter";
 import type { RenderLink } from "./linkAdapter";
 
 export interface CardProps extends Omit<ComponentPropsWithoutRef<"div">, "title"> {
@@ -121,7 +121,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     href,
     target,
     rel,
-    renderLink = defaultRenderLink,
+    renderLink: renderLinkProp,
     orientation = "vertical",
     eyebrow,
     promo,
@@ -130,6 +130,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
   },
   ref,
 ) {
+  const renderLink = useRenderLink(renderLinkProp, defaultRenderLink);
   const titleContent = useBionicChildren(title, bionic, bionicOptions);
   const bodyContent = useBionicChildren(children, bionic, bionicOptions);
   const titleIsEditable = editable && typeof title === "string";

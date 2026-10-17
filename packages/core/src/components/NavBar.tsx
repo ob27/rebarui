@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { Popover } from "./Popover";
 import { renderBionicChildren, useAmbientBionic } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { useRenderLink } from "./linkAdapter";
 
 export interface NavBarItem {
   label: string;
@@ -213,7 +214,7 @@ function MegaMenuTrigger({
  */
 export function NavBar({
   items,
-  renderLink = defaultRenderLink,
+  renderLink: renderLinkProp,
   renderIcon,
   moreLabel = "More",
   "aria-label": ariaLabel = "Main",
@@ -222,6 +223,7 @@ export function NavBar({
   bionicOptions,
   ...props
 }: NavBarProps) {
+  const renderLink = useRenderLink(renderLinkProp, defaultRenderLink);
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const moreRef = useRef<HTMLSpanElement>(null);

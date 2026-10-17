@@ -4,6 +4,7 @@ import type { ComponentPropsWithoutRef, MouseEvent, ReactNode } from "react";
 import clsx from "clsx";
 import { Divider } from "./Divider";
 import { Tag } from "./Tag";
+import { useRenderLink } from "./linkAdapter";
 
 export interface FooterLinkItem {
   text: string;
@@ -65,12 +66,13 @@ export function Footer({
   content,
   links,
   chips,
-  renderLink = defaultRenderLink,
+  renderLink: renderLinkProp,
   onLinkClick,
   onChipClick,
   className,
   ...props
 }: FooterProps) {
+  const renderLink = useRenderLink(renderLinkProp, defaultRenderLink);
   const handleLinkClick = (event: MouseEvent, item: FooterLinkItem, index: number) => {
     if (onLinkClick) {
       event.preventDefault();

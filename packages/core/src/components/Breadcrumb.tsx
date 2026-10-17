@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import clsx from "clsx";
 import { renderBionicChildren, useAmbientBionic } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { useRenderLink } from "./linkAdapter";
+import type { RenderLink } from "./linkAdapter";
 
 export interface BreadcrumbItem {
   label: string;
@@ -16,12 +18,17 @@ export interface BreadcrumbProps {
   /** Force bionic reading on/off for all items, overriding the ambient data-rebar-bionic setting. */
   bionic?: boolean;
   bionicOptions?: BionicOptions;
+  /** Link adapter for items with an `href`; defaults to the `RebarLinkProvider` adapter, then a plain `<a>`. */
+  renderLink?: RenderLink;
 }
 
+import { defaultRenderLink as plainLink } from "./linkAdapter";
+
 export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(function Breadcrumb(
-  { items, separator = "/", className, bionic, bionicOptions },
+  { items, separator = "/", className, bionic, bionicOptions, renderLink: renderLinkProp },
   ref,
 ) {
+  const renderLink = useRenderLink(renderLinkProp, plainLink);
   const lastIndex = items.length - 1;
   const ambient = useAmbientBionic();
   const bionicEnabled = bionic ?? ambient;
@@ -37,7 +44,7 @@ export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(function Brea
               {isLast ? (
                 <span aria-current="page">{label}</span>
               ) : item.href ? (
-                <a href={item.href}>{label}</a>
+                renderLink({ href: item.href, children: label })
               ) : (
                 <span>{label}</span>
               )}

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import clsx from "clsx";
 import { DrawerPanel } from "./Drawer";
-import { defaultRenderLink } from "./linkAdapter";
+import { defaultRenderLink, useRenderLink } from "./linkAdapter";
 import type { RenderLink } from "./linkAdapter";
 
 export interface ActionSheetAction {
@@ -82,6 +82,7 @@ export function ActionSheet({
   closeOnSelect = true,
   dismissible = true,
 }: ActionSheetProps) {
+  const contextRenderLink = useRenderLink(undefined, defaultRenderLink);
   const isControlled = open !== undefined;
   const [internalOpen, setInternalOpen] = useState(defaultOpen ?? false);
   const [pending, setPending] = useState<number | null>(null);
@@ -174,7 +175,7 @@ export function ActionSheet({
             "aria-busy": loading || undefined,
           };
           if (action.href !== undefined && !disabled) {
-            const render = action.renderLink ?? defaultRenderLink;
+            const render = action.renderLink ?? contextRenderLink;
             return (
               <span key={`${String(action.label)}-${i}`} className="rebar-action-sheet-link-wrap" style={{ display: "contents" }}>
                 {render({

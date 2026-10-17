@@ -3,6 +3,7 @@
 import type { ComponentPropsWithoutRef, KeyboardEvent, ReactNode } from "react";
 import { Fragment, useId, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
+import { useRenderLink } from "./linkAdapter";
 
 export interface ConstructSearchResult {
   /** Display name, e.g. "Kanban" or "Goal Tracker". */
@@ -61,13 +62,14 @@ interface FlatEntry {
  */
 export function ConstructSearch({
   results,
-  renderLink = defaultRenderLink,
+  renderLink: renderLinkProp,
   placeholder = "Search constructs...",
   maxResults = 8,
   className,
   "aria-label": ariaLabel = "Search constructs",
   ...rest
 }: ConstructSearchProps) {
+  const renderLink = useRenderLink(renderLinkProp, defaultRenderLink);
   const listId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const optionRefs = useRef<(HTMLLIElement | null)[]>([]);

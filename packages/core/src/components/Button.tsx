@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { Spin } from "./Spin";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
-import { defaultRenderLink } from "./linkAdapter";
+import { defaultRenderLink, useRenderLink } from "./linkAdapter";
 import type { RenderLink } from "./linkAdapter";
 
 export interface ButtonProps extends Omit<ComponentPropsWithoutRef<"button">, "children"> {
@@ -56,12 +56,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     href,
     target,
     rel,
-    renderLink = defaultRenderLink,
+    renderLink: renderLinkProp,
     asChild,
     ...props
   },
   ref,
 ) {
+  const renderLink = useRenderLink(renderLinkProp, defaultRenderLink);
   const content = useBionicChildren(children, bionic, bionicOptions);
   const marks = {
     className: clsx("rebar-button", className),

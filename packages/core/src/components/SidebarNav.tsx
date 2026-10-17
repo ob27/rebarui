@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, SearchIcon } from "./icons";
 import { renderBionicChildren, useAmbientBionic } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { useRenderLink } from "./linkAdapter";
 
 export interface SidebarNavItem {
   label: string;
@@ -211,7 +212,7 @@ function itemContainsActive(item: SidebarNavItem): boolean {
  */
 export function SidebarNav({
   items,
-  renderLink = defaultRenderLink,
+  renderLink: renderLinkProp,
   collapsed,
   defaultCollapsed = false,
   onCollapsedChange,
@@ -232,6 +233,7 @@ export function SidebarNav({
   bionicOptions,
   ...props
 }: SidebarNavProps) {
+  const renderLink = useRenderLink(renderLinkProp, defaultRenderLink);
   const [internalCollapsed, setInternalCollapsed] = useState(defaultCollapsed);
   const isCollapsedControlled = collapsed !== undefined;
   const currentCollapsed = isCollapsedControlled ? collapsed : internalCollapsed;

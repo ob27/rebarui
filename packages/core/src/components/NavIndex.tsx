@@ -8,6 +8,7 @@ import { Tag } from "./Tag";
 import type { TagTone } from "./Tag";
 import { renderBionicChildren, useAmbientBionic } from "../bionic";
 import type { BionicOptions } from "../bionic";
+import { useRenderLink } from "./linkAdapter";
 
 export interface NavIndexItem {
   label: string;
@@ -98,13 +99,14 @@ export function NavIndex({
   statusLabels,
   unstatusedLabel = "Other",
   searchPlaceholder = "Search…",
-  renderLink = defaultRenderLink,
+  renderLink: renderLinkProp,
   "aria-label": ariaLabel = "Page index",
   bionic,
   bionicOptions,
   className,
   ...props
 }: NavIndexProps) {
+  const renderLink = useRenderLink(renderLinkProp, defaultRenderLink);
   const ambientBionic = useAmbientBionic();
   const bionicEnabled = bionic ?? ambientBionic;
   const [query, setQuery] = useState("");
