@@ -27,6 +27,16 @@ const BLOCKS: Construct[] = [
     heading: "Migrating to Ant Design",
     body: [{ kind: "text", text: "Not codemod-covered. AntD's `Typography.Title` covers the same role with a `level` prop (1 to 5)." }],
   },
+  {
+    type: "doc-section",
+    heading: "Overriding the size",
+    body: [
+      {
+        "kind": "text",
+        "text": "The base `level` size rules sit in `:where()` (zero specificity), so a plain class selector such as `.hero-title { font-size: 2.5rem }` overrides a heading's size without `!important`. Weights keep their normal specificity."
+      }
+    ],
+  },
 ];
 
 export default function HeadingPage() {

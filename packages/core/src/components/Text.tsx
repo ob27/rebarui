@@ -1,11 +1,10 @@
 import { forwardRef } from "react";
-import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, ElementType, ReactElement, ReactNode, Ref } from "react";
 import clsx from "clsx";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
 
-export interface TextProps extends ComponentPropsWithoutRef<"p"> {
-  as?: ElementType;
+interface TextOwnProps {
   size?: "xs" | "sm" | "md";
   color?: "primary" | "secondary";
   children?: ReactNode;
@@ -28,7 +27,15 @@ export interface TextProps extends ComponentPropsWithoutRef<"p"> {
   rule?: "end" | "both" | false;
 }
 
-export const Text = forwardRef<HTMLParagraphElement, TextProps>(function Text(
+/**
+ * Polymorphic props: `as="label"` types `htmlFor` (and the rest of a `<label>`'s attributes);
+ * `as="span"`/`"div"`/... take that element's own props; no `as` is a `<p>`.
+ */
+export type TextProps<E extends ElementType = "p"> = TextOwnProps & { as?: E } & Omit<ComponentPropsWithoutRef<E>, keyof TextOwnProps | "as">;
+
+type TextComponent = (<E extends ElementType = "p">(props: TextProps<E> & { ref?: Ref<Element> }) => ReactElement | null) & { displayName?: string };
+
+export const Text = forwardRef(function Text(
   {
     as: Component = "p",
     size = "md",
@@ -41,8 +48,8 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(function Text(
     tone,
     rule = "end",
     ...props
-  },
-  ref,
+  }: TextProps<ElementType>,
+  ref: Ref<Element>,
 ) {
   const content = useBionicChildren(children, bionic, bionicOptions);
   const styled = variant !== "body";
@@ -62,4 +69,4 @@ export const Text = forwardRef<HTMLParagraphElement, TextProps>(function Text(
       {content}
     </Component>
   );
-});
+}) as unknown as TextComponent;

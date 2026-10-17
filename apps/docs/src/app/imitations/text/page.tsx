@@ -34,6 +34,20 @@ const BLOCKS: Construct[] = [
       },
     ],
   },
+  {
+    type: "doc-section",
+    heading: "Typed label",
+    body: [
+      {
+        "kind": "text",
+        "text": "With `as=\"label\"` the props are a `<label>`'s, so `htmlFor` is typed (and rejected on a plain `<p>` Text). Any other element works the same way: `as=\"span\"` takes span props."
+      },
+      {
+        "kind": "code",
+        "code": "<Text as=\"label\" htmlFor=\"email\" size=\"sm\">Email</Text>"
+      }
+    ],
+  },
 ];
 
 export default function TextPage() {

@@ -52,16 +52,22 @@ body {
   font-size: var(--rebar-font-size-md, 16px);
 }
 
-.rebar-heading[data-rebar-level="1"] {
+/* The size rules sit in :where() (zero specificity) so an app's plain class selector can override a
+   heading's size without !important. Weights keep their own, normal-specificity rules. */
+:where(.rebar-heading[data-rebar-level="1"]) {
   font-size: var(--rebar-font-size-2xl, 32px);
+}
+:where(.rebar-heading[data-rebar-level="2"]) {
+  font-size: var(--rebar-font-size-xl, 24px);
+}
+:where(.rebar-heading[data-rebar-level="3"]) {
+  font-size: var(--rebar-font-size-lg, 20px);
+}
+.rebar-heading[data-rebar-level="1"] {
   font-weight: var(--rebar-font-weight-bold, 700);
 }
-.rebar-heading[data-rebar-level="2"] {
-  font-size: var(--rebar-font-size-xl, 24px);
-  font-weight: var(--rebar-font-weight-semibold, 600);
-}
+.rebar-heading[data-rebar-level="2"],
 .rebar-heading[data-rebar-level="3"] {
-  font-size: var(--rebar-font-size-lg, 20px);
   font-weight: var(--rebar-font-weight-semibold, 600);
 }
 
