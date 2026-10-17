@@ -15,20 +15,6 @@ const STATUS_OPTIONS = [
   { value: "review", label: "In review" },
   { value: "done", label: COLUMN_TITLES.done },
   { value: "archived", label: "Archived", disabled: true },
-  {
-    type: "doc-section",
-    heading: "Option groups",
-    body: [
-      {
-        "kind": "text",
-        "text": "`options` may mix plain options with `{ label, options: [...] }` groups. Each group renders its label as a small uppercase heading (an ARIA `group` named by it) above its options, with a hairline between groups."
-      },
-      {
-        "kind": "code",
-        "code": "<Select aria-label=\"Food\" options={[{ value: \"none\", label: \"None\" }, { label: \"Fruit\", options: [{ value: \"apple\", label: \"Apple\" }] }]} />"
-      }
-    ],
-  },
 ];
 const SORT_OPTIONS = [
   { value: "due", label: "Due date" },
@@ -62,6 +48,20 @@ const BLOCKS: Construct[] = [
     type: "doc-section",
     heading: "Migrating to Ant Design",
     body: [{ kind: "text", text: "AntD's `Select` takes `options`, `value` and `onChange`: a close, low-risk rename." }],
+  },
+  {
+    type: "doc-section",
+    heading: "Option groups",
+    body: [
+      {
+        "kind": "text",
+        "text": "`options` may mix plain options with `{ label, options: [...] }` groups. Each group renders its label as a small uppercase heading (an ARIA `group` named by it) above its options, with a hairline between groups."
+      },
+      {
+        "kind": "code",
+        "code": "<Select aria-label=\"Food\" options={[{ value: \"none\", label: \"None\" }, { label: \"Fruit\", options: [{ value: \"apple\", label: \"Apple\" }] }]} />"
+      }
+    ],
   },
 ];
 

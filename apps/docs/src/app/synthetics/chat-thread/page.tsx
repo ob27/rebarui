@@ -53,20 +53,6 @@ const PHONE_MESSAGES: ChatMessage[] = [
     status: "sent",
     actions: <Tag>Event · {launch.title}</Tag>,
   },
-  {
-    type: "doc-section",
-    heading: "afterMessages slot",
-    body: [
-      {
-        "kind": "text",
-        "text": "`afterMessages` renders inside the scroller below the last message and the typing indicator (suggested replies, a follow-up row, a help card), so it scrolls with the transcript."
-      },
-      {
-        "kind": "code",
-        "code": "<ChatThread messages={messages} afterMessages={<SuggestedReplies />} />"
-      }
-    ],
-  },
 ];
 
 const PHONE_STYLE = {
@@ -117,6 +103,20 @@ const BLOCKS: Construct[] = [
         kind: "text",
         text: "Not codemod-covered: AntD ships no chat transcript. A migration composes `List` + `Avatar` + `Spin`, or adopts Ant Design X.",
       },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "afterMessages slot",
+    body: [
+      {
+        "kind": "text",
+        "text": "`afterMessages` renders inside the scroller below the last message and the typing indicator (suggested replies, a follow-up row, a help card), so it scrolls with the transcript."
+      },
+      {
+        "kind": "code",
+        "code": "<ChatThread messages={messages} afterMessages={<SuggestedReplies />} />"
+      }
     ],
   },
 ];
