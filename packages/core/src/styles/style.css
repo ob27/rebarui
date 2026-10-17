@@ -13369,137 +13369,163 @@ a.rebar-list-item-main {
   letter-spacing: var(--rebar-section-label-tracking, 0.16em);
 }
 
-/* Card: a tone card's border width can be set by an app (default: the card border width) */
-.rebar-card[data-rebar-tone] {
-  border-width: var(--rebar-card-tone-border-width, var(--rebar-border-width, 1px));
-}
-
-/* Card appearance="topic": the flat content card (square rounded cover, eyebrow pill, serif title, clamped excerpt) */
-.rebar-card[data-rebar-appearance="topic"] {
+/* Card orientation="feature": the bare media card (square framed cover, pill kicker, title, body) */
+.rebar-card[data-rebar-orientation="feature"] {
   display: flex;
   flex-direction: column;
-  gap: var(--rebar-card-topic-gap, 12px);
-  overflow: visible;
-  background: transparent;
+  gap: var(--rebar-card-feature-gap, 12px);
+  background: none;
   border: 0;
   border-radius: 0;
-  box-shadow: none;
-  transform: none;
-  text-decoration: none;
+  overflow: visible;
   color: inherit;
+  text-decoration: none;
 }
-.rebar-card[data-rebar-appearance="topic"] > .rebar-card-cover {
+.rebar-card[data-rebar-orientation="feature"][data-rebar-link]:hover {
+  transform: none;
+  box-shadow: none;
+}
+.rebar-card[data-rebar-orientation="feature"] > .rebar-card-cover {
+  box-sizing: border-box;
+  width: 100%;
   aspect-ratio: 1;
   overflow: hidden;
-  border-radius: var(--rebar-card-topic-cover-radius, 26px);
-  border: 1px solid var(--rebar-card-topic-cover-border, var(--rebar-color-border));
-  background: var(--rebar-card-topic-cover-background, var(--rebar-color-bg-secondary));
+  line-height: normal;
+  border-radius: var(--rebar-card-feature-cover-radius, 26px);
+  border: var(--rebar-card-feature-cover-border, 1px solid var(--rebar-color-border));
+  background: var(--rebar-card-feature-cover-background, var(--rebar-color-bg-secondary));
 }
-.rebar-card[data-rebar-appearance="topic"] > .rebar-card-cover img,
-.rebar-card[data-rebar-appearance="topic"] > .rebar-card-cover video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.rebar-card[data-rebar-appearance="topic"] > .rebar-card-header {
-  display: block;
+.rebar-card[data-rebar-orientation="feature"] > .rebar-card-header,
+.rebar-card[data-rebar-orientation="feature"] > .rebar-card-header:last-child {
   padding: 0;
   border: 0;
 }
-.rebar-card[data-rebar-appearance="topic"] .rebar-card-header-main { display: block; }
-.rebar-card[data-rebar-appearance="topic"] .rebar-card-title-group { display: flex; flex-direction: column; align-items: flex-start; gap: var(--rebar-card-topic-gap, 12px); }
-.rebar-card[data-rebar-appearance="topic"] .rebar-card-title-group > [data-rebar-variant="eyebrow"] {
+.rebar-card[data-rebar-orientation="feature"] > .rebar-card-body,
+.rebar-card[data-rebar-orientation="feature"] > .rebar-card-header + .rebar-card-body {
+  padding: 0;
+}
+.rebar-card[data-rebar-orientation="feature"] .rebar-card-title-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--rebar-card-feature-gap, 12px);
+  min-width: 0;
+}
+.rebar-card[data-rebar-orientation="feature"] .rebar-card-title {
+  display: block;
+  line-height: var(--rebar-card-feature-title-line-height, 1.2);
+}
+.rebar-card[data-rebar-orientation="feature"] .rebar-card-title-group > [data-rebar-variant="eyebrow"],
+.rebar-card[data-rebar-orientation="feature"] .rebar-card-subtitle {
   display: inline-block;
   margin: 0;
-  padding: var(--rebar-card-topic-pill-padding, 3px 10px);
+  padding: var(--rebar-card-feature-chip-padding, 3px 10px);
   border-radius: 999px;
-  background: var(--rebar-card-topic-pill-background, var(--rebar-color-tint-3));
-  color: var(--rebar-card-topic-pill-color, var(--rebar-color-text-secondary));
-  font-size: var(--rebar-card-topic-pill-size, 11px);
+  background: var(--rebar-card-feature-chip-background, var(--rebar-color-tint-3));
+  color: var(--rebar-card-feature-chip-color, var(--rebar-color-text-secondary));
+  font-size: var(--rebar-card-feature-chip-size, 11px);
   font-weight: 700;
   line-height: normal;
-  letter-spacing: var(--rebar-card-topic-pill-tracking, 0.1em);
-}
-.rebar-card[data-rebar-appearance="topic"] .rebar-card-title {
-  margin: 0;
-  font-family: var(--rebar-font-family-display);
-  font-size: var(--rebar-card-topic-title-size, 19px);
-  font-weight: var(--rebar-card-topic-title-weight, 600);
-  line-height: var(--rebar-card-topic-title-line-height, 1.2);
-  letter-spacing: var(--rebar-card-topic-title-tracking, -0.015em);
-  color: var(--rebar-card-topic-title-color, inherit);
-}
-.rebar-card[data-rebar-appearance="topic"] > .rebar-card-body {
-  padding: 0;
-  font-size: var(--rebar-card-topic-body-size, 13px);
-  line-height: var(--rebar-card-topic-body-line-height, 1.5);
-  color: var(--rebar-color-text-secondary);
-  display: -webkit-box;
-  -webkit-line-clamp: var(--rebar-card-topic-body-lines, 3);
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  letter-spacing: var(--rebar-card-feature-chip-letter-spacing, 0.1em);
+  text-transform: uppercase;
+  white-space: normal;
 }
 
-/* ListItem: the description can be one clipped line (an ellipsis at the box edge) instead of wrapping */
-.rebar-list-item-description {
-  min-width: 0;
-  white-space: var(--rebar-list-item-description-white-space, normal);
-  overflow: var(--rebar-list-item-description-overflow, visible);
-  text-overflow: var(--rebar-list-item-description-text-overflow, clip);
+/* ListItem: leading control box, the main area after it, a tone fill, the selected ring offset and a dimmed main area */
+.rebar-list-item-leading-control {
+  min-width: var(--rebar-list-item-leading-min-width, 44px);
+  padding: var(--rebar-list-item-leading-padding, 0 0 0 8px);
+}
+.rebar-list-item-leading-control + .rebar-list-item-main {
+  padding-inline-start: var(--rebar-list-item-after-leading-padding, 6px);
+}
+.rebar-list-item-main {
+  opacity: var(--rebar-list-item-main-opacity, 1);
+}
+.rebar-list[data-rebar-variant] > .rebar-list-item[data-rebar-tone="1"] { background: var(--rebar-color-tint-1); border-color: transparent; }
+.rebar-list[data-rebar-variant] > .rebar-list-item[data-rebar-tone="2"] { background: var(--rebar-color-tint-2); border-color: transparent; }
+.rebar-list[data-rebar-variant] > .rebar-list-item[data-rebar-tone="3"] { background: var(--rebar-color-tint-3); border-color: transparent; }
+.rebar-list[data-rebar-variant] > .rebar-list-item[data-rebar-tone="4"] { background: var(--rebar-color-tint-4); border-color: transparent; }
+.rebar-list[data-rebar-variant="cards"] > .rebar-list-item[data-rebar-tone="1"]:not([data-rebar-highlight]):hover { background: var(--rebar-color-tint-1); }
+.rebar-list[data-rebar-variant="cards"] > .rebar-list-item[data-rebar-tone="2"]:not([data-rebar-highlight]):hover { background: var(--rebar-color-tint-2); }
+.rebar-list[data-rebar-variant="cards"] > .rebar-list-item[data-rebar-tone="3"]:not([data-rebar-highlight]):hover { background: var(--rebar-color-tint-3); }
+.rebar-list[data-rebar-variant="cards"] > .rebar-list-item[data-rebar-tone="4"]:not([data-rebar-highlight]):hover { background: var(--rebar-color-tint-4); }
+.rebar-list[data-rebar-variant="cards"] > .rebar-list-item[data-rebar-selected] {
+  outline-offset: var(--rebar-list-item-selected-outline-offset, 0);
 }
 
-/* List variant="plain": the gap between rows can be set by an app (default none) */
-.rebar-list[data-rebar-variant="plain"] {
-  gap: var(--rebar-list-plain-gap, 0);
-}
-
-/* Button: face font family and variation settings can be set by an app (default: inherited) */
-.rebar-button {
-  font-family: var(--rebar-button-font-family, inherit);
-  font-variation-settings: var(--rebar-button-font-variation, inherit);
-}
-
-/* ReadingView: verse rows (columns, gap, padding, number type, highlight) and the action pill can be set by an app */
-.rebar-reading-view-verses {
-  gap: var(--rebar-reading-view-verses-gap, var(--rebar-space-sm));
-}
-.rebar-reading-view-verse {
-  grid-template-columns: var(--rebar-reading-view-verse-columns, 1.6em 1fr);
-  gap: var(--rebar-reading-view-verse-gap, var(--rebar-space-xs));
-  padding: var(--rebar-reading-view-verse-padding, var(--rebar-space-xs));
-  margin: var(--rebar-reading-view-verse-margin, 0 calc(-1 * var(--rebar-space-xs)));
-  border-radius: var(--rebar-reading-view-verse-radius, var(--rebar-radius-sm));
-}
-.rebar-reading-view-verse[data-rebar-highlighted] {
-  padding: var(--rebar-reading-view-highlight-padding, var(--rebar-reading-view-verse-padding, var(--rebar-space-xs)));
-  background: var(--rebar-reading-view-highlight-background, color-mix(in srgb, var(--rebar-color-primary) 16%, transparent));
-}
-.rebar-reading-view-num {
-  font-size: var(--rebar-reading-view-num-size, var(--rebar-font-size-xs));
-  font-weight: var(--rebar-reading-view-num-weight, var(--rebar-font-weight-semibold));
-  line-height: var(--rebar-reading-view-num-line-height, 2.4);
-  margin-top: var(--rebar-reading-view-num-margin-top, 0);
-}
-.rebar-reading-view-pill {
-  min-height: var(--rebar-reading-view-pill-min-height, 44px);
-  padding: var(--rebar-reading-view-pill-padding, 0 var(--rebar-space-sm));
-  background: var(--rebar-reading-view-pill-background, transparent);
-  color: var(--rebar-reading-view-pill-color, var(--rebar-color-text-secondary));
-  border-radius: var(--rebar-reading-view-pill-radius, 0);
-  font-size: var(--rebar-reading-view-pill-size, var(--rebar-font-size-xs));
-  text-decoration: var(--rebar-reading-view-pill-decoration, underline);
-}
-.rebar-reading-view-pill[data-rebar-state="done"] {
-  color: var(--rebar-reading-view-pill-done-color, var(--rebar-color-text-primary));
-  text-decoration: none;
-}
-.rebar-reading-view[data-rebar-verse-actions="below"] .rebar-reading-view-verse > div { display: contents; }
-.rebar-reading-view[data-rebar-verse-actions="below"] .rebar-reading-view-verse > .rebar-reading-view-num { grid-column: 1; grid-row: 1; }
-.rebar-reading-view[data-rebar-verse-actions="below"] .rebar-reading-view-verse > div > .rebar-reading-view-text { grid-column: 2; grid-row: 1; }
-.rebar-reading-view[data-rebar-verse-actions="below"] .rebar-reading-view-verse > div > div:not(.rebar-reading-view-extra) {
-  grid-column: 1 / -1;
+/* Statistic: caption placement, title and value type can be set by an app */
+.rebar-statistic[data-rebar-title-placement="bottom"] {
   display: flex;
-  margin: var(--rebar-reading-view-pill-margin-top, 0) 0 0 var(--rebar-reading-view-pill-margin-start, 0);
+  flex-direction: column-reverse;
 }
-.rebar-reading-view[data-rebar-verse-actions="below"] .rebar-reading-view-verse > div > .rebar-reading-view-extra { grid-column: 1 / -1; }
-.rebar-reading-view[data-rebar-verse-actions="below"] .rebar-reading-view-verse { row-gap: 0; }
+.rebar-statistic[data-rebar-title-placement="bottom"] .rebar-statistic-title {
+  margin-bottom: 0;
+  margin-top: var(--rebar-statistic-title-gap, var(--rebar-space-xs, 4px));
+}
+.rebar-statistic-title {
+  font-size: var(--rebar-statistic-title-size, var(--rebar-font-size-sm, 14px));
+  line-height: var(--rebar-statistic-title-line-height, inherit);
+  margin-bottom: var(--rebar-statistic-title-gap, var(--rebar-space-xs, 4px));
+}
+.rebar-statistic-value {
+  gap: var(--rebar-statistic-gap, var(--rebar-space-xs, 4px));
+  font-size: var(--rebar-statistic-value-size, var(--rebar-font-size-2xl, 32px));
+}
+.rebar-statistic-affix {
+  font-size: var(--rebar-statistic-affix-size, var(--rebar-font-size-md, 16px));
+  color: var(--rebar-statistic-affix-color, inherit);
+  letter-spacing: var(--rebar-statistic-affix-tracking, inherit);
+  font-variant-numeric: var(--rebar-statistic-affix-numeric, inherit);
+}
+
+/* Tag: the face font family can be set by an app (default: inherited) */
+.rebar-tag {
+  font-family: var(--rebar-tag-font-family, inherit);
+}
+
+/* ListItem: how the title wraps can be set by an app (default: pretty) */
+.rebar-list-item-title {
+  text-wrap: var(--rebar-list-item-title-text-wrap, pretty);
+}
+
+/* CalendarHeatmap month-rows: row rhythm, month label, cell size and colours, legend swatches can be set by an app */
+.rebar-calendar-heatmap-rows { gap: var(--rebar-calendar-heatmap-legend-gap, var(--rebar-space-sm)); }
+.rebar-calendar-heatmap-body { gap: var(--rebar-calendar-heatmap-row-gap, var(--rebar-space-xs)); padding: var(--rebar-calendar-heatmap-body-padding, 0); }
+.rebar-calendar-heatmap-row { gap: var(--rebar-calendar-heatmap-month-gap, var(--rebar-space-sm)); }
+.rebar-calendar-heatmap-month {
+  flex-basis: var(--rebar-calendar-heatmap-month-width, 56px);
+  font-size: var(--rebar-calendar-heatmap-month-size, var(--rebar-font-size-xs));
+  font-weight: var(--rebar-calendar-heatmap-month-weight, var(--rebar-font-weight-semibold));
+}
+.rebar-calendar-heatmap-cells { gap: var(--rebar-calendar-heatmap-cell-gap, 0); }
+.rebar-calendar-heatmap-cell {
+  width: var(--rebar-calendar-heatmap-hit, 44px);
+  height: var(--rebar-calendar-heatmap-hit, 44px);
+  margin: var(--rebar-calendar-heatmap-cell-margin, -6px -5px);
+}
+.rebar-calendar-heatmap-cell > span {
+  width: var(--rebar-calendar-heatmap-cell-size, 22px);
+  height: var(--rebar-calendar-heatmap-cell-size, 22px);
+  border-radius: var(--rebar-calendar-heatmap-cell-radius, 6px);
+  border-width: var(--rebar-calendar-heatmap-cell-border-width, 1.5px);
+  border-color: var(--rebar-calendar-heatmap-cell-border, var(--rebar-color-border-strong));
+}
+.rebar-calendar-heatmap-cell[data-rebar-shape="circle"] > span { border-radius: 50%; }
+.rebar-calendar-heatmap-cell[data-rebar-state="on"] > span {
+  background: var(--rebar-calendar-heatmap-on, var(--rebar-color-primary));
+  border-color: var(--rebar-calendar-heatmap-on, var(--rebar-color-primary));
+}
+.rebar-calendar-heatmap-legend { gap: var(--rebar-calendar-heatmap-legend-item-gap, var(--rebar-space-md)); }
+.rebar-calendar-heatmap-legend i {
+  width: var(--rebar-calendar-heatmap-swatch-size, 12px);
+  height: var(--rebar-calendar-heatmap-swatch-size, 12px);
+  border-radius: var(--rebar-calendar-heatmap-swatch-radius, 4px);
+  vertical-align: var(--rebar-calendar-heatmap-swatch-align, -1px);
+  border-width: var(--rebar-calendar-heatmap-cell-border-width, 1.5px);
+  border-color: var(--rebar-calendar-heatmap-cell-border, var(--rebar-color-border-strong));
+}
+.rebar-calendar-heatmap-legend i[data-rebar-state="on"] {
+  background: var(--rebar-calendar-heatmap-on, var(--rebar-color-primary));
+  border-color: var(--rebar-calendar-heatmap-on, var(--rebar-color-primary));
+}

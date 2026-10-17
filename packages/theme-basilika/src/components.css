@@ -3069,3 +3069,14 @@ textarea.rebar-input {
   border-radius: var(--rebar-reading-view-radius, var(--rebar-radius-lg));
   padding: var(--rebar-reading-view-padding, 20px);
 }
+
+/* Statistic: the display-face number's size, tracking, line height and affix weight behind the same opt-in properties */
+.rebar-statistic-value {
+  font-size: var(--rebar-statistic-value-size, 2.1rem);
+  font-weight: var(--rebar-statistic-value-weight, var(--rebar-font-weight-semibold));
+  letter-spacing: var(--rebar-statistic-value-tracking, -0.02em);
+  line-height: var(--rebar-statistic-value-line-height, 1.05);
+}
+.rebar-statistic-affix {
+  font-weight: var(--rebar-statistic-affix-weight, var(--rebar-font-weight-medium));
+}

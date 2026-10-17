@@ -178,6 +178,16 @@ export default function CardPage() {
             ),
           },
           {
+            label: "Feature card (orientation=\"feature\")",
+            node: (
+              <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 260px)" }}>
+                <Card orientation="feature" href="#quiet-morning" cover={<span aria-hidden="true" style={{ display: "block", width: "100%", height: "100%", background: "var(--rebar-color-bg-secondary)" }} />} eyebrow="Reflection" title="Quiet morning">
+                  A reflection on the morning readings.
+                </Card>
+              </div>
+            ),
+          },
+          {
             label: "Panel from --rebar-card-* properties (26px radius, 20px padding)",
             node: (
               <div style={{ "--rebar-card-radius": "26px", "--rebar-card-header-padding": "20px 20px 10px", "--rebar-card-body-padding": "20px", "--rebar-card-body-padding-top": "0px", "--rebar-card-eyebrow-gap": "0px" } as React.CSSProperties}>

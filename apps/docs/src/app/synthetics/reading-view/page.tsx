@@ -36,6 +36,16 @@ const BLOCKS: Construct[] = [
   },
   {
     type: "doc-section",
+    heading: "Opt-in properties for a classic reading panel",
+    body: [
+      {
+        kind: "text",
+        text: "`loadingLabel` shows a text message (for example \"Loading…\") instead of the skeleton lines. `verseActions=\"below\"` puts each verse's action pill and `extra` slot on a row of their own under the number and the text, offset by `--rebar-reading-view-pill-margin-start`. Every other value is a custom property whose fallback is the previous look: `--rebar-reading-view-panel-gap`, `-citation-size/-weight/-tracking/-color`, `-message-padding/-align/-size/-style`, `-footer-size`, `-radius`, `-padding`, `-verses-gap`, `-verse-columns/-gap/-padding/-margin/-radius`, `-highlight-padding/-background`, `-num-size/-weight/-line-height/-margin-top`, `-body-size/-line-height/-max-width`, and `-pill-min-height/-padding/-background/-color/-done-color/-radius/-size/-decoration/-margin-top`.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Migrating to Ant Design",
     body: [{ kind: "text", text: "No equivalent. Use `Typography.Paragraph` inside a `Card` with a tinted background; the verse numbering and per-verse actions are the part to keep." }],
   },
@@ -56,6 +66,48 @@ const BLOCKS: Construct[] = [
 ];
 
 const pill = { minHeight: 44 } as const;
+
+const CLASSIC_TOKENS = {
+  "--rebar-reading-view-panel-gap": "10px",
+  "--rebar-reading-view-citation-size": "11.5px",
+  "--rebar-reading-view-citation-weight": "700",
+  "--rebar-reading-view-citation-tracking": "0.14em",
+  "--rebar-reading-view-citation-color": "var(--rebar-color-primary-text-ink)",
+  "--rebar-reading-view-message-padding": "0",
+  "--rebar-reading-view-message-align": "left",
+  "--rebar-reading-view-message-size": "13px",
+  "--rebar-reading-view-message-style": "italic",
+  "--rebar-reading-view-verses-gap": "10px",
+  "--rebar-reading-view-verse-columns": "auto 1fr",
+  "--rebar-reading-view-verse-gap": "8px",
+  "--rebar-reading-view-verse-padding": "0",
+  "--rebar-reading-view-verse-margin": "0",
+  "--rebar-reading-view-num-size": "10.8333px",
+  "--rebar-reading-view-num-weight": "700",
+  "--rebar-reading-view-num-line-height": "normal",
+  "--rebar-reading-view-num-margin-top": "4px",
+  "--rebar-reading-view-body-size": "14.5px",
+  "--rebar-reading-view-body-line-height": "1.65",
+  "--rebar-reading-view-body-max-width": "none",
+  "--rebar-reading-view-pill-min-height": "0px",
+  "--rebar-reading-view-pill-padding": "2px 10px",
+  "--rebar-reading-view-pill-background": "var(--rebar-color-tint-3)",
+  "--rebar-reading-view-pill-color": "var(--rebar-color-text-primary)",
+  "--rebar-reading-view-pill-radius": "999px",
+  "--rebar-reading-view-pill-size": "12px",
+  "--rebar-reading-view-pill-decoration": "none",
+  "--rebar-reading-view-pill-margin-start": "20px",
+  "--rebar-reading-view-pill-margin-top": "4px",
+} as React.CSSProperties;
+
+function ClassicReading() {
+  return (
+    <div style={{ ...CLASSIC_TOKENS, display: "grid", gap: 16 }}>
+      <ReadingView tone="plain" citation={MASS_FIRST_READING_CITATION} empty="Not available inline: look this citation up in your own Bible or an approved online edition." />
+      <ReadingView tone="plain" verseFont="sans" verseActions="below" verses={GALATIANS_3} onVerseAction={() => {}} />
+    </div>
+  );
+}
 
 function Mass({ saved }: { saved?: boolean }) {
   return (
@@ -90,6 +142,8 @@ export default function ReadingViewPage() {
           { label: "Loading", node: <ReadingView title="Galatians 3" loading /> },
           { label: "Translation unavailable", node: <ReadingView title="Galatians 3" error={<Stack gap="sm" align="center"><b>Translation unavailable</b><span>The Douay-Rheims text isn’t downloaded. Connect once to fetch it.</span><Button size="sm" variant="secondary">Try again</Button></Stack>} /> },
           { label: "No reading", node: <ReadingView citation="Oct 11" empty="The missal hasn’t published Oct 11 yet. Try another day." /> },
+          { label: "Loading with a label (loadingLabel)", node: <ReadingView tone="plain" citation={MASS_FIRST_READING_CITATION} loading loadingLabel="Loading…" /> },
+          { label: "Classic reading panel from --rebar-reading-view-* properties (kicker, italic note, verseActions=\"below\", chip pill)", node: <ClassicReading /> },
           { label: "Plain tone", node: <ReadingView tone="plain" citation={MASS_FIRST_READING_CITATION}>{MASS_FIRST_READING.slice(0, 120)}…</ReadingView> },
         ]}
       >

@@ -87,10 +87,8 @@ export interface CardProps extends Omit<ComponentPropsWithoutRef<"div">, "title"
   rel?: string;
   /** Link adapter for `href`, the same shape as `NavBar`'s `renderLink`. */
   renderLink?: RenderLink;
-  /** `"row"` is the compact layout: a 64px thumbnail (`cover`) at the start, title and meta, `extra` at the end. `"tile"` is the hub tile: the `cover` (an icon) at the top, `title` and `subtitle` pinned to the bottom, sized by the `--rebar-card-tile-*` properties. Default `"vertical"`. */
-  orientation?: "vertical" | "row" | "tile";
-  /** `"topic"` is the flat content card: a square rounded cover, the eyebrow as a small tinted pill, a serif title and a clamped excerpt, with no surface or border, sized by the `--rebar-card-topic-*` properties. Default `"default"`. */
-  appearance?: "default" | "topic";
+  /** `"row"` is the compact layout: a 64px thumbnail (`cover`) at the start, title and meta, `extra` at the end. `"tile"` is the hub tile: the `cover` (an icon) at the top, `title` and `subtitle` pinned to the bottom, sized by the `--rebar-card-tile-*` properties. `"feature"` is the bare media card: no surface, border or padding; a square `cover` with a rounded, hairline-bordered frame, then the `eyebrow` (or `subtitle`) as a small pill, the `title` and the body, spaced by `--rebar-card-feature-gap`. Sized by the `--rebar-card-feature-*` properties. Default `"vertical"`. */
+  orientation?: "vertical" | "row" | "tile" | "feature";
   /** An uppercase kicker above the title (`Text variant="eyebrow"`). */
   eyebrow?: ReactNode;
   /** The promo preset: a row card on the lavender tint with a small thumbnail (`cover`), one action (`actions[0]`) and, with `onDismiss`, a close button. */
@@ -125,7 +123,6 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     rel,
     renderLink: renderLinkProp,
     orientation = "vertical",
-    appearance = "default",
     eyebrow,
     promo,
     onDismiss,
@@ -149,8 +146,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
   const marks = {
     "data-rebar-component": "card",
     "data-rebar-tone": tone === "default" ? undefined : String(tone),
-    "data-rebar-appearance": appearance === "topic" ? "topic" : undefined,
-    "data-rebar-orientation": effectiveOrientation === "row" ? "row" : effectiveOrientation === "tile" ? "tile" : undefined,
+    "data-rebar-orientation": effectiveOrientation === "row" ? "row" : effectiveOrientation === "tile" ? "tile" : effectiveOrientation === "feature" ? "feature" : undefined,
     "data-rebar-promo": promo ? "true" : undefined,
     "data-rebar-link": href !== undefined ? "true" : undefined,
   };

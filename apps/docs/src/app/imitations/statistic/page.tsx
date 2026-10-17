@@ -35,6 +35,16 @@ const BLOCKS: Construct[] = [
   },
   {
     type: "doc-section",
+    heading: "Caption placement and type properties",
+    body: [
+      {
+        kind: "text",
+        text: '`titlePlacement="bottom"` puts the title under the value. `--rebar-statistic-title-size/-line-height/-gap`, `--rebar-statistic-value-size/-weight/-tracking/-line-height`, `--rebar-statistic-gap` and `--rebar-statistic-affix-size/-weight/-color/-tracking/-numeric` set the type; each fallback is the previous value.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Migrating to Ant Design",
     body: [
       {
@@ -56,6 +66,7 @@ export default function StatisticPage() {
           { label: "Precision", node: <Statistic title="On-time rate" value={87.5} precision={1} suffix="%" /> },
           { label: "Prefix", node: <Statistic title="Budget left" value={158450} prefix="£" /> },
           { label: "No data", node: <Statistic title="Interviews booked" value="—" /> },
+          { label: "Caption below (titlePlacement=\"bottom\")", node: <div style={{ "--rebar-statistic-value-size": "30px", "--rebar-statistic-affix-size": "15px", "--rebar-statistic-affix-tracking": "normal", "--rebar-statistic-title-size": "12.5px", "--rebar-statistic-title-gap": "2px" } as React.CSSProperties}><Statistic titlePlacement="bottom" title="Mandatory Days attended this cycle" value={0} suffix="/ 56" /></div> },
           { label: "Long title", node: <Statistic title="Tasks waiting on a client reply" value={7} /> },
         ]}
       >
