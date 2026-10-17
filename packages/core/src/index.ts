@@ -880,3 +880,5 @@ export type {
 } from "./components/FilterBar";
 export { useHashTarget } from "./useHashTarget";
 export type { UseHashTargetOptions, UseHashTargetResult } from "./useHashTarget";
+// parity-a4
+export type { ToastAppearance } from "./components/toaster";

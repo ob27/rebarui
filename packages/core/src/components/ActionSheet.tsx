@@ -38,8 +38,10 @@ export interface ActionSheetProps {
   actions?: ActionSheetAction[];
   /** Alias of `actions`. */
   items?: ActionSheetAction[];
-  /** Label for the separate, visually-distinct dismiss button. Defaults to "Cancel". */
-  cancelLabel?: string;
+  /** Label for the separate, visually-distinct dismiss button. Defaults to "Cancel"; `null` omits the button (dismiss by the dim layer or Escape). */
+  cancelLabel?: string | null;
+  /** `"popup"`: the flat mobile-UI popup with plain text rows (see `BottomSheet` `appearance`). Default `"default"`. */
+  appearance?: "default" | "popup";
   /** Renders the sheet inside this (positioned) element instead of `document.body`, e.g. a `DeviceFrame` screen. See `DrawerProps.container`. */
   container?: HTMLElement | null;
   /** Close the sheet after a row is chosen. Default `true`; set `false` when a row opens follow-up UI that keeps the sheet (a confirm). A promise-returning `onSelect` closes it when settled. */
@@ -81,6 +83,7 @@ export function ActionSheet({
   container,
   closeOnSelect = true,
   dismissible = true,
+  appearance,
 }: ActionSheetProps) {
   const contextRenderLink = useRenderLink(undefined, defaultRenderLink);
   const isControlled = open !== undefined;
@@ -127,6 +130,7 @@ export function ActionSheet({
       side="bottom"
       dataComponent="action-sheet"
       dragToDismiss
+      appearance={appearance}
       handle={<div className="rebar-bottom-sheet-handle" data-rebar-part="handle" aria-hidden="true" />}
     >
       <div className="rebar-action-sheet-list" data-rebar-part="actions">
@@ -205,15 +209,17 @@ export function ActionSheet({
           );
         })}
       </div>
-      <button
-        type="button"
-        className="rebar-action-sheet-cancel"
-        data-rebar-part="cancel"
-        disabled={busy}
-        onClick={() => handleOpenChange(false)}
-      >
-        {cancelLabel}
-      </button>
+      {cancelLabel === null ? null : (
+        <button
+          type="button"
+          className="rebar-action-sheet-cancel"
+          data-rebar-part="cancel"
+          disabled={busy}
+          onClick={() => handleOpenChange(false)}
+        >
+          {cancelLabel}
+        </button>
+      )}
     </DrawerPanel>
   );
 }
