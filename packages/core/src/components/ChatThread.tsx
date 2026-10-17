@@ -38,6 +38,13 @@ export interface ChatMessage {
   actions?: ReactNode;
   /** Slot under the bubble (thumbs, Share answer). Not rendered on `blocked` or `crisis` messages. */
   footer?: ReactNode;
+  /** Pre-rendered content shown in place of `content` (for callers with their own inline formatting, such as coloured
+   * emphasis). `content` is still required: it is the plain-text fingerprint that drives auto-scroll and the streaming state. */
+  body?: ReactNode;
+  /** `variant="bubbles"`: shown in place of the citation cards when `citations` is empty (the explicit "no citation" note). */
+  citationsEmptyNote?: string;
+  /** Slot inside the bubble under the content (a "Read more" fold toggle, say). */
+  bodyFooter?: ReactNode;
   /** `"highlight"` tints the bubble. `"blocked"` is a tint-2 bubble for a refused answer. `"crisis"`
    * is a peach fill with a danger outline, `role="alert"`, and no footer. Default `"default"`. */
   tone?: ChatMessageTone;
@@ -48,8 +55,10 @@ export interface ChatMessage {
 
 export interface ChatCitation {
   label: string;
-  /** Longer description of the source, exposed as the pill's tooltip. */
+  /** Longer description of the source, exposed as the pill's tooltip (with `variant="bubbles"`, the snippet shown in the card). */
   detail?: string;
+  /** `variant="bubbles"` cards: text shown after the label in the card title but outside its link ("— Grace and Justification"). */
+  note?: string;
   href?: string;
 }
 
@@ -86,8 +95,16 @@ export interface ChatThreadProps extends ComponentPropsWithoutRef<"div"> {
    * left-aligned so a many-speaker group chat reads as one column. */
   align?: "sides" | "start";
   /** Shows a floating "Latest" pill (44px) whenever the reader has scrolled above the newest
-   * message. Pass `{ label }` to rename it. Pressing it scrolls to the newest message. */
-  scrollToLatest?: boolean | { label: string };
+   * message. Pass `{ label }` to rename it. Pressing it scrolls to the newest message.
+   * `threshold` (px from the bottom, default 48) is how far up counts as "away"; `icon` replaces the arrow glyph
+   * (with `variant="bubbles"` the button is a round icon button and `label` is its accessible name). */
+  scrollToLatest?: boolean | { label: string; threshold?: number; icon?: ReactNode };
+  /** `"bubbles"` is the classic messenger look: 22px bubbles with a squared tail corner, citations as cards under the
+   * bubble (first one open, the rest folded behind a summary), 15px pre-line text, tight 12px/6px rhythm, a round
+   * scroll-to-latest button. Sizes, radii and colours come from the `--rebar-chat-*` properties. Default `"default"`. */
+  variant?: "default" | "bubbles";
+  /** `variant="bubbles"`: summary text of the folded citations, from how many are folded. Default "N more citations". */
+  moreCitationsLabel?: (count: number) => string;
   /** Rendered inside the scroller below the last message (and the typing indicator): suggested replies, a follow-up row, a "get help" card. Scrolls with the transcript. */
   afterMessages?: ReactNode;
   /** Fires when the reader reaches the newest message again (by scrolling or via the pill). */
@@ -104,8 +121,8 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-function isAtBottom(el: HTMLElement): boolean {
-  return el.scrollHeight - el.scrollTop - el.clientHeight <= AT_BOTTOM_THRESHOLD_PX;
+function isAtBottom(el: HTMLElement, threshold = AT_BOTTOM_THRESHOLD_PX): boolean {
+  return el.scrollHeight - el.scrollTop - el.clientHeight <= threshold;
 }
 
 /** A cheap, order-and-content-sensitive fingerprint of the transcript — not a deep-equal, just
@@ -142,6 +159,46 @@ function TypingIndicator({ listItem = false }: { listItem?: boolean }) {
   );
 }
 
+function CitationCard({ citation }: { citation: ChatCitation }) {
+  return (
+    <div className="rebar-chat-citation-card" data-rebar-part="citation-card">
+      <div className="rebar-chat-citation-card-title">
+        {citation.href ? (
+          <a href={citation.href} target="_blank" rel="noopener noreferrer" data-rebar-part="citation">
+            {citation.label}
+          </a>
+        ) : (
+          <span data-rebar-part="citation">{citation.label}</span>
+        )}
+        {citation.note ? ` ${citation.note}` : ""}
+      </div>
+      {citation.detail ? <div className="rebar-chat-citation-card-text">{citation.detail}</div> : null}
+    </div>
+  );
+}
+
+/** `variant="bubbles"` citations: the first card is always visible (a citation is the trust feature, so it never hides
+ * behind a collapsed row), any others sit behind a native disclosure. */
+function ChatCitationCards({ citations, moreLabel }: { citations: ChatCitation[]; moreLabel?: (count: number) => string }) {
+  const [first, ...rest] = citations;
+  if (!first) return null;
+  return (
+    <div className="rebar-chat-message-citations rebar-chat-citation-cards" data-rebar-part="citations">
+      <CitationCard citation={first} />
+      {rest.length > 0 ? (
+        <details className="rebar-chat-citation-more">
+          <summary>{moreLabel ? moreLabel(rest.length) : `${rest.length} more ${rest.length === 1 ? "citation" : "citations"}`}</summary>
+          <div className="rebar-chat-citation-more-list">
+            {rest.map((c, i) => (
+              <CitationCard key={`${c.label}-${i}`} citation={c} />
+            ))}
+          </div>
+        </details>
+      ) : null}
+    </div>
+  );
+}
+
 function MessageBubble({
   message,
   onRetry,
@@ -149,7 +206,11 @@ function MessageBubble({
   bionicOptions,
   markdown = true,
   listItem = false,
+  variant = "default",
+  moreCitationsLabel,
 }: {
+  variant?: "default" | "bubbles";
+  moreCitationsLabel?: (count: number) => string;
   listItem?: boolean;
   message: ChatMessage;
   onRetry?: (message: ChatMessage) => void;
@@ -170,6 +231,7 @@ function MessageBubble({
   const itemRole = listItem ? "listitem" : undefined;
   const isCrisis = message.tone === "crisis";
   const showFooter = Boolean(message.footer) && message.tone !== "crisis" && message.tone !== "blocked";
+  const classic = variant === "bubbles";
 
   if (message.role === "system") {
     return (
@@ -222,7 +284,11 @@ function MessageBubble({
             {message.header}
           </div>
         ) : null}
-        {markdown ? (
+        {message.body !== undefined ? (
+          <div className="rebar-chat-message-content" data-rebar-part="content">
+            {message.body}
+          </div>
+        ) : markdown ? (
           <div className="rebar-chat-message-content" data-rebar-part="content">
             {renderMarkdown(message.content, { bionic: bionicEnabled, bionicOptions })}
           </div>
@@ -231,7 +297,7 @@ function MessageBubble({
             {plainContent}
           </span>
         )}
-        {message.citations && message.citations.length > 0 ? (
+        {!classic && message.citations && message.citations.length > 0 ? (
           <div className="rebar-chat-message-citations" data-rebar-part="citations">
             {message.citations.map((c, i) =>
               c.href ? (
@@ -268,7 +334,24 @@ function MessageBubble({
             <span className="rebar-chat-message-cursor" data-rebar-part="cursor" aria-hidden="true" />
           )
         ) : null}
+        {message.bodyFooter ? (
+          <div className="rebar-chat-message-body-footer" data-rebar-part="body-footer">
+            {message.bodyFooter}
+          </div>
+        ) : null}
+        {classic && message.actions ? (
+          <span className="rebar-chat-message-actions rebar-chat-message-actions-floating" data-rebar-part="actions">
+            {message.actions}
+          </span>
+        ) : null}
       </div>
+      {classic && message.citations && message.citations.length > 0 ? (
+        <ChatCitationCards citations={message.citations} moreLabel={moreCitationsLabel} />
+      ) : classic && message.citationsEmptyNote ? (
+        <div className="rebar-chat-citation-none" data-rebar-part="citations-empty">
+          {message.citationsEmptyNote}
+        </div>
+      ) : null}
       <div className="rebar-chat-message-meta" data-rebar-part="meta">
         {message.sender ? null : timestamp}
         {status === "sending" ? (
@@ -281,7 +364,7 @@ function MessageBubble({
             Failed to send
           </span>
         ) : null}
-        {message.actions ? (
+        {!classic && message.actions ? (
           <span className="rebar-chat-message-actions" data-rebar-part="actions">
             {message.actions}
           </span>
@@ -346,7 +429,7 @@ function MessageBubble({
  * button, which itself scrolls to bottom and resumes auto-scroll on click.
  */
 export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function ChatThread(
-  { messages, isTyping, onRetry, emptyMessage, bionic, bionicOptions, markdown = true, align = "sides", scrollToLatest, onReachLatest, afterMessages, className, ...props },
+  { messages, isTyping, onRetry, emptyMessage, bionic, bionicOptions, markdown = true, align = "sides", scrollToLatest, onReachLatest, afterMessages, variant = "default", moreCitationsLabel, className, ...props },
   ref,
 ) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -355,6 +438,8 @@ export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function C
   const [hasNewContent, setHasNewContent] = useState(false);
   const [awayFromLatest, setAwayFromLatest] = useState(false);
   const latestLabel = typeof scrollToLatest === "object" ? scrollToLatest.label : "Latest";
+  const latestThreshold = typeof scrollToLatest === "object" ? scrollToLatest.threshold : undefined;
+  const latestIcon = typeof scrollToLatest === "object" ? scrollToLatest.icon : undefined;
 
   // Group-chat features (names, system lines, "start" alignment) make the transcript a labelled
   // list so a screen reader announces "list, N items" and each speaker's name in order; a plain
@@ -365,7 +450,7 @@ export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function C
   const handleScroll = () => {
     const el = scrollRef.current;
     if (!el) return;
-    const atBottom = isAtBottom(el);
+    const atBottom = isAtBottom(el, latestThreshold);
     atBottomRef.current = atBottom;
     if (atBottom) setHasNewContent(false);
     if (scrollToLatest) {
@@ -406,6 +491,7 @@ export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function C
       className={clsx("rebar-chat-thread", className)}
       data-rebar-component="chat-thread"
       data-rebar-align={align === "start" ? "start" : undefined}
+      data-rebar-variant={variant === "bubbles" ? "bubbles" : undefined}
       {...props}
     >
       {messages.length === 0 ? (
@@ -429,6 +515,8 @@ export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function C
                 bionicOptions={bionicOptions}
                 markdown={markdown}
                 listItem={multiSpeaker}
+                variant={variant}
+                moreCitationsLabel={moreCitationsLabel}
               />
             ))}
             {isTyping ? <TypingIndicator listItem={multiSpeaker} /> : null}
@@ -443,9 +531,16 @@ export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function C
               type="button"
               className="rebar-chat-thread-scroll-to-bottom rebar-chat-thread-latest"
               data-rebar-part="latest"
+              aria-label={variant === "bubbles" ? latestLabel : undefined}
               onClick={scrollToBottom}
             >
-              <span aria-hidden="true">↓</span> {latestLabel}
+              {variant === "bubbles" ? (
+                latestIcon ?? <span aria-hidden="true">↓</span>
+              ) : (
+                <>
+                  <span aria-hidden="true">↓</span> {latestLabel}
+                </>
+              )}
             </button>
           ) : hasNewContent ? (
             <button

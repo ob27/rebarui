@@ -880,3 +880,6 @@ export type {
 } from "./components/FilterBar";
 export { useHashTarget } from "./useHashTarget";
 export type { UseHashTargetOptions, UseHashTargetResult } from "./useHashTarget";
+
+export { Chip } from "./components/Chip";
+export type { ChipProps } from "./components/Chip";

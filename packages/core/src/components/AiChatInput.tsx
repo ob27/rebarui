@@ -65,6 +65,12 @@ export interface AiChatInputProps {
   showCounter?: boolean;
   /** Enter sends (Shift+Enter adds a line). Pass `false` to make Enter add a line and send only from the button, as chat apps for long messages do. Default `true`. */
   submitOnEnter?: boolean;
+  /** `"boxed"` is the bar-and-box composer: a full-width bar (surface fill, top hairline, padding) holding a rounded-rectangle field and a separate round send/mic button. Works with or without `onDictate` (without it the round button is a Send). While recording the field stays and the round button turns red (no Listening pill); while transcribing the round button shows `busyIcon`. Sizes, radii and colours come from the `--rebar-ai-chat-boxed-*` properties. Default `"default"` (the pill). */
+  variant?: "default" | "boxed";
+  /** Render a single-line `<input>` instead of the growing `<textarea>` (Enter sends, newlines are stripped, the field never grows). Default `false`. */
+  singleLine?: boolean;
+  /** Boxed variant: glyph shown in the round button while `transcribing`. */
+  busyIcon?: ReactNode;
   "aria-label"?: string;
   className?: string;
 }
@@ -98,6 +104,9 @@ export function AiChatInput({
   maxLength,
   showCounter = false,
   submitOnEnter = true,
+  variant = "default",
+  singleLine = false,
+  busyIcon,
   "aria-label": ariaLabel,
   className,
 }: AiChatInputProps) {
@@ -105,6 +114,7 @@ export function AiChatInput({
   const isControlled = value !== undefined;
   const current = isControlled ? value : internalValue;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const setValue = (next: string) => {
     if (!isControlled) setInternalValue(next);
@@ -116,14 +126,14 @@ export function AiChatInput({
   // (not just newline-separated) lines growing the field.
   useLayoutEffect(() => {
     const el = textareaRef.current;
-    if (!el) return;
+    if (!el || singleLine) return;
     const lineHeight = parseFloat(getComputedStyle(el).lineHeight || "20") || 20;
     const maxHeight = lineHeight * maxRows;
     el.style.height = "auto";
     el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
-  }, [current, maxRows]);
+  }, [current, maxRows, singleLine]);
 
-  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChange = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     setValue(event.target.value);
   };
 
@@ -133,7 +143,7 @@ export function AiChatInput({
     if (!isControlled) setInternalValue("");
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     if (submitOnEnter && event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       handleSend();
@@ -155,8 +165,9 @@ export function AiChatInput({
 
   const isDisabled = Boolean(disabled);
   const disabledPlaceholder = typeof disabled === "object" || typeof disabled === "string" ? disabled : null;
-  const morph = onDictate !== undefined;
-  const isRecording = morph && Boolean(recording);
+  const boxed = variant === "boxed";
+  const morph = onDictate !== undefined || boxed;
+  const isRecording = onDictate !== undefined && Boolean(recording);
   const seconds = typeof recording === "object" ? recording.seconds : undefined;
   const hasText = current.trim().length > 0;
   const state = isDisabled ? "disabled" : isRecording ? "recording" : transcribing ? "transcribing" : undefined;
@@ -168,6 +179,7 @@ export function AiChatInput({
         data-rebar-component="ai-chat-input"
         data-rebar-intent={intent}
         data-rebar-mode="morph"
+        data-rebar-variant={boxed ? "boxed" : undefined}
         data-rebar-state={state}
       >
         {banner ? (
@@ -176,7 +188,7 @@ export function AiChatInput({
           </div>
         ) : null}
         <div className="rebar-ai-chat-input-bar" data-rebar-part="bar">
-          {isRecording ? (
+          {isRecording && !boxed ? (
             <div className="rebar-ai-chat-input-listening" data-rebar-part="listening" role="status" aria-label="Listening">
               <span className="rebar-ai-chat-input-pulse" aria-hidden="true" />
               <span>Listening</span>
@@ -193,28 +205,51 @@ export function AiChatInput({
             </div>
           ) : (
             <div className="rebar-ai-chat-input-field" data-rebar-part="field">
-              <textarea
-                ref={textareaRef}
-                className="rebar-input rebar-ai-chat-input-textarea"
-                data-rebar-part="textarea"
-                value={current}
-                onChange={handleChange}
-                onKeyDown={handleKeyDown}
-                placeholder={
-                  transcribing
-                    ? "Transcribing…"
-                    : typeof disabledPlaceholder === "string"
-                      ? disabledPlaceholder
-                      : (placeholder ?? defaultPlaceholder)
-                }
-                disabled={isDisabled}
-                readOnly={transcribing}
-                aria-label={ariaLabel ?? "Chat message"}
-                aria-busy={transcribing || undefined}
-                rows={1}
-                maxLength={maxLength}
-              />
-              {transcribing ? <span className="rebar-ai-chat-input-spinner" data-rebar-part="spinner" aria-hidden="true" /> : null}
+              {singleLine ? (
+                <input
+                  ref={inputRef}
+                  className="rebar-input rebar-ai-chat-input-textarea"
+                  data-rebar-part="textarea"
+                  value={current}
+                  onChange={handleChange}
+                  onKeyDown={handleKeyDown}
+                  placeholder={
+                    transcribing && !boxed
+                      ? "Transcribing…"
+                      : typeof disabledPlaceholder === "string"
+                        ? disabledPlaceholder
+                        : (placeholder ?? defaultPlaceholder)
+                  }
+                  disabled={isDisabled}
+                  readOnly={transcribing && !boxed}
+                  aria-label={ariaLabel ?? "Chat message"}
+                  aria-busy={transcribing || undefined}
+                  maxLength={maxLength}
+                />
+              ) : (
+                <textarea
+                  ref={textareaRef}
+                  className="rebar-input rebar-ai-chat-input-textarea"
+                  data-rebar-part="textarea"
+                  value={current}
+                  onChange={handleChange}
+                  onKeyDown={handleKeyDown}
+                  placeholder={
+                    transcribing && !boxed
+                      ? "Transcribing…"
+                      : typeof disabledPlaceholder === "string"
+                        ? disabledPlaceholder
+                        : (placeholder ?? defaultPlaceholder)
+                  }
+                  disabled={isDisabled}
+                  readOnly={transcribing && !boxed}
+                  aria-label={ariaLabel ?? "Chat message"}
+                  aria-busy={transcribing || undefined}
+                  rows={1}
+                  maxLength={maxLength}
+                />
+              )}
+              {transcribing && !boxed ? <span className="rebar-ai-chat-input-spinner" data-rebar-part="spinner" aria-hidden="true" /> : null}
             </div>
           )}
           {isRecording ? (
@@ -226,7 +261,17 @@ export function AiChatInput({
               aria-label="Stop recording"
               onClick={onDictate}
             >
-              <StopCircleIcon aria-hidden="true" />
+              {boxed ? (micIcon ?? <MicIcon aria-hidden="true" />) : <StopCircleIcon aria-hidden="true" />}
+            </button>
+          ) : boxed && transcribing ? (
+            <button
+              type="button"
+              className="rebar-ai-chat-input-round"
+              data-rebar-part="busy-button"
+              aria-label="Transcribing…"
+              disabled
+            >
+              {busyIcon ?? <span className="rebar-ai-chat-input-spinner" aria-hidden="true" />}
             </button>
           ) : hasText && !transcribing ? (
             <button
@@ -236,6 +281,16 @@ export function AiChatInput({
               aria-label={label}
               disabled={isDisabled}
               onClick={handleSend}
+            >
+              {sendIcon ?? <SendPlaneIcon aria-hidden="true" />}
+            </button>
+          ) : boxed && onDictate === undefined ? (
+            <button
+              type="button"
+              className="rebar-ai-chat-input-round"
+              data-rebar-part="send-button"
+              aria-label={label}
+              disabled
             >
               {sendIcon ?? <SendPlaneIcon aria-hidden="true" />}
             </button>

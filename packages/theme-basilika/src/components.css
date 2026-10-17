@@ -7,7 +7,7 @@
 /* Display type on the Heading construct */
 .rebar-heading {
   font-family: var(--rebar-font-family-display);
-  font-weight: var(--rebar-font-weight-semibold);
+  font-weight: var(--rebar-heading-weight, var(--rebar-font-weight-semibold));
   font-variation-settings: "SOFT" 100;
   letter-spacing: -0.015em;
   text-wrap: balance;
@@ -2483,19 +2483,19 @@ textarea.rebar-input {
 /* Button: icon-only, rounded (after the pill sizes above, same specificity) */
 .rebar-button[data-rebar-icon-only] {
   padding: 0;
-  width: 44px;
+  width: var(--rebar-icon-button-size, 44px);
   min-height: 0;
-  height: 44px;
+  height: var(--rebar-icon-button-size, 44px);
   border-radius: 50%;
 }
 .rebar-button[data-rebar-icon-only][data-rebar-size="sm"] {
-  width: 34px;
-  height: 34px;
+  width: var(--rebar-icon-button-size-sm, 34px);
+  height: var(--rebar-icon-button-size-sm, 34px);
   padding: 0;
 }
 .rebar-button[data-rebar-icon-only][data-rebar-size="lg"] {
-  width: 52px;
-  height: 52px;
+  width: var(--rebar-icon-button-size-lg, 52px);
+  height: var(--rebar-icon-button-size-lg, 52px);
   padding: 0;
 }
 .rebar-button[data-rebar-shape="rounded"] {
