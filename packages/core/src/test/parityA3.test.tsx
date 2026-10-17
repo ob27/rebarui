@@ -7,6 +7,7 @@ import { MobileTabBar } from "../components/MobileTabBar";
 import { List, ListItem } from "../components/List";
 import { Card } from "../components/Card";
 import { Empty } from "../components/Empty";
+import { BackdropSection } from "../components/BackdropSection";
 
 const css = readFileSync(resolve(__dirname, "../styles/style.css"), "utf8");
 const block = css.slice(css.indexOf("/* ---- parity-a3"));
@@ -158,5 +159,24 @@ describe("parity-a3: ListItem surface and Card panel properties", () => {
       /margin-bottom: var\(--rebar-card-eyebrow-gap, 4px\)/,
       /font-size: var\(--rebar-card-title-size, var\(--rebar-font-size-md, 16px\)\)/,
     ]) expect(block).toMatch(re);
+  });
+});
+
+describe("parity-a3: TopBar wrapping and overlay, BackdropSection", () => {
+  it("title wrapping and overlay surface are properties with the previous fallbacks", () => {
+    for (const re of [
+      /white-space: var\(--rebar-top-bar-title-white-space, nowrap\)/,
+      /text-overflow: var\(--rebar-top-bar-title-text-overflow, ellipsis\)/,
+      /background: var\(--rebar-top-bar-overlay-background, linear-gradient/,
+      /margin: var\(--rebar-top-bar-overlay-button-margin, 0 4px\)/,
+      /padding: var\(--rebar-backdrop-section-padding, var\(--rebar-space-3xl, 64px\) var\(--rebar-space-lg, 24px\)\)/,
+    ]) expect(block).toMatch(re);
+  });
+
+  it("scrim custom draws the layer for --rebar-backdrop-scrim-background", () => {
+    const { container } = render(<BackdropSection image={{ src: "x.jpg" }} scrim="custom">Hi</BackdropSection>);
+    expect(container.querySelector("[data-rebar-part='scrim']")).not.toBeNull();
+    expect(container.firstElementChild).toHaveAttribute("data-rebar-scrim", "custom");
+    expect(block).toMatch(/\[data-rebar-scrim="custom"\] \.rebar-backdrop-section-scrim/);
   });
 });

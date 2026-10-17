@@ -12333,6 +12333,7 @@ a.rebar-list-item-main {
   margin-bottom: var(--rebar-card-eyebrow-gap, 4px);
 }
 .rebar-card-title {
+  font-family: var(--rebar-card-title-family, inherit);
   font-size: var(--rebar-card-title-size, var(--rebar-font-size-md, 16px));
   font-weight: var(--rebar-card-title-weight, var(--rebar-font-weight-semibold, 600));
   line-height: var(--rebar-card-title-line-height, inherit);
@@ -12341,4 +12342,41 @@ a.rebar-list-item-main {
 }
 .rebar-card-subtitle {
   font-size: var(--rebar-card-subtitle-size, var(--rebar-font-size-sm, 14px));
+}
+
+/* TopBar title wrapping: nowrap with an ellipsis by default; an app can let the title wrap */
+.rebar-top-bar-title {
+  white-space: var(--rebar-top-bar-title-white-space, nowrap);
+  overflow: var(--rebar-top-bar-title-overflow, hidden);
+  text-overflow: var(--rebar-top-bar-title-text-overflow, ellipsis);
+}
+
+/* TopBar tone="overlay": scrim, button surface and spacing can be set by an app */
+.rebar-top-bar[data-rebar-tone="overlay"] {
+  background: var(--rebar-top-bar-overlay-background, linear-gradient(color-mix(in srgb, var(--rebar-color-bg-inverse, #1d2040) 75%, transparent), transparent));
+}
+.rebar-top-bar[data-rebar-tone="overlay"] .rebar-top-bar-button,
+.rebar-top-bar[data-rebar-tone="overlay"] .rebar-button[data-rebar-icon-only],
+.rebar-top-bar[data-rebar-tone="overlay"] .rebar-top-bar-trailing > button:not(.rebar-button):has(> svg:only-child),
+.rebar-top-bar[data-rebar-tone="overlay"] .rebar-top-bar-trailing > button:not(.rebar-button)[data-rebar-icon-only] {
+  background: var(--rebar-top-bar-overlay-button-background, color-mix(in srgb, var(--rebar-color-bg-inverse, #1d2040) 45%, transparent));
+  margin: var(--rebar-top-bar-overlay-button-margin, 0 4px);
+}
+
+/* BackdropSection: padding, side margin and a custom scrim background can be set by an app (defaults unchanged) */
+.rebar-backdrop-section {
+  padding: var(--rebar-backdrop-section-padding, var(--rebar-space-3xl, 64px) var(--rebar-space-lg, 24px));
+}
+.rebar-backdrop-section[data-rebar-rounded="true"] {
+  margin-inline: var(--rebar-backdrop-section-margin-inline, var(--rebar-space-md, 16px));
+}
+.rebar-backdrop-section[data-rebar-inset="false"] {
+  margin-inline: 0;
+  padding: 0;
+}
+.rebar-backdrop-section[data-rebar-scrim="custom"] .rebar-backdrop-section-scrim {
+  background: var(--rebar-backdrop-scrim-background, transparent);
+}
+.rebar-backdrop-section-content {
+  padding: var(--rebar-backdrop-section-content-padding, 0);
 }
