@@ -12087,3 +12087,202 @@ a.rebar-list-item-main {
 /* A dark scope inside a light page (ThemeScope scheme="dark") gets the same swap */
 [data-rebar-scheme="dark"] .rebar-empty-icon-raster { display: none; }
 [data-rebar-scheme="dark"] .rebar-empty-icon-vector { display: block; }
+
+/* ---- parity-a3: shell, navigation, lists and cards (opt-in properties; every default below is the previous value) ---- */
+
+/* TopBar: bar padding, gap, button box, title type and action size can be set by an app (defaults unchanged) */
+.rebar-top-bar-bar {
+  gap: var(--rebar-top-bar-gap, 2px);
+  padding: var(--rebar-top-bar-padding, 0 6px);
+}
+.rebar-top-bar-button {
+  box-sizing: border-box;
+  width: var(--rebar-top-bar-button-width, 44px);
+  height: var(--rebar-top-bar-button-height, 44px);
+  padding: var(--rebar-top-bar-button-padding, 0);
+  font-size: var(--rebar-top-bar-button-font-size, inherit);
+  line-height: var(--rebar-top-bar-button-line-height, inherit);
+}
+.rebar-top-bar-title {
+  padding: var(--rebar-top-bar-title-padding, 0 6px);
+  font-size: var(--rebar-top-bar-title-size, 1.3rem);
+  font-weight: var(--rebar-top-bar-title-weight, 600);
+  line-height: var(--rebar-top-bar-title-line-height, 1.15);
+  letter-spacing: var(--rebar-top-bar-title-letter-spacing, inherit);
+}
+.rebar-top-bar-logo {
+  padding: var(--rebar-top-bar-logo-padding, 0 8px);
+}
+.rebar-top-bar-logo {
+  line-height: var(--rebar-top-bar-logo-line-height, 1);
+}
+.rebar-top-bar-logo a {
+  display: var(--rebar-top-bar-logo-link-display, inline-flex);
+}
+.rebar-top-bar-logo img,
+.rebar-top-bar-logo svg {
+  display: var(--rebar-top-bar-logo-media-display, block);
+  height: var(--rebar-top-bar-logo-height, 24px);
+}
+.rebar-top-bar-trailing > a,
+.rebar-top-bar-trailing > button:not(.rebar-button) {
+  min-height: var(--rebar-top-bar-action-size, 44px);
+  min-width: var(--rebar-top-bar-action-size, 44px);
+  padding: var(--rebar-top-bar-action-padding, 0 14px);
+  font-size: var(--rebar-top-bar-action-font-size, inherit);
+  font-weight: var(--rebar-top-bar-action-weight, 600);
+  color: var(--rebar-top-bar-action-color, var(--rebar-color-primary-bright, var(--rebar-color-text-inverse, #fbf6ee)));
+}
+.rebar-top-bar-trailing > button:not(.rebar-button):has(> svg:only-child),
+.rebar-top-bar-trailing > button:not(.rebar-button)[data-rebar-icon-only] {
+  width: var(--rebar-top-bar-action-size, 44px);
+  height: var(--rebar-top-bar-action-size, 44px);
+  min-width: var(--rebar-top-bar-action-size, 44px);
+  min-height: var(--rebar-top-bar-action-size, 44px);
+  padding: 0;
+  font-size: var(--rebar-top-bar-action-font-size, inherit);
+  color: inherit;
+}
+
+/* MobileTabBar: box, item, icon and label metrics can be set by an app (defaults unchanged) */
+.rebar-mobile-tab-bar {
+  min-height: var(--rebar-tab-bar-min-height, 56px);
+  padding: var(--rebar-tab-bar-padding, var(--rebar-space-xs, 4px) var(--rebar-space-sm, 8px));
+  gap: var(--rebar-tab-bar-gap, var(--rebar-space-xs, 4px));
+}
+.rebar-mobile-tab-bar-item {
+  min-height: var(--rebar-tab-bar-item-min-height, 44px);
+  padding: var(--rebar-tab-bar-item-padding, var(--rebar-space-xs, 4px));
+  color: var(--rebar-tab-bar-color, var(--rebar-color-text-secondary, #757575));
+}
+.rebar-mobile-tab-bar-icon {
+  width: var(--rebar-tab-bar-icon-size, 20px);
+  height: var(--rebar-tab-bar-icon-size, 20px);
+  font-size: var(--rebar-tab-bar-icon-font-size, inherit);
+  line-height: var(--rebar-tab-bar-icon-line-height, inherit);
+}
+.rebar-mobile-tab-bar-label {
+  font-size: var(--rebar-tab-bar-label-size, inherit);
+  line-height: var(--rebar-tab-bar-label-line-height, 1.2);
+}
+.rebar-mobile-tab-bar-item-active {
+  color: var(--rebar-tab-bar-active-color, var(--rebar-color-text-primary, #212121));
+}
+
+/* List and ListItem: gap, row box, thumbnail, title, meta and the trailing button can be set by an app (defaults unchanged) */
+.rebar-list {
+  gap: var(--rebar-list-gap, 10px);
+}
+.rebar-list-item {
+  min-height: var(--rebar-list-item-min-height, 72px);
+  color: var(--rebar-list-item-color, var(--rebar-color-text-primary, #212121));
+}
+.rebar-list[data-rebar-variant="cards"] > .rebar-list-item {
+  border-color: var(--rebar-list-item-border-color, var(--rebar-color-border, #e0e0e0));
+  border-radius: var(--rebar-list-item-radius, 20px);
+}
+.rebar-list-item-main {
+  min-height: var(--rebar-list-item-min-height, 72px);
+  gap: var(--rebar-list-item-gap, 14px);
+  padding-block: var(--rebar-list-item-padding-block, 14px);
+  padding-inline-start: var(--rebar-list-item-padding-start, 16px);
+  padding-inline-end: var(--rebar-list-item-padding-end, 16px);
+}
+.rebar-list-item:has(> .rebar-list-item-trailing) > .rebar-list-item-main {
+  padding-inline-end: var(--rebar-list-item-padding-end-with-trailing, 16px);
+}
+.rebar-list-item-thumb {
+  width: var(--rebar-list-item-thumb-size, 56px);
+  height: var(--rebar-list-item-thumb-size, 56px);
+  border-radius: var(--rebar-list-item-thumb-radius, 14px);
+  align-self: var(--rebar-list-item-thumb-align, flex-start);
+}
+.rebar-list-item-thumb.rebar-list-item-bar {
+  height: var(--rebar-list-item-thumb-size, 56px);
+  border-radius: var(--rebar-list-item-thumb-radius, 14px);
+}
+.rebar-list-item-body {
+  gap: var(--rebar-list-item-body-gap, 3px);
+}
+.rebar-list-item-title {
+  font-size: var(--rebar-list-item-title-size, 1rem);
+  font-weight: var(--rebar-list-item-title-weight, 600);
+  line-height: var(--rebar-list-item-title-line-height, 1.3);
+  letter-spacing: var(--rebar-list-item-title-letter-spacing, inherit);
+  -webkit-line-clamp: var(--rebar-list-item-title-lines, 3);
+}
+.rebar-list-item[data-rebar-title-style="serif"] .rebar-list-item-title {
+  font-size: var(--rebar-list-item-title-size, 1.08rem);
+  line-height: var(--rebar-list-item-title-line-height, 1.25);
+}
+.rebar-list-item-description,
+.rebar-list-item-meta {
+  font-size: var(--rebar-list-item-meta-size, 0.85rem);
+  line-height: var(--rebar-list-item-meta-line-height, 1.4);
+}
+.rebar-list-item-trailing {
+  padding: var(--rebar-list-item-trailing-padding, 0 12px 0 0);
+}
+.rebar-list-item-more {
+  width: var(--rebar-list-item-more-size, 44px);
+  height: var(--rebar-list-item-more-size, 44px);
+  background: var(--rebar-list-item-more-background, var(--rebar-color-bg-secondary, #f5f5f5));
+  font-size: var(--rebar-list-item-more-font-size, inherit);
+}
+
+/* Progress: track and fill colours can be set by an app (defaults unchanged; status colours still win) */
+.rebar-progress {
+  background: var(--rebar-progress-track, var(--rebar-color-border, #e0e0e0));
+}
+.rebar-progress-indicator {
+  background: var(--rebar-progress-fill, var(--rebar-color-primary, #0066cc));
+}
+
+/* Card orientation="tile": a hub tile (icon cover at the top, title and subtitle at the bottom) */
+.rebar-card[data-rebar-orientation="tile"] {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--rebar-card-tile-gap, 18px);
+  min-height: var(--rebar-card-tile-min-height, 132px);
+  padding: var(--rebar-card-tile-padding, 16px);
+  border: 0;
+  border-radius: var(--rebar-card-tile-radius, 26px);
+}
+.rebar-card[data-rebar-orientation="tile"] > .rebar-card-header {
+  display: block;
+  padding: 0;
+  border-bottom: 0;
+}
+.rebar-card[data-rebar-orientation="tile"] .rebar-card-title {
+  display: block;
+  font-family: var(--rebar-font-family-display, inherit);
+  font-variation-settings: "SOFT" 100;
+  font-size: var(--rebar-card-tile-title-size, 19px);
+  font-weight: var(--rebar-heading-weight, 600);
+  line-height: var(--rebar-card-tile-title-line-height, 1.1);
+  letter-spacing: var(--rebar-card-tile-title-letter-spacing, -0.015em);
+  color: var(--rebar-card-tile-title-color, inherit);
+}
+.rebar-card[data-rebar-orientation="tile"] .rebar-card-subtitle {
+  display: block;
+  margin-top: var(--rebar-card-tile-subtitle-gap, 3px);
+  font-size: var(--rebar-card-tile-subtitle-size, 12.5px);
+  line-height: var(--rebar-card-tile-subtitle-line-height, 1.35);
+}
+.rebar-card[data-rebar-orientation="tile"][data-rebar-link]:hover {
+  transform: var(--rebar-card-tile-hover-transform, translateY(-2px));
+  box-shadow: var(--rebar-card-tile-hover-shadow, var(--rebar-shadow, 0 4px 14px rgba(0, 0, 0, 0.1)));
+}
+
+/* Empty icon="none": the plain note (description only); layout set by --rebar-empty-plain-* */
+.rebar-empty[data-rebar-icon="none"] {
+  align-items: var(--rebar-empty-plain-align, center);
+  padding: var(--rebar-empty-plain-padding, var(--rebar-space-xl, 32px));
+  text-align: var(--rebar-empty-plain-text-align, center);
+  color: var(--rebar-empty-plain-color, var(--rebar-color-text-secondary, #757575));
+}
+.rebar-empty[data-rebar-icon="none"] .rebar-empty-description {
+  font-size: var(--rebar-empty-plain-size, var(--rebar-font-size-sm, 14px));
+  line-height: var(--rebar-empty-plain-line-height, inherit);
+}

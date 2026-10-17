@@ -7,7 +7,7 @@ import { InboxOutlined } from "./icons";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
 
-export type EmptyIcon = "auto" | "illustration" | "vector" | "container";
+export type EmptyIcon = "auto" | "illustration" | "vector" | "container" | "none";
 export type EmptyIllustration = "ghost" | "bowl-and-spoon";
 
 const ILLUSTRATIONS: Record<EmptyIllustration, string> = {
@@ -31,7 +31,8 @@ export interface EmptyProps {
    * theme on its own, no raster/vector swap needed). "container" used to be a hand-traced
    * approximation of this exact shape before `InboxOutlined` existed in this project's own merged
    * icon set (`/imitations/icon`) — swapped for the real, licensed path once it did, rather than
-   * keeping a second, slightly-off copy of the same glyph around.
+   * keeping a second, slightly-off copy of the same glyph around. "none" is the plain note: only the
+   * description (and `children`), no icon, laid out by the `--rebar-empty-plain-*` properties.
    */
   icon?: EmptyIcon;
   /** Which raster illustration to use when `icon` shows one. Default `"ghost"`. */
@@ -60,11 +61,12 @@ export const Empty = forwardRef<HTMLDivElement, EmptyProps>(function Empty(
   ref,
 ) {
   const descriptionContent = useBionicChildren(description, bionic, bionicOptions);
+  const plain = icon === "none";
   const showRaster = icon === "auto" || icon === "illustration";
   const showVector = icon === "auto" || icon === "vector";
   const showContainer = icon === "container";
   return (
-    <div ref={ref} className={clsx("rebar-empty", className)} data-rebar-component="empty">
+    <div ref={ref} className={clsx("rebar-empty", className)} data-rebar-component="empty" data-rebar-icon={plain ? "none" : undefined}>
       {showRaster ? (
         <img
           className="rebar-empty-icon rebar-empty-icon-raster"

@@ -116,6 +116,8 @@ export interface ListItemProps extends Omit<ComponentPropsWithoutRef<"li">, "tit
   onMore?: () => void;
   /** Accessible name of the `"more"` button. Default "More actions". */
   moreLabel?: string;
+  /** Replaces the `"more"` button's built-in ••• icon (a glyph or icon of your own). */
+  moreIcon?: ReactNode;
   /** The whole row is a link. Standard link adapter shared with `Card`, `Button` and `ActionSheet` items. */
   href?: string;
   /** Anchor `target`, with `href`. */
@@ -182,6 +184,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
     trailing,
     onMore,
     moreLabel = "More actions",
+    moreIcon,
     href,
     target,
     renderLink: renderLinkProp,
@@ -332,7 +335,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
     end = (
       <span className="rebar-list-item-trailing" data-rebar-part="trailing">
         <button type="button" className="rebar-list-item-more" aria-label={moreLabel} disabled={disabled} onClick={onMore}>
-          <MoreDots />
+          {moreIcon ?? <MoreDots />}
         </button>
       </span>
     );
