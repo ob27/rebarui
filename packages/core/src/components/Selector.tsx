@@ -1,5 +1,5 @@
-import { useState } from "react";
-import type { ReactNode } from "react";
+import { useRef, useState } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 import clsx from "clsx";
 
 export interface SelectorOption<T> {
@@ -18,6 +18,13 @@ export interface SelectorProps<T> {
   disabled?: boolean;
   /** How many chips per row before wrapping. Omit for a plain wrapping row (the common case). */
   columns?: number;
+  /**
+   * Chip semantics. `"button"` (default) keeps toggle buttons with `aria-pressed`. `"choice"`
+   * exposes a real choice control: `role="checkbox"` with `aria-checked` when `multiple`, else
+   * `role="radio"` inside a `radiogroup` (arrow keys move and select, the selected chip is the tab
+   * stop, and pressing the selected chip again does not clear it).
+   */
+  chipRole?: "button" | "choice";
   "aria-label"?: string;
   className?: string;
 }
@@ -37,6 +44,7 @@ export function Selector<T extends string | number>({
   onValueChange,
   disabled = false,
   columns,
+  chipRole = "button",
   "aria-label": ariaLabel,
   className,
 }: SelectorProps<T>) {
@@ -49,12 +57,30 @@ export function Selector<T extends string | number>({
     onValueChange?.(next);
   };
 
+  const choice = chipRole === "choice";
+  const radio = choice && !multiple;
+  const groupRef = useRef<HTMLDivElement>(null);
+  const enabledChips = () => Array.from(groupRef.current?.querySelectorAll<HTMLButtonElement>("button:not(:disabled)") ?? []);
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!radio) return;
+    const dir = event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 0;
+    if (!dir) return;
+    const chips = enabledChips();
+    const at = chips.indexOf(document.activeElement as HTMLButtonElement);
+    if (at < 0 || chips.length === 0) return;
+    event.preventDefault();
+    const next = chips[(at + dir + chips.length) % chips.length];
+    next?.focus();
+    next?.click();
+  };
+
   const toggle = (option: SelectorOption<T>) => {
     if (disabled || option.disabled) return;
     const isSelected = current.includes(option.value);
     if (multiple) {
       setValue(isSelected ? current.filter((v) => v !== option.value) : [...current, option.value]);
     } else {
+      if (radio && isSelected) return;
       setValue(isSelected ? [] : [option.value]);
     }
   };
@@ -63,20 +89,26 @@ export function Selector<T extends string | number>({
     <div
       className={clsx("rebar-selector", className)}
       data-rebar-component="selector"
-      role="group"
+      ref={groupRef}
+      role={radio ? "radiogroup" : "group"}
       aria-label={ariaLabel}
-      style={columns ? { gridTemplateColumns: `repeat(${columns}, 1fr)` } : undefined}
+      onKeyDown={radio ? onKeyDown : undefined}
+      style={columns ? { display: "grid", gridTemplateColumns: `repeat(${columns}, 1fr)` } : undefined}
     >
       {options.map((option, i) => {
         const isSelected = current.includes(option.value);
         const isDisabled = disabled || option.disabled;
+        const firstEnabled = options.findIndex((o) => !(disabled || o.disabled));
+        const tabStop = current.length > 0 ? isSelected : i === firstEnabled;
         return (
           <button
             key={i}
             type="button"
             className="rebar-selector-chip"
             data-rebar-part="chip"
-            aria-pressed={isSelected}
+            {...(choice
+              ? { role: multiple ? "checkbox" : "radio", "aria-checked": isSelected, tabIndex: radio && !tabStop ? -1 : undefined }
+              : { "aria-pressed": isSelected })}
             disabled={isDisabled}
             onClick={() => toggle(option)}
           >

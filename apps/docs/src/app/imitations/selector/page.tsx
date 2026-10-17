@@ -32,6 +32,20 @@ const BLOCKS: Construct[] = [
       },
     ],
   },
+  {
+    type: "doc-section",
+    heading: "Grid columns and choice semantics",
+    body: [
+      {
+        "kind": "text",
+        "text": "`columns` lays the chips out as a real grid (`display: grid` with that many equal columns). `chipRole=\"choice\"` swaps the default toggle buttons (`aria-pressed`) for `role=\"checkbox\"` with `aria-checked` when `multiple`, or `role=\"radio\"` inside a `radiogroup` otherwise (arrow keys move and select; the selected chip is the tab stop)."
+      },
+      {
+        "kind": "code",
+        "code": "<Selector options={sizes} columns={3} chipRole=\"choice\" aria-label=\"Size\" />"
+      }
+    ],
+  },
 ];
 
 export default function SelectorPage() {
