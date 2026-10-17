@@ -3006,3 +3006,19 @@ textarea.rebar-input {
   background: var(--rebar-search-input-control-background, transparent);
   border-radius: var(--rebar-search-input-control-radius, 0);
 }
+
+/* Progress: bar height, track, fill and status colours are opt-in */
+.rebar-progress {
+  height: var(--rebar-progress-height, 8px);
+  border-radius: var(--rebar-progress-radius, 8px);
+  background: var(--rebar-progress-track, var(--rebar-color-border, #e0e0e0));
+}
+.rebar-progress[data-rebar-size="sm"] { height: var(--rebar-progress-height-sm, var(--rebar-progress-height, 4px)); }
+.rebar-progress[data-rebar-size="lg"] { height: var(--rebar-progress-height-lg, var(--rebar-progress-height, 12px)); }
+.rebar-progress-indicator {
+  border-radius: var(--rebar-progress-radius, 8px);
+  background: var(--rebar-progress-fill, var(--rebar-color-primary, #0066cc));
+}
+.rebar-progress[data-rebar-status="error"] .rebar-progress-indicator { background: var(--rebar-progress-error, var(--rebar-color-danger, #d32f2f)); }
+.rebar-progress[data-rebar-status="warning"] .rebar-progress-indicator { background: var(--rebar-progress-warning, var(--rebar-color-warning, #f57c00)); }
+.rebar-progress[data-rebar-status="success"] .rebar-progress-indicator { background: var(--rebar-progress-success, var(--rebar-color-success, #2e7d32)); }
