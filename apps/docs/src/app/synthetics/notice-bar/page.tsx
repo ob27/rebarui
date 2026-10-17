@@ -100,6 +100,20 @@ export default function NoticeBarPage() {
         </Stack>
       </DemoStage>
 
+      {/* ---- parity-a2: chat ---- */}
+      <Heading level={2}>Banner variant</Heading>
+      <DemoStage
+        title="Status strip"
+        caption='variant="banner": a plain full-width strip with centred text; colours and padding from --rebar-notice-bar-banner-*'
+        code={`<NoticeBar tone="warning" variant="banner" wrap content="You're offline." />`}
+        states={[
+          { label: "Offline", node: <NoticeBar tone="warning" variant="banner" wrap content="You're offline. Ask needs a connection. Readings and prayers you've opened are still available." /> },
+          { label: "Short", node: <NoticeBar tone="warning" variant="banner" wrap content="Pass-through mode" /> },
+        ]}
+      >
+        <NoticeBar tone="warning" variant="banner" wrap content="You're offline." />
+      </DemoStage>
+
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );
