@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
@@ -144,5 +146,31 @@ describe("MobileTabBar position, badge and disabled", () => {
     expect(onActiveChange).not.toHaveBeenCalled();
     expect(screen.getByRole("button", { name: /Away/ })).toBeDisabled();
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  });
+});
+
+describe("MobileTabBar safe area", () => {
+  const css = readFileSync(resolve(__dirname, "../styles/style.css"), "utf8");
+  const themeCss = readFileSync(resolve(__dirname, "../../../theme-basilika/src/components.css"), "utf8");
+
+  it("only the static bar carries the position attribute, so the fixed-bar rule skips it", () => {
+    const { rerender } = render(<MobileTabBar items={ITEMS} />);
+    expect(screen.getByRole("navigation")).not.toHaveAttribute("data-rebar-position");
+    rerender(<MobileTabBar items={ITEMS} position="static" />);
+    expect(screen.getByRole("navigation")).toHaveAttribute("data-rebar-position", "static");
+  });
+
+  it("pads the fixed bar's bottom by --rebar-tab-bar-safe-area, falling back to env(safe-area-inset-bottom)", () => {
+    expect(css).toMatch(
+      /\.rebar-mobile-tab-bar:not\(\[data-rebar-position="static"\]\) \{[^}]*padding-bottom: calc\([^;]*var\(--rebar-tab-bar-safe-area, env\(safe-area-inset-bottom, 0px\)\)\);/,
+    );
+  });
+
+  it("leaves the static bar without safe-area padding", () => {
+    expect(css).not.toMatch(/\.rebar-mobile-tab-bar\[data-rebar-position="static"\] \{[^}]*safe-area/);
+  });
+
+  it("lets a theme set the resting bottom padding the safe area is added to", () => {
+    expect(themeCss).toMatch(/\.rebar-mobile-tab-bar \{\s*--rebar-tab-bar-padding-bottom: 10px;/);
   });
 });

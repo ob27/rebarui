@@ -2627,3 +2627,8 @@ a.rebar-button[data-rebar-variant="tertiary"]:hover {
 .rebar-error-block[data-rebar-tone="neutral"] .rebar-error-block-icon {
   color: var(--rebar-color-text-secondary);
 }
+
+/* MobileTabBar: the fixed bar keeps its 10px bottom padding; core adds the safe area on top of it */
+.rebar-mobile-tab-bar {
+  --rebar-tab-bar-padding-bottom: 10px;
+}

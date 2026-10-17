@@ -11874,3 +11874,9 @@ a.rebar-list-item-main {
 .rebar-error-block[data-rebar-tone="neutral"] .rebar-error-block-icon {
   color: var(--rebar-color-text-secondary, #757575);
 }
+
+/* MobileTabBar: a fixed bar pads its own bottom edge by the safe area (home indicator). Override with --rebar-tab-bar-safe-area;
+   --rebar-tab-bar-padding-bottom is the bar's resting bottom padding (themes set it). Static bars are unchanged. */
+.rebar-mobile-tab-bar:not([data-rebar-position="static"]) {
+  padding-bottom: calc(var(--rebar-tab-bar-padding-bottom, var(--rebar-space-xs, 4px)) + var(--rebar-tab-bar-safe-area, env(safe-area-inset-bottom, 0px)));
+}
