@@ -2617,3 +2617,13 @@ a.rebar-button[data-rebar-variant="tertiary"]:hover {
 /* Onboarding */
 .rebar-onboarding-icon { border-radius: 30px; }
 .rebar-onboarding .rebar-onboarding-title.rebar-heading { font-size: 1.6rem; }
+
+/* ---- fixes ---- */
+
+/* ErrorBlock: empty and info are neutral (tint-3 panel, secondary icon), error states keep the tint and danger icon */
+.rebar-error-block[data-rebar-tone="neutral"]:not(.rebar-error-block-full-page) {
+  background: var(--rebar-color-tint-3);
+}
+.rebar-error-block[data-rebar-tone="neutral"] .rebar-error-block-icon {
+  color: var(--rebar-color-text-secondary);
+}

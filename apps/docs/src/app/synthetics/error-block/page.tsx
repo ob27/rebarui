@@ -13,8 +13,8 @@ const SHAPE: Construct[] = [
     type: "doc-section",
     heading: "Shape",
     body: [
-      { kind: "code", code: `{ type: "error-block", status?: "default"|"disconnected"|"empty"|"busy", title?: string, description?: string, action?: Action, fullPage?: boolean }` },
-      { kind: "text", text: "`fullPage` is on by default; set it false for an inline, one-card failure state." },
+      { kind: "code", code: `{ type: "error-block", status?: "default"|"disconnected"|"empty"|"busy"|"info", title?: string, description?: string, action?: Action, fullPage?: boolean }` },
+      { kind: "text", text: "`fullPage` is on by default; set it false for an inline, one-card failure state. `empty` and `info` are neutral: a quiet icon and a tinted panel, no error styling." },
     ],
   },
 ];
@@ -35,6 +35,7 @@ export default function ErrorBlockPage() {
           { label: "Default", node: inline({ status: "default", action: { label: "Try again" } }) },
           { label: "Empty", node: inline({ status: "empty", title: "No projects yet", description: "Create one to get the crew started." }) },
           { label: "Busy", node: inline({ status: "busy" }) },
+          { label: "Info (neutral)", node: inline({ status: "info", description: "Your library syncs overnight." }) },
         ]}
       >
         {inline({ status: "disconnected", title: "You are offline", description: "Tasks keep working. We will sync when the signal is back.", action: { label: "Retry" } })}

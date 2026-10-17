@@ -827,7 +827,7 @@ export type Construct =
       type: "error-block";
       /** Which failure state this is — each has its own default icon/title/description (all
        * overridable below). Default `"default"`. */
-      status?: "default" | "disconnected" | "empty" | "busy";
+      status?: "default" | "disconnected" | "empty" | "busy" | "info";
       /** Overrides the status's default title. */
       title?: string;
       /** Overrides the status's default description. */
