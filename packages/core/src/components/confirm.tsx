@@ -11,7 +11,7 @@ export interface ConfirmOptions {
   content?: ReactNode;
   /** An optional quoted item (the title of the thing being deleted) in a tinted block. */
   description?: ReactNode;
-  /** Default "Confirm". Use the verb: "Delete". */
+  /** Default "Confirm", or "Delete" when `destructive` is set. Use the verb: "Remove", "Leave". */
   confirmText?: string;
   /** Default "Cancel". */
   cancelText?: string;
@@ -146,7 +146,7 @@ export function ConfirmHost() {
               onClick={onConfirm}
             >
               {busy ? <span className="rebar-confirm-spinner" aria-hidden="true" /> : null}
-              {options?.confirmText ?? "Confirm"}
+              {options?.confirmText ?? (destructive ? "Delete" : "Confirm")}
             </button>
             <button
               ref={cancelRef}

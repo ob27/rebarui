@@ -251,6 +251,46 @@ describe("confirm()", () => {
     expect(screen.getByRole("button", { name: "Delete" })).toHaveAttribute("data-rebar-variant", "destructive-solid");
   });
 
+  it("uses confirmText and cancelText for the two buttons", async () => {
+    render(<ToastProvider>app</ToastProvider>);
+    act(() => {
+      void confirm({ title: "Leave the group?", confirmText: "Leave", cancelText: "Stay" });
+    });
+    await screen.findByRole("dialog");
+    expect(screen.getByRole("button", { name: "Leave" })).toHaveAttribute("data-rebar-part", "confirm");
+    expect(screen.getByRole("button", { name: "Stay" })).toHaveAttribute("data-rebar-part", "cancel");
+  });
+
+  it("defaults the labels to Confirm and Cancel", async () => {
+    render(<ToastProvider>app</ToastProvider>);
+    act(() => {
+      void confirm({ title: "Sure?" });
+    });
+    await screen.findByRole("dialog");
+    expect(screen.getByRole("button", { name: "Confirm" })).toHaveAttribute("data-rebar-part", "confirm");
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+  });
+
+  it("destructive without confirmText labels the confirm button Delete", async () => {
+    render(<ToastProvider>app</ToastProvider>);
+    act(() => {
+      void confirm({ title: "Delete this?", destructive: true });
+    });
+    await screen.findByRole("dialog");
+    expect(screen.getByRole("button", { name: "Delete" })).toHaveAttribute("data-rebar-variant", "destructive-solid");
+    expect(screen.queryByRole("button", { name: "Confirm" })).not.toBeInTheDocument();
+  });
+
+  it("an explicit confirmText wins over the destructive default", async () => {
+    render(<ToastProvider>app</ToastProvider>);
+    act(() => {
+      void confirm({ title: "Remove?", destructive: true, confirmText: "Remove" });
+    });
+    await screen.findByRole("dialog");
+    expect(screen.getByRole("button", { name: "Remove" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Delete" })).not.toBeInTheDocument();
+  });
+
   it("onConfirm keeps the dialog busy until it settles", async () => {
     render(<ToastProvider>app</ToastProvider>);
     let release: () => void = () => {};
