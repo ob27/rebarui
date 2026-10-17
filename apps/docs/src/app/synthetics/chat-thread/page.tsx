@@ -8,6 +8,7 @@ import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { CHAT, EVENTS, person } from "@/fixtures/tideline";
+import { NewBStages } from "./NewBStages";
 
 const CODE = `<ChatThread
   messages={messages}
@@ -159,6 +160,7 @@ export default function ChatThreadPage() {
         </div>
       </DemoStage>
 
+      <NewBStages />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

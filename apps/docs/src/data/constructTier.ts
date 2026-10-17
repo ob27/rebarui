@@ -264,6 +264,12 @@ export const CONSTRUCT_TIER = {
     ListSection: "synthetic",
     SearchInput: "imitation", // one native input mirroring a controlled/uncontrolled value, with its own clear and cancel buttons.
     Textarea: "imitation", // one native textarea mirroring a controlled/uncontrolled value.
+    /* ---- new-b: mobile features ---- */
+    ThemeScope: "imitation",
+    AuthScreen: "synthetic",
+    ImagePicker: "synthetic",
+    ReadingView: "synthetic",
+    Onboarding: "opinion",
   } satisfies Record<string, Tier>,
 
   block: {

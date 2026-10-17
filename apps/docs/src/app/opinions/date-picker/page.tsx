@@ -8,6 +8,7 @@ import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { EVENTS, HOURS_BY_PERSON, PEOPLE, project } from "@/fixtures/tideline";
+import { NewBStages } from "./NewBStages";
 
 const LAUNCH = new Date(2026, 9, 24);
 const CODE = `const [due, setDue] = useState(new Date(2026, 9, 24));
@@ -151,6 +152,7 @@ export default function DatePickerPage() {
         </Stack>
       </DemoStage>
 
+      <NewBStages />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

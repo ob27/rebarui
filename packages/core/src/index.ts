@@ -840,3 +840,22 @@ export { confirm, useConfirm } from "./components/confirm";
 export type { ConfirmOptions, ConfirmFunction } from "./components/confirm";
 export { defaultRenderLink } from "./components/linkAdapter";
 export type { RenderLink, RenderLinkProps } from "./components/linkAdapter";
+/* ---- new-b: mobile features ---- */
+export { ThemeScope, useSchemeAttr } from "./components/ThemeScope";
+export type { ThemeScopeProps, RebarScheme } from "./components/ThemeScope";
+
+export { AuthScreen } from "./components/AuthScreen";
+export type { AuthScreenProps, AuthScreenProgress } from "./components/AuthScreen";
+
+export { ImagePicker } from "./components/ImagePicker";
+export type { ImagePickerProps, ImagePickerItem } from "./components/ImagePicker";
+
+export { ReadingView } from "./components/ReadingView";
+export type { ReadingViewProps, ReadingVerse } from "./components/ReadingView";
+
+export { Onboarding } from "./components/Onboarding";
+export type { OnboardingProps, OnboardingSlide, OnboardingLabels } from "./components/Onboarding";
+
+export type { DatePickerDobProps, DatePickerDobPresentation } from "./components/DatePickerDob";
+export type { ImageDisplayState } from "./components/Image";
+export type { CalendarHeatmapWeekCell } from "./components/CalendarHeatmap";

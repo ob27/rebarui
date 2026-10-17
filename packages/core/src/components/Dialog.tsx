@@ -1,4 +1,5 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
+import { useSchemeAttr } from "./ThemeScope";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
@@ -54,6 +55,7 @@ export function Dialog({
   fullscreen,
   container,
 }: DialogProps) {
+  const schemeAttr = useSchemeAttr();
   const descriptionContent = useBionicChildren(description, bionic, bionicOptions);
   // Managed internally regardless of controlled/uncontrolled usage, so autoDismiss has a real
   // "close myself" mechanism to call even when the caller never passed `open` — the same
@@ -79,11 +81,13 @@ export function Dialog({
       {trigger ? <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger> : null}
       <RadixDialog.Portal container={container ?? undefined}>
         <RadixDialog.Overlay
+            {...schemeAttr}
           className={clsx("rebar-dialog-overlay", fullscreen && "rebar-dialog-overlay-fullscreen")}
           data-rebar-part="overlay"
           data-rebar-contained={container ? "true" : undefined}
         />
         <RadixDialog.Content
+            {...schemeAttr}
           className={clsx(
             "rebar-dialog-content",
             fullscreen && "rebar-dialog-content-fullscreen",

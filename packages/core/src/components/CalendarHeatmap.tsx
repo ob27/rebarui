@@ -1,4 +1,4 @@
-import type { ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import clsx from "clsx";
 import { renderChartEmptyState } from "../chartEmptyState";
 import { ChartValueTag, useChartMarkSelection } from "../chartMarkSelection";
@@ -11,10 +11,20 @@ export interface CalendarHeatmapCell {
   value: number;
 }
 
+/** One week (or any period) in the `month-rows` layout. */
+export interface CalendarHeatmapWeekCell {
+  /** `"YYYY-MM-DD"`, the start date; it decides which month row the cell belongs to. */
+  date: string;
+  /** `0` is a neutral outline (no "missed" colour or wording); anything above 0 is filled. */
+  value: number;
+  /** Accessible name and tooltip, e.g. "Week of 6 Oct, attended Mass". */
+  label: string;
+}
+
 export interface CalendarHeatmapProps extends Omit<ComponentPropsWithoutRef<"figure">, "title"> {
   /** Sparse — a date absent from `data` renders as a distinctly empty/neutral cell rather than a
    * real value of 0, the same convention `Heatmap` already uses. */
-  data: CalendarHeatmapCell[];
+  data?: CalendarHeatmapCell[];
   /** `"YYYY-MM-DD"`. Defaults to the earliest date in `data`. */
   startDate?: string;
   /** `"YYYY-MM-DD"`. Defaults to the latest date in `data`. */
@@ -32,7 +42,22 @@ export interface CalendarHeatmapProps extends Omit<ComponentPropsWithoutRef<"fig
   /** `"square"` (default) is the GitHub-style grid. `"hexagon"` draws each day as a flat-top regular
    * hexagon in a true honeycomb: week columns left to right, 7 day rows top to bottom, every odd
    * week column shifted down half a cell so neighbours interlock, with `gap` kept between flats. */
-  cellShape?: "square" | "hexagon";
+  cellShape?: "square" | "hexagon" | "circle";
+  /** `"grid"` (default) is the day-by-day SVG grid. `"month-rows"` is an HTML layout with one row per
+   * month and one rounded square per week (`cells`), the month label on the left. */
+  layout?: "grid" | "month-rows";
+  /** `month-rows` only: one entry per week. */
+  cells?: CalendarHeatmapWeekCell[];
+  /** `month-rows` only: `"month"` (default) groups cells into rows by start date, `"none"` puts them all in one row. */
+  groupBy?: "month" | "none";
+  /** `month-rows` only: legend labels for the filled and outlined cells, shown under the grid. */
+  legend?: { on: ReactNode; off: ReactNode };
+  /** `month-rows` only: pressing a cell selects it and reports it. */
+  onCellPress?: (cell: CalendarHeatmapWeekCell) => void;
+  /** `month-rows` only: `date` of the selected cell (ring). */
+  selected?: string;
+  /** `month-rows` only: tinted placeholder cells. */
+  loading?: boolean;
   /** Maps a value normalized to 0-1 (relative to the min/max `value` across all of `data`) to a
    * CSS color string. Defaults to a simple light-to-dark blend of the same token `Heatmap` uses. */
   colorScale?: (normalizedValue: number) => string;
@@ -74,14 +99,127 @@ function formatDateUTC(epochDay: number): string {
  * than a real 0 — the same sparse-data convention `Heatmap` already uses, just over a real
  * date axis instead of arbitrary category pairs.
  */
+function MonthRows({
+  cells,
+  groupBy,
+  legend,
+  onCellPress,
+  selected,
+  loading,
+  cellShape,
+  ariaLabel,
+  title,
+  className,
+  ...props
+}: {
+  cells: CalendarHeatmapWeekCell[];
+  groupBy: "month" | "none";
+  legend?: { on: ReactNode; off: ReactNode };
+  onCellPress?: (cell: CalendarHeatmapWeekCell) => void;
+  selected?: string;
+  loading?: boolean;
+  cellShape: string;
+  ariaLabel?: string;
+  title?: ReactNode;
+  className?: string;
+} & Omit<ComponentPropsWithoutRef<"figure">, "title">) {
+  const groups: { key: string; label: string; cells: CalendarHeatmapWeekCell[] }[] = [];
+  if (loading && cells.length === 0) {
+    for (let r = 0; r < 4; r++) {
+      groups.push({
+        key: `l${r}`,
+        label: "",
+        cells: Array.from({ length: 5 }, (_, i) => ({ date: `l${r}-${i}`, value: 0, label: "" })),
+      });
+    }
+  } else if (groupBy === "none") {
+    groups.push({ key: "all", label: "", cells });
+  } else {
+    for (const cell of cells) {
+      const [y, m] = cell.date.split("-").map(Number);
+      const key = `${y}-${m}`;
+      let g = groups.find((x) => x.key === key);
+      if (!g) {
+        g = { key, label: `${MONTH_NAMES[(m ?? 1) - 1]} ${y}`, cells: [] };
+        groups.push(g);
+      }
+      g.cells.push(cell);
+    }
+  }
+  return (
+    <figure
+      className={clsx("rebar-calendar-heatmap", "rebar-calendar-heatmap-rows", className)}
+      data-rebar-component="calendar-heatmap"
+      data-rebar-layout="month-rows"
+      data-rebar-loading={loading || undefined}
+      style={{ margin: 0 }}
+      {...props}
+    >
+      {title ? <figcaption className="rebar-chart-title">{title}</figcaption> : null}
+      <div role="group" aria-label={ariaLabel ?? (typeof title === "string" ? title : "Weekly activity")} className="rebar-calendar-heatmap-body">
+        {groups.map((g) => (
+          <div key={g.key} className="rebar-calendar-heatmap-row" data-rebar-part="row">
+            {g.label ? (
+              <span className="rebar-calendar-heatmap-month" data-rebar-part="month-label">
+                {g.label}
+              </span>
+            ) : null}
+            <div className="rebar-calendar-heatmap-cells">
+              {g.cells.map((cell) => {
+                const on = cell.value > 0;
+                const isSel = selected === cell.date;
+                return (
+                  <button
+                    key={cell.date}
+                    type="button"
+                    className="rebar-calendar-heatmap-cell"
+                    data-rebar-part="cell"
+                    data-rebar-shape={cellShape === "circle" ? "circle" : "square"}
+                    data-rebar-state={on ? "on" : "off"}
+                    data-rebar-selected={isSel || undefined}
+                    aria-label={loading ? "Loading" : cell.label}
+                    aria-pressed={onCellPress ? isSel : undefined}
+                    disabled={loading || !onCellPress}
+                    title={cell.label || undefined}
+                    onClick={() => onCellPress?.(cell)}
+                  >
+                    <span aria-hidden="true" />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+      {legend ? (
+        <div className="rebar-calendar-heatmap-legend" data-rebar-part="legend">
+          <span>
+            <i data-rebar-state="on" aria-hidden="true" /> {legend.on}
+          </span>
+          <span>
+            <i data-rebar-state="off" aria-hidden="true" /> {legend.off}
+          </span>
+        </div>
+      ) : null}
+    </figure>
+  );
+}
+
 export function CalendarHeatmap({
-  data,
+  data = [],
   startDate,
   endDate,
   title,
   ariaLabel,
   cellSize = 12,
   cellShape = "square",
+  layout = "grid",
+  cells,
+  groupBy = "month",
+  legend,
+  onCellPress,
+  selected,
+  loading,
   colorScale = DEFAULT_COLOR_SCALE,
   bionic,
   bionicOptions,
@@ -90,6 +228,24 @@ export function CalendarHeatmap({
 }: CalendarHeatmapProps) {
   const titleContent = useBionicChildren(title, bionic, bionicOptions);
   const { activeKey, isSelected, getMarkProps, backgroundProps } = useChartMarkSelection<string>();
+
+  if (layout === "month-rows") {
+    return (
+      <MonthRows
+        cells={cells ?? []}
+        groupBy={groupBy}
+        legend={legend}
+        onCellPress={onCellPress}
+        selected={selected}
+        loading={loading}
+        cellShape={cellShape}
+        ariaLabel={ariaLabel}
+        title={titleContent}
+        className={className}
+        {...props}
+      />
+    );
+  }
 
   if (data.length === 0 && !startDate && !endDate) {
     return (

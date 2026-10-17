@@ -9,6 +9,7 @@ import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { EVENTS, TASKS, person, project } from "@/fixtures/tideline";
+import { NewBStages } from "./NewBStages";
 
 const CODE = `<AiChatInput
   value={draft}
@@ -142,6 +143,7 @@ export default function AiChatInputPage() {
         </div>
       </DemoStage>
 
+      <NewBStages />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

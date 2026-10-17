@@ -1,0 +1,110 @@
+"use client";
+
+import { useState } from "react";
+import { Button, Heading, ReadingView, Stack, Text, WaveformAudioPlayer } from "rebar-ui";
+import type { Construct } from "@rebar-ui/placement";
+import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
+import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
+import { BIBLE_CREDIT, GALATIANS_3, MASS_DAY, MASS_FIRST_READING, MASS_FIRST_READING_CITATION } from "@/fixtures/athic";
+
+const CODE = `<ReadingView title="Galatians 3" verses={verses} highlight={2}
+  onVerseAction={(v) => addNote(v.num)} notedVerses={[1]} footer="Douay-Rheims translation (Challoner Revision)." />`;
+
+const BLOCKS: Construct[] = [
+  { type: "props-table", heading: "Props", rows: componentProps["ReadingView"] ?? [] },
+  {
+    type: "doc-section",
+    heading: "Accessibility",
+    body: [
+      {
+        kind: "text",
+        text: 'An `<article>` with the title as an `h2`. Verse numbers are `<sup>` text beside the verse, and each verse pill is a button named "Add Note, verse 2" (or "Note added, verse 1"), 44px tall. The error block is `role="alert"`; `loading` sets `aria-busy` with a "Loading reading" label.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "data-rebar-* attributes",
+    body: [
+      {
+        kind: "text",
+        text: '`data-rebar-component="reading-view"`, `data-rebar-tone="tint-1".."tint-4" | "plain"`, `data-rebar-state="loading" | "error"`. Parts: `title`, `panel`, `citation`, `media`, `verses`, `verse` (`data-rebar-highlighted`, `data-rebar-noted`), `verse-number`, `verse-action`, `body`, `actions`, `footer`, `loading`, `empty`, `error`.',
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "Migrating to Ant Design",
+    body: [{ kind: "text", text: "No equivalent. Use `Typography.Paragraph` inside a `Card` with a tinted background; the verse numbering and per-verse actions are the part to keep." }],
+  },
+];
+
+const pill = { minHeight: 44 } as const;
+
+function Mass({ saved }: { saved?: boolean }) {
+  return (
+    <ReadingView
+      citation={MASS_FIRST_READING_CITATION}
+      media={<WaveformAudioPlayer src="/narration-first-reading.mp3" aria-label="Narration, first reading" barCount={24} skipSeconds={0} trailingAction={<Button size="sm" variant="tertiary" aria-label={saved ? "Saved" : "Save to Library"}>{saved ? "Saved" : "Save"}</Button>} />}
+      actions={
+        <>
+          <Button size="sm" variant="secondary" style={pill}>Reflect on this reading</Button>
+          <Button size="sm" variant="secondary" style={pill}>Share</Button>
+          <Button size="sm" variant="secondary" style={pill}>Discuss this reading</Button>
+        </>
+      }
+    >
+      {MASS_FIRST_READING}
+    </ReadingView>
+  );
+}
+
+export default function ReadingViewPage() {
+  const [noted, setNoted] = useState<number[]>([1]);
+  return (
+    <Stack gap="lg">
+      <Heading level={1}>ReadingView</Heading>
+      <Text color="secondary">A reading panel for Scripture and Mass readings: optional narration bar, numbered verses or free text, an actions row and a credit.</Text>
+
+      <DemoStage
+        title="Bible chapter"
+        caption="Verse 2 is highlighted; Add Note turns the pill into Note added"
+        code={CODE}
+        states={[
+          { label: "Loading", node: <ReadingView title="Galatians 3" loading /> },
+          { label: "Translation unavailable", node: <ReadingView title="Galatians 3" error={<Stack gap="sm" align="center"><b>Translation unavailable</b><span>The Douay-Rheims text isn’t downloaded. Connect once to fetch it.</span><Button size="sm" variant="secondary">Try again</Button></Stack>} /> },
+          { label: "No reading", node: <ReadingView citation="Oct 11" empty="The missal hasn’t published Oct 11 yet. Try another day." /> },
+          { label: "Plain tone", node: <ReadingView tone="plain" citation={MASS_FIRST_READING_CITATION}>{MASS_FIRST_READING.slice(0, 120)}…</ReadingView> },
+        ]}
+      >
+        <div style={{ maxWidth: 480, margin: "0 auto" }}>
+          <ReadingView
+            title="Galatians 3"
+            verses={GALATIANS_3}
+            highlight={2}
+            onVerseAction={(v) => setNoted((n) => (n.includes(v.num) ? n : [...n, v.num]))}
+            notedVerses={noted}
+            footer={BIBLE_CREDIT}
+          />
+        </div>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Today’s Missal" caption="A Mass reading with narration, saved to the Library" widths={false}>
+        <div style={{ display: "flex", gap: 24, flexWrap: "wrap", justifyContent: "center" }}>
+          <TidelinePhone title="Today’s Missal" height={560} tabs={false}>
+            <Heading level={2} style={{ fontSize: 20, marginBottom: 12 }}>{MASS_DAY}</Heading>
+            <Mass />
+          </TidelinePhone>
+          <TidelinePhone title="Bible" height={560}>
+            <ReadingView title="Galatians 3" verses={GALATIANS_3} highlight={[2, 3]} footer={BIBLE_CREDIT} actions={<Button size="sm" variant="secondary" style={pill}>Reflect on this chapter</Button>} />
+          </TidelinePhone>
+        </div>
+      </DemoStage>
+
+      <NextBlockRenderer blocks={BLOCKS} />
+    </Stack>
+  );
+}

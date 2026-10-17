@@ -6,6 +6,7 @@ import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { avatarOf } from "@/fixtures/tideline";
+import { NewBStages } from "./NewBStages";
 
 const CODE = "<WaveformAudioPlayer src=\"/voice-note.mp3\" barCount={48} skipSeconds={15} />";
 
@@ -53,6 +54,7 @@ export default function WaveformAudioPlayerPage() {
         </Card>
       </DemoStage>
 
+      <NewBStages />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

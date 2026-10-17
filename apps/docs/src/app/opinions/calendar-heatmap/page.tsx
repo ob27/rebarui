@@ -6,6 +6,7 @@ import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { WEEKLY_DONE, avatarOf, person } from "@/fixtures/tideline";
+import { NewBStages } from "./NewBStages";
 
 const CODE = `<CalendarHeatmap
   title="Tasks finished per day"
@@ -94,6 +95,7 @@ export default function CalendarHeatmapPage() {
         </Card>
       </DemoStage>
 
+      <NewBStages />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

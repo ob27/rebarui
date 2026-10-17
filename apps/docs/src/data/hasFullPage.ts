@@ -223,4 +223,10 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   List: "/synthetics/list",
   SearchInput: "/imitations/search-input",
   Textarea: "/imitations/textarea",
+  /* ---- new-b: mobile features ---- */
+  ThemeScope: "/imitations/theme-scope",
+  AuthScreen: "/synthetics/auth-screen",
+  ImagePicker: "/synthetics/image-picker",
+  ReadingView: "/synthetics/reading-view",
+  Onboarding: "/opinions/onboarding",
 };

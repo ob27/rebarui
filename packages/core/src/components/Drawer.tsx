@@ -1,4 +1,5 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
+import { useSchemeAttr } from "./ThemeScope";
 import type { PointerEvent as ReactPointerEvent, ReactNode } from "react";
 import { useRef, useState } from "react";
 import clsx from "clsx";
@@ -81,6 +82,7 @@ export function DrawerPanel({
   dragToDismiss,
   container,
 }: DrawerPanelProps) {
+  const schemeAttr = useSchemeAttr();
   // Same controlled/uncontrolled pattern as Dialog: internally managed regardless of whether the
   // caller passes `open`, so every consumer (a plain uncontrolled trigger, or ActionSheet forcing
   // itself closed after a selection) works the same way.
@@ -144,11 +146,13 @@ export function DrawerPanel({
       {trigger ? <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger> : null}
       <RadixDialog.Portal container={container ?? undefined}>
         <RadixDialog.Overlay
+            {...schemeAttr}
           className="rebar-dialog-overlay"
           data-rebar-part="overlay"
           data-rebar-contained={container ? "true" : undefined}
         />
         <RadixDialog.Content
+            {...schemeAttr}
           className={clsx("rebar-drawer-content", `rebar-drawer-content-${side}`, className)}
           data-rebar-component={dataComponent}
           data-rebar-side={side}

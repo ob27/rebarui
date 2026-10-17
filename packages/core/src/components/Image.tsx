@@ -1,5 +1,5 @@
-import { forwardRef, useLayoutEffect, useRef, useState } from "react";
-import type { ComponentPropsWithoutRef, MutableRefObject, ReactNode, Ref, SyntheticEvent } from "react";
+import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from "react";
+import type { ComponentPropsWithoutRef, CSSProperties, MutableRefObject, ReactNode, Ref, SyntheticEvent } from "react";
 import clsx from "clsx";
 import { Skeleton } from "./Skeleton";
 
@@ -17,6 +17,10 @@ function mergeRefs<T>(...refs: (Ref<T> | undefined)[]) {
 }
 
 export type ImageLoadStatus = "empty" | "loading" | "loaded" | "error";
+
+/** What `onStateChange` reports: `idle` (lazy, not requested yet), `thumb` (the blurred `thumbSrc`
+ * is showing while `src` loads), `loaded`, or `error`. */
+export type ImageDisplayState = "idle" | "thumb" | "loaded" | "error";
 
 export interface ImageProps
   extends Omit<ComponentPropsWithoutRef<"img">, "alt" | "onLoad" | "onError" | "src"> {
@@ -38,6 +42,19 @@ export interface ImageProps
   emptyIndicator?: ReactNode;
   /** Shown while the image is loading. Defaults to a real Spin. */
   loadingIndicator?: ReactNode;
+  /** A tiny placeholder shown immediately, blurred, then faded out once `src` has painted. Never the
+   * final image. */
+  thumbSrc?: string;
+  /** Request `src` (and `thumbSrc`) only when the image is within `lazyMargin` of the viewport,
+   * using an IntersectionObserver (no request at all until then). */
+  lazy?: boolean;
+  /** Pixels before the viewport at which a `lazy` image starts loading. Default 300. */
+  lazyMargin?: number;
+  /** A solid accent (token or CSS colour) painted behind the image before it loads and, with the
+   * icon, in place of it when it fails. */
+  fallbackColor?: string;
+  /** Reports `idle`, `thumb`, `loaded` or `error`, so an app can cache images on device. */
+  onStateChange?: (state: ImageDisplayState) => void;
   onLoad?: (event: SyntheticEvent<HTMLImageElement>) => void;
   onError?: (event: SyntheticEvent<HTMLImageElement>) => void;
 }
@@ -93,7 +110,24 @@ function DefaultEmpty() {
  * error, empty, and disabled states are all designed, not just the happy path).
  */
 export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
-  { src, alt, fallback, emptyIndicator, loadingIndicator, onLoad, onError, className, style, loading, ...rest },
+  {
+    src,
+    alt,
+    fallback,
+    emptyIndicator,
+    loadingIndicator,
+    onLoad,
+    onError,
+    thumbSrc,
+    lazy = false,
+    lazyMargin = 300,
+    fallbackColor,
+    onStateChange,
+    className,
+    style,
+    loading,
+    ...rest
+  },
   ref,
 ) {
   const [status, setStatus] = useState<ImageLoadStatus>("loading");
@@ -124,13 +158,51 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
   // `useLayoutEffect` (not `useEffect`) so this resolves before paint, avoiding a flash of the
   // loading indicator over an image that actually already finished.
   const imgRef = useRef<HTMLImageElement>(null);
+  const rootRef = useRef<HTMLSpanElement>(null);
+
+  // Lazy: hold back the request until the root is near the viewport. Without IntersectionObserver
+  // (old browsers, jsdom) the image loads straight away rather than never.
+  const [inView, setInView] = useState(!lazy);
+  useEffect(() => {
+    if (!lazy || inView) return;
+    const el = rootRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: `${lazyMargin}px` },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [lazy, inView, lazyMargin]);
+
+  const requested = inView || !lazy;
+  const effectiveSrc = requested ? src : undefined;
+  const effectiveThumb = requested ? thumbSrc : undefined;
+
   useLayoutEffect(() => {
     const img = imgRef.current;
-    if (!img || !img.complete) return;
+    if (!img || !effectiveSrc || !img.complete) return;
     setStatus(img.naturalWidth > 0 ? "loaded" : "error");
     // Only re-checking when `src` changes (not on every render) mirrors the render-time guard
     // above — this is the mount/src-change reconciliation, not a per-render assertion.
-  }, [src]);
+  }, [effectiveSrc]);
+
+  const displayState: ImageDisplayState =
+    status === "error" ? "error" : status === "loaded" ? "loaded" : !requested ? "idle" : thumbSrc ? "thumb" : "idle";
+  const lastReported = useRef<ImageDisplayState | null>(null);
+  useEffect(() => {
+    if (!src || lastReported.current === displayState) return;
+    lastReported.current = displayState;
+    onStateChange?.(displayState);
+  });
 
   const handleLoad = (event: SyntheticEvent<HTMLImageElement>) => {
     setStatus("loaded");
@@ -145,10 +217,11 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
   if (!src) {
     return (
       <span
+        ref={rootRef}
         className={clsx("rebar-image", className)}
         data-rebar-component="image"
         data-rebar-image-status="empty"
-        style={style}
+        style={fallbackColor ? { ...style, "--rebar-image-fallback-color": fallbackColor } as CSSProperties : style}
       >
         <span className="rebar-image-empty" data-rebar-part="empty" role="img" aria-label={alt}>
           {emptyIndicator ?? <DefaultEmpty />}
@@ -159,14 +232,27 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
 
   return (
     <span
+      ref={rootRef}
       className={clsx("rebar-image", className)}
       data-rebar-component="image"
-      data-rebar-image-status={status}
-      style={style}
+      data-rebar-image-status={!requested && status === "loading" ? "idle" : status}
+      data-rebar-image-thumb={thumbSrc ? "true" : undefined}
+      data-rebar-image-tinted={fallbackColor ? "true" : undefined}
+      style={fallbackColor ? ({ ...style, "--rebar-image-fallback-color": fallbackColor } as CSSProperties) : style}
     >
+      {effectiveThumb && status !== "error" ? (
+        <img
+          className="rebar-image-thumb"
+          data-rebar-part="thumb"
+          src={effectiveThumb}
+          alt=""
+          aria-hidden="true"
+          data-rebar-hidden={status === "loaded" || undefined}
+        />
+      ) : null}
       <img
         ref={mergeRefs(ref, imgRef)}
-        src={src}
+        src={effectiveSrc}
         alt={alt}
         // Real, native lazy-loading — no JS intersection-observer reimplementation needed —
         // unless the caller passes their own `loading` prop through rest-spread.
@@ -177,7 +263,7 @@ export const Image = forwardRef<HTMLImageElement, ImageProps>(function Image(
         data-rebar-part="img"
         {...rest}
       />
-      {status === "loading" ? (
+      {status === "loading" && !effectiveThumb ? (
         <span className="rebar-image-loading" data-rebar-part="loading">
           {loadingIndicator ?? <Skeleton variant="rect" className="rebar-image-skeleton" />}
         </span>

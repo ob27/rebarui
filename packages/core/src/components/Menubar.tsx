@@ -1,4 +1,5 @@
 import * as RadixDropdownMenu from "@radix-ui/react-dropdown-menu";
+import { useSchemeAttr } from "./ThemeScope";
 import { useRef, useState } from "react";
 import type { ComponentPropsWithoutRef, KeyboardEvent, ReactNode } from "react";
 import clsx from "clsx";
@@ -68,6 +69,7 @@ export function Menubar({
   bionicOptions,
   ...props
 }: MenubarProps) {
+  const schemeAttr = useSchemeAttr();
   const ambientBionic = useAmbientBionic();
   const bionicEnabled = bionic ?? ambientBionic;
   // Which trigger is the current roving-tabindex target (Tab lands here).
@@ -178,6 +180,7 @@ export function Menubar({
             </RadixDropdownMenu.Trigger>
             <RadixDropdownMenu.Portal>
               <RadixDropdownMenu.Content
+            {...schemeAttr}
                 className="rebar-menubar-content"
                 data-rebar-component="menubar"
                 data-rebar-part="menu"

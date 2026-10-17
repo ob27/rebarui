@@ -1,4 +1,5 @@
 import * as RadixPopover from "@radix-ui/react-popover";
+import { useSchemeAttr } from "./ThemeScope";
 import type { ReactElement, ReactNode } from "react";
 
 export interface PopoverProps {
@@ -11,11 +12,13 @@ export interface PopoverProps {
 }
 
 export function Popover({ trigger, children, open, onOpenChange, sideOffset = 4, contentProps }: PopoverProps) {
+  const schemeAttr = useSchemeAttr();
   return (
     <RadixPopover.Root open={open} onOpenChange={onOpenChange}>
       <RadixPopover.Trigger asChild>{trigger}</RadixPopover.Trigger>
       <RadixPopover.Portal>
         <RadixPopover.Content
+            {...schemeAttr}
           className="rebar-popover-content"
           data-rebar-component="popover"
           sideOffset={sideOffset}

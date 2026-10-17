@@ -1,4 +1,5 @@
 import * as RadixTooltip from "@radix-ui/react-tooltip";
+import { useSchemeAttr } from "./ThemeScope";
 import type { ReactElement, ReactNode } from "react";
 
 export interface TooltipProps {
@@ -8,12 +9,14 @@ export interface TooltipProps {
 }
 
 export function Tooltip({ content, children, delayDuration = 200 }: TooltipProps) {
+  const schemeAttr = useSchemeAttr();
   return (
     <RadixTooltip.Provider delayDuration={delayDuration}>
       <RadixTooltip.Root>
         <RadixTooltip.Trigger asChild>{children}</RadixTooltip.Trigger>
         <RadixTooltip.Portal>
           <RadixTooltip.Content
+            {...schemeAttr}
             className="rebar-tooltip-content"
             data-rebar-component="tooltip"
             sideOffset={4}

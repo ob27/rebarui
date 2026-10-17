@@ -1,4 +1,5 @@
 import { forwardRef } from "react";
+import { useSchemeAttr } from "./ThemeScope";
 import * as RadixSelect from "@radix-ui/react-select";
 import clsx from "clsx";
 import { ChevronDownIcon } from "./icons";
@@ -31,6 +32,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select
   { options, value, defaultValue, onValueChange, placeholder, disabled, size = "md", className, invalid, ...props },
   ref,
 ) {
+  const schemeAttr = useSchemeAttr();
   return (
     <RadixSelect.Root
       value={value}
@@ -53,7 +55,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select
         </RadixSelect.Icon>
       </RadixSelect.Trigger>
       <RadixSelect.Portal>
-        <RadixSelect.Content className="rebar-select-content" data-rebar-part="content">
+        <RadixSelect.Content {...schemeAttr} className="rebar-select-content" data-rebar-part="content">
           <RadixSelect.Viewport>
             {options.map((option) => (
               <RadixSelect.Item

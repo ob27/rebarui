@@ -1,4 +1,5 @@
 import * as RadixDropdownMenu from "@radix-ui/react-dropdown-menu";
+import { useSchemeAttr } from "./ThemeScope";
 import type { ReactElement, ReactNode } from "react";
 
 export interface DropdownItem {
@@ -15,11 +16,13 @@ export interface DropdownProps {
 }
 
 export function Dropdown({ trigger, items }: DropdownProps) {
+  const schemeAttr = useSchemeAttr();
   return (
     <RadixDropdownMenu.Root>
       <RadixDropdownMenu.Trigger asChild>{trigger}</RadixDropdownMenu.Trigger>
       <RadixDropdownMenu.Portal>
         <RadixDropdownMenu.Content
+            {...schemeAttr}
           className="rebar-dropdown-content"
           data-rebar-component="dropdown"
           sideOffset={4}

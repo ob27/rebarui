@@ -1,15 +1,35 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ComponentPropsWithoutRef, KeyboardEvent, MouseEvent as ReactMouseEvent } from "react";
+import type { ComponentPropsWithoutRef, KeyboardEvent, MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import clsx from "clsx";
 import { Button } from "./Button";
 import { Text } from "./Text";
 
-export interface WaveformAudioPlayerProps extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
+export interface WaveformAudioPlayerProps extends Omit<ComponentPropsWithoutRef<"div">, "children" | "onTimeUpdate" | "onEnded"> {
   src: string;
   /** How many bars to render across the waveform. Default 48. */
   barCount?: number;
-  /** Seconds the skip-back/skip-forward buttons jump by. Default 15. */
+  /** Seconds the skip-back/skip-forward buttons jump by. Default 15. `0` hides both buttons (a compact bar for phones). */
   skipSeconds?: number;
+  /** Slot at the end of the bar (save to library, share, speed). Give it a 40px minimum target. */
+  trailingAction?: ReactNode;
+  /** Start playing when mounted or when `src` changes. Browsers may block this; `onPlayBlocked` fires. */
+  autoPlay?: boolean;
+  onPlayBlocked?: () => void;
+  /** Controlled play state, so a screen can pause one bar when another starts. */
+  playing?: boolean;
+  onPlayingChange?: (playing: boolean) => void;
+  /** Fires when playback reaches the end. The bar then shows a replay glyph at full progress. */
+  onEnded?: () => void;
+  onTimeUpdate?: (currentTime: number, duration: number) => void;
+  /** A failed load or playback the caller knows about: red outline and a message below the bar
+   * (a ReactNode is the message, `true` a default one); the play button then calls `onRetry`.
+   * Unlike a native load failure, the controls stay visible. */
+  error?: boolean | ReactNode;
+  onRetry?: () => void;
+  /** Spinner replaces the play glyph while buffering. Also set from the audio's own waiting event. */
+  loading?: boolean;
+  /** `"onDark"` for art cards such as a prayer detail. */
+  tone?: "default" | "onDark";
 }
 
 // Same seeded-hash technique Sticky's rotation/color pick and Avatar's placeholder selection
@@ -60,13 +80,32 @@ export function WaveformAudioPlayer({
   src,
   barCount = 48,
   skipSeconds = 15,
+  trailingAction,
+  autoPlay = false,
+  onPlayBlocked,
+  playing: playingProp,
+  onPlayingChange,
+  onEnded,
+  onTimeUpdate,
+  error: errorProp,
+  onRetry,
+  loading,
+  tone = "default",
   className,
   "aria-label": ariaLabel = "Audio player",
   ...props
 }: WaveformAudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const waveformRef = useRef<HTMLDivElement>(null);
-  const [playing, setPlaying] = useState(false);
+  const [internalPlaying, setInternalPlaying] = useState(false);
+  const isControlled = playingProp !== undefined;
+  const playing = isControlled ? playingProp : internalPlaying;
+  const setPlaying = (next: boolean) => {
+    if (!isControlled) setInternalPlaying(next);
+    if (next !== playing) onPlayingChange?.(next);
+  };
+  const [ended, setEnded] = useState(false);
+  const [buffering, setBuffering] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [error, setError] = useState(false);
@@ -77,16 +116,48 @@ export function WaveformAudioPlayer({
   // previous track's position/error/playing state onto it.
   useEffect(() => {
     setError(false);
-    setPlaying(false);
+    setInternalPlaying(false);
+    setEnded(false);
+    setBuffering(false);
     setCurrentTime(0);
     setDuration(0);
   }, [src]);
+
+  const startPlayback = (audio: HTMLAudioElement) => {
+    const result = audio.play() as Promise<void> | undefined;
+    if (result && typeof result.catch === "function") {
+      result.catch(() => {
+        setPlaying(false);
+        onPlayBlocked?.();
+      });
+    }
+  };
+
+  // autoPlay: runs after the reset effect above on a new src, so the track starts from the top.
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!autoPlay || !audio) return;
+    setInternalPlaying(true);
+    onPlayingChange?.(true);
+    startPlayback(audio);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [src, autoPlay]);
+
+  // Controlled: keep the real element in step with the caller's `playing`.
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!isControlled || !audio) return;
+    if (playingProp && audio.paused) startPlayback(audio);
+    else if (!playingProp && !audio.paused) audio.pause();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playingProp]);
 
   const handleTimeUpdate = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
     setCurrentTime(audio.currentTime);
-  }, []);
+    onTimeUpdate?.(audio.currentTime, Number.isFinite(audio.duration) ? audio.duration : 0);
+  }, [onTimeUpdate]);
 
   const handleLoadedMetadata = useCallback(() => {
     const audio = audioRef.current;
@@ -94,21 +165,34 @@ export function WaveformAudioPlayer({
     setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
   }, []);
 
-  const handleEnded = useCallback(() => setPlaying(false), []);
+  const handleEnded = () => {
+    setPlaying(false);
+    setEnded(true);
+    onEnded?.();
+  };
 
-  const handleError = useCallback(() => {
+  const handleError = () => {
     setError(true);
     setPlaying(false);
-  }, []);
+  };
 
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
+    if (errorProp) {
+      onRetry?.();
+      return;
+    }
     if (playing) {
       audio.pause();
       setPlaying(false);
     } else {
-      void audio.play();
+      if (ended) {
+        audio.currentTime = 0;
+        setCurrentTime(0);
+        setEnded(false);
+      }
+      startPlayback(audio);
       setPlaying(true);
     }
   };
@@ -166,12 +250,17 @@ export function WaveformAudioPlayer({
     }
   };
 
-  const playedCount = duration > 0 ? Math.round((currentTime / duration) * barCount) : 0;
+  const isLoading = Boolean(loading) || buffering;
+  const hasError = Boolean(errorProp);
+  const playLabel = hasError ? "Retry" : isLoading ? "Buffering" : playing ? "Pause" : ended ? "Replay" : "Play";
+  const playedCount = ended ? barCount : duration > 0 ? Math.round((currentTime / duration) * barCount) : 0;
 
   return (
     <div
       className={clsx("rebar-waveform-audio-player", className)}
       data-rebar-component="waveform-audio-player"
+      data-rebar-tone={tone === "onDark" ? "onDark" : undefined}
+      data-rebar-state={hasError ? "error" : isLoading ? "loading" : ended ? "ended" : playing ? "playing" : undefined}
       role="group"
       aria-label={ariaLabel}
       {...props}
@@ -183,6 +272,9 @@ export function WaveformAudioPlayer({
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={handleEnded}
         onError={handleError}
+        onWaiting={() => setBuffering(true)}
+        onCanPlay={() => setBuffering(false)}
+        onPlaying={() => setBuffering(false)}
         style={{ display: "none" }}
         data-rebar-part="audio"
       />
@@ -192,6 +284,7 @@ export function WaveformAudioPlayer({
         </Text>
       ) : (
         <div className="rebar-waveform-audio-player-controls" data-rebar-part="controls">
+          {skipSeconds > 0 ? (
           <Button
             aria-label="Skip back"
             data-rebar-part="skip-back"
@@ -200,9 +293,18 @@ export function WaveformAudioPlayer({
           >
             «{skipSeconds}
           </Button>
-          <Button aria-label={playing ? "Pause" : "Play"} data-rebar-part="play-button" onClick={togglePlay}>
-            {playing ? "Pause" : "Play"}
+          ) : null}
+          <Button
+            aria-label={playLabel}
+            data-rebar-part="play-button"
+            data-rebar-state={isLoading ? "loading" : ended && !playing ? "replay" : undefined}
+            aria-busy={isLoading || undefined}
+            onClick={togglePlay}
+          >
+            {isLoading ? <span className="rebar-waveform-audio-player-spinner" aria-hidden="true" /> : null}
+            {isLoading ? <span className="rebar-visually-hidden">Buffering</span> : playing ? "Pause" : ended ? "Replay" : hasError ? "Retry" : "Play"}
           </Button>
+          {skipSeconds > 0 ? (
           <Button
             aria-label="Skip forward"
             data-rebar-part="skip-forward"
@@ -211,6 +313,7 @@ export function WaveformAudioPlayer({
           >
             {skipSeconds}»
           </Button>
+          ) : null}
           <div
             ref={waveformRef}
             className="rebar-waveform-audio-player-waveform"
@@ -238,8 +341,18 @@ export function WaveformAudioPlayer({
           <Text className="rebar-waveform-audio-player-time" size="xs" data-rebar-part="time">
             {formatTime(currentTime)} / {formatTime(duration)}
           </Text>
+          {trailingAction ? (
+            <span className="rebar-waveform-audio-player-trailing" data-rebar-part="trailing-action">
+              {trailingAction}
+            </span>
+          ) : null}
         </div>
       )}
+      {hasError && !error ? (
+        <Text className="rebar-waveform-audio-player-message" size="sm" role="alert" data-rebar-part="message">
+          {errorProp === true ? "Couldn't play this recording. Tap play to try again." : errorProp}
+        </Text>
+      ) : null}
     </div>
   );
 }
