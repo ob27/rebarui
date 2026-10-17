@@ -157,6 +157,26 @@ export default function AiChatInputPage() {
         </div>
       </DemoStage>
 
+      {/* ---- parity-a2: chat ---- */}
+      <Heading level={2}>Boxed variant</Heading>
+      <DemoStage
+        title="Bar and box"
+        caption='variant="boxed" singleLine: a surface bar with a top rule, a rounded field and a separate round button'
+        code={`<AiChatInput variant="boxed" singleLine placeholder="Type your question…"
+  onDictate={toggleMic} recording={recording ? { seconds } : false}
+  transcribing={busy} sendIcon={<SendGlyph />} micIcon={<MicGlyph />} busyIcon={<Spinner />} />`}
+        states={[
+          { label: "Typed", node: <AiChatInput variant="boxed" singleLine defaultValue="What is grace?" onDictate={() => undefined} aria-label="Typed" /> },
+          { label: "Recording", node: <AiChatInput variant="boxed" singleLine onDictate={() => undefined} recording={{ seconds: 2 }} aria-label="Recording" /> },
+          { label: "Transcribing", node: <AiChatInput variant="boxed" singleLine onDictate={() => undefined} transcribing aria-label="Transcribing" /> },
+          { label: "Disabled", node: <AiChatInput variant="boxed" singleLine disabled defaultValue="Sending…" onDictate={() => undefined} aria-label="Disabled" /> },
+          { label: "Send only", node: <AiChatInput variant="boxed" singleLine maxLength={300} aria-label="Send only" /> },
+          { label: "With notice", node: <AiChatInput variant="boxed" singleLine banner="Couldn't reach the catechist." defaultValue="Is anyone there?" aria-label="With notice" /> },
+        ]}
+      >
+        <AiChatInput variant="boxed" singleLine placeholder="Type your question…" onDictate={() => undefined} aria-label="Boxed composer" />
+      </DemoStage>
+
       <NewBStages />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

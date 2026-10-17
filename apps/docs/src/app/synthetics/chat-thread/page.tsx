@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties, ReactNode } from "react";
-import { AiChatInput, ChatThread, DeviceFrame, Heading, Stack, Tag, Text } from "rebar-ui";
+import { AiChatInput, ChatThread, Chip, DeviceFrame, Heading, Stack, Tag, Text } from "rebar-ui";
 import type { ChatMessage } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
@@ -172,6 +172,66 @@ export default function ChatThreadPage() {
             </div>
           </Phone>
         </div>
+      </DemoStage>
+
+      {/* ---- parity-a2: chat ---- */}
+      <Heading level={2}>Bubbles variant</Heading>
+      <DemoStage
+        title="Classic messenger bubbles"
+        caption='variant="bubbles": 22px bubbles with a squared tail, citation cards, a round scroll-to-latest button'
+        code={`<ChatThread variant="bubbles" messages={messages}
+  scrollToLatest={{ label: "Scroll to latest", threshold: 120, icon: <ArrowDown /> }}
+  moreCitationsLabel={(n) => \`\${n} more citations\`} />`}
+        states={[
+          { label: "Streaming", node: <ChatThread variant="bubbles" style={{ height: 120 }} messages={[{ id: "s1", role: "user", content: "What is grace?" }, { id: "s2", role: "assistant", content: "", status: "streaming" }]} /> },
+          { label: "Crisis", node: <ChatThread variant="bubbles" style={{ height: 170 }} messages={[{ id: "c1", role: "assistant", tone: "crisis", content: "I am concerned about you. Please reach out to someone you trust right now." }]} /> },
+          { label: "Retry on a bubble", node: <ChatThread variant="bubbles" style={{ height: 110 }} messages={[{ id: "r1", role: "user", content: "One more question please", actions: <Chip variant="floating" aria-label="Try again">↻</Chip> }]} /> },
+          { label: "No citation", node: <ChatThread variant="bubbles" style={{ height: 130 }} messages={[{ id: "n1", role: "assistant", content: "The Eucharist is the source and summit.", citations: [], citationsEmptyNote: "No Catechism citation" }]} /> },
+        ]}
+      >
+        <ChatThread
+          variant="bubbles"
+          style={{ height: 360 }}
+          moreCitationsLabel={(n) => `${n} more citations`}
+          messages={[
+            { id: "b1", role: "user", content: "What does the Church teach about grace?" },
+            {
+              id: "b2",
+              role: "assistant",
+              content: "Grace is the free and undeserved help that God gives us.",
+              citations: [
+                { label: "CCC 1996", note: "— Grace and Justification", detail: "Grace is favor, the free and undeserved help…", href: "#" },
+                { label: "CCC 2006", note: "— Merit", detail: "The term merit refers in general to the recompense owed…" },
+              ],
+              footer: (
+                <Stack direction="row" gap="sm">
+                  <Chip variant="outline" aria-label="Helpful">↑</Chip>
+                  <Chip variant="outline" aria-label="Unhelpful">↓</Chip>
+                  <Chip size="sm">Share answer</Chip>
+                </Stack>
+              ),
+            },
+          ]}
+        />
+      </DemoStage>
+
+      <Heading level={2}>Chip</Heading>
+      <DemoStage
+        title="Pill buttons beside content"
+        caption="tonal, outline (toggle) and floating"
+        code={`<Chip>Why do Catholics pray the Rosary?</Chip>
+<Chip variant="outline" pressed aria-label="Helpful">↑</Chip>
+<Chip variant="floating" aria-label="Try again">↻</Chip>`}
+        states={[
+          { label: "Tonal", node: <Chip>Why do Catholics pray the Rosary?</Chip> },
+          { label: "Tonal sm", node: <Chip size="sm">Share answer</Chip> },
+          { label: "Outline", node: <Chip variant="outline" aria-label="Helpful">↑</Chip> },
+          { label: "Outline pressed", node: <Chip variant="outline" pressed aria-label="Helpful, chosen">↑</Chip> },
+          { label: "Outline disabled", node: <Chip variant="outline" disabled aria-label="Unhelpful">↓</Chip> },
+          { label: "Floating", node: <Chip variant="floating" aria-label="Try again">↻</Chip> },
+        ]}
+      >
+        <Chip>Help me prepare for Confession</Chip>
       </DemoStage>
 
       <NewBStages />
