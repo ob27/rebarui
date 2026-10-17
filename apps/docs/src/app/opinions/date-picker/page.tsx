@@ -42,6 +42,20 @@ const BLOCKS: Construct[] = [
       },
     ],
   },
+  {
+    type: "doc-section",
+    heading: "Typed onValueChange",
+    body: [
+      {
+        "kind": "text",
+        "text": "`onValueChange` is typed per mode, so an inline callback needs no annotation: `(date: Date)` by default, `mode=\"single\"` and `mode=\"dob\"`, and `(range: { start: Date; end: Date })` for `range` or `mode=\"range\"`. Mixing them (a range handler on a single picker) is a type error."
+      },
+      {
+        "kind": "code",
+        "code": "<DatePicker onValueChange={(d) => setDate(d)} />\\n<DatePicker mode=\"range\" onValueChange={(r) => setRange(r)} />"
+      }
+    ],
+  },
 ];
 
 const fmt = (d: Date) => d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" });

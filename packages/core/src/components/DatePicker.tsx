@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef, ReactElement } from "react";
 import clsx from "clsx";
 import { Button } from "./Button";
 import { Calendar } from "./Calendar";
@@ -25,19 +25,26 @@ interface DatePickerBaseProps extends Omit<ComponentPropsWithoutRef<"div">, "val
 
 export interface DatePickerSingleProps extends DatePickerBaseProps {
   range?: false;
+  /** `"single"` is the default; naming it makes `onValueChange` infer `(date: Date)` in any context. */
+  mode?: "single";
   value?: Date;
   defaultValue?: Date;
   onValueChange?: (date: Date) => void;
 }
 
-export interface DatePickerRangeProps extends DatePickerBaseProps {
-  /** Pick a start and an end day instead of one date. The value becomes `{ start, end }`. */
-  range: true;
+interface DatePickerRangeBaseProps extends DatePickerBaseProps {
   value?: DatePickerRange;
   defaultValue?: DatePickerRange;
   /** Fires once both ends are chosen (start <= end; clicking an earlier day second swaps them). */
   onValueChange?: (range: { start: Date; end: Date }) => void;
 }
+
+/**
+ * Range mode: pick a start and an end day instead of one date; the value becomes `{ start, end }`.
+ * Turn it on with `range` or with `mode="range"` (either, or both).
+ */
+export type DatePickerRangeProps = DatePickerRangeBaseProps &
+  ({ range: true; mode?: "range" } | { mode: "range"; range?: true });
 
 export type DatePickerProps = DatePickerSingleProps | DatePickerRangeProps | DatePickerDobProps;
 
@@ -64,8 +71,12 @@ function formatShort(date: Date): string {
  * pre-selects today). Set `range` for a start/end pair: the first click sets the start, the second
  * the end and commits, and `value` becomes `{ start, end }`.
  */
-export function DatePicker(props: DatePickerProps) {
-  if ("mode" in props && props.mode === "dob") return <DatePickerDob {...props} />;
+export function DatePicker(props: DatePickerSingleProps): ReactElement;
+export function DatePicker(props: DatePickerRangeProps): ReactElement;
+export function DatePicker(props: DatePickerDobProps): ReactElement;
+export function DatePicker(props: DatePickerProps): ReactElement;
+export function DatePicker(props: DatePickerProps): ReactElement {
+  if ("mode" in props && props.mode === "dob") return <DatePickerDob {...(props as DatePickerDobProps)} />;
   return <CalendarDatePicker {...(props as DatePickerSingleProps | DatePickerRangeProps)} />;
 }
 
@@ -74,13 +85,14 @@ function CalendarDatePicker(props: DatePickerSingleProps | DatePickerRangeProps)
   // Strip the value API from what is spread onto the root element.
   const {
     range: _range,
+    mode: _mode,
     value: _value,
     defaultValue: _defaultValue,
     onValueChange: _onValueChange,
     ...rootProps
-  } = rest as typeof rest & { range?: boolean; value?: unknown; defaultValue?: unknown; onValueChange?: unknown };
+  } = rest as typeof rest & { range?: boolean; mode?: string; value?: unknown; defaultValue?: unknown; onValueChange?: unknown };
 
-  const isRange = props.range === true;
+  const isRange = props.range === true || props.mode === "range";
   const [open, setOpen] = useState(false);
 
   const [internalSingle, setInternalSingle] = useState<Date | undefined>(
