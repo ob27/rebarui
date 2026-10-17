@@ -12087,3 +12087,129 @@ a.rebar-list-item-main {
 /* A dark scope inside a light page (ThemeScope scheme="dark") gets the same swap */
 [data-rebar-scheme="dark"] .rebar-empty-icon-raster { display: none; }
 [data-rebar-scheme="dark"] .rebar-empty-icon-vector { display: block; }
+
+/* ---- parity-a4: auth, overlays and sheets ---- */
+
+/* AuthScreen layout tokens (defaults = the shipped values). */
+.rebar-auth-screen-main {
+  padding: var(--rebar-auth-padding, var(--rebar-space-lg) var(--rebar-space-md));
+  gap: var(--rebar-auth-gap, var(--rebar-space-md));
+}
+.rebar-auth-screen-form {
+  gap: var(--rebar-auth-form-gap, 10px);
+  max-width: var(--rebar-auth-form-max-width, none);
+}
+.rebar-auth-screen-logo > img { display: var(--rebar-auth-logo-display, inline); }
+
+/* AuthScreen backdrop (photo + overlay) */
+.rebar-auth-screen.rebar-auth-screen[data-rebar-backdrop] {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--rebar-color-bg-inverse);
+  background-image: var(--rebar-auth-backdrop-image);
+  background-size: cover;
+  background-position: center;
+}
+.rebar-auth-screen-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--rebar-auth-backdrop-overlay, none);
+}
+.rebar-auth-screen[data-rebar-backdrop] > .rebar-auth-screen-header,
+.rebar-auth-screen[data-rebar-backdrop] > .rebar-auth-screen-main,
+.rebar-auth-screen[data-rebar-backdrop] > .rebar-auth-screen-footer { position: relative; z-index: 1; }
+
+/* AuthScreen footerPlacement="inline" */
+.rebar-auth-screen[data-rebar-footer="inline"] .rebar-auth-screen-footer { padding: 0; }
+
+/* AuthScreen fieldStyle="translucent" */
+.rebar-auth-screen.rebar-auth-screen[data-rebar-field-style="translucent"] .rebar-input.rebar-input,
+.rebar-auth-screen.rebar-auth-screen[data-rebar-field-style="translucent"] .rebar-input.rebar-input:focus,
+.rebar-auth-screen.rebar-auth-screen[data-rebar-field-style="translucent"] .rebar-input.rebar-input:focus-visible {
+  min-height: 0;
+  padding: var(--rebar-auth-field-padding, 14px 20px);
+  font-size: var(--rebar-auth-field-font-size, 15px);
+  border: 1px solid var(--rebar-auth-field-border, color-mix(in srgb, var(--rebar-color-text-inverse) 35%, transparent));
+  border-radius: var(--rebar-auth-field-radius, 999px);
+  background: var(--rebar-auth-field-bg, color-mix(in srgb, var(--rebar-color-text-inverse) 14%, transparent));
+  color: var(--rebar-auth-field-text, var(--rebar-color-text-inverse));
+  outline: none;
+  box-shadow: none;
+}
+.rebar-auth-screen.rebar-auth-screen[data-rebar-field-style="translucent"] .rebar-input::placeholder {
+  color: var(--rebar-auth-field-placeholder, var(--rebar-color-text-secondary));
+  opacity: 1;
+}
+
+/* AuthScreen buttonStyle="classic" (compact pills: primary = inverse fill, secondary = outline) */
+.rebar-auth-screen.rebar-auth-screen[data-rebar-button-style="classic"] .rebar-auth-screen-form .rebar-button:not([data-rebar-variant="tertiary"]),
+.rebar-auth-screen.rebar-auth-screen[data-rebar-button-style="classic"] .rebar-auth-screen-form .rebar-button:not([data-rebar-variant="tertiary"]):hover:not(:disabled) {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  min-height: 0;
+  padding: var(--rebar-auth-button-padding, 7px 12px);
+  font-size: var(--rebar-auth-button-font-size, 17px);
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: center;
+  border: 1px solid color-mix(in srgb, var(--rebar-color-text-inverse) 70%, transparent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--rebar-color-text-inverse);
+  outline: none;
+  user-select: none;
+}
+.rebar-auth-screen.rebar-auth-screen[data-rebar-button-style="classic"] .rebar-auth-screen-form .rebar-button[data-rebar-variant="primary"],
+.rebar-auth-screen.rebar-auth-screen[data-rebar-button-style="classic"] .rebar-auth-screen-form .rebar-button[data-rebar-variant="primary"]:hover:not(:disabled) {
+  font-weight: 700;
+  background: var(--rebar-auth-primary-bg, var(--rebar-color-text-inverse));
+  border-color: var(--rebar-auth-primary-bg, var(--rebar-color-text-inverse));
+  color: var(--rebar-auth-primary-text, var(--rebar-color-bg-inverse));
+}
+.rebar-auth-screen[data-rebar-button-style="classic"] .rebar-auth-screen-form .rebar-button:not([data-rebar-variant="tertiary"]):disabled { opacity: 0.4; }
+.rebar-auth-screen[data-rebar-button-style="classic"] .rebar-auth-screen-form .rebar-button:not([data-rebar-variant="tertiary"])::before {
+  content: " ";
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-1px, -1px);
+  width: 100%;
+  height: 100%;
+  box-sizing: content-box;
+  background: #000;
+  border: 1px solid #000;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+}
+.rebar-auth-screen[data-rebar-button-style="classic"] .rebar-auth-screen-form .rebar-button:not([data-rebar-variant="tertiary"]):active:not(:disabled)::before { opacity: 0.08; }
+
+/* AuthScreen linkStyle="plain" (ghost links as small plain text) */
+.rebar-auth-screen.rebar-auth-screen[data-rebar-link-style="plain"] .rebar-button[data-rebar-variant="tertiary"],
+.rebar-auth-screen.rebar-auth-screen[data-rebar-link-style="plain"] .rebar-button[data-rebar-variant="tertiary"]:hover:not(:disabled) {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--rebar-color-text-inverse);
+  font-size: var(--rebar-auth-link-font-size, 13px);
+  font-weight: 400;
+  line-height: normal;
+  opacity: var(--rebar-auth-link-opacity, 0.75);
+  outline: none;
+}
+.rebar-auth-screen.rebar-auth-screen[data-rebar-link-style="plain"] .rebar-auth-screen-footer .rebar-button[data-rebar-variant="tertiary"] {
+  padding: var(--rebar-auth-footer-link-padding, 1px 6px);
+  opacity: var(--rebar-auth-footer-link-opacity, 0.85);
+}
+.rebar-auth-screen[data-rebar-link-style="plain"] .rebar-auth-screen-form > .rebar-button[data-rebar-variant="tertiary"] { justify-self: center; }
+
+/* Button loadingStyle="dots" */
+.rebar-button-loading-wrapper { display: flex; height: 1.4em; align-items: center; justify-content: center; }
+.rebar-button-dots { display: inline-block; opacity: 0.6; }
+.rebar-button-dots svg { vertical-align: -0.125em; }
+.rebar-button[data-rebar-loading-style="dots"] { vertical-align: bottom; }

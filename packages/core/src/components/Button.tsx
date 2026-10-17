@@ -33,8 +33,34 @@ export interface ButtonProps extends Omit<ComponentPropsWithoutRef<"button">, "c
   rel?: string;
   /** Link adapter for `href` (a framework `Link`). Same shape as `NavBar`'s `renderLink`. */
   renderLink?: RenderLink;
+  /** How `loading` looks. `"spinner"` (default): a spinner before the label. `"dots"`: the label is replaced by three
+   * bouncing dots (the classic mobile-UI loading button), centred in a 1.4em line. */
+  loadingStyle?: "spinner" | "dots";
   /** Applies the button look to the single child element (a router `Link`, an `<a>`) instead of rendering a `<button>`. */
   asChild?: boolean;
+}
+
+/** Three small squares that hop in turn (SMIL, so it needs no CSS animation and runs on any background). */
+function DotsIndicator() {
+  return (
+    <span className="rebar-button-dots">
+    <svg height="1em" viewBox="0 0 100 40" aria-hidden="true" focusable="false">
+      <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+        <g transform="translate(-100.000000, -71.000000)">
+          <g transform="translate(95.000000, 71.000000)">
+            <g transform="translate(5.000000, 0.000000)">
+              {[0, 1, 2].map((i) => (
+                <rect key={i} fill="currentColor" x={20 + i * 26} y="16" width="8" height="8" rx="2">
+                  <animate attributeName="y" from="16" to="16" dur="2s" begin={`${i * 0.2}s`} repeatCount="indefinite" values="16; 6; 26; 16; 16" keyTimes="0; 0.1; 0.3; 0.4; 1" />
+                </rect>
+              ))}
+            </g>
+          </g>
+        </g>
+      </g>
+    </svg>
+    </span>
+  );
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
@@ -58,6 +84,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     rel,
     renderLink: renderLinkProp,
     asChild,
+    loadingStyle,
     ...props
   },
   ref,
@@ -73,6 +100,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     "data-rebar-block": block ? "true" : undefined,
     "data-rebar-icon-only": iconOnly ? "true" : undefined,
     "data-rebar-state": loading ? "loading" : "idle",
+    "data-rebar-loading-style": loading && loadingStyle === "dots" ? "dots" : undefined,
     "aria-busy": loading || undefined,
   };
   const lead = loading ? (
@@ -108,13 +136,18 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     }
   }
 
-  const inner = (
-    <>
-      {lead}
-      {content}
-      {tail}
-    </>
-  );
+  const inner =
+    loading && loadingStyle === "dots" ? (
+      <span className="rebar-button-loading-wrapper" data-rebar-part="loading-dots">
+        <DotsIndicator />
+      </span>
+    ) : (
+      <>
+        {lead}
+        {content}
+        {tail}
+      </>
+    );
 
   if (href !== undefined) {
     const inactive = disabled || loading;
