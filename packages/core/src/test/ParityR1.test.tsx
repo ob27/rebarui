@@ -30,6 +30,7 @@ describe("parity-r1: grouped list panel and ListSection type tokens", () => {
     expect(block).toContain("var(--rebar-list-item-chevron-size, 1.2em)");
     expect(block).toContain("var(--rebar-avatar-overflow, hidden)");
     expect(block).toContain("var(--rebar-popup-heading-size, 22px)");
+    expect(block).toContain("var(--rebar-classic-button-bg, var(--rebar-color-primary))");
     expect(block).toContain("var(--rebar-list-item-title-wrap, pretty)");
     expect(block).toContain("var(--rebar-avatar-image-radius, 0)");
   });
@@ -38,6 +39,7 @@ describe("parity-r1: grouped list panel and ListSection type tokens", () => {
     const t = theme.slice(theme.indexOf("/* ---- parity-r1"));
     expect(t).toContain("var(--rebar-avatar-background, var(--rebar-color-tint-3))");
     expect(t).toContain("var(--rebar-avatar-ring, 0 0 0 2px var(--rebar-color-bg-raised))");
+    expect(t).toContain("var(--rebar-input-invalid-border-color, var(--rebar-color-danger))");
   });
 
   it("ListSection still renders its title and footer parts", () => {
@@ -93,5 +95,24 @@ describe("parity-r1: Avatar overlayStyle=full", () => {
     const { container } = render(<Avatar fallback="A" size={64} overlay="edit" loading aria-label="Change" />);
     expect(container.querySelector('[data-rebar-component="avatar"]')).not.toHaveAttribute("data-rebar-overlay-style");
     expect(container.querySelector('[data-rebar-part="scrim"]')).toBeInTheDocument();
+  });
+});
+
+import { BackdropSection } from "../components/BackdropSection";
+
+describe("parity-r1: BackdropSection imageMode=background", () => {
+  it("draws no img or scrim element and carries the art as a custom property", () => {
+    const { container } = render(<BackdropSection image={{ src: "/a.jpg" }} scrim="custom" imageMode="background" rounded><p>Hi</p></BackdropSection>);
+    const root = container.querySelector('[data-rebar-component="backdrop-section"]') as HTMLElement;
+    expect(root).toHaveAttribute("data-rebar-image-mode", "background");
+    expect(root.style.getPropertyValue("--rebar-backdrop-image")).toBe('url("/a.jpg")');
+    expect(container.querySelector("img")).toBeNull();
+    expect(container.querySelector('[data-rebar-part="scrim"]')).toBeNull();
+  });
+  it("keeps the img and scrim by default", () => {
+    const { container } = render(<BackdropSection image={{ src: "/a.jpg" }}><p>Hi</p></BackdropSection>);
+    expect(container.querySelector("img")).toBeInTheDocument();
+    expect(container.querySelector('[data-rebar-part="scrim"]')).toBeInTheDocument();
+    expect(container.querySelector('[data-rebar-component="backdrop-section"]')).not.toHaveAttribute("data-rebar-image-mode");
   });
 });

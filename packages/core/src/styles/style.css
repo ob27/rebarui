@@ -13421,3 +13421,28 @@ a.rebar-list-item-main {
 
 /* ListItem: the title's line-breaking can be set by an app (default unchanged) */
 .rebar-list-item-title { text-wrap: var(--rebar-list-item-title-wrap, pretty); }
+
+/* Button appearance="classic", primary: the fill can be set by an app (default: the primary colour) */
+.rebar-button.rebar-button[data-rebar-appearance="classic"][data-rebar-variant="primary"],
+.rebar-button.rebar-button[data-rebar-appearance="classic"][data-rebar-variant="primary"]:hover:not(:disabled) {
+  background: var(--rebar-classic-button-bg, var(--rebar-color-primary));
+  border-color: var(--rebar-classic-button-bg, var(--rebar-color-primary));
+}
+
+/* BackdropSection imageMode="background": the art and scrim are background layers of the section itself */
+.rebar-backdrop-section[data-rebar-image-mode="background"] {
+  background-image: var(--rebar-backdrop-scrim-layer, none), var(--rebar-backdrop-image);
+  background-size: cover, cover;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+}
+.rebar-backdrop-section[data-rebar-image-mode="background"][data-rebar-scrim="soft"] {
+  --rebar-backdrop-scrim-layer: linear-gradient(180deg, color-mix(in srgb, var(--rebar-backdrop-scrim-color, #000000) 25%, transparent), color-mix(in srgb, var(--rebar-backdrop-scrim-color, #000000) 55%, transparent));
+}
+.rebar-backdrop-section[data-rebar-image-mode="background"][data-rebar-scrim="strong"] {
+  --rebar-backdrop-scrim-layer: linear-gradient(color-mix(in srgb, var(--rebar-backdrop-scrim-color, #000000) 70%, transparent), color-mix(in srgb, var(--rebar-backdrop-scrim-color, #000000) 70%, transparent));
+}
+.rebar-backdrop-section[data-rebar-image-mode="background"][data-rebar-scrim="start"] {
+  --rebar-backdrop-scrim-layer: linear-gradient(to right, color-mix(in srgb, var(--rebar-backdrop-scrim-color, #000000) 80%, transparent), color-mix(in srgb, var(--rebar-backdrop-scrim-color, #000000) 25%, transparent));
+}
+.rebar-backdrop-section[data-rebar-image-mode="background"][data-rebar-scrim="custom"] { --rebar-backdrop-scrim-layer: var(--rebar-backdrop-scrim-background, none); }
