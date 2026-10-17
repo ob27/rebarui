@@ -30,4 +30,11 @@ describe("Card orientation=feature", () => {
       expect(css).toContain(name);
     }
   });
+
+  it("styles the promo preset from --rebar-card-promo-* properties", () => {
+    const css = readFileSync(resolve(__dirname, "../styles/style.css"), "utf8");
+    for (const name of ["--rebar-card-promo-background", "--rebar-card-promo-radius", "--rebar-card-promo-cover-width", "--rebar-card-promo-title-size", "--rebar-card-promo-body-opacity"]) {
+      expect(css).toContain(name);
+    }
+  });
 });

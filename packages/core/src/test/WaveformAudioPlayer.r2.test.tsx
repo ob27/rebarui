@@ -32,4 +32,21 @@ describe("WaveformAudioPlayer appearance=track", () => {
     expect(css).toContain("--rebar-waveform-track-fill");
     expect(css).toContain("--rebar-waveform-track-glyph-size");
   });
+
+  it("appearance=card shows elapsed and total time around the bars, uses barHeights and a custom play glyph", () => {
+    const { container } = render(
+      <WaveformAudioPlayer src="/a.mp3" appearance="card" barHeights={[30, 60, 90, 45]} playIcon={<svg data-testid="pi" />} />,
+    );
+    const root = container.querySelector('[data-rebar-component="waveform-audio-player"]')!;
+    expect(root).toHaveAttribute("data-rebar-appearance", "card");
+    const bars = root.querySelectorAll<HTMLElement>('[data-rebar-part="bar"]');
+    expect(bars).toHaveLength(4);
+    expect(bars[2].style.height).toBe("90%");
+    expect(bars[0]).toHaveAttribute("data-played", "true");
+    expect(bars[1]).not.toHaveAttribute("data-played");
+    expect(screen.getByTestId("pi")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Skip back" })).toBeNull();
+    expect(root.querySelector('[data-rebar-part="time-elapsed"]')).toHaveTextContent("0:00");
+    expect(root.querySelector('[data-rebar-part="time"]')).toHaveTextContent("0:00");
+  });
 });

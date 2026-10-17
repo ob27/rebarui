@@ -13499,3 +13499,107 @@ a.rebar-list-item-main {
   white-space: var(--rebar-list-item-title-white-space, normal);
   text-overflow: var(--rebar-list-item-title-text-overflow, clip);
 }
+
+/* Card promo: surface, colour, radius, padding, thumbnail size and type can be set by an app (defaults = the shipped promo) */
+.rebar-card[data-rebar-promo] {
+  background: var(--rebar-card-promo-background, var(--rebar-color-tint-3, #f5f5f5));
+  color: var(--rebar-card-promo-color, inherit);
+  border-radius: var(--rebar-card-promo-radius, 20px);
+  padding: var(--rebar-card-promo-padding, 14px 52px 14px 14px);
+}
+.rebar-card[data-rebar-promo][data-rebar-orientation="row"] {
+  grid-template-columns: var(--rebar-card-promo-cover-width, 64px) minmax(0, 1fr);
+  column-gap: var(--rebar-card-promo-gap, 14px);
+  grid-template-rows: var(--rebar-card-promo-rows, none);
+  overflow: var(--rebar-card-promo-overflow, visible);
+}
+.rebar-card[data-rebar-promo][data-rebar-orientation="row"] > .rebar-card-cover {
+  width: var(--rebar-card-promo-cover-width, 64px);
+  height: var(--rebar-card-promo-cover-height, 64px);
+  border-radius: var(--rebar-card-promo-cover-radius, 16px);
+}
+.rebar-card[data-rebar-promo] .rebar-card-title {
+  font-size: var(--rebar-card-promo-title-size, var(--rebar-card-title-size, var(--rebar-font-size-md, 16px)));
+  font-weight: var(--rebar-card-promo-title-weight, var(--rebar-card-title-weight, 600));
+  line-height: var(--rebar-card-promo-title-line-height, var(--rebar-card-title-line-height, inherit));
+  letter-spacing: var(--rebar-card-promo-title-letter-spacing, var(--rebar-card-title-letter-spacing, inherit));
+}
+.rebar-card[data-rebar-promo] > .rebar-card-body {
+  font-size: var(--rebar-card-promo-body-size, inherit);
+  font-weight: var(--rebar-card-promo-body-weight, inherit);
+  line-height: var(--rebar-card-promo-body-line-height, inherit);
+  opacity: var(--rebar-card-promo-body-opacity, 1);
+  margin-top: var(--rebar-card-promo-body-gap, 0);
+}
+.rebar-card[data-rebar-promo][data-rebar-orientation="row"] > .rebar-card-header {
+  align-self: var(--rebar-card-promo-header-align, center);
+  padding: var(--rebar-card-promo-header-padding, 0);
+}
+.rebar-card[data-rebar-promo][data-rebar-orientation="row"] > .rebar-card-body {
+  align-self: var(--rebar-card-promo-body-align, center);
+  padding: var(--rebar-card-promo-body-padding, 0);
+  margin-inline: var(--rebar-card-promo-body-margin-inline, 0);
+}
+
+/* WaveformAudioPlayer appearance="card": a raised card, round play button, elapsed time, short bar waveform, total time */
+.rebar-waveform-audio-player[data-rebar-appearance="card"] {
+  gap: 0;
+  background: var(--rebar-waveform-card-background, var(--rebar-color-bg-raised, #fff));
+  border-radius: var(--rebar-waveform-card-radius, 20px);
+  padding: var(--rebar-waveform-card-padding, 14px 20px 14px 16px);
+  box-shadow: var(--rebar-waveform-card-shadow, 0 8px 24px rgba(10, 11, 22, 0.08));
+  box-sizing: border-box;
+}
+.rebar-waveform-audio-player[data-rebar-appearance="card"] .rebar-waveform-audio-player-controls {
+  flex-wrap: nowrap;
+  gap: var(--rebar-waveform-card-gap, 10px);
+}
+.rebar-waveform-audio-player[data-rebar-appearance="card"] .rebar-button[data-rebar-part="play-button"],
+.rebar-waveform-audio-player[data-rebar-appearance="card"] .rebar-button[data-rebar-part="play-button"]:hover:not(:disabled),
+.rebar-waveform-audio-player[data-rebar-appearance="card"] .rebar-button[data-rebar-part="play-button"]:active:not(:disabled) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: var(--rebar-waveform-card-play-size, 44px);
+  height: var(--rebar-waveform-card-play-size, 44px);
+  min-height: 0;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  box-shadow: none;
+  background: var(--rebar-waveform-card-play-background, var(--rebar-color-bg-inverse, #12142b));
+  color: var(--rebar-waveform-card-play-color, var(--rebar-color-text-inverse, #fdfaf5));
+  font-size: var(--rebar-waveform-card-play-font-size, 18px);
+  line-height: 1;
+}
+.rebar-waveform-audio-player[data-rebar-appearance="card"] .rebar-button[data-rebar-part="play-button"] svg {
+  width: 1em;
+  height: 1em;
+}
+.rebar-waveform-audio-player[data-rebar-appearance="card"] .rebar-waveform-audio-player-time {
+  font-size: var(--rebar-waveform-card-time-size, 12px);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--rebar-waveform-card-time-line-height, normal);
+  color: var(--rebar-waveform-card-time-color, var(--rebar-color-text-primary, inherit));
+  opacity: var(--rebar-waveform-card-time-opacity, 0.55);
+}
+.rebar-waveform-audio-player[data-rebar-appearance="card"] .rebar-waveform-audio-player-waveform {
+  align-items: center;
+  flex: 1 1 0;
+  height: var(--rebar-waveform-card-height, 32px);
+  gap: var(--rebar-waveform-card-bar-gap, 2px);
+  padding: 0;
+  border-radius: 0;
+}
+.rebar-waveform-audio-player[data-rebar-appearance="card"] .rebar-waveform-audio-player-bar {
+  min-width: 2px;
+  border-radius: var(--rebar-waveform-card-bar-radius, 2px);
+  background: var(--rebar-waveform-card-bar, rgba(10, 11, 22, 0.15));
+  transition: background 0.1s ease;
+}
+.rebar-waveform-audio-player[data-rebar-appearance="card"] .rebar-waveform-audio-player-bar[data-played] {
+  background: var(--rebar-waveform-card-bar-played, var(--rebar-color-primary, #0066cc));
+}

@@ -38,6 +38,13 @@ const BLOCKS: Construct[] = [
   },
   {
     type: "doc-section",
+    heading: "Card appearance",
+    body: [
+      { kind: "text", text: "`appearance=\"card\"` draws the app player: a raised rounded card, a round play button (`playIcon` and `pauseIcon` swap the glyph), the elapsed time, a short bar waveform (`barHeights` gives one percent per bar; a bar counts as played while its index over the count is at most the progress) and the total time. Skip buttons are not drawn. Set `--rebar-waveform-card-background`, `-radius`, `-padding`, `-shadow`, `-gap`, `-play-size`, `-play-background`, `-play-color`, `-time-*`, `-height`, `-bar`, `-bar-played` to match a brand." },
+    ],
+  },
+  {
+    type: "doc-section",
     heading: "Icon controls, compact size, audioRef",
     body: [
       {
@@ -72,6 +79,12 @@ export default function WaveformAudioPlayerPage() {
         states={[{ label: "On dark art", node: <div style={{ background: "#0a0b16", color: "#fdfaf5", padding: 14, borderRadius: 16 }}><WaveformAudioPlayer src={SRC} appearance="track" tone="onDark" aria-label="Track on dark" /></div> }]}>
         <div style={{ maxWidth: 480 }}>
           <WaveformAudioPlayer src={SRC} appearance="track" aria-label="Track player" />
+        </div>
+      </DemoStage>
+
+      <DemoStage title="Card appearance" caption="appearance=&quot;card&quot;: a raised card with a round play button, elapsed time, short bar waveform and total time (the app player)" code={"<WaveformAudioPlayer src={url} appearance=\"card\" barHeights={[40, 70, 55, 90, 35]} />"} widths={false}>
+        <div style={{ maxWidth: 480 }}>
+          <WaveformAudioPlayer src={SRC} appearance="card" barHeights={[40, 70, 55, 90, 35, 60, 80, 45, 65, 50, 75, 40, 85, 55, 70, 45]} aria-label="Card player" />
         </div>
       </DemoStage>
 
