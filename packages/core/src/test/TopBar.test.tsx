@@ -124,7 +124,7 @@ describe("TopBar trailing icon buttons, logo slot and height", () => {
             <button type="button" aria-label="Search">
               <svg aria-hidden="true" viewBox="0 0 24 24" />
             </button>
-            <Button iconOnly aria-label="Settings" variant="ghost">
+            <Button iconOnly aria-label="Settings" variant="tertiary">
               <svg aria-hidden="true" viewBox="0 0 24 24" />
             </Button>
           </>
