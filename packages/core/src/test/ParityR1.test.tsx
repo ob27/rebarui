@@ -17,8 +17,8 @@ describe("parity-r1: grouped list panel and ListSection type tokens", () => {
       </List>,
     );
     const chevrons = container.querySelectorAll('[data-rebar-part="chevron"]');
-    expect(chevrons[0].querySelector('[data-testid="own"]')).toBeInTheDocument();
-    expect(chevrons[1].querySelector("path")).toBeInTheDocument();
+    expect(chevrons[0]!.querySelector('[data-testid="own"]')).toBeInTheDocument();
+    expect(chevrons[1]!.querySelector("path")).toBeInTheDocument();
   });
 
   it("keeps every default when no token is set", () => {
