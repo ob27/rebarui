@@ -79,6 +79,27 @@ renders `<ThemeToggle />`, switching to "sketch" silently does nothing: no CSS i
 switch to, indistinguishable from a broken control. Import both themes' CSS whenever the toggle is
 in play, even though only one is the active default.
 
+## TypeScript
+
+The published `.d.ts` files import their types from `react` and `react-dom` and never ship a copy of
+`@types/react`: it is an optional peer dependency, so your app's own copy is the one used. If the
+app resolves two copies (a different major, or a nested one under another package) you get errors like
+"Type 'ReactNode' is not assignable to type 'ReactNode'". Pin one copy in the app's `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "react": ["./node_modules/@types/react"],
+      "react-dom": ["./node_modules/@types/react-dom"]
+    }
+  }
+}
+```
+
+(`paths` needs `baseUrl` on older TypeScript.) Or dedupe the package with `pnpm.overrides`
+(`"@types/react": "^19"`) or npm `overrides`. This only affects type checking, never runtime.
+
 ## No favicon of your own? Use the one this package ships
 
 `node_modules/rebar-ui/assets/favicon.svg` is a real, ready-to-use favicon — a theme-adaptive "R"
