@@ -3063,3 +3063,8 @@ textarea.rebar-input {
 }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-icon { border-radius: 50%; }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-title.rebar-heading { font-size: 26px; }
+
+/* ---- parity-r2: Avatar ring as a property (default = the ring above) ---- */
+.rebar-avatar {
+  box-shadow: var(--rebar-avatar-shadow, 0 0 0 2px var(--rebar-color-bg-raised));
+}

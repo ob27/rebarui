@@ -13492,3 +13492,10 @@ a.rebar-list-item-main {
 .rebar-heading-group {
   gap: var(--rebar-heading-group-gap, 8px);
 }
+
+/* ListItem title: display, wrapping and overflow (a one-line title with a character-level ellipsis instead of a line clamp) */
+.rebar-list-item-title {
+  display: var(--rebar-list-item-title-display, -webkit-box);
+  white-space: var(--rebar-list-item-title-white-space, normal);
+  text-overflow: var(--rebar-list-item-title-text-overflow, clip);
+}
