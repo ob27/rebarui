@@ -12936,7 +12936,7 @@ a.rebar-list-item-main {
   box-shadow: none;
 }
 .rebar-drawer-content[data-rebar-appearance="popup"] .rebar-dialog-header { display: block; flex: none; gap: 0; }
-.rebar-drawer-content[data-rebar-appearance="popup"] [data-rebar-part="title"] {
+.rebar-drawer-content[data-rebar-appearance="popup"] .rebar-dialog-header [data-rebar-part="title"] {
   margin: 0;
   padding: var(--rebar-popup-title-padding, 10px 12px 6px);
   font-family: inherit;
@@ -12949,7 +12949,7 @@ a.rebar-list-item-main {
   text-wrap: wrap;
   color: var(--rebar-popup-title-color, var(--rebar-color-text-secondary));
 }
-.rebar-drawer-content[data-rebar-appearance="popup"][data-rebar-title-style="heading"] [data-rebar-part="title"] {
+.rebar-drawer-content[data-rebar-appearance="popup"][data-rebar-title-style="heading"] .rebar-dialog-header [data-rebar-part="title"] {
   padding: 0;
   font-family: var(--rebar-font-family-display, inherit);
   font-variation-settings: "SOFT" 100;
@@ -13345,3 +13345,4 @@ a.rebar-list-item-main {
   letter-spacing: var(--rebar-text-eyebrow-letter-spacing, 0.16em);
 }
 .rebar-checkbox-label { color: var(--rebar-checkbox-label-color, inherit); }
+.rebar-list[data-rebar-variant="cards"] > .rebar-list-item { border-width: var(--rebar-list-item-border-width, 1px); }
