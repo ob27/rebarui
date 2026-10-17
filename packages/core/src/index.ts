@@ -824,3 +824,19 @@ export type { BackdropSectionProps } from "./components/BackdropSection";
 
 export { Puppet } from "./components/Puppet";
 export type { PuppetProps, PuppetLayers, PuppetWobblePart, PuppetPose } from "./components/Puppet";
+
+/* ---- new-a: mobile structure ---- */
+export { TopBar } from "./components/TopBar";
+export type { TopBarProps, TopBarEditableTitle } from "./components/TopBar";
+export { List, ListItem, ListSection } from "./components/List";
+export type { ListProps, ListItemProps, ListSectionProps, ListVariant } from "./components/List";
+export { SearchInput } from "./components/SearchInput";
+export type { SearchInputProps } from "./components/SearchInput";
+export { Textarea } from "./components/Textarea";
+export type { TextareaProps } from "./components/Textarea";
+export { toast, useToast, ToastView } from "./components/toaster";
+export type { ToastOptions, ToastKind, ToastPosition, ToastFunction, ToastViewProps } from "./components/toaster";
+export { confirm, useConfirm } from "./components/confirm";
+export type { ConfirmOptions, ConfirmFunction } from "./components/confirm";
+export { defaultRenderLink } from "./components/linkAdapter";
+export type { RenderLink, RenderLinkProps } from "./components/linkAdapter";

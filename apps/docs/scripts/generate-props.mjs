@@ -221,6 +221,11 @@ const COMPONENT_FILES = [
   "ShapeGallery.tsx",
   "FileManager.tsx",
   "LayersPanel.tsx",
+  /* ---- new-a: mobile structure ---- */
+  "TopBar.tsx",
+  "List.tsx",
+  "SearchInput.tsx",
+  "Textarea.tsx",
 ];
 
 // react-docgen-typescript detects every component-shaped export in a parsed file, not just the

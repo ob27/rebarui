@@ -4,6 +4,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { CardMobile } from "./CardMobile";
 import { KPIS, PROJECTS, STATUS_TONE, avatarsOf, project } from "@/fixtures/tideline";
 
 const CODE = `<Card cover={<div className="cover cover-brand" />}>
@@ -197,6 +198,7 @@ export default function CardPage() {
         </div>
       </DemoStage>
 
+      <CardMobile />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

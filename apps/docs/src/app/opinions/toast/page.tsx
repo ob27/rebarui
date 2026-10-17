@@ -6,6 +6,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { ToastImperative } from "./ToastImperative";
 import { PROJECTS, TASKS, person } from "@/fixtures/tideline";
 
 const CODE = `// once, at the app root
@@ -127,6 +128,7 @@ export default function ToastPage() {
           <Toast open={moved} onOpenChange={setMoved} type="success" title="Task moved to Done" description={`${TASKS[5].title} · ${person(TASKS[5].assignee).name}`} duration={4000} />
         </DemoStage>
 
+        <ToastImperative />
         <NextBlockRenderer blocks={BLOCKS} />
       </Stack>
     </ToastProvider>

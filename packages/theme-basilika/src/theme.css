@@ -54,6 +54,10 @@
   --rebar-color-primary: #b53824;
   --rebar-color-primary-hover: #99301d;
   --rebar-color-primary-text: #ffffff;
+  /* Small coral text (eyebrows, section labels, tertiary links): coral mixed with ink, 4.5:1 on the page and the tints. Buttons keep pure coral. */
+  --rebar-color-primary-text-ink: color-mix(in srgb, var(--rebar-color-primary) 80%, var(--rebar-color-text-primary));
+  /* The bright coral, for text and dots on the navy surfaces (the top bar). */
+  --rebar-color-primary-bright: #e9705c;
   --rebar-color-danger: #b3261e;
   --rebar-color-danger-text: #ffffff;
   --rebar-color-danger-bg: #f9dedb;
@@ -124,6 +128,8 @@
   --rebar-color-primary: #e9705c;
   --rebar-color-primary-hover: #f08a78;
   --rebar-color-primary-text: #0a0b16;
+  --rebar-color-primary-text-ink: color-mix(in srgb, var(--rebar-color-primary) 80%, var(--rebar-color-text-primary));
+  --rebar-color-primary-bright: #e9705c;
   --rebar-color-danger: #ff8f86;
   --rebar-color-danger-text: #0a0b16;
   --rebar-color-danger-bg: #3b2226;

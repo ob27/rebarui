@@ -3,6 +3,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { AvatarMobile } from "./AvatarMobile";
 import { PEOPLE, avatarOf, avatarsOf } from "@/fixtures/tideline";
 
 // Must match `AVATAR_PLACEHOLDERS.length` in packages/core/src/assets/avatarPlaceholders.ts (kept internal, so not imported).
@@ -148,6 +149,7 @@ export default function AvatarPage() {
         </Stack>
       </DemoStage>
 
+      <AvatarMobile />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

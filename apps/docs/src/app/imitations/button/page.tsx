@@ -3,6 +3,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { ButtonMobile } from "./ButtonMobile";
 import { project } from "@/fixtures/tideline";
 
 const CODE = `<Button variant="primary">Save changes</Button>
@@ -86,6 +87,7 @@ export default function ButtonPage() {
         </Card>
       </DemoStage>
 
+      <ButtonMobile />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

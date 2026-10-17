@@ -256,6 +256,14 @@ export const CONSTRUCT_TIER = {
     SkipLink: "order",
 
     // Geneses — starter projects, currently empty, will be populated as projects are added.
+
+    /* ---- new-a: mobile structure ---- */
+    TopBar: "synthetic", // composes a leading control, a title slot and a trailing slot; the only state is the inline-rename field.
+    List: "synthetic", // a static composition of rows; no state.
+    ListItem: "synthetic", // composes row parts; its only state is the self-clearing "just added" highlight.
+    ListSection: "synthetic",
+    SearchInput: "imitation", // one native input mirroring a controlled/uncontrolled value, with its own clear and cancel buttons.
+    Textarea: "imitation", // one native textarea mirroring a controlled/uncontrolled value.
   } satisfies Record<string, Tier>,
 
   block: {

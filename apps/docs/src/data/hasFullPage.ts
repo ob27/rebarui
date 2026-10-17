@@ -216,4 +216,11 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   Alert: "/synthetics/alert",
   Iframe: "/imitations/iframe",
   ThemeToggle: "/opinions/theme-toggle",
+  /* ---- new-a: mobile structure ---- */
+  TopBar: "/synthetics/top-bar",
+  ListSection: "/synthetics/list",
+  ListItem: "/synthetics/list",
+  List: "/synthetics/list",
+  SearchInput: "/imitations/search-input",
+  Textarea: "/imitations/textarea",
 };

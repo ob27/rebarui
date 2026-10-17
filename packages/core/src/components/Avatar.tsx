@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import type { ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef, CSSProperties, KeyboardEvent, ReactNode } from "react";
 import * as RadixAvatar from "@radix-ui/react-avatar";
 import clsx from "clsx";
 import { useAvatarPlaceholderSrc } from "./avatarPlaceholder";
@@ -16,25 +16,53 @@ export interface AvatarProps extends Omit<ComponentPropsWithoutRef<"span">, "cla
    * picks a specific one directly (`placeholder % AVATAR_PLACEHOLDERS.length`).
    */
   placeholder?: boolean | number;
-  /** Visual size — same sm/md/lg convention as `Button`/`Input`. Defaults to `"md"` (the original,
-   * only size this component shipped with), applied via `data-rebar-size` like every other sized
-   * component here, not a prop-driven inline style. */
-  size?: "sm" | "md" | "lg";
+  /** Visual size — `sm`/`md`/`lg` as `Button`/`Input`, `xl` is 96px, a number is a diameter in px. Defaults to `"md"`. */
+  size?: "sm" | "md" | "lg" | "xl" | number;
+  /** A band over the bottom of the image (`"edit"` shows "Edit", or pass your own content). Makes the avatar a button: give it `onClick` and an `aria-label`. Needs a size of 64 or more. */
+  overlay?: "edit" | ReactNode;
+  /** A round badge on the bottom-right edge (a camera icon). The alternative to `overlay`. */
+  badge?: ReactNode;
+  /** A dim scrim with a spinner (uploading). Pointer events off, `aria-busy`. */
+  loading?: boolean;
+  /** A danger ring for a failed upload. */
+  invalid?: boolean;
 }
 
 export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
-  { src, alt, fallback, className, placeholder, size = "md", ...props },
+  { src, alt, fallback, className, placeholder, size = "md", overlay, badge, loading, invalid, onClick, style, ...props },
   ref,
 ) {
   const placeholderSrc = useAvatarPlaceholderSrc(src ? undefined : placeholder, fallback);
   const imageSrc = src ?? placeholderSrc;
+  const interactive = overlay !== undefined && overlay !== false && overlay !== null ? true : Boolean(onClick);
+  const numeric = typeof size === "number";
+  const sizeStyle: CSSProperties | undefined = numeric
+    ? ({ width: size, height: size, fontSize: Math.max(12, Math.round(size * 0.38)) } as CSSProperties)
+    : undefined;
 
-  return (
+  const handleKeyDown = (event: KeyboardEvent<HTMLSpanElement>) => {
+    if (!interactive || loading) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      event.currentTarget.click();
+    }
+  };
+
+  const avatar = (
     <RadixAvatar.Root
       ref={ref}
       className={clsx("rebar-avatar", className)}
       data-rebar-component="avatar"
-      data-rebar-size={size}
+      data-rebar-size={numeric ? "custom" : size}
+      data-rebar-loading={loading ? "true" : undefined}
+      data-rebar-invalid={invalid ? "true" : undefined}
+      role={interactive ? "button" : undefined}
+      tabIndex={interactive && !loading ? 0 : undefined}
+      aria-busy={loading || undefined}
+      aria-disabled={interactive && loading ? true : undefined}
+      onClick={loading ? undefined : onClick}
+      onKeyDown={handleKeyDown}
+      style={{ ...sizeStyle, ...style }}
       {...props}
     >
       {imageSrc ? (
@@ -43,6 +71,26 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
       <RadixAvatar.Fallback className="rebar-avatar-fallback" data-rebar-part="fallback">
         {fallback}
       </RadixAvatar.Fallback>
+      {overlay !== undefined && overlay !== false && overlay !== null ? (
+        <span className="rebar-avatar-overlay" data-rebar-part="overlay">
+          {overlay === "edit" ? "Edit" : overlay}
+        </span>
+      ) : null}
+      {loading ? (
+        <span className="rebar-avatar-scrim" data-rebar-part="scrim" role="status" aria-label="Uploading">
+          <span className="rebar-avatar-spinner" aria-hidden="true" />
+        </span>
+      ) : null}
     </RadixAvatar.Root>
+  );
+
+  if (!badge) return avatar;
+  return (
+    <span className="rebar-avatar-wrap" data-rebar-part="avatar-wrap">
+      {avatar}
+      <span className="rebar-avatar-badge" data-rebar-part="badge">
+        {badge}
+      </span>
+    </span>
   );
 });

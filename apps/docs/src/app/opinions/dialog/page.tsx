@@ -6,6 +6,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { ConfirmDemo } from "./ConfirmDemo";
 import { PROJECTS, person, project } from "@/fixtures/tideline";
 
 const CODE = `<Dialog
@@ -246,6 +247,7 @@ export default function DialogPage() {
         </Stack>
       </DemoStage>
 
+      <ConfirmDemo />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

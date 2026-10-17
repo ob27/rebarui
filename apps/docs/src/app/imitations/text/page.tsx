@@ -5,6 +5,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TextMobile } from "./TextMobile";
 import { person, project } from "@/fixtures/tideline";
 
 const CODE = `<Text size="md">Identity, site and launch kit.</Text>
@@ -67,6 +68,7 @@ export default function TextPage() {
         </Card>
       </DemoStage>
 
+      <TextMobile />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

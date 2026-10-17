@@ -4,6 +4,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { InputMobile } from "./InputMobile";
 import { person, project } from "@/fixtures/tideline";
 
 const CODE = `<label>
@@ -118,6 +119,7 @@ export default function InputPage() {
         </Card>
       </DemoStage>
 
+      <InputMobile />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

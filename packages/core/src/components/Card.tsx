@@ -7,6 +7,9 @@ import { Editable } from "./Editable";
 import { Tag } from "./Tag";
 import type { TagTone } from "./Tag";
 import { Watermark } from "./Watermark";
+import { Text } from "./Text";
+import { defaultRenderLink } from "./linkAdapter";
+import type { RenderLink } from "./linkAdapter";
 
 export interface CardProps extends Omit<ComponentPropsWithoutRef<"div">, "title"> {
   children?: ReactNode;
@@ -74,6 +77,24 @@ export interface CardProps extends Omit<ComponentPropsWithoutRef<"div">, "title"
   /** Overlays a repeating diagonal watermark (via the real `Watermark` component) across the
    * whole card — a draft stamp, an internal-only marker, an attribution. Off by default. */
   watermark?: string;
+  /** Tint fill (peach, sand, lavender, sage) with no border: the same tokens as `BentoCard`. `"default"` is the raised surface. */
+  tone?: "default" | 1 | 2 | 3 | 4;
+  /** Makes the whole card one link (an anchor, or your router's `Link` through `renderLink`). Hover lifts it and the focus ring is on the card; do not nest buttons or links inside, use trailing text instead. */
+  href?: string;
+  /** Anchor `target`, with `href`. */
+  target?: string;
+  /** Anchor `rel`, with `href`. */
+  rel?: string;
+  /** Link adapter for `href`, the same shape as `NavBar`'s `renderLink`. */
+  renderLink?: RenderLink;
+  /** `"row"` is the compact layout: a 64px thumbnail (`cover`) at the start, title and meta, `extra` at the end. Default `"vertical"`. */
+  orientation?: "vertical" | "row";
+  /** An uppercase kicker above the title (`Text variant="eyebrow"`). */
+  eyebrow?: ReactNode;
+  /** The promo preset: a row card on the lavender tint with a small thumbnail (`cover`), one action (`actions[0]`) and, with `onDismiss`, a close button. */
+  promo?: boolean;
+  /** Shows a 44px close button on a `promo` card and calls this when it is pressed. */
+  onDismiss?: () => void;
 }
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
@@ -96,6 +117,15 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     bionicOptions,
     activeBorder,
     watermark,
+    tone = "default",
+    href,
+    target,
+    rel,
+    renderLink = defaultRenderLink,
+    orientation = "vertical",
+    eyebrow,
+    promo,
+    onDismiss,
     ...props
   },
   ref,
@@ -108,15 +138,19 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
   // mid-edit state, not "delete the title control." `titleIsEditable` alone already guarantees
   // `editable` was set with a real (if possibly empty) string, so it's the right signal here.
   const hasTitle = titleIsEditable || !!title;
-  const hasHeader = !!(avatar || hasTitle || extra);
+  const hasHeader = !!(avatar || hasTitle || extra || eyebrow);
+  const effectiveOrientation = promo ? "row" : orientation;
 
-  const cardElement = (
-    <div
-      ref={ref}
-      className={clsx("rebar-card", activeBorder && "rebar-active-border", className)}
-      data-rebar-component="card"
-      {...props}
-    >
+  const rootClass = clsx("rebar-card", activeBorder && "rebar-active-border", className);
+  const marks = {
+    "data-rebar-component": "card",
+    "data-rebar-tone": tone === "default" ? undefined : String(tone),
+    "data-rebar-orientation": effectiveOrientation === "row" ? "row" : undefined,
+    "data-rebar-promo": promo ? "true" : undefined,
+    "data-rebar-link": href !== undefined ? "true" : undefined,
+  };
+  const inner = (
+    <>
       {cornerBadge ? (
         <div className="rebar-card-corner-badge" data-rebar-part="corner-badge">
           {cornerBadge}
@@ -144,9 +178,14 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
                 {avatar}
               </span>
             ) : null}
-            {hasTitle ? (
+            {hasTitle || eyebrow ? (
               <span className="rebar-card-title-group">
-                {titleIsEditable ? (
+                {eyebrow ? (
+                  <Text as="span" variant="eyebrow" data-rebar-part="eyebrow">
+                    {eyebrow}
+                  </Text>
+                ) : null}
+                {!hasTitle ? null : titleIsEditable ? (
                   <Editable
                     value={title as string}
                     onChange={onTitleChange}
@@ -200,8 +239,24 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
           ))}
         </div>
       ) : null}
-    </div>
+      {promo && onDismiss ? (
+        <button type="button" className="rebar-card-dismiss" data-rebar-part="dismiss" aria-label="Dismiss" onClick={onDismiss}>
+          <svg viewBox="0 0 24 24" width="1.1em" height="1.1em" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true" focusable="false">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      ) : null}
+    </>
   );
+
+  const cardElement =
+    href !== undefined ? (
+      <>{renderLink({ ...(props as object), ...marks, className: rootClass, href, target, rel, children: inner } as never)}</>
+    ) : (
+      <div ref={ref} className={rootClass} {...marks} {...props}>
+        {inner}
+      </div>
+    );
 
   return watermark ? <Watermark text={watermark}>{cardElement}</Watermark> : cardElement;
 });

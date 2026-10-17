@@ -3,6 +3,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { HeadingMobile } from "./HeadingMobile";
 import { project } from "@/fixtures/tideline";
 
 const CODE = `<Heading level={1}>Harbour rebrand</Heading>
@@ -65,6 +66,7 @@ export default function HeadingPage() {
         </Card>
       </DemoStage>
 
+      <HeadingMobile />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

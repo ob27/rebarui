@@ -1,17 +1,29 @@
 import * as RadixToast from "@radix-ui/react-toast";
+import { useContext } from "react";
 import type { ReactNode } from "react";
+import { ConfirmHost } from "./confirm";
+import { ToasterHost, ToasterHostedContext } from "./toaster";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
 
 /**
  * Mount once at the app root, wrapping everything — same pattern Radix itself documents.
- * Individual <Toast> components elsewhere in the tree render into this viewport via portal.
+ * Individual <Toast> components elsewhere in the tree render into this viewport via portal. The same
+ * provider also hosts the imperative `toast()` stack and the `confirm()` dialog, so one provider serves
+ * all three (a nested provider hosts nothing extra).
  */
-export function ToastProvider({ children }: { children: ReactNode }) {
+export function ToastProvider({ children, max = 3 }: { children: ReactNode; /** How many imperative toasts show at once per position. Default 3. */ max?: number }) {
+  const hosted = useContext(ToasterHostedContext);
   return (
     <RadixToast.Provider>
-      {children}
+      <ToasterHostedContext.Provider value={true}>{children}</ToasterHostedContext.Provider>
       <RadixToast.Viewport className="rebar-toast-viewport" data-rebar-component="toast-viewport" />
+      {hosted ? null : (
+        <>
+          <ToasterHost max={max} />
+          <ConfirmHost />
+        </>
+      )}
     </RadixToast.Provider>
   );
 }

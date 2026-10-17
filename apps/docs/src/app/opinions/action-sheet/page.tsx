@@ -6,6 +6,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { ActionSheetMobile } from "./ActionSheetMobile";
 import { TASKS, person, project } from "@/fixtures/tideline";
 import { PhoneList, PhoneRow, PhoneSheet, TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
 
@@ -169,6 +170,7 @@ export default function ActionSheetPage() {
         </div>
       </DemoStage>
 
+      <ActionSheetMobile />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

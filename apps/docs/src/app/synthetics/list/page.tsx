@@ -1,0 +1,199 @@
+"use client";
+
+import { useState } from "react";
+import { ActionSheet, Button, MoreIcon, Heading, List, ListItem, ListSection, SearchInput, Stack, Switch, Text, ToastProvider, TopBar, confirm } from "rebar-ui";
+import type { Construct } from "@rebar-ui/placement";
+import componentProps from "@/generated/component-props.json";
+import { DemoStage } from "@/components/DemoStage";
+import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { PhoneBar, athicTabs } from "@/components/PhoneBar";
+import { TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
+import { ART, BIBLE_TRANSLATIONS, DISCUSSIONS, LIBRARY_ENTRIES, PROFILE } from "@/fixtures/athic";
+
+const CODE = `<ListSection title="Your collection" footer="Saved on this device.">
+  <List variant="cards">
+    <ListItem title="Why do Catholics confess to a priest?" meta="2 hours ago"
+      media={<Thumb />} trailing="more" onClick={open} />
+    <ListItem title="Explain today’s Gospel" meta="3 days ago" selected />
+  </List>
+</ListSection>
+
+<List variant="grouped">
+  <ListItem title="Plan and billing" trailing="chevron" href="/billing" />
+  <ListItem title="Remind me daily" trailing={<Switch aria-label="Remind me daily" onChange={save} />} />
+</List>`;
+
+const BLOCKS: Construct[] = [
+  { type: "props-table", heading: "List props", rows: componentProps["List"] ?? [] },
+  { type: "props-table", heading: "ListItem props", rows: componentProps["ListItem"] ?? [] },
+  { type: "props-table", heading: "ListSection props", rows: componentProps["ListSection"] ?? [] },
+  {
+    type: "doc-section",
+    heading: "Accessibility",
+    body: [
+      {
+        kind: "text",
+        text: "A real `<ul>` of `<li>` rows. The media and text area of a row is the one link or button (`href` or `onClick`); trailing controls sit beside it, never inside, so a `Switch` or a menu button is never nested in an interactive element and never triggers the row. `selected` sets `aria-current`; `loading` sets `aria-busy` and a labelled spinner; `skeleton` rows are `aria-hidden`; a disabled row has no focusable control. A `ListSection` is a labelled region named by its eyebrow.",
+      },
+    ],
+  },
+  {
+    type: "doc-section",
+    heading: "data-rebar-* attributes",
+    body: [
+      {
+        kind: "text",
+        text: '`data-rebar-component="list" | "list-item" | "list-section"`, `data-rebar-variant` on the list and its rows, `data-rebar-title-style`, `data-rebar-selected`, `data-rebar-highlight`, `data-rebar-state="loading" | "skeleton" | "disabled"`; parts `main`, `media`, `leading`, `body`, `title`, `description`, `meta`, `chip`, `chevron`, `trailing`.',
+      },
+    ],
+  },
+];
+
+const thumb = (n: number) => <span style={{ display: "block", background: ART[n] }} />;
+const chev = "chevron" as const;
+const ic = (d: string) => (
+  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d={d} />
+  </svg>
+);
+const ICONS = [ic("M4 5h16v11H8l-4 4z"), ic("M7 4h10v16l-5-4-5 4z"), ic("M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2zM5 18a2 2 0 0 1 2-2h12"), ic("M12 4a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V7a3 3 0 0 1 3-3zM6 11a6 6 0 0 0 12 0M12 17v3")];
+
+export default function ListPage() {
+  const [selected, setSelected] = useState("sick");
+  const [rows, setRows] = useState(DISCUSSIONS.slice(0, 4));
+  const [pending, setPending] = useState<string | null>(null);
+  const [remind, setRemind] = useState(false);
+  const [translation, setTranslation] = useState("dr");
+
+  async function remove(id: string) {
+    if (!(await confirm({ title: "Delete this discussion?", content: "This can’t be undone.", confirmText: "Delete", destructive: true }))) return;
+    setPending(id);
+    await new Promise((r) => setTimeout(r, 900));
+    setRows((r) => r.filter((x) => x.id !== id));
+    setPending(null);
+  }
+  const setReminder = (on: boolean) => new Promise<void>((resolve) => setTimeout(() => { setRemind(on); resolve(); }, 900));
+
+  const STATES = [
+          { label: "Default", node: <List><ListItem title={DISCUSSIONS[0].title} meta={DISCUSSIONS[0].when} media={thumb(0)} trailing="more" onClick={() => {}} /></List> },
+          { label: "Just added (highlight, pinned)", node: <List><ListItem title={DISCUSSIONS[4].title} meta={DISCUSSIONS[4].when} media={thumb(4)} trailing="more" highlight="new" highlightPinned onClick={() => {}} /></List> },
+          { label: "Selected (open item)", node: <List><ListItem title={DISCUSSIONS[2].title} meta={DISCUSSIONS[2].when} media={thumb(2)} trailing="more" selected onClick={() => {}} /></List> },
+          { label: "Busy (deleting)", node: <List><ListItem title={DISCUSSIONS[0].title} meta={DISCUSSIONS[0].when} media={thumb(0)} loading /></List> },
+          { label: "Long title wraps", node: <List><ListItem title={DISCUSSIONS[1].title} meta={DISCUSSIONS[1].when} media={thumb(1)} trailing="more" onClick={() => {}} /></List> },
+          { label: "Skeleton", node: <List><ListItem title="" skeleton /></List> },
+          { label: "Disabled", node: <List><ListItem title={DISCUSSIONS[2].title} meta={DISCUSSIONS[2].when} media={thumb(2)} trailing="more" disabled /></List> },
+          { label: "Trailing: chevron", node: <List variant="grouped"><ListItem title="Plan and billing" trailing={chev} href="#billing" /><ListItem title="App icon" trailing={chev} href="#icon" /></List> },
+          { label: "Trailing: Switch, loading", node: <List variant="grouped"><ListItem title="Remind me daily" description="Turning on…" trailing={<Switch aria-label="Remind me daily" loading defaultChecked />} /></List> },
+          { label: "Trailing: value", node: <List variant="grouped"><ListItem title="Time" trailing={<span style={{ border: "1.5px solid var(--rebar-color-border)", borderRadius: 999, padding: "8px 18px", color: "var(--rebar-color-text-primary)" }}>8:00 AM</span>} /><ListItem title="Language" trailing={<span style={{ border: "1.5px solid var(--rebar-color-border)", borderRadius: 999, padding: "8px 18px", color: "var(--rebar-color-text-primary)" }}>English</span>} /></List> },
+          { label: "Leading icon tile (nav card)", node: <List><ListItem title="Your Reflections" trailing={chev} leading={{ icon: ICONS[2], tone: 1 }} href="#reflections" /><ListItem title="Indulgences" trailing={chev} leading={{ icon: ICONS[1], tone: 3 }} href="#indulgences" /></List> },
+          { label: "Empty", node: <List empty={<><Heading level={3}>No discussions yet</Heading><Text size="sm" color="secondary">Ask a question and it will appear here.</Text></>} /> },
+        ];
+
+  return (
+    <ToastProvider>
+    <Stack gap="lg">
+      <Heading level={1}>List</Heading>
+      <Text color="secondary">One row family for phone screens: thumbnail rows, settings rows and navigation cards.</Text>
+
+      <DemoStage
+        title="List, ListItem, ListSection"
+        caption="Cards and grouped variants; try a row, the switch, or Delete"
+        code={CODE}
+        widths={false}
+      >
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 330px), 1fr))", gap: 24 }}>
+          <ListSection title='variant="cards"'>
+            <List aria-label="Discussions">
+              {rows.map((d) => (
+                <ListItem
+                  key={d.id}
+                  title={d.title}
+                  meta={d.when}
+                  media={thumb(d.art)}
+                  selected={selected === d.id}
+                  loading={pending === d.id}
+                  onClick={() => setSelected(d.id)}
+                  trailing={
+                    <ActionSheet
+                      title="Discussion actions"
+                      trigger={<Button iconOnly variant="secondary" aria-label={`Actions for ${d.title}`}><MoreIcon /></Button>}
+                      closeOnSelect={false}
+                      actions={[{ label: "Save to Library" }, { label: "Delete", destructive: true, onSelect: () => remove(d.id) }]}
+                    />
+                  }
+                />
+              ))}
+            </List>
+          </ListSection>
+          <ListSection title='variant="grouped"' footer="Used for the Bible and the Mass readings. Bible search covers the Douay-Rheims only.">
+            <List variant="grouped" aria-label="Settings">
+              <ListItem title="Plan and billing" trailing={chev} href="#billing" />
+              <ListItem title="App icon" trailing={chev} href="#icon" />
+              <ListItem title="Your Details" description="Username, photo and what Athic knows about you" trailing={chev} href="#details" />
+              <ListItem title="Remind me daily" description="One notification a day; tapping it opens Today." trailing={<Switch aria-label="Remind me daily" checked={remind} onChange={setReminder} />} />
+            </List>
+          </ListSection>
+        </div>
+        <div style={{ marginTop: 32, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: "22px 18px" }}>
+          {STATES.map((state) => (
+            <div key={state.label} style={{ display: "grid", gap: 8, alignContent: "start" }}>
+              <Text variant="eyebrow" tone="muted">{state.label}</Text>
+              {state.node}
+            </div>
+          ))}
+        </div>
+      </DemoStage>
+
+      <Heading level={2}>In context</Heading>
+      <DemoStage title="Ask, Profile and Library" caption="Just added and busy rows, settings groups, navigation cards and skeletons" widths={false}>
+        <Stack direction="row" gap="lg" style={{ flexWrap: "wrap", justifyContent: "center", alignItems: "flex-start" }}>
+          <TidelinePhone width={320} height={560} tabBar={athicTabs("ask")} bar={<PhoneBar><TopBar leading="back" title="Ask" /></PhoneBar>}>
+            <div style={{ display: "grid", gap: 12 }}>
+              <SearchInput placeholder="Search your Discussions" />
+              <List>
+                <ListItem title={DISCUSSIONS[4].title} meta={DISCUSSIONS[4].when} media={thumb(4)} trailing="more" highlight="new" highlightPinned />
+                <ListItem title={DISCUSSIONS[0].title} meta={DISCUSSIONS[0].when} media={thumb(0)} loading />
+                <ListItem title={DISCUSSIONS[2].title} meta={DISCUSSIONS[2].when} media={thumb(2)} trailing="more" onClick={() => {}} />
+                <ListItem title={DISCUSSIONS[3].title} meta={DISCUSSIONS[3].when} media={thumb(3)} trailing="more" onClick={() => {}} />
+              </List>
+            </div>
+          </TidelinePhone>
+          <TidelinePhone width={320} height={560} tabBar={athicTabs("me")} bar={<PhoneBar><TopBar title="Your Profile" /></PhoneBar>}>
+            <div style={{ display: "grid", gap: 16 }}>
+              <ListSection title="Account">
+                <List variant="grouped">
+                  <ListItem title={PROFILE.username} description={PROFILE.email} trailing={chev} href="#account" />
+                  <ListItem title="Plan and billing" trailing={chev} href="#billing" />
+                </List>
+              </ListSection>
+              <ListSection title="Bible translation" footer="Used for the Bible and the Mass readings.">
+                <List variant="grouped">
+                  {BIBLE_TRANSLATIONS.map((t) => (
+                    <ListItem key={t.value} title={t.label} onClick={() => setTranslation(t.value)} selected={translation === t.value} trailing={<span aria-hidden="true">{translation === t.value ? "●" : "○"}</span>} />
+                  ))}
+                </List>
+              </ListSection>
+            </div>
+          </TidelinePhone>
+          <TidelinePhone width={320} height={640} tabBar={athicTabs("library")} bar={<PhoneBar><TopBar title="Library" /></PhoneBar>}>
+            <div style={{ display: "grid", gap: 16 }}>
+              <ListSection title="Your collection">
+                <List>
+                  {LIBRARY_ENTRIES.map((e) => (
+                    <ListItem key={e.id} title={e.label} description={e.detail} trailing={chev} leading={{ icon: ICONS[e.tone - 1], tone: e.tone }} href={`#${e.id}`} />
+                  ))}
+                </List>
+              </ListSection>
+              <ListSection title="Loading">
+                <List loading />
+              </ListSection>
+            </div>
+          </TidelinePhone>
+        </Stack>
+      </DemoStage>
+
+      <NextBlockRenderer blocks={BLOCKS} />
+    </Stack>
+    </ToastProvider>
+  );
+}

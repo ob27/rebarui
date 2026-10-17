@@ -2467,3 +2467,106 @@ textarea.rebar-input {
 
 /* WaybackSlider "Latest" badge: primary-on-tint text sits just under AA; ink on the tint always passes */
 .rebar-wayback-slider-latest { color: var(--rebar-color-text-primary); font-weight: var(--rebar-font-weight-semibold); }
+
+/* ---- new-a: mobile structure ---- */
+
+/* Eyebrow and section labels read in the coral ink */
+.rebar-text[data-rebar-variant="eyebrow"],
+.rebar-text[data-rebar-variant="section-label"] {
+  font-family: var(--rebar-font-family-sans);
+}
+.rebar-heading[data-rebar-rule] {
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+/* Button: icon-only, rounded (after the pill sizes above, same specificity) */
+.rebar-button[data-rebar-icon-only] {
+  padding: 0;
+  width: 44px;
+  min-height: 0;
+  height: 44px;
+  border-radius: 50%;
+}
+.rebar-button[data-rebar-icon-only][data-rebar-size="sm"] {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+}
+.rebar-button[data-rebar-icon-only][data-rebar-size="lg"] {
+  width: 52px;
+  height: 52px;
+  padding: 0;
+}
+.rebar-button[data-rebar-shape="rounded"] {
+  border-radius: var(--rebar-radius);
+}
+a.rebar-button[data-rebar-variant="tertiary"] {
+  padding: 0 4px;
+  font-weight: var(--rebar-font-weight-semibold);
+}
+a.rebar-button[data-rebar-variant="tertiary"]:hover {
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Switch: sizes with the 44px hit area */
+.rebar-switch[data-rebar-size="md"] {
+  width: 52px;
+  height: 32px;
+  padding: 3px;
+}
+.rebar-switch[data-rebar-size="md"] .rebar-switch-thumb {
+  width: 26px;
+  height: 26px;
+}
+.rebar-switch[data-rebar-size="md"] .rebar-switch-thumb[data-state="checked"] {
+  transform: translateX(20px);
+}
+.rebar-switch[data-rebar-size="lg"] {
+  width: 60px;
+  height: 36px;
+  padding: 3px;
+}
+.rebar-switch[data-rebar-size="lg"] .rebar-switch-thumb {
+  width: 30px;
+  height: 30px;
+}
+.rebar-switch[data-rebar-size="lg"] .rebar-switch-thumb[data-state="checked"] {
+  transform: translateX(24px);
+}
+.rebar-switch[data-rebar-size]::after {
+  content: "";
+  position: absolute;
+  inset: -6px -2px;
+}
+.rebar-switch[data-rebar-loading][data-state="checked"] .rebar-switch-thumb {
+  background: var(--rebar-color-bg-raised);
+}
+
+/* Textarea: matches the pill Input */
+.rebar-textarea {
+  border-radius: 20px;
+}
+
+/* Input: affix padding follows the pill */
+.rebar-input-affix[data-rebar-has-start] > .rebar-input {
+  padding-left: 46px;
+}
+
+/* TopBar: serif title, coral action on navy */
+.rebar-top-bar-title,
+.rebar-top-bar-logo {
+  font-variation-settings: "SOFT" 100;
+}
+
+/* ListItem: grouped rows use the sans title and the unfilled chevron */
+.rebar-list[data-rebar-variant="grouped"] > .rebar-list-item {
+  border-radius: 0;
+}
+
+/* Toast and confirm: dark scheme toasts use the tint-3 surface */
+.rebar-confirm-button[data-rebar-variant="destructive-solid"] {
+  font-weight: var(--rebar-font-weight-semibold);
+}

@@ -4,6 +4,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { SwitchMobile } from "./SwitchMobile";
 
 const CODE = `<label>
   <Switch defaultChecked />
@@ -134,6 +135,7 @@ export default function SwitchPage() {
         </Card>
       </DemoStage>
 
+      <SwitchMobile />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );
