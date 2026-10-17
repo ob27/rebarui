@@ -12071,3 +12071,15 @@ a.rebar-list-item-main {
   margin-inline: 0;
   padding: 0;
 }
+
+/* Empty auto: the dark-theme glyph is a neutral line drawing (ghost / tray) in the secondary text colour, at the raster's size */
+.rebar-empty-icon-vector[data-rebar-glyph="neutral"] {
+  opacity: 0.7;
+  color: var(--rebar-color-text-secondary, #757575);
+}
+/* A light scope inside a dark page keeps the illustration */
+[data-rebar-scheme="light"] .rebar-empty-icon-raster { display: block; }
+[data-rebar-scheme="light"] .rebar-empty-icon-vector { display: none; }
+/* A dark scope inside a light page (ThemeScope scheme="dark") gets the same swap */
+[data-rebar-scheme="dark"] .rebar-empty-icon-raster { display: none; }
+[data-rebar-scheme="dark"] .rebar-empty-icon-vector { display: block; }

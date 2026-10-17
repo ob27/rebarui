@@ -21,8 +21,10 @@ export interface EmptyProps {
   className?: string;
   /**
    * Which icon to render. "auto" (default) shows the hand-drawn illustration in light mode and
-   * switches to the plain vector automatically in dark mode — the illustration is a raster image
-   * baked onto a white background, so it can't recolor itself for a dark surface. Set explicitly
+   * switches to a neutral, theme-tinted line glyph (a ghost, or an empty tray for
+   * `illustration="bowl-and-spoon"`; never the error-style circle-with-an-X) automatically in dark
+   * mode — the illustration is a raster image baked onto a white background, so it can't recolor
+   * itself for a dark surface. Set explicitly
    * to keep one icon in both themes instead: "illustration" for the sketch look everywhere,
    * "vector" for the plain circle-with-an-X everywhere, "container" for the real Ant
    * Design-sourced `InboxOutlined` glyph (`currentColor`, same as "vector" — adapts to either
@@ -76,13 +78,28 @@ export const Empty = forwardRef<HTMLDivElement, EmptyProps>(function Empty(
         <svg
           className="rebar-empty-icon rebar-empty-icon-vector"
           data-rebar-part="icon"
+          data-rebar-glyph={icon === "auto" ? "neutral" : undefined}
           viewBox="0 0 24 24"
           aria-hidden="true"
           focusable="false"
           style={icon === "vector" ? { display: "block" } : undefined}
         >
-          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.5" />
-          <path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          {icon === "auto" ? (
+            illustration === "ghost" ? (
+              <>
+                <path d="M5.5 20.5V11a6.5 6.5 0 0 1 13 0v9.5l-2.17-1.8-2.16 1.8-2.17-1.8-2.16 1.8-2.17-1.8z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                <circle cx="9.6" cy="10.8" r="1.1" fill="currentColor" />
+                <circle cx="14.4" cy="10.8" r="1.1" fill="currentColor" />
+              </>
+            ) : (
+              <path d="M3.5 13.5l2.4-7a1.5 1.5 0 0 1 1.4-1h9.4a1.5 1.5 0 0 1 1.4 1l2.4 7v4a1.5 1.5 0 0 1-1.5 1.5H5a1.5 1.5 0 0 1-1.5-1.5v-4zm0 0h5.2a3.3 3.3 0 0 0 6.6 0h5.2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            )
+          ) : (
+            <>
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </>
+          )}
         </svg>
       ) : null}
       {showContainer ? (

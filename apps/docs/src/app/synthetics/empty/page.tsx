@@ -85,6 +85,16 @@ const BLOCKS: Construct[] = [
       },
     ],
   },
+  {
+    type: "doc-section",
+    heading: "Neutral dark-mode glyph",
+    body: [
+      {
+        "kind": "text",
+        "text": "With `icon=\"auto\"` the raster illustration shows in light mode, and in dark mode (`[data-theme=\"dark\"]` or a dark `ThemeScope`) a neutral, theme-tinted line glyph takes its place: a ghost for the default illustration, an empty tray for `bowl-and-spoon`. It is never the error-style circle-with-an-X (that stays available as `icon=\"vector\"`)."
+      }
+    ],
+  },
 ];
 
 export default function EmptyPage() {

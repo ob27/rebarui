@@ -69,3 +69,26 @@ describe("Empty", () => {
     expect(screen.getByRole("button", { name: "Create project" })).toBeInTheDocument();
   });
 });
+
+describe("Empty auto glyph (fixes-2)", () => {
+  it("the auto dark glyph is neutral: no circle-with-an-X, a theme-tinted line drawing", () => {
+    const { container } = render(<Empty />);
+    const glyph = container.querySelector(".rebar-empty-icon-vector")!;
+    expect(glyph).toHaveAttribute("data-rebar-glyph", "neutral");
+    expect(glyph.querySelector("circle[r='9']")).toBeNull();
+    expect(glyph.innerHTML).toContain("currentColor");
+    expect(glyph.querySelectorAll("path").length).toBeGreaterThan(0);
+  });
+  it("bowl-and-spoon auto uses a neutral tray glyph, also without the X", () => {
+    const { container } = render(<Empty illustration="bowl-and-spoon" />);
+    const glyph = container.querySelector(".rebar-empty-icon-vector")!;
+    expect(glyph.querySelector("circle[r='9']")).toBeNull();
+    expect(glyph).toHaveAttribute("data-rebar-glyph", "neutral");
+  });
+  it("explicit icon='vector' keeps the circle-with-an-X", () => {
+    const { container } = render(<Empty icon="vector" />);
+    const glyph = container.querySelector(".rebar-empty-icon-vector")!;
+    expect(glyph.querySelector("circle[r='9']")).not.toBeNull();
+    expect(glyph).not.toHaveAttribute("data-rebar-glyph");
+  });
+});
