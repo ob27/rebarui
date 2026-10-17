@@ -41,7 +41,7 @@ describe("Heading base size rules", () => {
   const css = readFileSync(resolve(__dirname, "../styles/style.css"), "utf8");
   it("wraps the three size selectors in :where() so a plain class can override them", () => {
     for (const level of [1, 2, 3]) {
-      expect(css).toContain(`:where(.rebar-heading[data-rebar-level="${level}"]) {\n  font-size:`);
+      expect(css.replace(/\r\n/g, "\n")).toContain(`:where(.rebar-heading[data-rebar-level="${level}"]) {\n  font-size:`);
     }
   });
   it("does not set a font-size on a normal-specificity heading selector", () => {
