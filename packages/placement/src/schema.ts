@@ -640,7 +640,23 @@ export type Construct =
       copyable?: boolean;
     }
   | { type: "data-list"; items: DataListItem[] }
-  | { type: "filter-bar"; searchPlaceholder?: string; filterLabel?: string; filterOptions?: string[]; actionLabel?: string }
+  | {
+      type: "filter-bar";
+      searchPlaceholder?: string;
+      /** Accessible name of the filter select, or of the pill group when `pills` is set. */
+      filterLabel?: string;
+      filterOptions?: string[];
+      actionLabel?: string;
+      /** Switches the block to the `FilterBar` look: a pill search field, single-select filter pills (first is "all"),
+       * an optional sort and a result count. Without `pills`, `sortOptions` and `resultCount` the block is the
+       * plain search + select + button row. */
+      pills?: string[];
+      /** Sort choices in a pill-shaped select with a muted `sortLabel` ("Sort"). */
+      sortOptions?: string[];
+      sortLabel?: string;
+      /** Result count line under the bar, e.g. `{ count: 24, noun: "Perspective" }` reads "24 Perspectives". */
+      resultCount?: { count: number; noun?: string; plural?: string };
+    }
   | { type: "tabs"; tabs: { label: string; blocks: Construct[] }[] }
   | { type: "modal"; title: string; blocks: Construct[]; confirmLabel?: string; cancelLabel?: string }
   | {

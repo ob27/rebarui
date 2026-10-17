@@ -1,5 +1,5 @@
 import { Children, useCallback, useEffect, useRef, useState } from "react";
-import type { ComponentPropsWithoutRef, FocusEvent, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, CSSProperties, FocusEvent, ReactNode } from "react";
 import clsx from "clsx";
 import { Button } from "./Button";
 import { ChevronLeftIcon, ChevronRightIcon } from "./icons";
@@ -22,9 +22,20 @@ export interface ScrollRailProps extends Omit<ComponentPropsWithoutRef<"div">, "
   autoScroll?: boolean | number;
   /** With `autoScroll`: render a second `aria-hidden`, inert copy of the items and wrap seamlessly. */
   loop?: boolean;
-  /** Space between items, token driven. Default `"md"`. */
-  gap?: "sm" | "md" | "lg";
+  /** Space between items: a token step, or any CSS length (`"12px"`). Default `"md"`. */
+  gap?: "sm" | "md" | "lg" | (string & {});
+  /**
+   * Width of every item: a number is px, a string any CSS length. `{ base, md }` is responsive: `base`
+   * on phones, `md` from 768px up (use a `base` narrower than the container so the next item peeks).
+   * Replaces setting `--rebar-scroll-rail-item-width` by hand. Items stay equal height; push a card
+   * footer to the bottom with `margin-top: auto`.
+   */
+  itemWidth?: number | string | { base: number | string; md?: number | string };
+  /** A heading row above the rail (title, "See all" link). When set, the previous/next buttons move into this row, end aligned. */
+  header?: ReactNode;
 }
+
+const toCssLength = (value: number | string) => (typeof value === "number" ? `${value}px` : value);
 
 const DEFAULT_SPEED = 40;
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
@@ -54,9 +65,21 @@ export function ScrollRail({
   autoScroll,
   loop = false,
   gap = "md",
+  itemWidth,
+  header,
   className,
+  style,
   ...rest
 }: ScrollRailProps) {
+  const gapToken = gap === "sm" || gap === "md" || gap === "lg";
+  const railStyle: CSSProperties = { ...style };
+  if (itemWidth !== undefined) {
+    const base = typeof itemWidth === "object" ? itemWidth.base : itemWidth;
+    const md = typeof itemWidth === "object" ? (itemWidth.md ?? itemWidth.base) : itemWidth;
+    (railStyle as Record<string, string>)["--rebar-scroll-rail-item-width"] = toCssLength(base);
+    (railStyle as Record<string, string>)["--rebar-scroll-rail-item-width-md"] = toCssLength(md);
+  }
+  if (!gapToken) (railStyle as Record<string, string>)["--rebar-scroll-rail-gap"] = gap;
   const items = Children.toArray(children);
   const reducedMotion = useReducedMotion();
   const speed = autoScroll === true ? DEFAULT_SPEED : typeof autoScroll === "number" && autoScroll > 0 ? autoScroll : 0;
@@ -156,6 +179,36 @@ export function ScrollRail({
     }
   };
 
+  const controlsNode = showControls ? (
+    <>
+      <Button
+        type="button"
+        variant="secondary"
+        size="sm"
+        data-rebar-part="control"
+        data-rebar-direction="prev"
+        aria-label="Previous items"
+        disabled={!canScrollStart}
+        onClick={() => scrollByItem(-1)}
+      >
+        <ChevronLeftIcon />
+      </Button>
+      <Button
+        type="button"
+        variant="secondary"
+        size="sm"
+        data-rebar-part="control"
+        data-rebar-direction="next"
+        aria-label="Next items"
+        disabled={!canScrollEnd}
+        onClick={() => scrollByItem(1)}
+      >
+        <ChevronRightIcon />
+      </Button>
+    </>
+  ) : null;
+  const controlsInHeader = Boolean(header) && showControls;
+
   const state = !autoActive ? "static" : running ? "scrolling" : "paused";
 
   return (
@@ -163,7 +216,9 @@ export function ScrollRail({
       className={clsx("rebar-scroll-rail", className)}
       data-rebar-component="scroll-rail"
       data-rebar-state={state}
-      data-rebar-gap={gap}
+      data-rebar-gap={gapToken ? gap : "custom"}
+      data-rebar-item-width={itemWidth !== undefined ? "set" : undefined}
+      style={railStyle}
       data-rebar-snap={snapOn ? "true" : "false"}
       data-rebar-can-scroll-start={canScrollStart ? "true" : "false"}
       data-rebar-can-scroll-end={canScrollEnd ? "true" : "false"}
@@ -171,6 +226,16 @@ export function ScrollRail({
       aria-label={ariaLabel}
       {...rest}
     >
+      {header ? (
+        <div className="rebar-scroll-rail-header" data-rebar-part="header">
+          <div className="rebar-scroll-rail-header-content">{header}</div>
+          {controlsInHeader ? (
+            <div className="rebar-scroll-rail-header-controls" data-rebar-part="header-controls">
+              {controlsNode}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
       <div
         ref={viewportRef}
         className="rebar-scroll-rail-viewport"
@@ -208,36 +273,9 @@ export function ScrollRail({
         </div>
       </div>
 
-      {showControls || autoActive ? (
+      {showControls && !controlsInHeader || autoActive ? (
         <div className="rebar-scroll-rail-bar">
-          {showControls ? (
-            <>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                data-rebar-part="control"
-                data-rebar-direction="prev"
-                aria-label="Previous items"
-                disabled={!canScrollStart}
-                onClick={() => scrollByItem(-1)}
-              >
-                <ChevronLeftIcon />
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                data-rebar-part="control"
-                data-rebar-direction="next"
-                aria-label="Next items"
-                disabled={!canScrollEnd}
-                onClick={() => scrollByItem(1)}
-              >
-                <ChevronRightIcon />
-              </Button>
-            </>
-          ) : null}
+          {controlsInHeader ? null : controlsNode}
           {autoActive ? (
             <Button
               type="button"

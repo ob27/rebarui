@@ -824,3 +824,25 @@ export type { BackdropSectionProps } from "./components/BackdropSection";
 
 export { Puppet } from "./components/Puppet";
 export type { PuppetProps, PuppetLayers, PuppetWobblePart, PuppetPose } from "./components/Puppet";
+
+/* ---- new-c: marketing group ---- */
+export { Section } from "./components/Section";
+export type { SectionProps } from "./components/Section";
+export { HeroSplit } from "./components/HeroSplit";
+export type { HeroSplitProps } from "./components/HeroSplit";
+export { PageHeader } from "./components/PageHeader";
+export type { PageHeaderProps } from "./components/PageHeader";
+export { Prose, Markdown } from "./components/Prose";
+export type { ProseProps, MarkdownProps } from "./components/Prose";
+export { renderMarkdown } from "./markdown";
+export type { RenderMarkdownOptions, MarkdownComponents, MarkdownTag } from "./markdown";
+export { FilterBar, FilterPills, ResultCount } from "./components/FilterBar";
+export type {
+  FilterBarProps,
+  FilterBarSortOption,
+  FilterPillOption,
+  FilterPillsProps,
+  ResultCountProps,
+} from "./components/FilterBar";
+export { useHashTarget } from "./useHashTarget";
+export type { UseHashTargetOptions, UseHashTargetResult } from "./useHashTarget";
