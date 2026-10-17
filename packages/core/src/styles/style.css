@@ -13330,3 +13330,112 @@ a.rebar-list-item-main {
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-buttons { gap: 10px; }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-buttons > * { min-height: 0; }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-brand { display: flex; }
+
+/* ---- parity-r3: reading, calendar, bible, reflections, listen (opt-in properties; every default is the previous value) ---- */
+
+/* ReadingView: panel gap, citation kicker, empty/loading message, footer and body type can be set by an app */
+.rebar-reading-view-panel {
+  gap: var(--rebar-reading-view-panel-gap, var(--rebar-space-md));
+  border-radius: var(--rebar-reading-view-radius, var(--rebar-radius));
+  padding: var(--rebar-reading-view-padding, var(--rebar-space-md));
+}
+.rebar-reading-view[data-rebar-tone="plain"] .rebar-reading-view-panel { padding: 0; }
+.rebar-reading-view-citation {
+  font-size: var(--rebar-reading-view-citation-size, var(--rebar-font-size-xs));
+  font-weight: var(--rebar-reading-view-citation-weight, var(--rebar-font-weight-semibold));
+  letter-spacing: var(--rebar-reading-view-citation-tracking, 0.06em);
+  color: var(--rebar-reading-view-citation-color, var(--rebar-color-text-secondary));
+}
+.rebar-reading-view-message {
+  padding: var(--rebar-reading-view-message-padding, var(--rebar-space-md));
+  text-align: var(--rebar-reading-view-message-align, center);
+  font-size: var(--rebar-reading-view-message-size, inherit);
+  font-style: var(--rebar-reading-view-message-style, normal);
+}
+.rebar-reading-view-footer {
+  font-size: var(--rebar-reading-view-footer-size, var(--rebar-font-size-xs));
+}
+.rebar-reading-view-verses,
+.rebar-reading-view-body {
+  line-height: var(--rebar-reading-view-body-line-height, 1.7);
+  font-size: var(--rebar-reading-view-body-size, inherit);
+  max-width: var(--rebar-reading-view-body-max-width, 34em);
+}
+
+/* Text variant="section-label": size, tracking and line height can be set by an app */
+.rebar-text[data-rebar-variant="section-label"] {
+  font-size: var(--rebar-section-label-size, 12px);
+  line-height: var(--rebar-section-label-line-height, 1.2);
+  letter-spacing: var(--rebar-section-label-tracking, 0.16em);
+}
+
+/* Card: a tone card's border width can be set by an app (default: the card border width) */
+.rebar-card[data-rebar-tone] {
+  border-width: var(--rebar-card-tone-border-width, var(--rebar-border-width, 1px));
+}
+
+/* Card appearance="topic": the flat content card (square rounded cover, eyebrow pill, serif title, clamped excerpt) */
+.rebar-card[data-rebar-appearance="topic"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rebar-card-topic-gap, 12px);
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none;
+  text-decoration: none;
+  color: inherit;
+}
+.rebar-card[data-rebar-appearance="topic"] > .rebar-card-cover {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: var(--rebar-card-topic-cover-radius, 26px);
+  border: 1px solid var(--rebar-card-topic-cover-border, var(--rebar-color-border));
+  background: var(--rebar-card-topic-cover-background, var(--rebar-color-bg-secondary));
+}
+.rebar-card[data-rebar-appearance="topic"] > .rebar-card-cover img,
+.rebar-card[data-rebar-appearance="topic"] > .rebar-card-cover video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.rebar-card[data-rebar-appearance="topic"] > .rebar-card-header {
+  display: block;
+  padding: 0;
+  border: 0;
+}
+.rebar-card[data-rebar-appearance="topic"] .rebar-card-header-main { display: block; }
+.rebar-card[data-rebar-appearance="topic"] .rebar-card-title-group { display: flex; flex-direction: column; align-items: flex-start; gap: var(--rebar-card-topic-gap, 12px); }
+.rebar-card[data-rebar-appearance="topic"] .rebar-card-title-group > [data-rebar-variant="eyebrow"] {
+  display: inline-block;
+  margin: 0;
+  padding: var(--rebar-card-topic-pill-padding, 3px 10px);
+  border-radius: 999px;
+  background: var(--rebar-card-topic-pill-background, var(--rebar-color-tint-3));
+  color: var(--rebar-card-topic-pill-color, var(--rebar-color-text-secondary));
+  font-size: var(--rebar-card-topic-pill-size, 11px);
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: var(--rebar-card-topic-pill-tracking, 0.1em);
+}
+.rebar-card[data-rebar-appearance="topic"] .rebar-card-title {
+  margin: 0;
+  font-family: var(--rebar-font-family-display);
+  font-size: var(--rebar-card-topic-title-size, 19px);
+  font-weight: var(--rebar-card-topic-title-weight, 600);
+  line-height: var(--rebar-card-topic-title-line-height, 1.2);
+  letter-spacing: var(--rebar-card-topic-title-tracking, -0.015em);
+  color: var(--rebar-card-topic-title-color, inherit);
+}
+.rebar-card[data-rebar-appearance="topic"] > .rebar-card-body {
+  padding: 0;
+  font-size: var(--rebar-card-topic-body-size, 13px);
+  line-height: var(--rebar-card-topic-body-line-height, 1.5);
+  color: var(--rebar-color-text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: var(--rebar-card-topic-body-lines, 3);
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

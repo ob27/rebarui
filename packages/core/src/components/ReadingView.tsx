@@ -45,6 +45,8 @@ export interface ReadingViewProps extends Omit<ComponentPropsWithoutRef<"article
   footer?: ReactNode;
   /** Skeleton lines instead of the text. */
   loading?: boolean;
+  /** With `loading`: a text message (for example "Loading…") instead of the skeleton lines. */
+  loadingLabel?: ReactNode;
   /** Shown instead of the text when there is no reading (a ReactNode). */
   empty?: ReactNode;
   /** Shown instead of the text, for example "Translation unavailable". */
@@ -78,6 +80,7 @@ export function ReadingView({
   actions,
   footer,
   loading,
+  loadingLabel,
   empty,
   error,
   tone = "tint-2",
@@ -89,6 +92,12 @@ export function ReadingView({
     body = (
       <div className="rebar-reading-view-message" data-rebar-part="error" role="alert">
         {error}
+      </div>
+    );
+  } else if (loading && loadingLabel) {
+    body = (
+      <div className="rebar-reading-view-message" data-rebar-part="loading" aria-busy="true">
+        {loadingLabel}
       </div>
     );
   } else if (loading) {

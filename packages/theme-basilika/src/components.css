@@ -3063,3 +3063,9 @@ textarea.rebar-input {
 }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-icon { border-radius: 50%; }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-title.rebar-heading { font-size: 26px; }
+
+/* ---- parity-r3: reading, calendar, bible, reflections, listen (theme defaults behind the same opt-in properties as core) ---- */
+.rebar-reading-view-panel {
+  border-radius: var(--rebar-reading-view-radius, var(--rebar-radius-lg));
+  padding: var(--rebar-reading-view-padding, 20px);
+}
