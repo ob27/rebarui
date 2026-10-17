@@ -41,6 +41,11 @@ const BLOCKS: Construct[] = [
     heading: "Migrating to Ant Design",
     body: [{ kind: "text", text: "No AntD equivalent: build it from a `Layout`, `Typography.Title` and a `Form`. The shell is layout only, so the form children carry over unchanged." }],
   },
+  {
+    type: "doc-section",
+    heading: 'Classic appearances (opt-in)',
+    body: [{ kind: "text", text: '`backdrop={{ image, overlay }}` paints a cover photo under a gradient (`--rebar-auth-backdrop-*`). `fieldStyle="translucent"` makes glass fields, `buttonStyle="classic"` compact pills (cream primary, outlined secondary, pressed overlay), `linkStyle="plain"` small plain ghost links, `footerPlacement="inline"` puts the footer in the column, `frame="column"` a centred 480px column, `columnWidth` caps the reading column, `lead` adds content above the title. Spacing, title, description, field and link values come from `--rebar-auth-*` tokens (padding, gap, form-gap, form-max-width, logo-display, title-size, description-*, field-*, footer-*, link-*). Defaults are unchanged.' }],
+  },
 ];
 
 const wordmark = (

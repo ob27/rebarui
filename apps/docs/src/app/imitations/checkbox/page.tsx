@@ -49,6 +49,11 @@ const BLOCKS: Construct[] = [
       }
     ],
   },
+  {
+    type: "doc-section",
+    heading: 'appearance="native"',
+    body: [{ kind: "text", text: '`appearance="native"` renders a real `<input type="checkbox">` in the platform look (accent from `--rebar-checkbox-native-accent`), as a row with `--rebar-checkbox-native-gap` and `-align`. `labelClassName` styles the label.' }],
+  },
 ];
 
 export default function CheckboxPage() {

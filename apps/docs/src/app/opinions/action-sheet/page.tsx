@@ -43,6 +43,11 @@ const BLOCKS: Construct[] = [
     heading: "Migrating to Ant Design",
     body: [{ kind: "text", text: "AntD has no direct equivalent (an action sheet is a mobile-native pattern). The closest antd building block is a `Dropdown` menu, which loses the bottom-anchored layout and the separate Cancel row." }],
   },
+  {
+    type: "doc-section",
+    heading: 'appearance="popup", cancelLabel={null}',
+    body: [{ kind: "text", text: '`appearance="popup"` renders plain left-aligned text rows (info line with a hairline, destructive in `--rebar-popup-danger`); `cancelLabel={null}` omits the Cancel button; `closeOnSelect={false}` keeps the menu open under a follow-up.' }],
+  },
 ];
 
 const sync = TASKS.find((t) => t.id === "sync") ?? TASKS[0];

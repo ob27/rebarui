@@ -52,6 +52,11 @@ const BLOCKS: Construct[] = [
     heading: "Migrating to Ant Design",
     body: [{ kind: "text", text: "Not codemod-covered: AntD's `Input` has no mask. A masked field needs a mask library alongside AntD's `Input`." }],
   },
+  {
+    type: "doc-section",
+    heading: 'fieldStyle, revealIcons, revealStyle',
+    body: [{ kind: "text", text: '`fieldStyle="translucent"` is a glass field for photo or dark surfaces (`--rebar-auth-field-*` tokens). `revealIcons={{ show, hide }}` swaps the eye glyphs and `revealStyle="plain"` makes the eye a bare 70% glyph inset by `--rebar-input-reveal-inset`.' }],
+  },
 ];
 
 export default function InputPage() {

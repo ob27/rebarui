@@ -56,6 +56,11 @@ const BLOCKS: Construct[] = [
       }
     ],
   },
+  {
+    type: "doc-section",
+    heading: 'appearance="native"',
+    body: [{ kind: "text", text: '`appearance="native"` renders the platform date input (`<input type="date">`) with the same `Date` value API (`value`, `defaultValue`, `onValueChange`, `minDate`, `maxDate`), also for `mode="dob"`. Single dates only.' }],
+  },
 ];
 
 const fmt = (d: Date) => d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" });

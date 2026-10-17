@@ -57,6 +57,11 @@ const BLOCKS: Construct[] = [
       },
     ],
   },
+  {
+    type: "doc-section",
+    heading: 'appearance="classic"',
+    body: [{ kind: "text", text: '`appearance="classic"` is the plain mobile-UI button: 7px 12px, 17px / 1.4, 1px border, 4px radius, a pressed overlay, 40% opacity when disabled, and dots-only loading (`loadingStyle="dots"`, also usable alone). Tune with `--rebar-classic-button-padding / -font-size / -weight / -line-height / -border-width / -radius / -align / -disabled-opacity / -press-opacity` and `--rebar-classic-secondary-*` / `-tertiary-text`.' }],
+  },
 ];
 
 export default function ButtonPage() {
