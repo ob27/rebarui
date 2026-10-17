@@ -12127,7 +12127,10 @@ a.rebar-list-item-main {
 /* AuthScreen fieldStyle="translucent" */
 .rebar-auth-screen.rebar-auth-screen[data-rebar-field-style="translucent"] .rebar-input.rebar-input,
 .rebar-auth-screen.rebar-auth-screen[data-rebar-field-style="translucent"] .rebar-input.rebar-input:focus,
-.rebar-auth-screen.rebar-auth-screen[data-rebar-field-style="translucent"] .rebar-input.rebar-input:focus-visible {
+.rebar-auth-screen.rebar-auth-screen[data-rebar-field-style="translucent"] .rebar-input.rebar-input:focus-visible,
+.rebar-input.rebar-input.rebar-input.rebar-input[data-rebar-field-style="translucent"],
+.rebar-input.rebar-input.rebar-input.rebar-input[data-rebar-field-style="translucent"]:focus,
+.rebar-input.rebar-input.rebar-input.rebar-input[data-rebar-field-style="translucent"]:focus-visible {
   min-height: 0;
   padding: var(--rebar-auth-field-padding, 14px 20px);
   font-size: var(--rebar-auth-field-font-size, 15px);
@@ -12138,7 +12141,8 @@ a.rebar-list-item-main {
   outline: none;
   box-shadow: none;
 }
-.rebar-auth-screen.rebar-auth-screen[data-rebar-field-style="translucent"] .rebar-input::placeholder {
+.rebar-auth-screen.rebar-auth-screen[data-rebar-field-style="translucent"] .rebar-input::placeholder,
+.rebar-input.rebar-input.rebar-input[data-rebar-field-style="translucent"]::placeholder {
   color: var(--rebar-auth-field-placeholder, var(--rebar-color-text-secondary));
   opacity: 1;
 }
@@ -12667,3 +12671,43 @@ a.rebar-list-item-main {
 .rebar-auth-screen:not([data-rebar-tone="navy"]) .rebar-auth-screen-description { color: var(--rebar-auth-description-color, var(--rebar-color-text-secondary)); }
 .rebar-auth-screen-footer .rebar-button { min-height: var(--rebar-auth-footer-button-min-height, 44px); }
 .rebar-auth-screen-footer { gap: var(--rebar-auth-footer-gap, 0); }
+
+/* DatePicker appearance="native": the platform date input takes the field look of .rebar-input; nothing of its own. */
+.rebar-date-picker-native { font-family: inherit; }
+
+/* AuthScreen lead slot, columnWidth, text-align/justify tokens, navy description colour token */
+.rebar-auth-screen-lead { text-align: start; }
+.rebar-auth-screen[data-rebar-column] .rebar-auth-screen-main > * {
+  width: 100%;
+  max-width: var(--rebar-auth-column-width);
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+.rebar-auth-screen[data-rebar-align="start"] .rebar-auth-screen-main { justify-content: var(--rebar-auth-justify, flex-start); }
+.rebar-auth-screen[data-rebar-tone="navy"] .rebar-auth-screen-description { color: var(--rebar-auth-description-color, var(--rebar-color-text-inverse-secondary)); }
+
+/* Input revealStyle="plain" */
+.rebar-input-reveal[data-rebar-reveal-style="plain"] {
+  right: var(--rebar-input-reveal-inset, 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: auto;
+  height: auto;
+  min-width: 0;
+  padding: 0;
+  border-radius: 0;
+  font-size: var(--rebar-input-reveal-font-size, 13.3333px);
+  color: var(--rebar-input-reveal-color, inherit);
+  opacity: 0.7;
+}
+.rebar-input-reveal[data-rebar-reveal-style="plain"][aria-pressed="true"] { color: var(--rebar-input-reveal-color, inherit); }
+
+/* Button appearance="classic": text and border colours for the outlined (secondary) variant */
+.rebar-button.rebar-button[data-rebar-appearance="classic"][data-rebar-variant="secondary"],
+.rebar-button.rebar-button[data-rebar-appearance="classic"][data-rebar-variant="secondary"]:hover:not(:disabled) {
+  color: var(--rebar-classic-secondary-text, var(--rebar-color-primary));
+  border-color: var(--rebar-classic-secondary-border, var(--rebar-color-primary));
+}
+
+.rebar-button.rebar-button[data-rebar-appearance="classic"][data-rebar-variant="tertiary"],
+.rebar-button.rebar-button[data-rebar-appearance="classic"][data-rebar-variant="tertiary"]:hover:not(:disabled) { color: var(--rebar-classic-tertiary-text, var(--rebar-color-primary)); }

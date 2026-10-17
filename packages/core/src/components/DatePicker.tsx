@@ -6,6 +6,7 @@ import { Calendar } from "./Calendar";
 import { Popover } from "./Popover";
 import { CalendarIcon, ChevronDownIcon } from "./icons";
 import { DatePickerDob } from "./DatePickerDob";
+import { DatePickerNative } from "./DatePickerNative";
 import type { DatePickerDobProps } from "./DatePickerDob";
 
 /** A start/end pair for `range` mode. `end` is undefined while the second click is pending. */
@@ -21,6 +22,8 @@ interface DatePickerBaseProps extends Omit<ComponentPropsWithoutRef<"div">, "val
   disabled?: boolean;
   /** Shown in the field while nothing is picked. */
   placeholder?: string;
+  /** `"native"`: the platform's own date input (`<input type="date">`) as a Rebar field, instead of the calendar popover. Default `"default"`. */
+  appearance?: "default" | "native";
 }
 
 export interface DatePickerSingleProps extends DatePickerBaseProps {
@@ -76,6 +79,7 @@ export function DatePicker(props: DatePickerRangeProps): ReactElement;
 export function DatePicker(props: DatePickerDobProps): ReactElement;
 export function DatePicker(props: DatePickerProps): ReactElement;
 export function DatePicker(props: DatePickerProps): ReactElement {
+  if ((props as { appearance?: string }).appearance === "native") return <DatePickerNative {...(props as object)} />;
   if ("mode" in props && props.mode === "dob") return <DatePickerDob {...(props as DatePickerDobProps)} />;
   return <CalendarDatePicker {...(props as DatePickerSingleProps | DatePickerRangeProps)} />;
 }

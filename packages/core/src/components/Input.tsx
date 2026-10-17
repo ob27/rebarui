@@ -25,6 +25,14 @@ export interface InputProps extends Omit<ComponentPropsWithoutRef<"input">, "siz
   autoHide?: boolean;
   /** A leading icon (a lock, a magnifier) inside the field. */
   startIcon?: ReactNode;
+  /** `"translucent"`: a glass field (tinted fill and hairline in the inverse text colour, no focus ring; sized by the `--rebar-auth-field-*`
+   * tokens) for use over a photo or dark surface. Default `"solid"`. */
+  fieldStyle?: "solid" | "translucent";
+  /** Your own glyphs for the eye button (an element for each state), replacing the built-in eye. */
+  revealIcons?: { show: ReactNode; hide: ReactNode };
+  /** `"plain"`: the eye button is a bare glyph (no 44px target, no circle) inset from the right edge by `--rebar-input-reveal-inset`
+   * (10px), faded to 70%. Default `"default"`. */
+  revealStyle?: "default" | "plain";
   /** The eye button's `aria-label` for each state. Defaults to "Show password" and "Hide password". */
   toggleLabels?: { show: string; hide: string };
 }
@@ -78,7 +86,7 @@ function EyeIcon({ off }: { off: boolean }) {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { size = "md", className, mask, onChange, invalid, revealable, autoHide, startIcon, toggleLabels, type, ...props },
+  { size = "md", className, mask, onChange, invalid, revealable, autoHide, startIcon, toggleLabels, revealIcons, revealStyle, fieldStyle, type, ...props },
   ref,
 ) {
   const handleMaskedChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -121,6 +129,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       data-rebar-size={size}
       aria-invalid={invalid ? true : undefined}
       data-rebar-invalid={invalid ? "true" : undefined}
+      data-rebar-field-style={fieldStyle === "translucent" ? "translucent" : undefined}
       onChange={mask ? handleMaskedChange : onChange}
       placeholder={mask ? mask.replace(/9/g, "_").replace(/a/g, "_") : undefined}
       type={canReveal && visible ? "text" : type}
@@ -155,12 +164,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           type="button"
           className="rebar-input-reveal"
           data-rebar-part="reveal"
+          data-rebar-reveal-style={revealStyle === "plain" ? "plain" : undefined}
           aria-label={visible ? labels.hide : labels.show}
           aria-pressed={visible}
           disabled={props.disabled}
           onClick={() => setVisible(!visible)}
         >
-          <EyeIcon off={visible} />
+          {revealIcons ? (visible ? revealIcons.hide : revealIcons.show) : <EyeIcon off={visible} />}
         </button>
       ) : null}
     </span>

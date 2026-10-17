@@ -32,6 +32,8 @@ export interface DatePickerDobProps
   placeholder?: string;
   /** Title of the sheet or popover. Default "Date of birth". */
   title?: string;
+  /** `"native"`: the platform's own date input (`<input type="date">`) as a Rebar field, instead of the sheet. Default `"default"`. */
+  appearance?: "default" | "native";
   /** `sheet` only: render the sheet inside this element (for example a device frame) instead of the page body. */
   container?: HTMLElement | null;
 }

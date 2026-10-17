@@ -45,6 +45,11 @@ export interface AuthScreenProps extends Omit<ComponentPropsWithoutRef<"section"
   /** `"plain"`: ghost links (tertiary buttons in the form column and the footer) render as small plain
    * text, 13px at reduced opacity, no hit-area padding or hover fill. Default `"default"`. */
   linkStyle?: "default" | "plain";
+  /** Content above the title in the column (a notice, a disclaimer). */
+  lead?: ReactNode;
+  /** Caps the column (logo, lead, title, description and form each at this width, centred) for a reading column on a wide screen:
+   * a CSS length or a number of px. Default: the full width of the screen. */
+  columnWidth?: string | number;
   /** `"column"`: the screen is a centred column (`--rebar-auth-frame-width`, default 480px) on `--rebar-auth-frame-bg` instead of the
    * full width, so on a wide viewport the page behind shows either side. Default `"full"`. */
   frame?: "full" | "column";
@@ -77,6 +82,8 @@ export const AuthScreen = forwardRef<HTMLElement, AuthScreenProps>(function Auth
     linkStyle,
     footerPlacement,
     frame,
+    lead,
+    columnWidth,
     className,
     style,
     ...props
@@ -99,6 +106,7 @@ export const AuthScreen = forwardRef<HTMLElement, AuthScreenProps>(function Auth
     </div>
   ) : null;
   const inlineFooter = footerPlacement === "inline";
+  const columnStyle = columnWidth !== undefined ? ({ "--rebar-auth-column-width": typeof columnWidth === "number" ? `${columnWidth}px` : columnWidth } as Record<string, string>) : undefined;
   const backdropStyle = backdrop
     ? ({
         "--rebar-auth-backdrop-image": `url(${JSON.stringify(backdrop.image)})`,
@@ -119,8 +127,9 @@ export const AuthScreen = forwardRef<HTMLElement, AuthScreenProps>(function Auth
       data-rebar-link-style={linkStyle && linkStyle !== "default" ? linkStyle : undefined}
       data-rebar-footer={inlineFooter ? "inline" : undefined}
       data-rebar-frame={frame === "column" ? "column" : undefined}
+      data-rebar-column={columnWidth !== undefined ? "true" : undefined}
       aria-busy={busy || undefined}
-      style={backdropStyle ? { ...backdropStyle, ...style } : style}
+      style={backdropStyle || columnStyle ? { ...backdropStyle, ...columnStyle, ...style } : style}
       {...props}
     >
       {backdrop ? <div className="rebar-auth-screen-backdrop" data-rebar-part="backdrop" aria-hidden="true" /> : null}
@@ -133,6 +142,11 @@ export const AuthScreen = forwardRef<HTMLElement, AuthScreenProps>(function Auth
         {logo ? (
           <div className="rebar-auth-screen-logo" data-rebar-part="logo">
             {logo}
+          </div>
+        ) : null}
+        {lead ? (
+          <div className="rebar-auth-screen-lead" data-rebar-part="lead">
+            {lead}
           </div>
         ) : null}
         {progress ? (
