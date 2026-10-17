@@ -7,6 +7,7 @@ import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { FILES, STATUS_TONE, project } from "@/fixtures/tideline";
+import { NewBStages } from "./NewBStages";
 
 const CODE = `<Image src="/art/grain-dawn.svg" alt="Harbour van livery" width={320} height={200} />`;
 
@@ -83,6 +84,7 @@ export default function ImagePage() {
         </Stack>
       </DemoStage>
 
+      <NewBStages />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

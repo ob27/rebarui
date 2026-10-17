@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import type { ChangeEvent, KeyboardEvent } from "react";
+import type { ChangeEvent, KeyboardEvent, ReactNode } from "react";
 import clsx from "clsx";
 import { Button } from "./Button";
 import { MicIcon, SendPlaneIcon, StopCircleIcon } from "./icons";
@@ -39,7 +39,23 @@ export interface AiChatInputProps {
   dictation?: boolean;
   dictating?: boolean;
   onDictationToggle?: (active: boolean) => void;
-  disabled?: boolean;
+  /** `true` disables the field. A ReactNode also disables it and becomes the placeholder
+   * ("Catechist is replying...") so a blocked composer explains itself. */
+  disabled?: boolean | ReactNode;
+  /** Morph mode: the composer shows one round button that is a mic while the field is empty and a
+   * Send once there is text. Pressing the mic (or the Stop shown while `recording`) calls this.
+   * Omit it to keep the classic Send button (plus the optional `dictation` toggle). */
+  onDictate?: () => void;
+  /** The caller is recording: the field becomes a Listening bar (pulse dot, timer, level bars) and
+   * the button a Stop. An object carries the elapsed `seconds`. Only meaningful with `onDictate`. */
+  recording?: boolean | { seconds: number };
+  /** Speech is being turned into text: spinner in the field and the mic disabled until it arrives. */
+  transcribing?: boolean;
+  /** Slot above the bar for quota-exceeded or offline notices, with its own action. */
+  banner?: ReactNode;
+  /** Override the glyph of the morph-mode buttons (both are 46px circles). */
+  sendIcon?: ReactNode;
+  micIcon?: ReactNode;
   /** Caps how tall the field grows before it scrolls internally instead of growing further.
    * Default `6`. */
   maxRows?: number;
@@ -66,6 +82,12 @@ export function AiChatInput({
   dictating = false,
   onDictationToggle,
   disabled,
+  onDictate,
+  recording = false,
+  transcribing = false,
+  banner,
+  sendIcon,
+  micIcon,
   maxRows = 6,
   "aria-label": ariaLabel,
   className,
@@ -111,8 +133,115 @@ export function AiChatInput({
 
   const { label, placeholder: defaultPlaceholder } = INTENT_CONFIG[intent];
 
+  const isDisabled = Boolean(disabled);
+  const disabledPlaceholder = typeof disabled === "object" || typeof disabled === "string" ? disabled : null;
+  const morph = onDictate !== undefined;
+  const isRecording = morph && Boolean(recording);
+  const seconds = typeof recording === "object" ? recording.seconds : undefined;
+  const hasText = current.trim().length > 0;
+  const state = isDisabled ? "disabled" : isRecording ? "recording" : transcribing ? "transcribing" : undefined;
+
+  if (morph) {
+    return (
+      <div
+        className={clsx("rebar-ai-chat-input", className)}
+        data-rebar-component="ai-chat-input"
+        data-rebar-intent={intent}
+        data-rebar-mode="morph"
+        data-rebar-state={state}
+      >
+        {banner ? (
+          <div className="rebar-ai-chat-input-banner" data-rebar-part="banner" role="status">
+            {banner}
+          </div>
+        ) : null}
+        <div className="rebar-ai-chat-input-bar" data-rebar-part="bar">
+          {isRecording ? (
+            <div className="rebar-ai-chat-input-listening" data-rebar-part="listening" role="status" aria-label="Listening">
+              <span className="rebar-ai-chat-input-pulse" aria-hidden="true" />
+              <span>Listening</span>
+              {seconds !== undefined ? (
+                <span className="rebar-ai-chat-input-timer" data-rebar-part="timer">
+                  {Math.floor(seconds / 60)}:{String(Math.floor(seconds % 60)).padStart(2, "0")}
+                </span>
+              ) : null}
+              <span className="rebar-ai-chat-input-levels" aria-hidden="true">
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <i key={i} style={{ animationDelay: `${i * 90}ms` }} />
+                ))}
+              </span>
+            </div>
+          ) : (
+            <div className="rebar-ai-chat-input-field" data-rebar-part="field">
+              <textarea
+                ref={textareaRef}
+                className="rebar-input rebar-ai-chat-input-textarea"
+                data-rebar-part="textarea"
+                value={current}
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                placeholder={
+                  transcribing
+                    ? "Transcribing…"
+                    : typeof disabledPlaceholder === "string"
+                      ? disabledPlaceholder
+                      : (placeholder ?? defaultPlaceholder)
+                }
+                disabled={isDisabled}
+                readOnly={transcribing}
+                aria-label={ariaLabel ?? "Chat message"}
+                aria-busy={transcribing || undefined}
+                rows={1}
+              />
+              {transcribing ? <span className="rebar-ai-chat-input-spinner" data-rebar-part="spinner" aria-hidden="true" /> : null}
+            </div>
+          )}
+          {isRecording ? (
+            <button
+              type="button"
+              className="rebar-ai-chat-input-round"
+              data-rebar-part="stop-button"
+              data-rebar-tone="stop"
+              aria-label="Stop recording"
+              onClick={onDictate}
+            >
+              <StopCircleIcon aria-hidden="true" />
+            </button>
+          ) : hasText && !transcribing ? (
+            <button
+              type="button"
+              className="rebar-ai-chat-input-round"
+              data-rebar-part="send-button"
+              aria-label={label}
+              disabled={isDisabled}
+              onClick={handleSend}
+            >
+              {sendIcon ?? <SendPlaneIcon aria-hidden="true" />}
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="rebar-ai-chat-input-round"
+              data-rebar-part="mic-button"
+              aria-label="Dictate"
+              disabled={isDisabled || transcribing}
+              onClick={onDictate}
+            >
+              {micIcon ?? <MicIcon aria-hidden="true" />}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={clsx("rebar-ai-chat-input", className)} data-rebar-component="ai-chat-input" data-rebar-intent={intent}>
+    <div className={clsx("rebar-ai-chat-input", className)} data-rebar-component="ai-chat-input" data-rebar-intent={intent} data-rebar-state={state}>
+      {banner ? (
+        <div className="rebar-ai-chat-input-banner" data-rebar-part="banner" role="status">
+          {banner}
+        </div>
+      ) : null}
       <textarea
         ref={textareaRef}
         className="rebar-input rebar-ai-chat-input-textarea"
@@ -120,8 +249,8 @@ export function AiChatInput({
         value={current}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        placeholder={placeholder ?? defaultPlaceholder}
-        disabled={disabled}
+        placeholder={typeof disabledPlaceholder === "string" ? disabledPlaceholder : (placeholder ?? defaultPlaceholder)}
+        disabled={isDisabled}
         aria-label={ariaLabel ?? "Chat message"}
         rows={1}
       />
@@ -131,7 +260,7 @@ export function AiChatInput({
             type="button"
             variant="secondary"
             size="sm"
-            disabled={disabled}
+            disabled={isDisabled}
             onClick={() => onDictationToggle?.(!dictating)}
             className="rebar-ai-chat-input-dictation-button"
             data-rebar-part="dictation-button"
@@ -146,7 +275,7 @@ export function AiChatInput({
           type="button"
           variant="primary"
           size="sm"
-          disabled={disabled || current.trim().length === 0}
+          disabled={isDisabled || current.trim().length === 0}
           onClick={handleSend}
           className="rebar-ai-chat-input-send-button"
           data-rebar-part="send-button"

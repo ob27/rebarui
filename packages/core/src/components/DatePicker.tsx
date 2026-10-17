@@ -5,6 +5,8 @@ import { Button } from "./Button";
 import { Calendar } from "./Calendar";
 import { Popover } from "./Popover";
 import { CalendarIcon, ChevronDownIcon } from "./icons";
+import { DatePickerDob } from "./DatePickerDob";
+import type { DatePickerDobProps } from "./DatePickerDob";
 
 /** A start/end pair for `range` mode. `end` is undefined while the second click is pending. */
 export interface DatePickerRange {
@@ -37,7 +39,7 @@ export interface DatePickerRangeProps extends DatePickerBaseProps {
   onValueChange?: (range: { start: Date; end: Date }) => void;
 }
 
-export type DatePickerProps = DatePickerSingleProps | DatePickerRangeProps;
+export type DatePickerProps = DatePickerSingleProps | DatePickerRangeProps | DatePickerDobProps;
 
 function dayStart(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -63,6 +65,11 @@ function formatShort(date: Date): string {
  * the end and commits, and `value` becomes `{ start, end }`.
  */
 export function DatePicker(props: DatePickerProps) {
+  if ("mode" in props && props.mode === "dob") return <DatePickerDob {...props} />;
+  return <CalendarDatePicker {...(props as DatePickerSingleProps | DatePickerRangeProps)} />;
+}
+
+function CalendarDatePicker(props: DatePickerSingleProps | DatePickerRangeProps) {
   const { minDate, maxDate, disabled, placeholder = "Pick a date", className, ...rest } = props;
   // Strip the value API from what is spread onto the root element.
   const {

@@ -11,7 +11,7 @@ import { Empty } from "./Empty";
 /** `"system"` is a muted, italic, unbubbled single line (an event or notice) — no avatar, no retry. */
 export type ChatMessageRole = "user" | "assistant" | "system";
 /** `"highlight"` tints the bubble (e.g. to mark human lines in a group chat). */
-export type ChatMessageTone = "default" | "highlight";
+export type ChatMessageTone = "default" | "highlight" | "blocked" | "crisis";
 export type ChatMessageStatus = "sending" | "sent" | "streaming" | "error";
 
 export interface ChatMessage {
@@ -36,7 +36,10 @@ export interface ChatMessage {
   header?: ReactNode;
   /** Rendered in the message's meta row, after the timestamp (e.g. a Reply button). */
   actions?: ReactNode;
-  /** `"highlight"` tints the bubble. Default `"default"`. */
+  /** Slot under the bubble (thumbs, Share answer). Not rendered on `blocked` or `crisis` messages. */
+  footer?: ReactNode;
+  /** `"highlight"` tints the bubble. `"blocked"` is a tint-2 bubble for a refused answer. `"crisis"`
+   * is a peach fill with a danger outline, `role="alert"`, and no footer. Default `"default"`. */
   tone?: ChatMessageTone;
   /** Sources the message cites, rendered as small pills inside the bubble under the content
    * (a link when `href` is given, otherwise plain text). Separate from `actions`, which stays in the meta row. */
@@ -45,6 +48,8 @@ export interface ChatMessage {
 
 export interface ChatCitation {
   label: string;
+  /** Longer description of the source, exposed as the pill's tooltip. */
+  detail?: string;
   href?: string;
 }
 
@@ -80,6 +85,11 @@ export interface ChatThreadProps extends ComponentPropsWithoutRef<"div"> {
   /** `"sides"` (default): user messages right, assistant left. `"start"`: every message is
    * left-aligned so a many-speaker group chat reads as one column. */
   align?: "sides" | "start";
+  /** Shows a floating "Latest" pill (44px) whenever the reader has scrolled above the newest
+   * message. Pass `{ label }` to rename it. Pressing it scrolls to the newest message. */
+  scrollToLatest?: boolean | { label: string };
+  /** Fires when the reader reaches the newest message again (by scrolling or via the pill). */
+  onReachLatest?: () => void;
 }
 
 /** How close to the real bottom (in px) still counts as "at the bottom" for auto-scroll and for
@@ -156,6 +166,8 @@ function MessageBubble({
   const status = message.status ?? "sent";
   const isError = status === "error";
   const itemRole = listItem ? "listitem" : undefined;
+  const isCrisis = message.tone === "crisis";
+  const showFooter = Boolean(message.footer) && message.tone !== "crisis" && message.tone !== "blocked";
 
   if (message.role === "system") {
     return (
@@ -186,12 +198,12 @@ function MessageBubble({
 
   const bubble = (
     <div
-      role={message.avatarFallback ? undefined : itemRole}
       className={clsx("rebar-chat-message", `rebar-chat-message-${message.role}`)}
       data-rebar-part="message"
       data-rebar-role={message.role}
       data-rebar-status={status}
-      data-rebar-tone={message.tone === "highlight" ? "highlight" : undefined}
+      data-rebar-tone={message.tone && message.tone !== "default" ? message.tone : undefined}
+      role={isCrisis ? "alert" : message.avatarFallback ? undefined : itemRole}
     >
       {message.sender ? (
         <div className="rebar-chat-message-byline" data-rebar-part="byline">
@@ -221,11 +233,11 @@ function MessageBubble({
           <div className="rebar-chat-message-citations" data-rebar-part="citations">
             {message.citations.map((c, i) =>
               c.href ? (
-                <a key={`${c.label}-${i}`} className="rebar-chat-message-citation" data-rebar-part="citation" href={c.href}>
+                <a key={`${c.label}-${i}`} className="rebar-chat-message-citation" data-rebar-part="citation" href={c.href} title={c.detail}>
                   {c.label}
                 </a>
               ) : (
-                <span key={`${c.label}-${i}`} className="rebar-chat-message-citation" data-rebar-part="citation">
+                <span key={`${c.label}-${i}`} className="rebar-chat-message-citation" data-rebar-part="citation" title={c.detail}>
                   {c.label}
                 </span>
               ),
@@ -273,6 +285,11 @@ function MessageBubble({
           </span>
         ) : null}
       </div>
+      {showFooter ? (
+        <div className="rebar-chat-message-footer" data-rebar-part="footer">
+          {message.footer}
+        </div>
+      ) : null}
       {isError ? (
         <Button
           type="button"
@@ -327,13 +344,15 @@ function MessageBubble({
  * button, which itself scrolls to bottom and resumes auto-scroll on click.
  */
 export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function ChatThread(
-  { messages, isTyping, onRetry, emptyMessage, bionic, bionicOptions, markdown = true, align = "sides", className, ...props },
+  { messages, isTyping, onRetry, emptyMessage, bionic, bionicOptions, markdown = true, align = "sides", scrollToLatest, onReachLatest, className, ...props },
   ref,
 ) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const atBottomRef = useRef(true);
   const prevSignatureRef = useRef("");
   const [hasNewContent, setHasNewContent] = useState(false);
+  const [awayFromLatest, setAwayFromLatest] = useState(false);
+  const latestLabel = typeof scrollToLatest === "object" ? scrollToLatest.label : "Latest";
 
   // Group-chat features (names, system lines, "start" alignment) make the transcript a labelled
   // list so a screen reader announces "list, N items" and each speaker's name in order; a plain
@@ -347,6 +366,10 @@ export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function C
     const atBottom = isAtBottom(el);
     atBottomRef.current = atBottom;
     if (atBottom) setHasNewContent(false);
+    if (scrollToLatest) {
+      if (atBottom && awayFromLatest) onReachLatest?.();
+      setAwayFromLatest(!atBottom);
+    }
   };
 
   useLayoutEffect(() => {
@@ -369,6 +392,10 @@ export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function C
     el.scrollTo({ top: el.scrollHeight, behavior: prefersReducedMotion() ? "auto" : "smooth" });
     atBottomRef.current = true;
     setHasNewContent(false);
+    if (awayFromLatest) {
+      setAwayFromLatest(false);
+      onReachLatest?.();
+    }
   };
 
   return (
@@ -404,7 +431,16 @@ export const ChatThread = forwardRef<HTMLDivElement, ChatThreadProps>(function C
             ))}
             {isTyping ? <TypingIndicator listItem={multiSpeaker} /> : null}
           </div>
-          {hasNewContent ? (
+          {scrollToLatest && awayFromLatest ? (
+            <button
+              type="button"
+              className="rebar-chat-thread-scroll-to-bottom rebar-chat-thread-latest"
+              data-rebar-part="latest"
+              onClick={scrollToBottom}
+            >
+              <span aria-hidden="true">↓</span> {latestLabel}
+            </button>
+          ) : hasNewContent ? (
             <button
               type="button"
               className="rebar-chat-thread-scroll-to-bottom"
