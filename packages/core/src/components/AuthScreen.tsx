@@ -45,6 +45,9 @@ export interface AuthScreenProps extends Omit<ComponentPropsWithoutRef<"section"
   /** `"plain"`: ghost links (tertiary buttons in the form column and the footer) render as small plain
    * text, 13px at reduced opacity, no hit-area padding or hover fill. Default `"default"`. */
   linkStyle?: "default" | "plain";
+  /** `"column"`: the screen is a centred column (`--rebar-auth-frame-width`, default 480px) on `--rebar-auth-frame-bg` instead of the
+   * full width, so on a wide viewport the page behind shows either side. Default `"full"`. */
+  frame?: "full" | "column";
   /** `"inline"`: the footer follows the form in the same centred column (with the column gap) instead of
    * sitting pinned to the bottom edge. Default `"pinned"`. */
   footerPlacement?: "pinned" | "inline";
@@ -73,6 +76,7 @@ export const AuthScreen = forwardRef<HTMLElement, AuthScreenProps>(function Auth
     buttonStyle,
     linkStyle,
     footerPlacement,
+    frame,
     className,
     style,
     ...props
@@ -114,6 +118,7 @@ export const AuthScreen = forwardRef<HTMLElement, AuthScreenProps>(function Auth
       data-rebar-button-style={buttonStyle && buttonStyle !== "default" ? buttonStyle : undefined}
       data-rebar-link-style={linkStyle && linkStyle !== "default" ? linkStyle : undefined}
       data-rebar-footer={inlineFooter ? "inline" : undefined}
+      data-rebar-frame={frame === "column" ? "column" : undefined}
       aria-busy={busy || undefined}
       style={backdropStyle ? { ...backdropStyle, ...style } : style}
       {...props}

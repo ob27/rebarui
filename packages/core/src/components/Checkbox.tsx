@@ -1,6 +1,6 @@
 import { forwardRef, useId } from "react";
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
-import type { ReactNode } from "react";
+import type { ReactNode, Ref } from "react";
 import clsx from "clsx";
 import { useBionicChildren } from "../bionic";
 import type { BionicOptions } from "../bionic";
@@ -12,6 +12,11 @@ export interface CheckboxProps
   description?: ReactNode;
   /** `"card"` makes the whole label a bordered, padded card that tints when checked (for option lists such as plans or permissions). Default `"default"`. */
   variant?: "default" | "card";
+  /** `"native"`: a real `<input type="checkbox">` in the platform's own look (accent colour from `--rebar-checkbox-native-accent`, else
+   * the primary), laid out as a row (`--rebar-checkbox-native-gap` 10px, `--rebar-checkbox-native-align`). Default `"default"`: the drawn box. */
+  appearance?: "default" | "native";
+  /** `className` for the label element (with `appearance="native"`, where `className` goes to the input). */
+  labelClassName?: string;
   /** Marks the field as failing validation: sets `aria-invalid="true"` and `data-rebar-invalid`. */
   invalid?: boolean;
   /** Force bionic reading on/off for the label, overriding the ambient data-rebar-bionic setting. */
@@ -20,13 +25,44 @@ export interface CheckboxProps
 }
 
 export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(function Checkbox(
-  { className, children, bionic, bionicOptions, id, invalid, description, variant = "default", "aria-describedby": describedBy, ...props },
+  { className, children, bionic, bionicOptions, id, invalid, description, variant = "default", appearance, labelClassName, "aria-describedby": describedBy, ...props },
   ref,
 ) {
   const generatedId = id ?? undefined;
   const descriptionId = useId();
   const describedByIds = [describedBy, description ? descriptionId : undefined].filter(Boolean).join(" ") || undefined;
   const label = useBionicChildren(children, bionic, bionicOptions);
+
+  if (appearance === "native") {
+    const { checked, defaultChecked, onCheckedChange, disabled, name, value, required, form } = props as RadixCheckbox.CheckboxProps;
+    return (
+      <label className={clsx("rebar-checkbox-label", labelClassName)} htmlFor={generatedId} data-rebar-appearance="native">
+        <input
+          ref={ref as unknown as Ref<HTMLInputElement>}
+          type="checkbox"
+          id={generatedId}
+          className={clsx("rebar-checkbox-native", className)}
+          data-rebar-component="checkbox"
+          checked={checked === undefined ? undefined : checked === true}
+          defaultChecked={defaultChecked === true ? true : undefined}
+          disabled={disabled}
+          name={name}
+          value={value as string | undefined}
+          required={required}
+          form={form}
+          aria-invalid={invalid ? true : undefined}
+          aria-describedby={describedByIds}
+          onChange={(e) => onCheckedChange?.(e.target.checked)}
+        />
+        {children ? <span data-rebar-part="label">{label}</span> : null}
+        {description ? (
+          <span id={descriptionId} className="rebar-checkbox-description" data-rebar-part="description">
+            {description}
+          </span>
+        ) : null}
+      </label>
+    );
+  }
 
   return (
     <label className="rebar-checkbox-label" htmlFor={generatedId} data-rebar-variant={variant === "card" ? "card" : undefined}>

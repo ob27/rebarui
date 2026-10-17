@@ -2636,3 +2636,9 @@ a.rebar-button[data-rebar-variant="tertiary"]:hover {
 /* Carousel: controls and a long dot row wrap instead of pushing a phone page sideways */
 .rebar-carousel-controls { flex-wrap: wrap; max-width: 100%; }
 .rebar-carousel-dots { flex-wrap: wrap; justify-content: center; max-width: 100%; }
+
+/* ---- parity-a4: AuthScreen title tokens (defaults = the values above) ---- */
+.rebar-auth-screen .rebar-auth-screen-title.rebar-heading[data-rebar-level] {
+  font-size: var(--rebar-auth-title-size, 1.7rem);
+  line-height: var(--rebar-auth-title-line-height, 1.15);
+}

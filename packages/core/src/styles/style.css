@@ -12195,7 +12195,7 @@ a.rebar-list-item-main {
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: var(--rebar-color-text-inverse);
+  color: var(--rebar-auth-link-color, var(--rebar-color-text-inverse));
   font-size: var(--rebar-auth-link-font-size, 13px);
   font-weight: 400;
   line-height: normal;
@@ -12424,7 +12424,14 @@ a.rebar-list-item-main {
   border-radius: 4px;
   background: var(--rebar-popup-handle-bg, var(--rebar-popup-hairline, var(--rebar-color-border)));
 }
-.rebar-drawer-content[data-rebar-appearance="popup"] .rebar-dialog-body { margin: 0; flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+/* The body scrolls (so it clips); it bleeds into the panel padding so a focus ring at the content edge is not cut off. */
+.rebar-drawer-content[data-rebar-appearance="popup"] .rebar-dialog-body {
+  margin: 0 calc(var(--rebar-popup-bleed, 6px) * -1);
+  padding: 0 var(--rebar-popup-bleed, 6px);
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
 .rebar-drawer-content[data-rebar-appearance="popup"] .rebar-dialog-footer {
   display: block;
   flex: none;
@@ -12490,10 +12497,10 @@ a.rebar-list-item-main {
   margin: 0;
   padding: var(--rebar-classic-button-padding, 7px 12px);
   font-size: var(--rebar-classic-button-font-size, 17px);
-  font-weight: 400;
-  line-height: 1.4;
+  font-weight: var(--rebar-classic-button-weight, 400);
+  line-height: var(--rebar-classic-button-line-height, 1.4);
   text-align: center;
-  border: 1px solid var(--rebar-color-primary);
+  border: var(--rebar-classic-button-border-width, 1px) solid var(--rebar-color-primary);
   border-radius: var(--rebar-classic-button-radius, 4px);
   background: var(--rebar-color-primary);
   color: var(--rebar-color-primary-text, #fff);
@@ -12523,7 +12530,7 @@ a.rebar-list-item-main {
 }
 .rebar-button.rebar-button[data-rebar-appearance="classic"][data-rebar-size="sm"] { padding: 3px 12px; font-size: 15px; }
 .rebar-button.rebar-button[data-rebar-appearance="classic"][data-rebar-size="lg"] { padding: 11px 12px; font-size: 18px; }
-.rebar-button[data-rebar-appearance="classic"]:disabled { opacity: 0.4; cursor: not-allowed; }
+.rebar-button[data-rebar-appearance="classic"]:disabled { opacity: var(--rebar-classic-button-disabled-opacity, 0.4); cursor: not-allowed; }
 .rebar-button[data-rebar-appearance="classic"]::before {
   content: " ";
   position: absolute;
@@ -12540,7 +12547,7 @@ a.rebar-list-item-main {
   pointer-events: none;
 }
 .rebar-button[data-rebar-appearance="classic"][data-rebar-variant="tertiary"]::before { transform: none; border-width: 0; }
-.rebar-button[data-rebar-appearance="classic"]:active:not(:disabled)::before { opacity: 0.08; }
+.rebar-button[data-rebar-appearance="classic"]:active:not(:disabled)::before { opacity: var(--rebar-classic-button-press-opacity, 0.08); }
 
 /* ImagePicker columns="auto" and appearance="classic" (tokens: --rebar-image-picker-tile-min / -gap / -max-height / -tile-radius / -tile-bg;
    chips: --rebar-classic-chip-bg / -text / -active-bg / -active-text) */
@@ -12625,3 +12632,38 @@ a.rebar-list-item-main {
   text-align: start;
   color: inherit;
 }
+
+/* AuthScreen frame="column" and footer tokens (--rebar-auth-footer-padding / -footer-border), description width */
+.rebar-auth-screen[data-rebar-frame="column"] {
+  width: 100%;
+  max-width: var(--rebar-auth-frame-width, 480px);
+  margin-inline: auto;
+  background-color: var(--rebar-auth-frame-bg, var(--rebar-color-bg-raised));
+  background-image: none;
+}
+.rebar-auth-screen-footer {
+  padding: var(--rebar-auth-footer-padding, var(--rebar-space-sm) var(--rebar-space-md) var(--rebar-space-md));
+  border-top: var(--rebar-auth-footer-border, 0 none);
+}
+.rebar-auth-screen[data-rebar-footer="inline"] .rebar-auth-screen-footer { margin-top: var(--rebar-auth-footer-offset, 0); }
+
+/* Checkbox appearance="native" */
+.rebar-checkbox-label[data-rebar-appearance="native"] {
+  display: flex;
+  align-items: var(--rebar-checkbox-native-align, center);
+  gap: var(--rebar-checkbox-native-gap, 10px);
+  cursor: pointer;
+}
+.rebar-checkbox-native { accent-color: var(--rebar-checkbox-native-accent, var(--rebar-color-primary)); }
+
+/* AuthScreen text tokens: --rebar-auth-title-size / -title-color / -title-line-height (title is also hooked in the theme), description
+   width / size / colour / margin, footer button min-height, link colour */
+.rebar-auth-screen .rebar-auth-screen-title.rebar-heading[data-rebar-level] { color: var(--rebar-auth-title-color, var(--rebar-color-text-primary, #212121)); }
+.rebar-auth-screen-description {
+  max-width: var(--rebar-auth-description-width, 240px);
+  margin: var(--rebar-auth-description-margin, 0);
+  font-size: var(--rebar-auth-description-size, var(--rebar-font-size-sm));
+}
+.rebar-auth-screen:not([data-rebar-tone="navy"]) .rebar-auth-screen-description { color: var(--rebar-auth-description-color, var(--rebar-color-text-secondary)); }
+.rebar-auth-screen-footer .rebar-button { min-height: var(--rebar-auth-footer-button-min-height, 44px); }
+.rebar-auth-screen-footer { gap: var(--rebar-auth-footer-gap, 0); }
