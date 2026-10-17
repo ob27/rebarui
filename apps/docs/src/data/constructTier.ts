@@ -256,6 +256,16 @@ export const CONSTRUCT_TIER = {
     SkipLink: "order",
 
     // Geneses — starter projects, currently empty, will be populated as projects are added.
+
+    /* ---- new-c: marketing group ---- */
+    HeroSplit: "synthetic", // composes slots (Buttons, a DeviceStage) around copy; no state.
+    Section: "synthetic", // a page band with an optional heading group; plain elements, no state (owner tier list).
+    PageHeader: "synthetic", // composes `Breadcrumb` with the h1 group, no state.
+    Prose: "synthetic", // one wrapper with descendant typography; no state (tiered with Markdown as in the approved mock).
+    Markdown: "synthetic", // composes `Prose` around the shared `renderMarkdown`; stateless.
+    FilterBar: "synthetic", // composes `Select`, `FilterPills` and `ResultCount`; mirrors the search text into its clear button.
+    FilterPills: "imitation", // single-select toggle buttons reimplemented raw (like SegmentedControl), documented on /synthetics/filter-bar.
+    ResultCount: "imitation", // one live-region element with a clear button; documented on /synthetics/filter-bar.
   } satisfies Record<string, Tier>,
 
   block: {

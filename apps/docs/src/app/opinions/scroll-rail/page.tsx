@@ -6,6 +6,8 @@ import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { FILES, PROJECTS, STATUS_TONE, project } from "@/fixtures/tideline";
+import { PerspectiveCard } from "@/fixtures/AthicBits";
+import { PERSPECTIVES } from "@/fixtures/athic";
 
 const RAIL = { "--rebar-scroll-rail-item-width": "15rem" } as React.CSSProperties;
 
@@ -24,6 +26,14 @@ const projectCards = PROJECTS.map((p) => (
     extra={<Tag tone={STATUS_TONE[p.status]}>{p.status}</Tag>}
   />
 ));
+
+const WIDTH_CODE = `<ScrollRail
+  aria-label="Perspectives"
+  itemWidth={{ base: 280, md: 300 }}
+  header={<><Heading level={2}>Reflections worth sitting with.</Heading><a href="/perspectives">See all</a></>}
+>
+  {perspectives.map((p) => <PerspectiveCard key={p.id} p={p} />)}
+</ScrollRail>`;
 
 const BLOCKS: Construct[] = [
   { type: "props-table", heading: "Props", rows: componentProps["ScrollRail"] ?? [] },
@@ -47,7 +57,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: '`data-rebar-component="scroll-rail"` on the root, with `data-rebar-state` (`static`, `scrolling` or `paused`), `data-rebar-gap`, `data-rebar-snap`, `data-rebar-can-scroll-start` and `data-rebar-can-scroll-end`. `data-rebar-part` values `viewport`, `track`, `item`, `control` (prev/next, with `data-rebar-direction`) and `toggle` (Pause/Play).',
+        text: '`data-rebar-component="scroll-rail"` on the root, with `data-rebar-state` (`static`, `scrolling` or `paused`), `data-rebar-gap` (`custom` for a CSS-length gap), `data-rebar-item-width` (`set` with `itemWidth`), `data-rebar-snap`, `data-rebar-can-scroll-start` and `data-rebar-can-scroll-end`. `data-rebar-part` values `header`, `header-controls`, `viewport`, `track`, `item`, `control` (prev/next, with `data-rebar-direction`) and `toggle` (Pause/Play).',
       },
     ],
   },
@@ -80,6 +90,34 @@ export default function ScrollRailPage() {
         ]}
       >
         <ScrollRail aria-label="Projects" style={RAIL}>{projectCards}</ScrollRail>
+      </DemoStage>
+
+      <Heading level={2}>itemWidth, header and equal-height cards</Heading>
+      <DemoStage
+        title="Perspectives rail"
+        caption="itemWidth sets every card's width; titles of one, two and three lines stay level, footers on one baseline"
+        code={WIDTH_CODE}
+        states={[
+          { label: "No header, 12px gap", node: <ScrollRail aria-label="Perspectives, plain" itemWidth="16rem" gap="12px">{PERSPECTIVES.slice(0, 4).map((p) => <PerspectiveCard key={p.id} p={p} coverHeight={90} />)}</ScrollRail> },
+        ]}
+      >
+        <ScrollRail
+          aria-label="Perspectives"
+          itemWidth={{ base: 280, md: 300 }}
+          header={
+            <Stack direction="row" gap="md" align="end" justify="between" style={{ flexWrap: "wrap" }}>
+              <Stack gap="xs">
+                <Text as="span" size="xs" color="secondary" style={{ letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600 }}>Perspectives</Text>
+                <Heading level={2}>Reflections worth sitting with.</Heading>
+              </Stack>
+              <a href="/perspectives" onClick={(e) => e.preventDefault()} style={{ minHeight: 44, display: "inline-flex", alignItems: "center" }}>See all</a>
+            </Stack>
+          }
+        >
+          {PERSPECTIVES.map((p) => (
+            <PerspectiveCard key={p.id} p={p} />
+          ))}
+        </ScrollRail>
       </DemoStage>
 
       <Heading level={2}>In context</Heading>

@@ -221,6 +221,12 @@ const COMPONENT_FILES = [
   "ShapeGallery.tsx",
   "FileManager.tsx",
   "LayersPanel.tsx",
+  /* ---- new-c: marketing group ---- */
+  "Section.tsx",
+  "HeroSplit.tsx",
+  "PageHeader.tsx",
+  "Prose.tsx",
+  "FilterBar.tsx",
 ];
 
 // react-docgen-typescript detects every component-shaped export in a parsed file, not just the

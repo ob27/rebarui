@@ -58,6 +58,8 @@ const SUB_COMPONENT_EXCLUSIONS = new Set([
   "Tab",             // documented on /opinions/tabs with Tabs
   "TabPanel",        // documented on /opinions/tabs with Tabs
   "Col",             // documented on /orders/row with Row
+  "FilterPills",     // new-c: documented on /synthetics/filter-bar with FilterBar
+  "ResultCount",     // new-c: documented on /synthetics/filter-bar with FilterBar
 ]);
 
 /** Convert a PascalCase component name to kebab-case for matching against block types. */
@@ -87,7 +89,7 @@ function blockDisplayLabel(type: string): string {
  * deserves a normal place in its tier's sidebar and cross-tier search, like any other Imitation.
  */
 const EXTRA_SECTIONS: Partial<Record<Tier, DocsShellSection[]>> = {
-  imitation: [{ href: "/imitations/icon", label: "Icon", category: "web" }],
+  imitation: [{ href: "/imitations/icon", label: "Icon", category: "web" }, { href: "/imitations/use-hash-target", label: "useHashTarget", category: "web" }],
 };
 
 export function tierDocsShellSections(tier: Tier): DocsShellSection[] {
