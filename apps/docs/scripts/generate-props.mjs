@@ -221,6 +221,12 @@ const COMPONENT_FILES = [
   "ShapeGallery.tsx",
   "FileManager.tsx",
   "LayersPanel.tsx",
+  /* ---- new-b: mobile features ---- */
+  "ThemeScope.tsx",
+  "AuthScreen.tsx",
+  "ImagePicker.tsx",
+  "ReadingView.tsx",
+  "Onboarding.tsx",
 ];
 
 // react-docgen-typescript detects every component-shaped export in a parsed file, not just the
@@ -241,7 +247,7 @@ const COMPONENT_FILES = [
 // `FloatAssistant.constants.ts` instead, a file this script never scans at all, rather than
 // growing this list further. Prefer that pattern for any component's own plain data constants
 // over adding another name here.
-const INTERNAL_ONLY = new Set(["DrawerPanel", "buildTruncated"]);
+const INTERNAL_ONLY = new Set(["DrawerPanel", "buildTruncated", "useSchemeAttr"]);
 
 const result = {};
 

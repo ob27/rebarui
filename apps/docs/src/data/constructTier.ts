@@ -256,6 +256,13 @@ export const CONSTRUCT_TIER = {
     SkipLink: "order",
 
     // Geneses — starter projects, currently empty, will be populated as projects are added.
+
+    /* ---- new-b: mobile features ---- */
+    ThemeScope: "imitation",
+    AuthScreen: "synthetic",
+    ImagePicker: "synthetic",
+    ReadingView: "synthetic",
+    Onboarding: "opinion",
   } satisfies Record<string, Tier>,
 
   block: {

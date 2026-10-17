@@ -2467,3 +2467,51 @@ textarea.rebar-input {
 
 /* WaybackSlider "Latest" badge: primary-on-tint text sits just under AA; ink on the tint always passes */
 .rebar-wayback-slider-latest { color: var(--rebar-color-text-primary); font-weight: var(--rebar-font-weight-semibold); }
+
+/* ---- new-b: scheme lock, AuthScreen navy, ImagePicker, ReadingView, Onboarding ---- */
+
+/* The asker's bubble follows the locked scheme, not the page's */
+[data-rebar-scheme="dark"] .rebar-chat-message-user .rebar-chat-message-bubble {
+  background: var(--rebar-color-primary);
+  color: var(--rebar-color-primary-text);
+}
+[data-rebar-scheme="light"] .rebar-chat-message-user .rebar-chat-message-bubble {
+  background: var(--rebar-color-bg-emphasis);
+  color: var(--rebar-color-text-emphasis);
+}
+
+/* AuthScreen: serif title, navy gradient with cream controls */
+.rebar-auth-screen .rebar-auth-screen-title.rebar-heading[data-rebar-level] { font-size: 1.7rem; line-height: 1.15; }
+.rebar-auth-screen[data-rebar-tone="navy"] {
+  background-color: var(--rebar-color-bg-inverse);
+  background-image: linear-gradient(180deg, var(--rebar-color-bg-inverse) 25%, color-mix(in srgb, var(--rebar-color-bg-inverse) 62%, var(--rebar-color-primary)));
+}
+.rebar-auth-screen[data-rebar-tone="navy"] .rebar-input {
+  background: var(--rebar-color-text-primary);
+  color: var(--rebar-color-bg-primary);
+  border-color: transparent;
+}
+.rebar-auth-screen[data-rebar-tone="navy"] .rebar-input::placeholder { color: color-mix(in srgb, var(--rebar-color-bg-primary) 62%, var(--rebar-color-text-primary)); }
+.rebar-auth-screen[data-rebar-tone="navy"] .rebar-button[data-rebar-variant="secondary"] {
+  background: var(--rebar-color-text-primary);
+  color: var(--rebar-color-bg-primary);
+  border-color: transparent;
+}
+.rebar-auth-screen-footer a,
+.rebar-auth-screen-footer button:not(.rebar-button) {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  font-weight: var(--rebar-font-weight-semibold);
+  text-decoration: none;
+  justify-content: center;
+}
+
+/* ReadingView: panel radius and a softer verse highlight */
+.rebar-reading-view-panel { border-radius: var(--rebar-radius-lg); padding: 20px; }
+.rebar-reading-view-actions .rebar-button { min-height: 44px; }
+
+/* Onboarding */
+.rebar-onboarding-icon { border-radius: 30px; }
+.rebar-onboarding .rebar-onboarding-title.rebar-heading { font-size: 1.6rem; }
