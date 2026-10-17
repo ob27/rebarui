@@ -137,3 +137,26 @@ describe("parity-a3: Progress", () => {
     expect(block).toMatch(/background: var\(--rebar-progress-fill, var\(--rebar-color-primary, #0066cc\)\)/);
   });
 });
+
+describe("parity-a3: ListItem surface and Card panel properties", () => {
+  it("surface, hover, selected and meta colour are properties with the previous fallbacks", () => {
+    for (const re of [
+      /background: var\(--rebar-list-item-background, var\(--rebar-color-bg-raised/,
+      /background: var\(--rebar-list-item-hover-background,/,
+      /outline: var\(--rebar-list-item-selected-outline, 1\.5px solid var\(--rebar-color-primary, #b53824\)\)/,
+      /color: var\(--rebar-list-item-meta-color, var\(--rebar-color-text-secondary, #757575\)\)/,
+      /font-variation-settings: var\(--rebar-list-item-title-variation, inherit\)/,
+    ]) expect(block).toMatch(re);
+  });
+
+  it("card radius, header and body padding and title type are properties with the previous fallbacks", () => {
+    for (const re of [
+      /border-radius: var\(--rebar-card-radius, var\(--rebar-radius, 4px\)\)/,
+      /padding: var\(--rebar-card-header-padding, var\(--rebar-space-md, 16px\) var\(--rebar-space-lg, 24px\)\)/,
+      /padding: var\(--rebar-card-body-padding, var\(--rebar-space-lg, 24px\)\)/,
+      /padding-top: var\(--rebar-card-body-padding-top, var\(--rebar-space-md, 16px\)\)/,
+      /margin-bottom: var\(--rebar-card-eyebrow-gap, 4px\)/,
+      /font-size: var\(--rebar-card-title-size, var\(--rebar-font-size-md, 16px\)\)/,
+    ]) expect(block).toMatch(re);
+  });
+});

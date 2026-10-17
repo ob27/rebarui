@@ -2663,3 +2663,8 @@ a.rebar-button[data-rebar-variant="tertiary"]:hover {
 .rebar-empty[data-rebar-icon="none"] {
   padding: var(--rebar-empty-plain-padding, 30px 20px);
 }
+
+/* Card: theme radius behind the opt-in --rebar-card-radius */
+.rebar-card {
+  border-radius: var(--rebar-card-radius, var(--rebar-radius));
+}
