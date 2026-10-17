@@ -859,3 +859,24 @@ export type { OnboardingProps, OnboardingSlide, OnboardingLabels } from "./compo
 export type { DatePickerDobProps, DatePickerDobPresentation } from "./components/DatePickerDob";
 export type { ImageDisplayState } from "./components/Image";
 export type { CalendarHeatmapWeekCell } from "./components/CalendarHeatmap";
+/* ---- new-c: marketing group ---- */
+export { Section } from "./components/Section";
+export type { SectionProps } from "./components/Section";
+export { HeroSplit } from "./components/HeroSplit";
+export type { HeroSplitProps } from "./components/HeroSplit";
+export { PageHeader } from "./components/PageHeader";
+export type { PageHeaderProps } from "./components/PageHeader";
+export { Prose, Markdown } from "./components/Prose";
+export type { ProseProps, MarkdownProps } from "./components/Prose";
+export { renderMarkdown } from "./markdown";
+export type { RenderMarkdownOptions, MarkdownComponents, MarkdownTag } from "./markdown";
+export { FilterBar, FilterPills, ResultCount } from "./components/FilterBar";
+export type {
+  FilterBarProps,
+  FilterBarSortOption,
+  FilterPillOption,
+  FilterPillsProps,
+  ResultCountProps,
+} from "./components/FilterBar";
+export { useHashTarget } from "./useHashTarget";
+export type { UseHashTargetOptions, UseHashTargetResult } from "./useHashTarget";

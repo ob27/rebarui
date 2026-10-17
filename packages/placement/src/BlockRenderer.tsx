@@ -76,6 +76,7 @@ import type {
   WizardSubmitHandler,
 } from "./live";
 import { ICONS } from "./icons";
+import { FilterBarBlock, HeaderHeightBox } from "./marketingBlocks";
 
 // Parses the tiny inline markup `doc-section` prose supports: `` `code` ``, `[label](href)`, and
 // `*emphasis*`. Deliberately not a markdown library — three patterns, checked in document order,
@@ -1640,7 +1641,7 @@ function renderBlock(
         ? resolveSource<ConstructSearchResult[] | undefined>(data, block.constructSearch.source, undefined)
         : undefined;
       return (
-        <Box
+        <HeaderHeightBox
           key={index}
           as="header"
           data-rebar-placement-block="site-header"
@@ -1680,7 +1681,7 @@ function renderBlock(
               </Stack>
             ) : null}
           </Stack>
-        </Box>
+        </HeaderHeightBox>
       );
     }
 
@@ -1975,6 +1976,21 @@ function renderBlock(
       );
 
     case "filter-bar":
+      if (block.pills || block.sortOptions || block.resultCount) {
+        return (
+          <FilterBarBlock
+            key={index}
+            searchPlaceholder={block.searchPlaceholder}
+            pills={block.pills}
+            pillsLabel={block.filterLabel}
+            sortOptions={block.sortOptions}
+            sortLabel={block.sortLabel}
+            resultCount={block.resultCount}
+            actionLabel={block.actionLabel}
+            path={path}
+          />
+        );
+      }
       return (
         <Stack
           key={index}

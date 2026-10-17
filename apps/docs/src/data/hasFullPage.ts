@@ -229,4 +229,13 @@ export const HAS_FULL_PAGE: Record<string, string> = {
   ImagePicker: "/synthetics/image-picker",
   ReadingView: "/synthetics/reading-view",
   Onboarding: "/opinions/onboarding",
+  /* ---- new-c: marketing group ---- */
+  HeroSplit: "/synthetics/hero-split",
+  Section: "/synthetics/section",
+  PageHeader: "/synthetics/page-header",
+  Prose: "/synthetics/prose",
+  Markdown: "/synthetics/prose",
+  FilterPills: "/synthetics/filter-bar",
+  ResultCount: "/synthetics/filter-bar",
+  FilterBar: "/synthetics/filter-bar",
 };

@@ -24,15 +24,18 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(function Acc
 
 export interface AccordionItemProps {
   value: string;
+  /** DOM id of the item, e.g. for a `#hash` link target (see `useHashTarget`). */
+  id?: string;
   trigger: ReactNode;
   children: ReactNode;
   disabled?: boolean;
 }
 
-export function AccordionItem({ value, trigger, children, disabled }: AccordionItemProps) {
+export function AccordionItem({ value, id, trigger, children, disabled }: AccordionItemProps) {
   return (
     <RadixAccordion.Item
       value={value}
+      id={id}
       disabled={disabled}
       className="rebar-accordion-item"
       data-rebar-part="item"

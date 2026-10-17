@@ -8,6 +8,7 @@ import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { PEOPLE, avatarOf, person, project } from "@/fixtures/tideline";
+import { CONTACT_ASIDE, CONTACT_TOPICS } from "@/fixtures/athic";
 
 const CODE = `<Form defaultValues={{ name: "Harbour rebrand", owner: "Maya Chen", due: "24 Oct" }} onSubmit={save}>
   <FormItem name="name" label="Project name" required>
@@ -22,9 +23,30 @@ const CODE = `<Form defaultValues={{ name: "Harbour rebrand", owner: "Maya Chen"
   <Button type="submit">Save changes</Button>
 </Form>`;
 
+const CONTACT_CODE = `<Form
+  status={status}                       // "idle" | "submitting" | "success" | "error"
+  onSubmit={send}
+  successMessage={<><h3>Thanks, we\u2019ll get back to you soon.</h3><Button onClick={() => setStatus("idle")}>Send another</Button></>}
+  errorMessage={<><b>We couldn\u2019t send that.</b> Try again in a minute.</>}
+>
+  <FormItem name="name" label="Name" required>{(f) => <Input {...f} />}</FormItem>
+  <FormItem name="message" label="Message" required>{(f) => <textarea className="rebar-input" rows={4} {...f} />}</FormItem>
+  {/* honeypot: hidden from people, filled by bots; drop the submission in onSubmit */}
+  <div className="visually-hidden" aria-hidden="true"><FormItem name="website" label="Website">{(f) => <Input tabIndex={-1} autoComplete="off" {...f} />}</FormItem></div>
+  <Button type="submit">Send message</Button>
+</Form>`;
+
 const BLOCKS: Construct[] = [
   { type: "props-table", heading: "Form props", rows: componentProps["Form"] ?? [] },
   { type: "props-table", heading: "FormItem props", rows: componentProps["FormItem"] ?? [] },
+  {
+    type: "doc-section",
+    heading: "Status and the contact form recipe",
+    body: [
+      { kind: "text", text: "Pass `status` and the form follows it: `submitting` disables every field in a `<fieldset disabled>` and sets `aria-busy`; `error` shows `errorMessage` in a `role=\"alert\"` banner above the fields and leaves them editable; `success` swaps the form for `successMessage` in a `role=\"status\"` panel, and returning to `idle` resets the fields. You own the status: set `submitting` at the start of `onSubmit`, then `success` or `error`." },
+      { kind: "text", text: "A spam honeypot is app code, not a prop: a field that is visually hidden (off-screen, not `display: none`), `tabindex=\"-1\"`, `autocomplete=\"off\"` and `aria-hidden`. A person never fills it; if it has a value, drop the submission in `onSubmit` without an error. Pair it with a simple challenge question if you need more. Until `Textarea` ships, use `<textarea className=\"rebar-input\">` for the message." },
+    ],
+  },
   {
     type: "doc-section",
     heading: "Accessibility",
@@ -61,6 +83,83 @@ function ValidateOnMount({ trigger }: { trigger: () => Promise<boolean> }) {
     void trigger();
   }, [trigger]);
   return null;
+}
+
+type ContactStatus = "idle" | "submitting" | "success" | "error";
+const hiddenStyle = { position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" } as const;
+const SENT = (reset?: () => void) => (
+  <>
+    <Heading level={3}>Thanks, we’ll get back to you soon.</Heading>
+    <Text size="sm" color="secondary">A copy is on its way to maria@example.com.</Text>
+    <Button variant="secondary" size="sm" type="button" onClick={reset}>Send another</Button>
+  </>
+);
+const FAILED = (
+  <>
+    <b>We couldn’t send that.</b> Your message is still here. Try again in a minute.
+  </>
+);
+
+function ContactFields({ sending }: { sending?: boolean }) {
+  return (
+    <>
+      <FormItem name="name" label="Name" required>
+        {(field) => <Input {...field} autoComplete="name" />}
+      </FormItem>
+      <FormItem name="email" label="Email" required rules={{ pattern: { value: /^[^@\s]+@[^@\s]+\.[^@\s]+$/, message: "That email address doesn’t look valid." } }}>
+        {(field) => <Input {...field} type="email" autoComplete="email" />}
+      </FormItem>
+      <FormItem name="topic" label="Topic">
+        {(field) => (
+          <select className="rebar-input" {...field}>
+            {CONTACT_TOPICS.map((t) => (
+              <option key={t}>{t}</option>
+            ))}
+          </select>
+        )}
+      </FormItem>
+      <FormItem name="message" label="Message" required rules={{ minLength: { value: 10, message: "Tell us a little more." } }}>
+        {(field) => <textarea className="rebar-input" rows={4} style={{ minHeight: 120, borderRadius: 18 }} {...field} />}
+      </FormItem>
+      <FormItem name="consent" label="Consent" rules={{ validate: (v) => v === true || "Please agree so we can reply." }}>
+        {(field) => (
+          <label style={{ display: "flex", gap: 10, alignItems: "flex-start", minHeight: 44 }}>
+            <input type="checkbox" style={{ marginTop: 4 }} {...field} />
+            <span>I agree to be contacted about this message.</span>
+          </label>
+        )}
+      </FormItem>
+      <div style={hiddenStyle} aria-hidden="true">
+        <FormItem name="website" label="Website (leave empty)">
+          {(field) => <Input tabIndex={-1} autoComplete="off" {...field} />}
+        </FormItem>
+      </div>
+      <Stack direction="row" gap="md" align="center" style={{ flexWrap: "wrap" }}>
+        <Button type="submit" size="lg" loading={sending}>{sending ? "Sending…" : "Send message"}</Button>
+        <Text size="xs" color="secondary">We reply within two working days.</Text>
+      </Stack>
+    </>
+  );
+}
+
+function ContactForm() {
+  const [status, setStatus] = useState<ContactStatus>("idle");
+  return (
+    <Form
+      status={status}
+      defaultValues={{ name: "", email: "", topic: CONTACT_TOPICS[0], message: "", consent: false, website: "" }}
+      onSubmit={async (values) => {
+        if (values.website) return; // honeypot: a bot filled the hidden field, drop it silently
+        setStatus("submitting");
+        await new Promise((resolve) => setTimeout(resolve, 900));
+        setStatus(String(values.message).toLowerCase().includes("fail") ? "error" : "success");
+      }}
+      successMessage={SENT(() => setStatus("idle"))}
+      errorMessage={FAILED}
+    >
+      <ContactFields sending={status === "submitting"} />
+    </Form>
+  );
 }
 
 export default function FormPage() {
@@ -239,6 +338,32 @@ export default function FormPage() {
             </DeviceFrame>
           </div>
         </Stack>
+      </DemoStage>
+
+      <Heading level={2}>Contact form</Heading>
+      <DemoStage
+        title="Get in touch"
+        caption="Validation, sending, success. Type “fail” in the message to see the error state"
+        code={CONTACT_CODE}
+        states={[
+          { label: "Sending", node: <Form status="submitting" onSubmit={() => {}} defaultValues={{ name: "Maria Lopez", email: "maria@example.com", topic: CONTACT_TOPICS[0], message: "Is Ask available outside the US?", consent: true }}><ContactFields sending /></Form> },
+          { label: "Error", node: <Form status="error" errorMessage={FAILED} onSubmit={() => {}} defaultValues={{ name: "Maria Lopez", email: "maria@example.com", topic: CONTACT_TOPICS[0], message: "Is Ask available outside the US?", consent: true }}><ContactFields /></Form> },
+          { label: "Success", node: <Form status="success" successMessage={SENT()} onSubmit={() => {}}><span /></Form> },
+        ]}
+      >
+        <div style={{ display: "grid", gap: 24, gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", alignItems: "start" }}>
+          <Card style={{ padding: 8 }}>
+            <ContactForm />
+          </Card>
+          <Stack gap="sm">
+            {CONTACT_ASIDE.map((a) => (
+              <div key={a.id} style={{ background: `var(--rebar-color-tint-${a.tint})`, borderRadius: "var(--rebar-radius-lg)", padding: "18px 20px" }}>
+                <Text as="span" size="xs" style={{ fontWeight: "var(--rebar-font-weight-semibold)", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--rebar-color-text-secondary)" }}>{a.kicker}</Text>
+                <Text>{a.body}</Text>
+              </div>
+            ))}
+          </Stack>
+        </div>
       </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />

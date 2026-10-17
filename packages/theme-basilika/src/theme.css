@@ -204,3 +204,8 @@
 :where(a:not([class])) {
   color: var(--rebar-color-primary);
 }
+
+/* ---- new-c: bright coral for small caps and links on navy/art surfaces (same value in light and dark) ---- */
+:where(:root, [data-rebar-theme="basilika"], [data-theme="dark"], [data-theme="dark"] [data-rebar-theme="basilika"]) {
+  --rebar-color-primary-bright: #e9705c;
+}
