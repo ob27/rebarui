@@ -13498,6 +13498,7 @@ a.rebar-list-item-main {
   display: var(--rebar-list-item-title-display, -webkit-box);
   white-space: var(--rebar-list-item-title-white-space, normal);
   text-overflow: var(--rebar-list-item-title-text-overflow, clip);
+  text-wrap-style: var(--rebar-list-item-title-text-wrap, pretty);
 }
 
 /* Card promo: surface, colour, radius, padding, thumbnail size and type can be set by an app (defaults = the shipped promo) */
@@ -13602,4 +13603,9 @@ a.rebar-list-item-main {
 }
 .rebar-waveform-audio-player[data-rebar-appearance="card"] .rebar-waveform-audio-player-bar[data-played] {
   background: var(--rebar-waveform-card-bar-played, var(--rebar-color-primary, #0066cc));
+}
+
+/* ListItem trailing: gap between trailing items */
+.rebar-list-item-trailing {
+  gap: var(--rebar-list-item-trailing-gap, 8px);
 }
