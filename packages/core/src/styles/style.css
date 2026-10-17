@@ -13487,3 +13487,8 @@ a.rebar-list-item-main {
   text-transform: uppercase;
   white-space: normal;
 }
+
+/* Heading with an eyebrow: gap between the two */
+.rebar-heading-group {
+  gap: var(--rebar-heading-group-gap, 8px);
+}
