@@ -24,6 +24,8 @@ interface DatePickerBaseProps extends Omit<ComponentPropsWithoutRef<"div">, "val
   placeholder?: string;
   /** `"native"`: the platform's own date input (`<input type="date">`) as a Rebar field, instead of the calendar popover. Default `"default"`. */
   appearance?: "default" | "native";
+  /** `appearance="native"`: the input is `required` (the browser blocks an empty submit). */
+  required?: boolean;
 }
 
 export interface DatePickerSingleProps extends DatePickerBaseProps {
