@@ -2954,3 +2954,44 @@ textarea.rebar-input {
 .rebar-radio.rebar-radio-native:focus-visible { outline: var(--rebar-radio-native-focus-outline, -webkit-focus-ring-color auto 1px); outline-offset: var(--rebar-radio-native-focus-outline-offset, 0px); }
 .rebar-checkbox-label { align-items: var(--rebar-checkbox-label-align, center); }
 .rebar-radio.rebar-radio-native { margin: var(--rebar-radio-native-margin, 3px 3px 0 5px); }
+
+/* SearchInput: field size, shape, icon, text, focus and clear button are opt-in */
+.rebar-search-input-field {
+  height: var(--rebar-search-input-height, 48px);
+  gap: var(--rebar-search-input-gap, 10px);
+  padding: var(--rebar-search-input-padding, 0 6px 0 16px);
+  border-width: var(--rebar-search-input-border-width, 1.5px);
+  border-color: var(--rebar-search-input-border-color, var(--rebar-color-border, #e0e0e0));
+  border-radius: var(--rebar-search-input-radius, 999px);
+  background: var(--rebar-search-input-background, var(--rebar-color-bg-raised, var(--rebar-color-bg-primary, #ffffff)));
+  color: var(--rebar-search-input-icon-color, var(--rebar-color-text-secondary, #757575));
+}
+.rebar-search-input-field:focus-within {
+  border-color: var(--rebar-search-input-focus-border-color, var(--rebar-color-primary, #b53824));
+  background: var(--rebar-search-input-focus-background, var(--rebar-search-input-background, var(--rebar-color-bg-raised, var(--rebar-color-bg-primary, #ffffff))));
+  box-shadow: var(--rebar-search-input-focus-shadow, 0 0 0 4px color-mix(in srgb, var(--rebar-color-primary, #b53824) 18%, transparent));
+}
+.rebar-search-input-icon {
+  width: var(--rebar-search-input-icon-width, auto);
+  height: var(--rebar-search-input-icon-height, auto);
+  align-items: center;
+  justify-content: center;
+  font-size: var(--rebar-search-input-icon-size, inherit);
+}
+.rebar-search-input-control {
+  padding: var(--rebar-search-input-control-padding, 0);
+  color: var(--rebar-search-input-color, var(--rebar-color-text-primary, #212121));
+  font-size: var(--rebar-search-input-font-size, 1rem);
+  line-height: var(--rebar-search-input-line-height, normal);
+}
+.rebar-search-input-control::placeholder { color: var(--rebar-search-input-placeholder-color, var(--rebar-color-text-secondary, #757575)); }
+.rebar-search-input-field:focus-within .rebar-search-input-control::placeholder { color: var(--rebar-search-input-focus-placeholder-color, var(--rebar-search-input-placeholder-color, var(--rebar-color-text-secondary, #757575))); }
+.rebar-search-input-clear {
+  width: var(--rebar-search-input-clear-size, 36px);
+  height: var(--rebar-search-input-clear-size, 36px);
+  margin: var(--rebar-search-input-clear-margin, 0);
+  border-radius: var(--rebar-search-input-clear-radius, 50%);
+  background: var(--rebar-search-input-clear-background, var(--rebar-color-bg-secondary, #eeeeee));
+  color: var(--rebar-search-input-clear-color, var(--rebar-color-text-secondary, #757575));
+  font-size: var(--rebar-search-input-clear-font-size, inherit);
+}

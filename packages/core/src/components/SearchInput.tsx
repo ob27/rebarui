@@ -1,5 +1,5 @@
 import { forwardRef, useRef, useState } from "react";
-import type { ChangeEvent, ComponentPropsWithoutRef, KeyboardEvent } from "react";
+import type { ChangeEvent, ComponentPropsWithoutRef, KeyboardEvent, ReactNode } from "react";
 import clsx from "clsx";
 
 export interface SearchInputProps extends Omit<ComponentPropsWithoutRef<"input">, "size" | "value" | "defaultValue" | "onChange" | "type"> {
@@ -27,6 +27,10 @@ export interface SearchInputProps extends Omit<ComponentPropsWithoutRef<"input">
   cancelLabel?: string;
   /** Label of the clear button. Default "Clear". */
   clearLabel?: string;
+  /** Replaces the magnifier glyph (any element sized by its own `width`/`height` or `1em`). */
+  icon?: ReactNode;
+  /** Replaces the glyph inside the clear button. */
+  clearIcon?: ReactNode;
 }
 
 function MagnifierIcon() {
@@ -61,6 +65,8 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
     onKeyDown,
     cancelLabel = "Cancel",
     clearLabel = "Clear",
+    icon,
+    clearIcon,
     "aria-label": ariaLabel = "Search",
     ...props
   },
@@ -106,7 +112,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
     >
       <div className="rebar-search-input-field" data-rebar-part="field">
         <span className="rebar-search-input-icon" data-rebar-part="icon" aria-hidden="true">
-          <MagnifierIcon />
+          {icon ?? <MagnifierIcon />}
         </span>
         <input
           ref={(node) => {
@@ -138,9 +144,11 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(functi
         {loading ? <span className="rebar-search-input-spinner" data-rebar-part="spinner" role="status" aria-label="Searching" /> : null}
         {showClear ? (
           <button type="button" className="rebar-search-input-clear" data-rebar-part="clear" aria-label={clearLabel} onClick={clear}>
-            <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true" focusable="false">
-              <path d="M7 7l10 10M17 7L7 17" />
-            </svg>
+            {clearIcon ?? (
+              <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true" focusable="false">
+                <path d="M7 7l10 10M17 7L7 17" />
+              </svg>
+            )}
           </button>
         ) : null}
       </div>
