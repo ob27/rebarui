@@ -20,5 +20,18 @@ const pairs = [["color-text-primary", "color-bg-primary"], ["color-text-primary"
 for (const [name, t] of [["light", light], ["dark", { ...light, ...dark }]]) for (const [fg, bg] of pairs) {
   const r = ratio(t[fg], t[bg]); if (r < 4.5) bad.push(`${name}: ${fg} on ${bg} is ${r.toFixed(2)}:1`);
 }
+// Opt-in parity properties: each rule must read its custom property with the old literal as the default, so apps that do not set them look the same.
+const comps = readFileSync("src/components.css", "utf8");
+const core = readFileSync("../core/src/styles/style.css", "utf8");
+const has = (src, re, what) => { if (!re.test(src)) bad.push(`missing opt-in default: ${what}`); };
+has(comps, /width:\s*var\(--rebar-icon-button-size,\s*44px\)/, "--rebar-icon-button-size 44px");
+has(comps, /height:\s*var\(--rebar-icon-button-size,\s*44px\)/, "--rebar-icon-button-size 44px (height)");
+has(comps, /width:\s*var\(--rebar-icon-button-size-sm,\s*34px\)/, "--rebar-icon-button-size-sm 34px");
+has(comps, /width:\s*var\(--rebar-icon-button-size-lg,\s*52px\)/, "--rebar-icon-button-size-lg 52px");
+has(comps, /font-weight:\s*var\(--rebar-heading-weight,\s*var\(--rebar-font-weight-semibold\)\)/, "--rebar-heading-weight (theme heading)");
+has(core, /font-weight:\s*var\(--rebar-heading-weight,\s*var\(--rebar-font-weight-bold,\s*700\)\)/, "--rebar-heading-weight level 1 default 700");
+has(core, /font-weight:\s*var\(--rebar-heading-weight,\s*var\(--rebar-font-weight-semibold,\s*600\)\)/, "--rebar-heading-weight level 2-3 default 600");
+has(core, /line-height:\s*var\(--rebar-heading-line-height,\s*var\(--rebar-line-height,\s*1\.5\)\)/, "--rebar-heading-line-height default = body line-height");
+for (const k of ["icon-button-size", "heading-weight", "heading-line-height"]) if (light[k]) bad.push(`--rebar-${k} must stay unset in the theme (opt-in only)`);
 if (bad.length) { console.error(bad.join("\n")); process.exit(1); }
-console.log("theme-basilika: fonts present, dark complete, text pairs pass AA");
+console.log("theme-basilika: fonts present, dark complete, text pairs pass AA, opt-in parity props default to the old values");

@@ -64,11 +64,15 @@ body {
   font-size: var(--rebar-font-size-lg, 20px);
 }
 .rebar-heading[data-rebar-level="1"] {
-  font-weight: var(--rebar-font-weight-bold, 700);
+  font-weight: var(--rebar-heading-weight, var(--rebar-font-weight-bold, 700));
 }
 .rebar-heading[data-rebar-level="2"],
 .rebar-heading[data-rebar-level="3"] {
-  font-weight: var(--rebar-font-weight-semibold, 600);
+  font-weight: var(--rebar-heading-weight, var(--rebar-font-weight-semibold, 600));
+}
+/* Opt-in: a heading line-height of its own (default: the body line-height token). */
+.rebar-heading {
+  line-height: var(--rebar-heading-line-height, var(--rebar-line-height, 1.5));
 }
 
 .rebar-button {
