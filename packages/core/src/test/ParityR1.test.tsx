@@ -30,6 +30,7 @@ describe("parity-r1: grouped list panel and ListSection type tokens", () => {
     expect(block).toContain("var(--rebar-list-item-chevron-size, 1.2em)");
     expect(block).toContain("var(--rebar-avatar-overflow, hidden)");
     expect(block).toContain("var(--rebar-popup-heading-size, 22px)");
+    expect(block).toContain("var(--rebar-list-item-title-wrap, pretty)");
     expect(block).toContain("var(--rebar-avatar-image-radius, 0)");
   });
 

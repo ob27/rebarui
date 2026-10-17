@@ -13418,3 +13418,6 @@ a.rebar-list-item-main {
 .rebar-drawer-content[data-rebar-appearance="popup"][data-rebar-title-style="heading"] [data-rebar-part="title"] {
   font-size: var(--rebar-popup-heading-size, 22px);
 }
+
+/* ListItem: the title's line-breaking can be set by an app (default unchanged) */
+.rebar-list-item-title { text-wrap: var(--rebar-list-item-title-wrap, pretty); }
