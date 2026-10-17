@@ -48,3 +48,29 @@ describe("parity-r1: grouped list panel and ListSection type tokens", () => {
     expect(container.querySelector(".rebar-list-section-footer")).toHaveTextContent("Note");
   });
 });
+
+import { ImagePicker } from "../components/ImagePicker";
+
+describe("parity-r1: ImagePicker appearance=ring", () => {
+  const items = [
+    { id: "a", src: "a.png", alt: "A" },
+    { id: "b", src: "b.png", alt: "B" },
+  ];
+  it("marks the appearance and keeps the selected badge while busy", () => {
+    const { container } = render(<ImagePicker appearance="ring" items={items} selectedId="a" busyId="a" checkIcon={<i data-testid="tick" />} />);
+    expect(container.querySelector('[data-rebar-component="image-picker"]')).toHaveAttribute("data-rebar-appearance", "ring");
+    const tile = container.querySelector('[data-rebar-part="tile"]')!;
+    expect(tile).toHaveAttribute("data-rebar-state", "busy");
+    expect(tile).toHaveAttribute("data-rebar-selected", "true");
+    expect(tile.querySelector('[data-testid="tick"]')).toBeInTheDocument();
+  });
+  it("leaves the default appearance unchanged (no badge while busy)", () => {
+    const { container } = render(<ImagePicker items={items} selectedId="a" busyId="a" />);
+    expect(container.querySelector('[data-rebar-component="image-picker"]')).not.toHaveAttribute("data-rebar-appearance");
+    expect(container.querySelector('[data-rebar-part="check"]')).toBeNull();
+  });
+  it("css keeps the ring defaults", () => {
+    expect(block).toContain("var(--rebar-image-picker-tile-radius, 18px)");
+    expect(block).toContain("var(--rebar-image-picker-gap, 14px)");
+  });
+});

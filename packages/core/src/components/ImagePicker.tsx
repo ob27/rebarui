@@ -28,8 +28,12 @@ export interface ImagePickerProps extends Omit<ComponentPropsWithoutRef<"div">, 
   /** `"classic"`: the plain mobile-UI picker. Tiles are square 10px-radius thumbnails with a 3px border (the selected or busy one gets the
    * bright primary border, no badge or spinner, the rest fade when the picker is disabled), a 10px gap and an optional scroll height
    * (`--rebar-image-picker-max-height`); tag chips are flat square-cornered chips with a corner tick when on; the empty message is plain
-   * left-aligned text. Default `"default"`. */
-  appearance?: "default" | "classic";
+   * left-aligned text. `"ring"`: soft-shadow tiles (`--rebar-image-picker-tile-radius`, default 18px; `-shadow`; `-gap`, 14px) where the selected one
+   * wears a bright ring (`--rebar-image-picker-ring`) and a small corner badge, and a busy one just fades (`--rebar-image-picker-busy-opacity`, 0.5; no
+   * spinner; a busy tile can also be the selected one). Default `"default"`. */
+  appearance?: "default" | "classic" | "ring";
+  /** Replaces the check glyph in the selected tile's badge (a glyph set the app already uses). */
+  checkIcon?: ReactNode;
   /** Renders the tag chip row above the grid, with an "All" chip first. Omit for no filter. */
   tags?: string[];
   /** Controlled tag (`null` = all). Items are filtered to it. */
@@ -71,6 +75,7 @@ export function ImagePicker({
   busyId = null,
   columns = 3,
   appearance,
+  checkIcon,
   tags,
   activeTag,
   defaultActiveTag = null,
@@ -172,6 +177,7 @@ export function ImagePicker({
               className="rebar-image-picker-tile"
               data-rebar-part="tile"
               data-rebar-state={isBusy ? "busy" : isSel ? "selected" : undefined}
+              data-rebar-selected={appearance === "ring" && isSel ? "true" : undefined}
               aria-pressed={isSel}
               aria-label={item.alt}
               aria-busy={isBusy || undefined}
@@ -180,11 +186,13 @@ export function ImagePicker({
               onClick={() => choose(item)}
             >
               <Image src={item.src} thumbSrc={item.thumbSrc} alt="" fallbackColor="var(--rebar-color-tint-2)" />
-              {isSel && !isBusy ? (
+              {isSel && (!isBusy || appearance === "ring") ? (
                 <span className="rebar-image-picker-check" data-rebar-part="check" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" focusable="false">
-                    <path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  {checkIcon ?? (
+                    <svg viewBox="0 0 24 24" focusable="false">
+                      <path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
                 </span>
               ) : null}
               {isBusy ? <span className="rebar-image-picker-busy" data-rebar-part="busy" aria-hidden="true" /> : null}
@@ -201,7 +209,7 @@ export function ImagePicker({
       data-rebar-component="image-picker"
       data-rebar-shape={shape}
       data-rebar-columns={columns}
-      data-rebar-appearance={appearance === "classic" ? "classic" : undefined}
+      data-rebar-appearance={appearance === "classic" ? "classic" : appearance === "ring" ? "ring" : undefined}
       data-rebar-disabled={disabled ? "true" : undefined}
       {...props}
     >

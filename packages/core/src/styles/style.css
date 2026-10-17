@@ -13367,3 +13367,34 @@ a.rebar-list-item-main {
   overflow: var(--rebar-avatar-overflow, hidden);
 }
 .rebar-avatar-image { border-radius: var(--rebar-avatar-image-radius, 0); }
+
+/* ImagePicker appearance="ring": soft-shadow tiles, a bright ring and corner badge for the selected one, a plain fade for a busy one
+   (tokens: --rebar-image-picker-gap / -tile-radius / -shadow / -ring / -busy-opacity / -check-size / -check-inset / -check-bg / -check-icon-size) */
+.rebar-image-picker[data-rebar-appearance="ring"] { display: block; }
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-grid { gap: var(--rebar-image-picker-gap, 14px); }
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-tile {
+  min-width: 0;
+  min-height: 0;
+  border-radius: var(--rebar-image-picker-tile-radius, 18px);
+  background: var(--rebar-image-picker-tile-bg, transparent);
+  box-shadow: var(--rebar-image-picker-shadow, 0 2px 8px rgba(10, 11, 22, 0.15));
+}
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-tile[data-rebar-selected="true"],
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-tile[data-rebar-state="selected"] {
+  box-shadow: var(--rebar-image-picker-ring, 0 0 0 3px var(--rebar-color-primary-bright, var(--rebar-color-primary)));
+}
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-tile[aria-disabled="true"],
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-tile[data-rebar-disabled="true"] { opacity: 1; cursor: default; }
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-tile[data-rebar-state="busy"] { opacity: var(--rebar-image-picker-busy-opacity, 0.5); box-shadow: var(--rebar-image-picker-shadow, 0 2px 8px rgba(10, 11, 22, 0.15)); }
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-tile[data-rebar-state="busy"][data-rebar-selected="true"] { box-shadow: var(--rebar-image-picker-ring, 0 0 0 3px var(--rebar-color-primary-bright, var(--rebar-color-primary))); }
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-busy { display: none; }
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-check {
+  right: var(--rebar-image-picker-check-inset, 4px);
+  bottom: var(--rebar-image-picker-check-inset, 4px);
+  width: var(--rebar-image-picker-check-size, 22px);
+  height: var(--rebar-image-picker-check-size, 22px);
+  background: var(--rebar-image-picker-check-bg, var(--rebar-color-primary-bright, var(--rebar-color-primary)));
+  color: #fff;
+  font-size: var(--rebar-image-picker-check-icon-size, 13px);
+}
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-check svg { width: 1em; height: 1em; }
