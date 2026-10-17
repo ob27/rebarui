@@ -12353,3 +12353,295 @@ a.rebar-list-item-main {
 }
 .rebar-notice-bar[data-rebar-variant="banner"] .rebar-notice-bar-content { display: block; white-space: normal; }
 .rebar-notice-bar[data-rebar-variant="banner"] .rebar-notice-bar-text { display: inline; }
+/* ---- parity-a3: shell, navigation, lists and cards (opt-in properties; every default below is the previous value) ---- */
+
+/* TopBar: bar padding, gap, button box, title type and action size can be set by an app (defaults unchanged) */
+.rebar-top-bar-bar {
+  gap: var(--rebar-top-bar-gap, 2px);
+  padding: var(--rebar-top-bar-padding, 0 6px);
+}
+.rebar-top-bar-button {
+  box-sizing: border-box;
+  width: var(--rebar-top-bar-button-width, 44px);
+  height: var(--rebar-top-bar-button-height, 44px);
+  padding: var(--rebar-top-bar-button-padding, 0);
+  font-size: var(--rebar-top-bar-button-font-size, inherit);
+  line-height: var(--rebar-top-bar-button-line-height, inherit);
+}
+.rebar-top-bar-title {
+  padding: var(--rebar-top-bar-title-padding, 0 6px);
+  font-size: var(--rebar-top-bar-title-size, 1.3rem);
+  font-weight: var(--rebar-top-bar-title-weight, 600);
+  line-height: var(--rebar-top-bar-title-line-height, 1.15);
+  letter-spacing: var(--rebar-top-bar-title-letter-spacing, inherit);
+}
+.rebar-top-bar-title-button {
+  min-height: var(--rebar-top-bar-title-button-min-height, 44px);
+}
+.rebar-top-bar-logo {
+  padding: var(--rebar-top-bar-logo-padding, 0 8px);
+}
+.rebar-top-bar-logo {
+  line-height: var(--rebar-top-bar-logo-line-height, 1);
+  font-family: var(--rebar-top-bar-logo-font-family, var(--rebar-font-family-display, inherit));
+  font-size: var(--rebar-top-bar-logo-font-size, 1.45rem);
+  font-weight: var(--rebar-top-bar-logo-font-weight, 600);
+}
+.rebar-top-bar-logo a {
+  display: var(--rebar-top-bar-logo-link-display, inline-flex);
+}
+.rebar-top-bar-logo img,
+.rebar-top-bar-logo svg {
+  display: var(--rebar-top-bar-logo-media-display, block);
+  height: var(--rebar-top-bar-logo-height, 24px);
+}
+.rebar-top-bar-trailing > a,
+.rebar-top-bar-trailing > button:not(.rebar-button) {
+  min-height: var(--rebar-top-bar-action-size, 44px);
+  min-width: var(--rebar-top-bar-action-size, 44px);
+  padding: var(--rebar-top-bar-action-padding, 0 14px);
+  font-size: var(--rebar-top-bar-action-font-size, inherit);
+  font-weight: var(--rebar-top-bar-action-weight, 600);
+  color: var(--rebar-top-bar-action-color, var(--rebar-color-primary-bright, var(--rebar-color-text-inverse, #fbf6ee)));
+}
+.rebar-top-bar-trailing > button:not(.rebar-button):has(> svg:only-child),
+.rebar-top-bar-trailing > button:not(.rebar-button)[data-rebar-icon-only] {
+  width: var(--rebar-top-bar-action-width, var(--rebar-top-bar-action-size, 44px));
+  height: var(--rebar-top-bar-action-height, var(--rebar-top-bar-action-size, 44px));
+  min-width: var(--rebar-top-bar-action-size, 44px);
+  min-height: var(--rebar-top-bar-action-size, 44px);
+  padding: var(--rebar-top-bar-action-icon-padding, 0);
+  font-size: var(--rebar-top-bar-action-font-size, inherit);
+  color: inherit;
+}
+
+/* MobileTabBar: box, item, icon and label metrics can be set by an app (defaults unchanged) */
+.rebar-mobile-tab-bar {
+  min-height: var(--rebar-tab-bar-min-height, 56px);
+  padding: var(--rebar-tab-bar-padding, var(--rebar-space-xs, 4px) var(--rebar-space-sm, 8px));
+  gap: var(--rebar-tab-bar-gap, var(--rebar-space-xs, 4px));
+}
+.rebar-mobile-tab-bar-item {
+  min-height: var(--rebar-tab-bar-item-min-height, 44px);
+  padding: var(--rebar-tab-bar-item-padding, var(--rebar-space-xs, 4px));
+  color: var(--rebar-tab-bar-color, var(--rebar-color-text-secondary, #757575));
+}
+.rebar-mobile-tab-bar-icon {
+  width: var(--rebar-tab-bar-icon-size, 20px);
+  height: var(--rebar-tab-bar-icon-size, 20px);
+  font-size: var(--rebar-tab-bar-icon-font-size, inherit);
+  line-height: var(--rebar-tab-bar-icon-line-height, inherit);
+}
+.rebar-mobile-tab-bar-label {
+  font-size: var(--rebar-tab-bar-label-size, inherit);
+  line-height: var(--rebar-tab-bar-label-line-height, 1.2);
+}
+.rebar-mobile-tab-bar-item-active {
+  color: var(--rebar-tab-bar-active-color, var(--rebar-color-text-primary, #212121));
+}
+
+/* List and ListItem: gap, row box, thumbnail, title, meta and the trailing button can be set by an app (defaults unchanged) */
+.rebar-list {
+  gap: var(--rebar-list-gap, 10px);
+}
+.rebar-list-item {
+  min-height: var(--rebar-list-item-min-height, 72px);
+  color: var(--rebar-list-item-color, var(--rebar-color-text-primary, #212121));
+}
+.rebar-list[data-rebar-variant="cards"] > .rebar-list-item {
+  border-color: var(--rebar-list-item-border-color, var(--rebar-color-border, #e0e0e0));
+  border-radius: var(--rebar-list-item-radius, 20px);
+}
+.rebar-list-item-main {
+  min-height: var(--rebar-list-item-min-height, 72px);
+  gap: var(--rebar-list-item-gap, 14px);
+  padding-block: var(--rebar-list-item-padding-block, 14px);
+  padding-inline-start: var(--rebar-list-item-padding-start, 16px);
+  padding-inline-end: var(--rebar-list-item-padding-end, 16px);
+}
+.rebar-list-item:has(> .rebar-list-item-trailing) > .rebar-list-item-main {
+  padding-inline-end: var(--rebar-list-item-padding-end-with-trailing, 16px);
+}
+.rebar-list-item-thumb {
+  width: var(--rebar-list-item-thumb-size, 56px);
+  height: var(--rebar-list-item-thumb-size, 56px);
+  border-radius: var(--rebar-list-item-thumb-radius, 14px);
+  align-self: var(--rebar-list-item-thumb-align, flex-start);
+}
+.rebar-list-item-thumb.rebar-list-item-bar {
+  height: var(--rebar-list-item-thumb-size, 56px);
+  border-radius: var(--rebar-list-item-thumb-radius, 14px);
+}
+.rebar-list-item-body {
+  gap: var(--rebar-list-item-body-gap, 3px);
+}
+.rebar-list-item-title {
+  font-size: var(--rebar-list-item-title-size, 1rem);
+  font-weight: var(--rebar-list-item-title-weight, 600);
+  line-height: var(--rebar-list-item-title-line-height, 1.3);
+  letter-spacing: var(--rebar-list-item-title-letter-spacing, inherit);
+  -webkit-line-clamp: var(--rebar-list-item-title-lines, 3);
+  font-variation-settings: var(--rebar-list-item-title-variation, inherit);
+}
+.rebar-list-item[data-rebar-title-style="serif"] .rebar-list-item-title {
+  font-size: var(--rebar-list-item-title-size, 1.08rem);
+  line-height: var(--rebar-list-item-title-line-height, 1.25);
+}
+.rebar-list-item-description,
+.rebar-list-item-meta {
+  font-size: var(--rebar-list-item-meta-size, 0.85rem);
+  line-height: var(--rebar-list-item-meta-line-height, 1.4);
+}
+.rebar-list-item-trailing {
+  padding: var(--rebar-list-item-trailing-padding, 0 12px 0 0);
+}
+.rebar-list-item-more {
+  width: var(--rebar-list-item-more-size, 44px);
+  height: var(--rebar-list-item-more-size, 44px);
+  background: var(--rebar-list-item-more-background, var(--rebar-color-bg-secondary, #f5f5f5));
+  font-size: var(--rebar-list-item-more-font-size, inherit);
+}
+
+/* Progress: track and fill colours can be set by an app (defaults unchanged; status colours still win) */
+.rebar-progress {
+  background: var(--rebar-progress-track, var(--rebar-color-border, #e0e0e0));
+}
+.rebar-progress-indicator {
+  background: var(--rebar-progress-fill, var(--rebar-color-primary, #0066cc));
+}
+
+/* Card orientation="tile": a hub tile (icon cover at the top, title and subtitle at the bottom) */
+.rebar-card[data-rebar-orientation="tile"] {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--rebar-card-tile-gap, 18px);
+  min-height: var(--rebar-card-tile-min-height, 132px);
+  padding: var(--rebar-card-tile-padding, 16px);
+  border: 0;
+  border-radius: var(--rebar-card-tile-radius, 26px);
+}
+.rebar-card[data-rebar-orientation="tile"] > .rebar-card-header {
+  display: block;
+  padding: 0;
+  border-bottom: 0;
+}
+.rebar-card[data-rebar-orientation="tile"] .rebar-card-title {
+  display: block;
+  font-family: var(--rebar-font-family-display, inherit);
+  font-variation-settings: "SOFT" 100;
+  font-size: var(--rebar-card-tile-title-size, 19px);
+  font-weight: var(--rebar-heading-weight, 600);
+  line-height: var(--rebar-card-tile-title-line-height, 1.1);
+  letter-spacing: var(--rebar-card-tile-title-letter-spacing, -0.015em);
+  color: var(--rebar-card-tile-title-color, inherit);
+}
+.rebar-card[data-rebar-orientation="tile"] .rebar-card-subtitle {
+  display: block;
+  margin-top: var(--rebar-card-tile-subtitle-gap, 3px);
+  font-size: var(--rebar-card-tile-subtitle-size, 12.5px);
+  line-height: var(--rebar-card-tile-subtitle-line-height, 1.35);
+}
+.rebar-card[data-rebar-orientation="tile"][data-rebar-link]:hover {
+  transform: var(--rebar-card-tile-hover-transform, translateY(-2px));
+  box-shadow: var(--rebar-card-tile-hover-shadow, var(--rebar-shadow, 0 4px 14px rgba(0, 0, 0, 0.1)));
+}
+
+/* Empty icon="none": the plain note (description only); layout set by --rebar-empty-plain-* */
+.rebar-empty[data-rebar-icon="none"] {
+  align-items: var(--rebar-empty-plain-align, center);
+  padding: var(--rebar-empty-plain-padding, var(--rebar-space-xl, 32px));
+  text-align: var(--rebar-empty-plain-text-align, center);
+  color: var(--rebar-empty-plain-color, var(--rebar-color-text-secondary, #757575));
+}
+.rebar-empty[data-rebar-icon="none"] .rebar-empty-description {
+  font-size: var(--rebar-empty-plain-size, var(--rebar-font-size-sm, 14px));
+  line-height: var(--rebar-empty-plain-line-height, inherit);
+}
+
+/* ListItem: surface, hover, selected and meta colour can be set by an app (defaults unchanged) */
+.rebar-list-item {
+  background: var(--rebar-list-item-background, var(--rebar-color-bg-raised, var(--rebar-color-bg-primary, #ffffff)));
+}
+.rebar-list[data-rebar-variant="cards"] > .rebar-list-item:not([data-rebar-highlight]):hover {
+  background: var(--rebar-list-item-hover-background, var(--rebar-list-item-background, var(--rebar-color-bg-raised, var(--rebar-color-bg-primary, #ffffff))));
+}
+.rebar-list[data-rebar-variant="cards"] > .rebar-list-item[data-rebar-selected] {
+  outline: var(--rebar-list-item-selected-outline, 1.5px solid var(--rebar-color-primary, #b53824));
+  box-shadow: var(--rebar-list-item-selected-shadow, 0 0 0 1px var(--rebar-color-primary, #b53824));
+  background: var(--rebar-list-item-selected-background, var(--rebar-list-item-background, var(--rebar-color-bg-raised, var(--rebar-color-bg-primary, #ffffff))));
+}
+.rebar-list-item-description,
+.rebar-list-item-meta {
+  color: var(--rebar-list-item-meta-color, var(--rebar-color-text-secondary, #757575));
+}
+
+/* Card (vertical): radius, header and body padding, eyebrow gap and title type can be set by an app (defaults unchanged) */
+.rebar-card {
+  border-radius: var(--rebar-card-radius, var(--rebar-radius, 4px));
+}
+.rebar-card-header {
+  padding: var(--rebar-card-header-padding, var(--rebar-space-md, 16px) var(--rebar-space-lg, 24px));
+}
+.rebar-card-header:last-child {
+  padding-bottom: var(--rebar-card-header-padding-bottom-last, var(--rebar-space-md, 16px));
+}
+.rebar-card-body {
+  padding: var(--rebar-card-body-padding, var(--rebar-space-lg, 24px));
+}
+.rebar-card-cover + .rebar-card-body,
+.rebar-card-header + .rebar-card-body,
+.rebar-card-labels + .rebar-card-body {
+  padding-top: var(--rebar-card-body-padding-top, var(--rebar-space-md, 16px));
+}
+.rebar-card-title-group > [data-rebar-variant="eyebrow"] {
+  margin-bottom: var(--rebar-card-eyebrow-gap, 4px);
+}
+.rebar-card-title {
+  font-family: var(--rebar-card-title-family, inherit);
+  font-size: var(--rebar-card-title-size, var(--rebar-font-size-md, 16px));
+  font-weight: var(--rebar-card-title-weight, var(--rebar-font-weight-semibold, 600));
+  line-height: var(--rebar-card-title-line-height, inherit);
+  letter-spacing: var(--rebar-card-title-letter-spacing, inherit);
+  font-variation-settings: var(--rebar-card-title-variation, inherit);
+}
+.rebar-card-subtitle {
+  font-size: var(--rebar-card-subtitle-size, var(--rebar-font-size-sm, 14px));
+}
+
+/* TopBar title wrapping: nowrap with an ellipsis by default; an app can let the title wrap */
+.rebar-top-bar-title {
+  white-space: var(--rebar-top-bar-title-white-space, nowrap);
+  overflow: var(--rebar-top-bar-title-overflow, hidden);
+  text-overflow: var(--rebar-top-bar-title-text-overflow, ellipsis);
+}
+
+/* TopBar tone="overlay": scrim, button surface and spacing can be set by an app */
+.rebar-top-bar[data-rebar-tone="overlay"] {
+  background: var(--rebar-top-bar-overlay-background, linear-gradient(color-mix(in srgb, var(--rebar-color-bg-inverse, #1d2040) 75%, transparent), transparent));
+}
+.rebar-top-bar[data-rebar-tone="overlay"] .rebar-top-bar-button,
+.rebar-top-bar[data-rebar-tone="overlay"] .rebar-button[data-rebar-icon-only],
+.rebar-top-bar[data-rebar-tone="overlay"] .rebar-top-bar-trailing > button:not(.rebar-button):has(> svg:only-child),
+.rebar-top-bar[data-rebar-tone="overlay"] .rebar-top-bar-trailing > button:not(.rebar-button)[data-rebar-icon-only] {
+  background: var(--rebar-top-bar-overlay-button-background, color-mix(in srgb, var(--rebar-color-bg-inverse, #1d2040) 45%, transparent));
+  margin: var(--rebar-top-bar-overlay-button-margin, 0 4px);
+}
+
+/* BackdropSection: padding, side margin and a custom scrim background can be set by an app (defaults unchanged) */
+.rebar-backdrop-section {
+  padding: var(--rebar-backdrop-section-padding, var(--rebar-space-3xl, 64px) var(--rebar-space-lg, 24px));
+}
+.rebar-backdrop-section[data-rebar-rounded="true"] {
+  margin-inline: var(--rebar-backdrop-section-margin-inline, var(--rebar-space-md, 16px));
+}
+.rebar-backdrop-section[data-rebar-inset="false"] {
+  margin-inline: 0;
+  padding: 0;
+}
+.rebar-backdrop-section[data-rebar-scrim="custom"] .rebar-backdrop-section-scrim {
+  background: var(--rebar-backdrop-scrim-background, transparent);
+}
+.rebar-backdrop-section-content {
+  padding: var(--rebar-backdrop-section-content-padding, 0);
+}

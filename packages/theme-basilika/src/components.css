@@ -3025,3 +3025,34 @@ textarea.rebar-input {
 .rebar-button { box-shadow: var(--rebar-button-shadow, none); aspect-ratio: var(--rebar-button-aspect-ratio, auto); }
 .rebar-button[data-rebar-shape="rounded"] { border-radius: var(--rebar-button-rounded-radius, var(--rebar-radius)); }
 .rebar-button[data-rebar-variant="destructive"] { font-weight: var(--rebar-button-destructive-font-weight, var(--rebar-button-font-weight, var(--rebar-font-weight-semibold))); }
+/* ---- parity-a3: shell, navigation, lists and cards ---- */
+
+/* TopBar: the display title keeps the theme's tight tracking unless an app sets --rebar-top-bar-title-letter-spacing */
+.rebar-top-bar-title {
+  letter-spacing: var(--rebar-top-bar-title-letter-spacing, -0.015em);
+}
+
+/* MobileTabBar: theme defaults behind the same opt-in properties as core */
+.rebar-mobile-tab-bar {
+  gap: var(--rebar-tab-bar-gap, 0);
+  padding: var(--rebar-tab-bar-padding, 6px 4px 10px);
+}
+.rebar-mobile-tab-bar-item {
+  gap: var(--rebar-tab-bar-item-gap, 3px);
+  border-radius: var(--rebar-tab-bar-item-radius, 14px);
+  font-weight: var(--rebar-tab-bar-weight, var(--rebar-font-weight-medium));
+}
+.rebar-mobile-tab-bar-item-active {
+  color: var(--rebar-tab-bar-active-color, var(--rebar-color-primary));
+  font-weight: var(--rebar-tab-bar-active-weight, var(--rebar-font-weight-bold));
+}
+
+/* Empty icon="none": theme spacing behind the same --rebar-empty-plain-* properties */
+.rebar-empty[data-rebar-icon="none"] {
+  padding: var(--rebar-empty-plain-padding, 30px 20px);
+}
+
+/* Card: theme radius behind the opt-in --rebar-card-radius */
+.rebar-card {
+  border-radius: var(--rebar-card-radius, var(--rebar-radius));
+}

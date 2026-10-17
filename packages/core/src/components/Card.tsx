@@ -87,8 +87,8 @@ export interface CardProps extends Omit<ComponentPropsWithoutRef<"div">, "title"
   rel?: string;
   /** Link adapter for `href`, the same shape as `NavBar`'s `renderLink`. */
   renderLink?: RenderLink;
-  /** `"row"` is the compact layout: a 64px thumbnail (`cover`) at the start, title and meta, `extra` at the end. Default `"vertical"`. */
-  orientation?: "vertical" | "row";
+  /** `"row"` is the compact layout: a 64px thumbnail (`cover`) at the start, title and meta, `extra` at the end. `"tile"` is the hub tile: the `cover` (an icon) at the top, `title` and `subtitle` pinned to the bottom, sized by the `--rebar-card-tile-*` properties. Default `"vertical"`. */
+  orientation?: "vertical" | "row" | "tile";
   /** An uppercase kicker above the title (`Text variant="eyebrow"`). */
   eyebrow?: ReactNode;
   /** The promo preset: a row card on the lavender tint with a small thumbnail (`cover`), one action (`actions[0]`) and, with `onDismiss`, a close button. */
@@ -146,7 +146,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
   const marks = {
     "data-rebar-component": "card",
     "data-rebar-tone": tone === "default" ? undefined : String(tone),
-    "data-rebar-orientation": effectiveOrientation === "row" ? "row" : undefined,
+    "data-rebar-orientation": effectiveOrientation === "row" ? "row" : effectiveOrientation === "tile" ? "tile" : undefined,
     "data-rebar-promo": promo ? "true" : undefined,
     "data-rebar-link": href !== undefined ? "true" : undefined,
   };

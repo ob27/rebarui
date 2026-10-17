@@ -168,6 +168,23 @@ export default function CardPage() {
               </Card>
             ),
           },
+          {
+            label: "Hub tile (orientation=\"tile\")",
+            node: (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <Card orientation="tile" tone={1} href="#reflections" cover={<span aria-hidden="true" style={{ display: "inline-grid", placeItems: "center", width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,0.7)" }}>✎</span>} title="Reflections" subtitle="Your notes and prayers" />
+                <Card orientation="tile" tone={3} href="#perspectives" cover={<span aria-hidden="true" style={{ display: "inline-grid", placeItems: "center", width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,0.7)" }}>◉</span>} title="Perspectives" subtitle="Essays and letters" />
+              </div>
+            ),
+          },
+          {
+            label: "Panel from --rebar-card-* properties (26px radius, 20px padding)",
+            node: (
+              <div style={{ "--rebar-card-radius": "26px", "--rebar-card-header-padding": "20px 20px 10px", "--rebar-card-body-padding": "20px", "--rebar-card-body-padding-top": "0px", "--rebar-card-eyebrow-gap": "0px" } as React.CSSProperties}>
+                <Card tone={1} eyebrow="Today's Mass readings"><Text>First Reading — Ephesians 1:15-23</Text></Card>
+              </div>
+            ),
+          },
         ]}
       >
         <div style={GRID}>

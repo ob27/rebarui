@@ -111,6 +111,7 @@ export default function EmptyPage() {
           { label: "No results", node: <Empty icon="vector" description={<Message title="Nothing for “signage”" detail="Try another word." />} /> },
           { label: "Inbox zero", node: <Empty icon="container" description={<Message title="All caught up" detail="Nothing needs you." />} /> },
           { label: "Illustration", node: <Empty description="No files yet" /> },
+          { label: "Plain note (icon=\"none\")", node: <Empty icon="none" description="No saved articles yet." /> },
         ]}
       >
         <Card style={{ maxWidth: 520, margin: "0 auto" }}>

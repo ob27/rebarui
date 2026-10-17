@@ -20,6 +20,10 @@ export interface TopBarProps extends Omit<ComponentPropsWithoutRef<"header">, "t
   onBack?: () => void;
   /** Handler of the built-in menu button. */
   onMenu?: () => void;
+  /** Replaces the built-in back chevron (a glyph or icon of your own). The button keeps its label and handler. */
+  backIcon?: ReactNode;
+  /** Replaces the built-in menu icon. The button keeps its label and handler. */
+  menuIcon?: ReactNode;
   /** The title: serif, one line, ellipsis. Pass `{ editable: true, value, onSave }` for an inline rename field (Enter or the check saves, Escape cancels). */
   title?: ReactNode | TopBarEditableTitle;
   /** A brand mark shown in place of the title (the home screen). */
@@ -140,6 +144,8 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
     leading = "none",
     onBack,
     onMenu,
+    backIcon,
+    menuIcon,
     title,
     logo,
     align = "start",
@@ -161,13 +167,13 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
   if (leading === "back") {
     lead = (
       <button type="button" className="rebar-top-bar-button" data-rebar-part="leading" aria-label="Back" onClick={onBack ?? (() => window.history.back())}>
-        <BackIcon />
+        {backIcon ?? <BackIcon />}
       </button>
     );
   } else if (leading === "menu") {
     lead = (
       <button type="button" className="rebar-top-bar-button" data-rebar-part="leading" aria-label="Menu" onClick={onMenu}>
-        <MenuIcon />
+        {menuIcon ?? <MenuIcon />}
       </button>
     );
   } else if (leading !== "none" && leading) {

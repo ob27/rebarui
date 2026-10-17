@@ -154,6 +154,14 @@ export default function MobileTabBarPage() {
               </BarBox>
             ),
           },
+          {
+            label: "Compact bar via --rebar-tab-bar-* properties (49px, 24px icons, 10px labels, regular weight)",
+            node: (
+              <div style={{ "--rebar-tab-bar-min-height": "0px", "--rebar-tab-bar-padding": "0", "--rebar-tab-bar-gap": "0", "--rebar-tab-bar-item-padding": "4px 8px", "--rebar-tab-bar-item-min-height": "0px", "--rebar-tab-bar-item-gap": "2px", "--rebar-tab-bar-item-radius": "0", "--rebar-tab-bar-icon-size": "24px", "--rebar-tab-bar-icon-font-size": "24px", "--rebar-tab-bar-label-size": "10px", "--rebar-tab-bar-label-line-height": "15px", "--rebar-tab-bar-weight": "400", "--rebar-tab-bar-active-weight": "400", "--rebar-tab-bar-color": "#666" } as React.CSSProperties}>
+                <MobileTabBar position="static" activeIndex={0} items={[{ label: "Today", icon: <span>◆</span> }, { label: "Pray", icon: <span>◇</span> }, { label: "Ask", icon: <span>○</span> }]} />
+              </div>
+            ),
+          },
         ]}
       >
         <div className="cs-grain" style={{ padding: "28px 20px" }}>

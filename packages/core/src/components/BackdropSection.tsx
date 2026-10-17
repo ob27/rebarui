@@ -5,8 +5,9 @@ export interface BackdropSectionProps extends ComponentPropsWithoutRef<"section"
   /** The backdrop art. Decorative unless `alt` is given. Use art at least as wide as the section. */
   image: { src: string; alt?: string };
   /** A darkening layer so the text keeps contrast. `"start"` is darker on the text side and fades
-   * across. Default `"soft"`. */
-  scrim?: "none" | "soft" | "strong" | "start";
+   * across. `"custom"` draws the layer but leaves its background to `--rebar-backdrop-scrim-background`
+   * (any CSS background, e.g. a three-stop gradient). Default `"soft"`. */
+  scrim?: "none" | "soft" | "strong" | "start" | "custom";
   /** An inset rounded panel instead of a full-bleed band. Default `false`. */
   rounded?: boolean;
   /** Keep the section's own side margin (when `rounded`) and padding. Pass `false` to drop both when the app lays the section out itself, e.g. full-bleed. Default `true`. */
