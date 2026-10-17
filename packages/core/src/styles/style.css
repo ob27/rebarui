@@ -13336,6 +13336,7 @@ a.rebar-list-item-main {
 /* Card: border width (tone cards draw a transparent border; the original tinted panels had none) */
 .rebar-card {
   border-width: var(--rebar-card-border-width, var(--rebar-border-width, 1px));
+  overflow: var(--rebar-card-overflow, hidden);
 }
 
 /* Text eyebrow / section-label: size, weight, line height and tracking */
