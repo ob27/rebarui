@@ -2995,3 +2995,9 @@ textarea.rebar-input {
   color: var(--rebar-search-input-clear-color, var(--rebar-color-text-secondary, #757575));
   font-size: var(--rebar-search-input-clear-font-size, inherit);
 }
+.rebar-tag-close {
+  color: var(--rebar-tag-close-color, inherit);
+  opacity: var(--rebar-tag-close-opacity, 0.6);
+  font-size: var(--rebar-tag-close-font-size, inherit);
+}
+.rebar-tag { text-transform: var(--rebar-tag-text-transform, none); }
