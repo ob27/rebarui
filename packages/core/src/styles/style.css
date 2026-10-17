@@ -12095,3 +12095,8 @@ a.rebar-list-item-main {
   color: var(--rebar-color-text-primary, #212121);
   border-color: transparent;
 }
+
+/* Heading: per-level size and wrapping, opt-in (a zero-specificity default as above, so a class can still override). */
+:where(.rebar-heading[data-rebar-level="1"]) { font-size: var(--rebar-heading-size-1, var(--rebar-font-size-2xl, 32px)); }
+:where(.rebar-heading[data-rebar-level="2"]) { font-size: var(--rebar-heading-size-2, var(--rebar-font-size-xl, 24px)); }
+:where(.rebar-heading[data-rebar-level="3"]) { font-size: var(--rebar-heading-size-3, var(--rebar-font-size-lg, 20px)); }

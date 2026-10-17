@@ -29,10 +29,12 @@ export type TabListProps = ComponentPropsWithoutRef<typeof RadixTabs.List> & {
    * behavior difference beyond the bigger, description-carrying tab buttons. Default `"default"`.
    */
   size?: "default" | "jumbo";
+  /** `"line"` (default): tabs sit on one underlined row. `"pills"`: each tab is its own filled pill and they share the row (a view switch). */
+  variant?: "line" | "pills";
 };
 
 export const TabList = forwardRef<HTMLDivElement, TabListProps>(function TabList(
-  { className, size = "default", ...props },
+  { className, size = "default", variant = "line", ...props },
   ref,
 ) {
   return (
@@ -41,6 +43,7 @@ export const TabList = forwardRef<HTMLDivElement, TabListProps>(function TabList
       className={clsx("rebar-tab-list", className)}
       data-rebar-part="list"
       data-rebar-size={size}
+      data-rebar-variant={variant === "pills" ? "pills" : undefined}
       {...props}
     />
   );

@@ -18,6 +18,8 @@ export interface SegmentedControlProps extends Omit<ComponentPropsWithoutRef<"di
   disabled?: boolean;
   /** One row that scrolls horizontally with snap instead of wrapping or squeezing, for many or long labels. The selected segment is kept in view. */
   scrollable?: boolean;
+  /** `"segmented"` (default): one outlined pill track with a raised active segment. `"chips"`: loose filled chips that wrap, the active one in the primary colour (a filter row). */
+  variant?: "segmented" | "chips";
   /** Force bionic reading on/off for option labels, overriding the ambient data-rebar-bionic setting. */
   bionic?: boolean;
   bionicOptions?: BionicOptions;
@@ -37,6 +39,7 @@ export function SegmentedControl({
   onValueChange,
   disabled,
   scrollable = false,
+  variant = "segmented",
   bionic,
   bionicOptions,
   className,
@@ -86,6 +89,7 @@ export function SegmentedControl({
       className={clsx("rebar-segmented-control", className)}
       data-rebar-component="segmented-control"
       data-rebar-scrollable={scrollable ? "true" : undefined}
+      data-rebar-variant={variant === "chips" ? "chips" : undefined}
       ref={groupRef}
       role="radiogroup"
       {...props}

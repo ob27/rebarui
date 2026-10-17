@@ -1,4 +1,5 @@
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
+import type * as React from "react";
 import { useSchemeAttr } from "./ThemeScope";
 import * as RadixSelect from "@radix-ui/react-select";
 import clsx from "clsx";
@@ -37,13 +38,71 @@ export interface SelectProps {
   /** Marks the field as failing validation: sets `aria-invalid="true"` and `data-rebar-invalid` on the trigger. */
   invalid?: boolean;
   "aria-label"?: string;
+  /**
+   * Renders the platform's own `<select>` (the OS picker on a phone, the browser's list on a desktop) with the same
+   * options, value and `onValueChange`, styled by the same tokens as the custom trigger. Use it where the native
+   * control's look and behaviour are the point. The ref then points at the `<select>`.
+   */
+  native?: boolean;
+  /** `id` of the field (native: on the `<select>`, so a `<label htmlFor>` finds it). */
+  id?: string;
+  name?: string;
+  required?: boolean;
 }
 
 export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
-  { options, value, defaultValue, onValueChange, placeholder, disabled, size = "md", className, invalid, ...props },
+  { options, value, defaultValue, onValueChange, placeholder, disabled, size = "md", className, invalid, native, ...props },
   ref,
 ) {
   const schemeAttr = useSchemeAttr();
+  // Native mode keeps its own value the way Radix does when `value` is not passed.
+  const [internal, setInternal] = useState(defaultValue ?? "");
+  if (native) {
+    const renderOption = (option: SelectOption) => (
+      <option key={option.value} value={option.value} disabled={option.disabled}>
+        {option.label}
+      </option>
+    );
+    // A placeholder is an empty first option, shown while nothing is chosen (the custom trigger shows it the same way).
+    const firstValue = options.flatMap((entry) => (isGroup(entry) ? entry.options : [entry])).find((option) => !option.disabled)?.value ?? "";
+    const raw = value ?? internal;
+    const empty = placeholder !== undefined && raw === "";
+    // With no placeholder, an unset field shows its first option, as a native <select> does.
+    const current = raw === "" && placeholder === undefined ? firstValue : raw;
+    return (
+      <select
+        ref={ref as unknown as React.Ref<HTMLSelectElement>}
+        className={clsx("rebar-select-trigger", "rebar-select-native", className)}
+        data-rebar-component="select"
+        data-rebar-native="true"
+        data-rebar-size={size}
+        data-rebar-invalid={invalid ? "true" : undefined}
+        aria-invalid={invalid ? true : undefined}
+        disabled={disabled}
+        value={current}
+        onChange={(event) => {
+          setInternal(event.target.value);
+          onValueChange?.(event.target.value);
+        }}
+        {...props}
+      >
+        {placeholder !== undefined && empty ? (
+          <option value="" disabled hidden>
+            {placeholder}
+          </option>
+        ) : null}
+        {options.map((entry, index) =>
+          isGroup(entry) ? (
+            <optgroup key={`group-${index}`} label={entry.label}>
+              {entry.options.map((option) => renderOption(option))}
+            </optgroup>
+          ) : (
+            renderOption(entry)
+          ),
+        )}
+      </select>
+    );
+  }
   const renderItem = (option: SelectOption) => (
     <RadixSelect.Item
       key={option.value}
