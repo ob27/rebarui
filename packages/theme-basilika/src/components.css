@@ -3022,3 +3022,6 @@ textarea.rebar-input {
 .rebar-progress[data-rebar-status="error"] .rebar-progress-indicator { background: var(--rebar-progress-error, var(--rebar-color-danger, #d32f2f)); }
 .rebar-progress[data-rebar-status="warning"] .rebar-progress-indicator { background: var(--rebar-progress-warning, var(--rebar-color-warning, #f57c00)); }
 .rebar-progress[data-rebar-status="success"] .rebar-progress-indicator { background: var(--rebar-progress-success, var(--rebar-color-success, #2e7d32)); }
+.rebar-button { box-shadow: var(--rebar-button-shadow, none); aspect-ratio: var(--rebar-button-aspect-ratio, auto); }
+.rebar-button[data-rebar-shape="rounded"] { border-radius: var(--rebar-button-rounded-radius, var(--rebar-radius)); }
+.rebar-button[data-rebar-variant="destructive"] { font-weight: var(--rebar-button-destructive-font-weight, var(--rebar-button-font-weight, var(--rebar-font-weight-semibold))); }

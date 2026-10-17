@@ -211,6 +211,11 @@ export default function SelectPage() {
         </Stack>
       </DemoStage>
 
+            <Heading level={2}>Native</Heading>
+      <DemoStage title="native" caption="The platform's own select (the OS picker on a phone) with the same options and onValueChange. --rebar-select-* tokens style it." widths={false}
+        code={`<Select native aria-label="Letter" options={options} />`}>
+        <Select native aria-label="Letter" defaultValue="a" options={[{ value: "a", label: "Alpha" }, { value: "b", label: "Beta" }]} />
+      </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

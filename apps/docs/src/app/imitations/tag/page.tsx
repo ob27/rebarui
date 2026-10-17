@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Avatar, Card, Heading, Stack, Tag, Text } from "rebar-ui";
+import type { CSSProperties } from "react";
 import type { TagTone } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
@@ -114,6 +115,10 @@ export default function TagPage() {
         </Card>
       </DemoStage>
 
+            <Heading level={2}>Outlined small caps</Heading>
+      <DemoStage title="Tokens" caption="Padding, size, weight, tracking, case, fill and outline per tone: --rebar-tag-*." widths={false}>
+        <Tag tone="info" style={{ "--rebar-tag-padding": "1px 7px", "--rebar-tag-font-size": "9.5px", "--rebar-tag-font-weight": 700, "--rebar-tag-letter-spacing": "0.08em", "--rebar-tag-text-transform": "uppercase", "--rebar-tag-info-bg": "transparent", "--rebar-tag-info-border-color": "currentColor" } as CSSProperties}>This week</Tag>
+      </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

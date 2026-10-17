@@ -99,6 +99,11 @@ export default function TextareaPage() {
         </Stack>
       </DemoStage>
 
+            <Heading level={2}>Compact counter</Heading>
+      <DemoStage title="countSeparator" caption={'countSeparator="/" prints 59/2000; --rebar-textarea-* tokens set type, padding, border, radius and focus.'} widths={false}
+        code={`<Textarea showCount maxLength={2000} countSeparator="/" />`}>
+        <Textarea aria-label="Feedback" showCount maxLength={2000} countSeparator="/" defaultValue="Short note" resize="vertical" />
+      </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

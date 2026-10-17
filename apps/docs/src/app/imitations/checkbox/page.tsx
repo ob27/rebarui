@@ -126,6 +126,16 @@ export default function CheckboxPage() {
         </Card>
       </DemoStage>
 
+            <Heading level={2}>Native appearance</Heading>
+      <DemoStage title="Native" caption={'appearance="native" renders the browser checkbox (sized by --rebar-checkbox-native-size, tinted by --rebar-checkbox-accent); card and label tokens style the row.'} widths={false}
+        code={`<Checkbox appearance="native" variant="card">Mandatory Days only</Checkbox>`}
+        states={[
+          { label: "Checked", node: <Checkbox appearance="native" defaultChecked>Hide past dates</Checkbox> },
+          { label: "Indeterminate", node: <Checkbox appearance="native" checked="indeterminate">Some selected</Checkbox> },
+          { label: "Disabled", node: <Checkbox appearance="native" disabled>Unavailable</Checkbox> },
+        ]}>
+        <Stack gap="sm"><Checkbox appearance="native" variant="card">Mandatory Days only</Checkbox><Checkbox appearance="native" variant="card" defaultChecked>Hide past dates</Checkbox></Stack>
+      </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

@@ -1,4 +1,5 @@
 import { Card, Heading, Progress, Stack, Text } from "rebar-ui";
+import type { CSSProperties } from "react";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
@@ -106,6 +107,10 @@ export default function ProgressPage() {
         </Card>
       </DemoStage>
 
+            <Heading level={2}>Thin usage bar</Heading>
+      <DemoStage title="Tokens" caption="Height, radius, track and fill per status: --rebar-progress-*." widths={false}>
+        <div style={{ "--rebar-progress-height": "6px", "--rebar-progress-radius": "999px", "--rebar-progress-fill": "#e9705c" } as CSSProperties}><Progress value={64} aria-label="Usage" /></div>
+      </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

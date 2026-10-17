@@ -100,6 +100,11 @@ export default function SegmentedControlPage() {
         </Card>
       </DemoStage>
 
+            <Heading level={2}>Chips</Heading>
+      <DemoStage title="variant chips" caption="Loose filled chips that wrap, the active one in the primary colour: a filter row. --rebar-chips-* tokens set size and fill." widths={false}
+        code={`<SegmentedControl variant="chips" options={[...]} />`}>
+        <SegmentedControl variant="chips" aria-label="Filter" defaultValue="all" options={[{ value: "all", label: "All" }, { value: "grace", label: "Grace (2)" }, { value: "charism", label: "Charism (1)" }]} />
+      </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

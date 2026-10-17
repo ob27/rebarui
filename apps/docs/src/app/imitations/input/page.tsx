@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Button, Card, Heading, Input, Stack, Text } from "rebar-ui";
+import type { CSSProperties } from "react";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
@@ -120,6 +121,10 @@ export default function InputPage() {
       </DemoStage>
 
       <InputMobile />
+            <Heading level={2}>Type, padding and focus tokens</Heading>
+      <DemoStage title="Tokens" caption={'--rebar-input-* set size, padding, border, radius, fill, colour, focus ring and disabled look; type="date" gives the native date field.'} widths={false}>
+        <Stack gap="sm"><Input aria-label="Date" type="date" style={{ "--rebar-input-font-size": "14px", "--rebar-input-padding": "6px 10px", "--rebar-input-min-height": "0", "--rebar-input-border-width": "1px", "--rebar-input-radius": "16px", width: "auto" } as CSSProperties} /></Stack>
+      </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

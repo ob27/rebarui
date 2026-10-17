@@ -116,6 +116,11 @@ export default function SearchInputPage() {
         </div>
       </DemoStage>
 
+            <Heading level={2}>Custom glyphs</Heading>
+      <DemoStage title="icon and clearIcon" caption="Swap the glyphs; height, border, radius, fill, focus and clear-button size are --rebar-search-input-* tokens." widths={false}
+        code={`<SearchInput icon={<MyGlyph />} clearIcon={<MyClear />} defaultValue="grace" />`}>
+        <SearchInput aria-label="Search" defaultValue="grace" icon={<span aria-hidden="true">⌕</span>} clearIcon={<span aria-hidden="true">✕</span>} />
+      </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

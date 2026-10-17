@@ -191,6 +191,11 @@ export default function TabsPage() {
         </Card>
       </DemoStage>
 
+            <Heading level={2}>Pills</Heading>
+      <DemoStage title="variant pills" caption="Each tab is its own filled pill; they share the row (a view switch). --rebar-tabs-pills-* tokens." widths={false}
+        code={`<TabList variant="pills">...</TabList>`}>
+        <Tabs defaultValue="cycle"><TabList variant="pills" aria-label="View"><Tab value="cycle">Liturgical year</Tab><Tab value="year">Past 52 weeks</Tab></TabList></Tabs>
+      </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

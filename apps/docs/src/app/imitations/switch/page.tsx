@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Card, Heading, Stack, Switch, Text } from "rebar-ui";
+import type { CSSProperties } from "react";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
@@ -136,6 +137,10 @@ export default function SwitchPage() {
       </DemoStage>
 
       <SwitchMobile />
+            <Heading level={2}>Sizing tokens</Heading>
+      <DemoStage title="Tokens" caption="Width, height, padding, thumb size and travel, track colours, shadow: --rebar-switch-*." widths={false}>
+        <Switch aria-label="Reframe" defaultChecked style={{ "--rebar-switch-width": "51px", "--rebar-switch-height": "31px", "--rebar-switch-padding": "2px", "--rebar-switch-thumb-size": "27px", "--rebar-switch-thumb-travel": "20px" } as CSSProperties} />
+      </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

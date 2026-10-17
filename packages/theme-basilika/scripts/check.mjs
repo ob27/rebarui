@@ -33,5 +33,9 @@ has(core, /font-weight:\s*var\(--rebar-heading-weight,\s*var\(--rebar-font-weigh
 has(core, /font-weight:\s*var\(--rebar-heading-weight,\s*var\(--rebar-font-weight-semibold,\s*600\)\)/, "--rebar-heading-weight level 2-3 default 600");
 has(core, /line-height:\s*var\(--rebar-heading-line-height,\s*var\(--rebar-line-height,\s*1\.5\)\)/, "--rebar-heading-line-height default = body line-height");
 for (const k of ["icon-button-size", "heading-weight", "heading-line-height"]) if (light[k]) bad.push(`--rebar-${k} must stay unset in the theme (opt-in only)`);
+// parity-a1: every opt-in property the type and form-control rules read has a default and is not set by the theme itself.
+const a1 = comps.slice(comps.indexOf("/* ---- parity-a1"));
+const a1props = new Set([...a1.matchAll(/var\(--rebar-((?:input|textarea|button|switch|tabs-pills|chips|tag|select|checkbox|radio|search-input|progress|heading-text-wrap|heading-letter-spacing|auth-secondary)[a-z0-9-]*)(,?)/g)].map((m) => { if (!m[2]) bad.push(`parity-a1: --rebar-${m[1]} is read without a default`); return m[1]; }));
+for (const k of a1props) if (light[k]) bad.push(`--rebar-${k} must stay unset in the theme (opt-in only)`);
 if (bad.length) { console.error(bad.join("\n")); process.exit(1); }
 console.log("theme-basilika: fonts present, dark complete, text pairs pass AA, opt-in parity props default to the old values");

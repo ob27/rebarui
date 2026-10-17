@@ -186,6 +186,11 @@ export default function RadioGroupPage() {
         </Card>
       </DemoStage>
 
+            <Heading level={2}>Native appearance</Heading>
+      <DemoStage title="Native" caption={'RadioGroup appearance="native": each Radio is the browser radio, grouped by name.'} widths={false}
+        code={`<RadioGroup appearance="native" defaultValue="dr"><Radio value="dr">Douay-Rheims</Radio><Radio value="cpdv">CPDV</Radio></RadioGroup>`}>
+        <RadioGroup appearance="native" defaultValue="dr" aria-label="Translation"><Radio value="dr">Douay-Rheims</Radio><Radio value="cpdv">CPDV</Radio></RadioGroup>
+      </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

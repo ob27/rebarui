@@ -102,6 +102,16 @@ export default function ButtonPage() {
       </DemoStage>
 
       <ButtonMobile />
+            <Heading level={2}>Tonal</Heading>
+      <DemoStage title="Tonal" caption="A soft filled chip for a secondary action; size sm is the chip. Pill padding, font and fill are --rebar-button-* tokens." widths={false}
+        code={`<Button variant="tonal" size="sm">Share</Button>`}
+        states={[
+          { label: "Medium", node: <Button variant="tonal">Reflect on this reading</Button> },
+          { label: "Disabled", node: <Button variant="tonal" size="sm" disabled>Share</Button> },
+          { label: "Loading", node: <Button variant="tonal" size="sm" loading>Sharing</Button> },
+        ]}>
+        <Stack direction="row" gap="sm" align="center"><Button variant="tonal" size="sm">Share</Button><Button variant="tonal" size="sm">Discuss</Button></Stack>
+      </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );
