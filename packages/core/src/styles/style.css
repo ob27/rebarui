@@ -9322,7 +9322,7 @@ button.rebar-heatmap-viewer-row {
   width: 100%;
 }
 .rebar-button[data-rebar-block] + .rebar-button[data-rebar-block] {
-  margin-top: var(--rebar-space-md, 12px);
+  margin-top: var(--rebar-button-block-gap, var(--rebar-space-md, 12px));
 }
 .rebar-button[data-rebar-shape="rounded"] {
   border-radius: var(--rebar-radius, 14px);

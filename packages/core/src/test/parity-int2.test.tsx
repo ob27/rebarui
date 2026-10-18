@@ -12,6 +12,12 @@ describe("parity-int2: Card promo slot rows", () => {
   });
 });
 
+describe("parity-int2: stacked block buttons", () => {
+  it("take their gap from --rebar-button-block-gap, defaulting to the spacing token", () => {
+    expect(css).toContain("margin-top: var(--rebar-button-block-gap, var(--rebar-space-md, 12px))");
+  });
+});
+
 describe("parity-int2: reconciled token families keep every earlier name", () => {
   it("eyebrow and section-label tokens: --rebar-text-eyebrow-* with the --rebar-eyebrow-* and --rebar-section-label-* aliases", () => {
     for (const name of ["--rebar-text-eyebrow-size", "--rebar-eyebrow-size", "--rebar-section-label-size", "--rebar-section-label-tracking", "--rebar-eyebrow-color", "--rebar-text-eyebrow-color"]) {
