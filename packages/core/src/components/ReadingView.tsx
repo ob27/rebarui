@@ -37,6 +37,8 @@ export interface ReadingViewProps extends Omit<ComponentPropsWithoutRef<"article
   verseFont?: "sans" | "serif";
   /** Verses whose pill reads "Note added" (filled). */
   notedVerses?: number[];
+  /** Where each verse's action pill and `extra` sit: `"inline"` (default) in the text column under the verse, or `"below"` on a row of their own under the number and the text, offset by `--rebar-reading-view-pill-margin-start`; a verse that carries `extra` then shows it instead of the pill (offset by `--rebar-reading-view-extra-margin-start`). */
+  verseActions?: "inline" | "below";
   /** Slot above the text for the narration bar (`WaveformAudioPlayer`). */
   media?: ReactNode;
   /** Slot below the text: Reflect, Share, Discuss as small outlined pills. */
@@ -45,6 +47,8 @@ export interface ReadingViewProps extends Omit<ComponentPropsWithoutRef<"article
   footer?: ReactNode;
   /** Skeleton lines instead of the text. */
   loading?: boolean;
+  /** With `loading`: a text message (for example "Loading…") instead of the skeleton lines. */
+  loadingLabel?: ReactNode;
   /** Shown instead of the text when there is no reading (a ReactNode). */
   empty?: ReactNode;
   /** Shown instead of the text, for example "Translation unavailable". */
@@ -72,12 +76,14 @@ export function ReadingView({
   onVerseAction,
   verseActionLabel = "Add Note",
   notedVerses = [],
+  verseActions = "inline",
   renderVerse,
   verseFont,
   media,
   actions,
   footer,
   loading,
+  loadingLabel,
   empty,
   error,
   tone = "tint-2",
@@ -89,6 +95,12 @@ export function ReadingView({
     body = (
       <div className="rebar-reading-view-message" data-rebar-part="error" role="alert">
         {error}
+      </div>
+    );
+  } else if (loading && loadingLabel) {
+    body = (
+      <div className="rebar-reading-view-message" data-rebar-part="loading" aria-busy="true">
+        {loadingLabel}
       </div>
     );
   } else if (loading) {
@@ -116,7 +128,7 @@ export function ReadingView({
               const content = (
                 <div>
                   <span className="rebar-reading-view-text">{verse.text}</span>
-                  {onVerseAction ? (
+                  {onVerseAction && !(verseActions === "below" && verse.extra) ? (
                     <div>
                       <button
                         type="button"
@@ -169,6 +181,7 @@ export function ReadingView({
       data-rebar-component="reading-view"
       data-rebar-tone={tone}
       data-rebar-verse-font={verseFont}
+      data-rebar-verse-actions={verseActions === "below" ? "below" : undefined}
       data-rebar-state={error ? "error" : loading ? "loading" : undefined}
       {...props}
     >

@@ -10,6 +10,8 @@ export interface StatisticProps {
   precision?: number;
   prefix?: ReactNode;
   suffix?: ReactNode;
+  /** `"bottom"` puts the title under the value (a number with its caption below). Default `"top"`. */
+  titlePlacement?: "top" | "bottom";
   className?: string;
   /** Force bionic reading on/off for the title, overriding the ambient data-rebar-bionic setting. */
   bionic?: boolean;
@@ -24,12 +26,12 @@ function formatValue(value: number | string, precision?: number): string {
 }
 
 export const Statistic = forwardRef<HTMLDivElement, StatisticProps>(function Statistic(
-  { title, value, precision, prefix, suffix, bionic, bionicOptions, className },
+  { title, value, precision, prefix, suffix, titlePlacement = "top", bionic, bionicOptions, className },
   ref,
 ) {
   const titleContent = useBionicChildren(title, bionic, bionicOptions);
   return (
-    <div ref={ref} className={clsx("rebar-statistic", className)} data-rebar-component="statistic">
+    <div ref={ref} className={clsx("rebar-statistic", className)} data-rebar-component="statistic" data-rebar-title-placement={titlePlacement === "bottom" ? "bottom" : undefined}>
       {title ? (
         <div className="rebar-statistic-title" data-rebar-part="title">
           {titleContent}

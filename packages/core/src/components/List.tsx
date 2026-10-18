@@ -130,6 +130,8 @@ export interface ListItemProps extends Omit<ComponentPropsWithoutRef<"li">, "tit
   onClick?: (event: MouseEvent<HTMLElement>) => void;
   /** Primary outline: the open item in a master list. */
   selected?: boolean;
+  /** A tint fill (peach, sand, lavender, sage) with no border: a done or marked row, like `Card`'s `tone`. */
+  tone?: 1 | 2 | 3 | 4;
   /** Outline plus tint and, for `"new"`, a New chip: "just added". Clears itself after 4 seconds unless `highlightPinned`. */
   highlight?: boolean | "new";
   /** Keeps the highlight until `highlight` goes false. */
@@ -193,6 +195,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
     renderLink: renderLinkProp,
     onClick,
     selected,
+    tone,
     highlight,
     highlightPinned,
     onHighlightEnd,
@@ -226,6 +229,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
     "data-rebar-variant": variant,
     "data-rebar-title-style": style,
     "data-rebar-selected": selected ? "true" : undefined,
+    "data-rebar-tone": tone ? String(tone) : undefined,
     "data-rebar-highlight": highlightOn ? "true" : undefined,
     "data-rebar-editing": isEditing ? "true" : undefined,
     "data-rebar-state": skeleton ? "skeleton" : loading ? "loading" : disabled ? "disabled" : undefined,
