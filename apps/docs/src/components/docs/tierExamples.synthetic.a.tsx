@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Affix,
   AiChatInput,
@@ -66,6 +66,16 @@ const d = (month: number, day: number) => new Date(2026, month, day);
 const project_items = PROJECTS.map((p) => ({ title: p.name, badge: p.status }));
 
 /* ---- stateful or compound examples ---- */
+
+/** Counts to a moment fixed after mount (two days three hours on), so it can never read zero and the server render matches the first client render. */
+function LaunchCountdown() {
+  const [target, setTarget] = useState<number | null>(null);
+  useEffect(() => {
+    const id = setTimeout(() => setTarget(Date.now() + (2 * 86400 + 3 * 3600) * 1000), 0);
+    return () => clearTimeout(id);
+  }, []);
+  return target === null ? <span aria-hidden="true">2d 03h 00m 00s</span> : <Countdown target={target} />;
+}
 
 function AiComposer() {
   const [draft, setDraft] = useState(`What is due before the ${launch.title.toLowerCase()} on ${launch.date}?`);
@@ -304,8 +314,8 @@ export const SYNTHETIC_A: ExampleMap = {
   ),
   Countdown: ex(
     <Stack gap="xs">
-      <Text size="sm" color="secondary">{launch.title}, {launch.date} {launch.time}</Text>
-      <Countdown target="2026-10-24T09:00:00" />
+      <Text size="sm" color="secondary">{launch.title}, opens in about two days</Text>
+      <LaunchCountdown />
     </Stack>,
   ),
   "Data List": ex(<NextBlockRenderer blocks={[{ type: "data-list", items: project_items.slice(0, 4) }]} />),

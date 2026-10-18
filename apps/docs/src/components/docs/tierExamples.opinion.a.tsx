@@ -360,8 +360,6 @@ const SORTS = ["Due date", "Priority", "Owner", "Recently updated"];
 /* ---- Ellipsis ---- */
 const NOTE =
   "Interview 11: most of the crew keep a paper copy of the rota in the cab because the app is slow to open on the quay. They want shifts they can read at a glance, offline, with the next handover time shown first.";
-// The core stylesheet leaves .rebar-ellipsis inline, so it never truncates; block display fixes it (a core CSS gap, noted in the report).
-const ELLIPSIS_FIX = ".tg-ellipsis .rebar-ellipsis { display: block; }";
 
 /* ---- EmailCapture ---- */
 const later = () => new Promise<void>((resolve) => setTimeout(resolve, 600));
@@ -736,12 +734,7 @@ export const OPINION_A: ExampleMap = {
   Drawer: ex(drawer),
   Dropdown: ex(<Dropdown trigger={<Button variant="secondary">Sort: Due date</Button>} items={SORTS.map((s) => ({ key: s, label: s, onSelect: () => {} }))} />),
   Editable: ex(<Editable defaultValue={harbour.name} aria-label="Project name" />),
-  Ellipsis: ex(
-    <div className="tg-ellipsis">
-      <style>{ELLIPSIS_FIX}</style>
-      <Ellipsis content={NOTE} rows={2} expandText="More" collapseText="Less" />
-    </div>,
-  ),
+  Ellipsis: ex(<Ellipsis content={NOTE} rows={2} expandText="More" collapseText="Less" />),
   EmailCapture: ex(<EmailCapture onSubmit={later} submitLabel="Notify me" helperText="We will only email you about the launch." />),
   FileManager: ex(<FileManager root={FILE_ROOT} aria-label="Project files" />, { wide: true }),
   FileUpload: ex(<FileUpload multiple maxSizeBytes={5 * 1024 * 1024} files={UPLOADS} />),

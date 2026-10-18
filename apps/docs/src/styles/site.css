@@ -222,5 +222,10 @@ main { min-width: 0; }
 .cs-gal-body[data-ready="false"] { min-height: 110px; }
 .cs-gal-skel { height: 110px; border-radius: var(--rebar-radius); background: color-mix(in srgb, var(--rebar-color-text-primary) 5%, transparent); }
 .cs-gal-body .rebar-kanban { --rebar-kanban-column-width: 76%; }
+/* Examples whose own width is fixed or sums their columns: let them fit the card instead of scrolling inside it. */
+.cs-gal-body .rebar-slash-command-menu { width: 100%; max-width: 280px; }
+.cs-gal-body .rebar-cascader { display: flex; flex-wrap: wrap; max-width: 100%; }
+.cs-gal-body .rebar-cascader > * { min-width: 0; max-width: 100%; }
+.cs-gal-body [data-rebar-placement-block="mega-menu"] { min-width: 0 !important; padding: 16px !important; gap: 16px !important; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)) !important; }
 @media (max-width: 1180px) { :root { --cs-gal-top: 68px; } }
 @media (max-width: 900px) { :root { --cs-gal-top: 60px; } }

@@ -307,6 +307,17 @@ const VERSIONS = [
 /* ---- small stateful examples ---- */
 
 // A button that opens the keypad sheet (the real one portals to the viewport) and echoes the digits.
+/**
+ * ThemeToggle writes the page's own theme attributes (`data-theme` on `<html>`), so a working one here would restyle the whole
+ * docs site. It is shown as an inert preview: real markup and styling, but it cannot be focused or clicked.
+ */
+function ThemePreview() {
+  return (
+    <div inert style={{ pointerEvents: "none" }}>
+      <ThemeToggle sections={["mode"]} />
+    </div>
+  );
+}
 function Keypad() {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
@@ -675,7 +686,7 @@ export const OPINION_B: ExampleMap = {
   Tabs: ex(<ProjectTabs />),
   TagInput: ex(<TagField />),
   TextToSpeechBar: ex(<ReadAloud />),
-  ThemeToggle: ex(<ThemeToggle label="Theme" />),
+  ThemeToggle: ex(<ThemePreview />),
   TimePicker: ex(<TimePicker defaultValue="09:00" minuteStep={15} aria-label="Start time" />),
   Toast: ex(<ToastTriggers />),
   TodoItem: ex(<TodoList />),
@@ -691,7 +702,7 @@ export const OPINION_B: ExampleMap = {
   UMAPPlot: ex(<UMAPPlot title="Interview excerpts, by theme" clusters={CLUSTERS} height={230} />, { wide: true }),
   UploadQueue: ex(<UploadExample />),
   VersionHistory: ex(<VersionHistory trigger={<Button>Version history</Button>} versions={VERSIONS} currentVersionId="v3" onRestore={() => {}} />),
-  VideoPlayer: ex(<VideoPlayer src="/reference-orb.mp4" aria-label="Sample clip" />),
+  VideoPlayer: ex(<VideoPlayer src="/reference-orb.mp4" poster="/art/grain-dusk.svg" preload="none" aria-label="Sample clip" />),
   VoiceComposer: ex(<VoiceNote />),
   VoiceInputBar: ex(<MicBar />),
   WaveformAudioPlayer: ex(
