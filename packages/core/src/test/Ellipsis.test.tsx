@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -59,5 +61,30 @@ describe("Ellipsis", () => {
     const { rerender } = render(<Ellipsis content="Some short text" open={false} onOpenChange={onOpenChange} />);
     rerender(<Ellipsis content="Some short text" open onOpenChange={onOpenChange} />);
     expect(screen.getByText("Some short text")).toBeInTheDocument();
+  });
+});
+
+describe("Ellipsis truncation and layout", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it("the stylesheet gives .rebar-ellipsis block display so it has a measurable width", () => {
+    const css = readFileSync(resolve(__dirname, "../styles/style.css"), "utf8");
+    const rule = css.match(/\.rebar-ellipsis\s*\{([^}]*)\}/);
+    expect(rule).not.toBeNull();
+    expect(rule![1]).toMatch(/display:\s*block/);
+  });
+
+  it("truncates with a real ellipsis and offers the expand button once the measurer overflows", () => {
+    // jsdom has no layout: fake a 200px container and a measurer that wraps to a second line past 20 characters.
+    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(200);
+    vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockImplementation(function (this: HTMLElement) {
+      return (this.textContent ?? "").length > 24 ? 40 : 20;
+    });
+    const content = "Interview 11: the crew keep a paper copy of the rota in the cab";
+    const { container } = render(<Ellipsis content={content} rows={1} expandText="More" />);
+    const shown = container.querySelector('[data-rebar-part="content"]')!.textContent!;
+    expect(shown.endsWith("\u2026")).toBe(true);
+    expect(shown.length).toBeLessThan(content.length);
+    expect(screen.getByRole("button", { name: "More" })).toBeInTheDocument();
   });
 });
