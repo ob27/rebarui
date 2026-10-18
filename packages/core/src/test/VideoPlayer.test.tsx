@@ -188,3 +188,17 @@ describe("VideoPlayer", () => {
     expect(screen.getByText("0:00 / 0:00")).toBeInTheDocument();
   });
 });
+
+describe("VideoPlayer preload", () => {
+  it("defaults to metadata and passes poster through", () => {
+    const { container } = render(<VideoPlayer src="/clip.mp4" poster="/poster.svg" />);
+    const video = container.querySelector("video")!;
+    expect(video).toHaveAttribute("preload", "metadata");
+    expect(video).toHaveAttribute("poster", "/poster.svg");
+  });
+
+  it('preload="none" tells the browser not to fetch the file until play', () => {
+    const { container } = render(<VideoPlayer src="/clip.mp4" preload="none" />);
+    expect(container.querySelector("video")).toHaveAttribute("preload", "none");
+  });
+});
