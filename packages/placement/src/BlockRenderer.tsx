@@ -1482,7 +1482,24 @@ function DataTableBlockView({
   );
 }
 
+/**
+ * Renders one block as a keyed list child. Not every case below sets its own `key` (mega-menu and
+ * construct-entry returned bare elements), so the key is applied here once, for every block type, and
+ * every caller that maps blocks into a Stack gets stable keys without repeating it.
+ */
 function renderBlock(
+  block: Construct,
+  index: number,
+  renderLink: NonNullable<BlockRendererProps["renderLink"]>,
+  parentPath = "blocks",
+  pageSections: { id: string; label: string }[] = [],
+  data: BlockRendererData = {},
+  handlers: BlockRendererHandlers = {},
+) {
+  return <Fragment key={index}>{renderBlockElement(block, index, renderLink, parentPath, pageSections, data, handlers)}</Fragment>;
+}
+
+function renderBlockElement(
   block: Construct,
   index: number,
   renderLink: NonNullable<BlockRendererProps["renderLink"]>,
