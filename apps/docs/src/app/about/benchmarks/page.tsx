@@ -1,5 +1,4 @@
 import type { Construct } from "@rebar-ui/placement";
-import { GrainHero } from "@/components/GrainHero";
 import { BenchmarkDateline } from "@/components/BenchmarkDateline";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { Stack } from "rebar-ui";
@@ -67,7 +66,6 @@ const BLOCKS: Construct[] = [
 export default function BenchmarksPage() {
   return (
     <Stack gap="lg">
-      <GrainHero tone="dawn" />
       <BenchmarkDateline published="2026-09-14" updated="2026-09-26" />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>

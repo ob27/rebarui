@@ -1,5 +1,4 @@
 import { Heading, Stack, Text, CodeBlock } from "rebar-ui";
-import { GrainHero } from "@/components/GrainHero";
 import fs from "fs/promises";
 import path from "path";
 
@@ -11,7 +10,6 @@ export default async function AgentPage() {
 
   return (
     <Stack gap="lg" style={{ maxWidth: 800, margin: "0 auto", padding: "var(--rebar-space-xl)" }}>
-      <GrainHero tone="sand" />
       <Heading level={1}>Agent Context</Heading>
       <Text color="secondary">
         The full design-heuristics checklist and framework rules for building with Rebar UI —

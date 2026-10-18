@@ -1,5 +1,4 @@
 import { Container, Stack } from "rebar-ui";
-import { GrainHero } from "@/components/GrainHero";
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -744,7 +743,6 @@ export default function HeuristicsPage() {
   return (
     <Container verticalPadding="var(--rebar-space-xl)">
       <Stack gap="lg">
-        <GrainHero tone="sand" />
         <Stack direction="row" gap="xl" style={{ alignItems: "flex-start" }}>
           <Stack gap="lg" style={{ flex: 1, minWidth: 0 }}>
             <NextBlockRenderer blocks={HEURISTIC_BLOCKS} />
