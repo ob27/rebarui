@@ -13901,7 +13901,7 @@ a.rebar-button[data-rebar-variant="tertiary"] {
 }
 
 /* ---- parity-r4: card tone tokens, eyebrow type tokens, checkbox label colour (every default below is the previous value) ---- */
-.rebar-card[data-rebar-tone] { border-width: var(--rebar-card-tone-border-width, var(--rebar-border-width, 1px)); }
+.rebar-card[data-rebar-tone] { border-width: var(--rebar-card-tone-border-width, var(--rebar-card-border-width, var(--rebar-border-width, 1px))); }
 .rebar-card[data-rebar-tone="1"] { background: var(--rebar-card-tone-bg, var(--rebar-color-tint-1, #f5f5f5)); }
 .rebar-card[data-rebar-tone="2"] { background: var(--rebar-card-tone-bg, var(--rebar-color-tint-2, #f5f5f5)); }
 .rebar-card[data-rebar-tone="3"] { background: var(--rebar-card-tone-bg, var(--rebar-color-tint-3, #f5f5f5)); }
@@ -13936,7 +13936,8 @@ a.rebar-button[data-rebar-variant="tertiary"] {
    --rebar-list-item-title-overflow (parity-r4) is an alias of --rebar-list-item-title-text-overflow (parity-r2). */
 .rebar-list-item-title {
   display: var(--rebar-list-item-title-display, -webkit-box);
+  /* text-wrap and white-space both set text-wrap-mode: white-space comes last so a nowrap token is not reset by the wrap style */
+  text-wrap: var(--rebar-list-item-title-text-wrap, var(--rebar-list-item-title-wrap, pretty));
   white-space: var(--rebar-list-item-title-white-space, normal);
   text-overflow: var(--rebar-list-item-title-text-overflow, var(--rebar-list-item-title-overflow, clip));
-  text-wrap: var(--rebar-list-item-title-text-wrap, var(--rebar-list-item-title-wrap, pretty));
 }

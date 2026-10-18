@@ -17,7 +17,7 @@ describe("parity-r4: card tone tokens", () => {
   });
   it("defaults to the previous tint and border when no token is set", () => {
     expect(block).toContain('.rebar-card[data-rebar-tone="2"] { background: var(--rebar-card-tone-bg, var(--rebar-color-tint-2, #f5f5f5)); }');
-    expect(block).toContain("border-width: var(--rebar-card-tone-border-width, var(--rebar-border-width, 1px))");
+    expect(block).toContain("border-width: var(--rebar-card-tone-border-width, var(--rebar-card-border-width, var(--rebar-border-width, 1px)))");
   });
 });
 
