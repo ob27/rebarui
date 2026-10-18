@@ -13525,6 +13525,7 @@ a.rebar-list-item-main {
 .rebar-statistic[data-rebar-title-placement="bottom"] {
   display: flex;
   flex-direction: column-reverse;
+  justify-content: flex-end;
 }
 .rebar-statistic[data-rebar-title-placement="bottom"] .rebar-statistic-title {
   margin-bottom: 0;
