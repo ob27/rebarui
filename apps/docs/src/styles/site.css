@@ -196,3 +196,6 @@ main { min-width: 0; }
 .cs-gen--banners .cs-gen-banner { min-height: 300px; padding: 32px; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 10px; border: 1px solid var(--rebar-color-border); }
 .cs-gen--banners .cs-gen-banner .cs-h2 { margin: 6px 0 0; font-size: clamp(2rem, 4vw, 3rem); }
 .cs-gen--banners .cs-gen-banner .cs-muted { margin: 0 0 8px; max-width: 34ch; }
+
+/* Page hero band on the grain art (about, roadmap, archetypes, ...). */
+.cs-grain-hero { width: 100%; height: clamp(120px, 24vw, 200px); border: 1px solid var(--rebar-color-border); }

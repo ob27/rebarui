@@ -1,4 +1,5 @@
-import { Container, Heading, Image, Stack, Text, Timeline } from "rebar-ui";
+import { Container, Heading, Stack, Text, Timeline } from "rebar-ui";
+import { GrainHero } from "@/components/GrainHero";
 import type { TimelineItem } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -76,7 +77,7 @@ export default function RoadmapPage() {
   return (
     <Container verticalPadding="var(--rebar-space-xl)">
       <Stack gap="lg">
-        <Image src="/catalogue-heros/roadmap.jpeg" alt="Roadmap hero" style={{ width: "100%", borderRadius: "8px" }} />
+        <GrainHero tone="dawn" />
         <Heading level={1}>Roadmap</Heading>
         <Text color="secondary">
           Where Rebar UI has been, and where it&apos;s headed — from the first public release through

@@ -1,4 +1,5 @@
-import { Container, Heading, Image, Stack, Text } from "rebar-ui";
+import { Container, Heading, Stack, Text } from "rebar-ui";
+import { GrainHero } from "@/components/GrainHero";
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import Link from "next/link";
@@ -95,7 +96,7 @@ export default function AboutPage() {
   return (
     <Container as="main" verticalPadding="var(--rebar-space-xl)">
       <Stack gap="lg">
-        <Image src="/catalogue-heros/about.jpeg" alt="About hero" style={{ width: "100%", borderRadius: "8px" }} />
+        <GrainHero tone="dawn" />
         <Stack gap="xs">
           <Heading level={1}>About</Heading>
           <Text color="secondary">

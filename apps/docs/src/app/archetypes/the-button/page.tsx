@@ -1,4 +1,5 @@
-import { Image, Stack } from "rebar-ui";
+import { Stack } from "rebar-ui";
+import { GrainHero } from "@/components/GrainHero";
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -131,7 +132,7 @@ const BLOCKS: Construct[] = [
 export default function TheButtonPage() {
   return (
     <Stack gap="lg">
-      <Image src="/catalogue-heros/button.webp" alt="Button hero image" style={{ width: "100%", borderRadius: "8px" }} />
+      <GrainHero tone="dawn" />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

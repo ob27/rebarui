@@ -1,7 +1,8 @@
 import type { Construct } from "@rebar-ui/placement";
+import { GrainHero } from "@/components/GrainHero";
 import { BenchmarkDateline } from "@/components/BenchmarkDateline";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
-import { Image, Stack } from "rebar-ui";
+import { Stack } from "rebar-ui";
 
 const BLOCKS: Construct[] = [
   {
@@ -66,11 +67,7 @@ const BLOCKS: Construct[] = [
 export default function BenchmarksPage() {
   return (
     <Stack gap="lg">
-      <Image
-        src="/catalogue-heros/benchmark.jpeg"
-        alt="Benchmarks hero image"
-        style={{ width: "100%", borderRadius: "8px" }}
-      />
+      <GrainHero tone="dawn" />
       <BenchmarkDateline published="2026-09-14" updated="2026-09-26" />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
