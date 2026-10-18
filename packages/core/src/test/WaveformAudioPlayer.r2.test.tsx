@@ -41,7 +41,7 @@ describe("WaveformAudioPlayer appearance=track", () => {
     expect(root).toHaveAttribute("data-rebar-appearance", "card");
     const bars = root.querySelectorAll<HTMLElement>('[data-rebar-part="bar"]');
     expect(bars).toHaveLength(4);
-    expect(bars[2].style.height).toBe("90%");
+    expect(bars[2]!.style.height).toBe("90%");
     expect(bars[0]).toHaveAttribute("data-played", "true");
     expect(bars[1]).not.toHaveAttribute("data-played");
     expect(screen.getByTestId("pi")).toBeInTheDocument();
