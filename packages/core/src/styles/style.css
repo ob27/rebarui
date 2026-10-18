@@ -13609,3 +13609,9 @@ a.rebar-list-item-main {
 .rebar-list-item-trailing {
   gap: var(--rebar-list-item-trailing-gap, 8px);
 }
+
+/* Card as a link: the hover lift and shadow can be set by an app (defaults = the shipped lift) */
+.rebar-card[data-rebar-link]:hover {
+  transform: var(--rebar-card-link-hover-transform, translateY(-2px));
+  box-shadow: var(--rebar-card-link-hover-shadow, var(--rebar-shadow, 0 4px 14px rgba(0, 0, 0, 0.1)));
+}
