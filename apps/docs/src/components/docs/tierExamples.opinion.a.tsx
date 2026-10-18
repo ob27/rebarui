@@ -794,7 +794,7 @@ export const OPINION_A: ExampleMap = {
       ],
     }),
   ),
-  GraphExplorer: ex(<GraphExplorer nodes={GRAPH.nodes} edges={GRAPH.edges} title="Who is on what" width={540} height={300} />, { wide: true }),
+  GraphExplorer: ex(<GraphExplorer nodes={GRAPH.nodes} edges={GRAPH.edges} title="Who is on what" width={320} height={280} />, { wide: true }),
   Heatmap: ex(<Heatmap title="Tasks done this week" rows={HEAT_ROWS} cols={HEAT_DAYS} data={HEAT_DATA} cellSize={30} />),
   HeatmapPainter: ex(<PainterDemo />, { wide: true }),
   HeatmapViewer: ex(<HeatmapViewer source={DEPOT_SOURCE} title="Depot signage" />, { wide: true }),
