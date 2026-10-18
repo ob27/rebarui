@@ -1,4 +1,4 @@
-import { Container, Heading, Image, Stack, Text, Timeline } from "rebar-ui";
+import { Container, Heading, Stack, Text, Timeline } from "rebar-ui";
 import type { TimelineItem } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
@@ -25,11 +25,11 @@ const MILESTONES: TimelineItem[] = [
     children: "Direct investigation into real downstream usage (four independent rebuilds of a production app) and a controlled, n=15-per-condition Kanban benchmark found the Packer's schema wrapper wasn't actually the source of the measured savings — reaching for the highest-tier existing unit was, independent of delivery mechanism. Site copy, agent.md, and every package README were rewritten around that finding instead of \"compose everything through the Packer.\" A follow-up condition then tested whether a properly-scoped DSL (its schema widened to actually cover the real customization needed, instead of forcing a hand-authored escape hatch) could still win outright once separated from tier — it did, on every metric measured, including beating the previous benchmark's cheapest condition on raw token cost.",
   },
   {
-    label: "0.12.1 Open Beta — current",
+    label: "1.0.0 — current",
     tone: "info",
     children: (
       <>
-        The catalog crosses 207 components and 45 blocks. FloatAssistant&apos;s sidebar-dock mode,
+        1.0 makes basilika the canonical theme. The catalog crosses 207 components and 45 blocks. FloatAssistant&apos;s sidebar-dock mode,
         several components&apos; real customization gaps closed directly from controlled-benchmark
         findings (Kanban&apos;s <code>addPosition</code>/<code>assignee</code>/<code>statusTag</code>,
         SignaturePad&apos;s typed-name tracking), and a real search-rendering bug found and fixed in
@@ -76,7 +76,6 @@ export default function RoadmapPage() {
   return (
     <Container verticalPadding="var(--rebar-space-xl)">
       <Stack gap="lg">
-        <Image src="/catalogue-heros/roadmap.jpeg" alt="Roadmap hero" style={{ width: "100%", borderRadius: "8px" }} />
         <Heading level={1}>Roadmap</Heading>
         <Text color="secondary">
           Where Rebar UI has been, and where it&apos;s headed — from the first public release through

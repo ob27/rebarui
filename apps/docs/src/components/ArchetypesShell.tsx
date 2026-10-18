@@ -26,7 +26,7 @@ export function ArchetypesShell({ children }: { children: ReactNode }) {
             </Link>
           )}
         />
-        <Box style={{ flex: 1, minWidth: 0 }}>{children}</Box>
+        <Box style={{ flex: "1 1 320px", minWidth: 0 }}>{children}</Box>
       </Stack>
     </Box>
   );

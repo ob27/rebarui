@@ -1,6 +1,6 @@
 {
   "name": "@rebar-ui/theme-clean",
-  "version": "0.12.1",
+  "version": "1.0.0",
   "description": "Rebar's plain, production-safe baseline theme — the first step before a full custom re-skin.",
   "type": "module",
   "files": [

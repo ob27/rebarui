@@ -1,4 +1,5 @@
-import { Heading, Image, Stack, Text } from "rebar-ui";
+import { Heading, Stack, Text } from "rebar-ui";
+import { GrainHero } from "@/components/GrainHero";
 import type { Construct } from "@rebar-ui/placement";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
@@ -33,7 +34,7 @@ const BLOCKS: Construct[] = [
 export default function ArchetypesPage() {
   return (
     <Stack gap="lg" style={{ maxWidth: 720 }}>
-      <Image src="/catalogue-heros/archetypes.jpeg" alt="Archetypes hero image" style={{ width: "100%", borderRadius: "8px" }} />
+      <GrainHero tone="sand" />
 
       <NextBlockRenderer blocks={BLOCKS} />
 
