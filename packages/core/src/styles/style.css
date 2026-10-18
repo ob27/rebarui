@@ -13941,3 +13941,13 @@ a.rebar-button[data-rebar-variant="tertiary"] {
   white-space: var(--rebar-list-item-title-white-space, normal);
   text-overflow: var(--rebar-list-item-title-text-overflow, var(--rebar-list-item-title-overflow, clip));
 }
+
+/* ---- parity-int2: integration of the round-2 branches ---- */
+/* Card promo: the grid row each slot sits in can be set by an app (default: auto-placed). With rows `1fr auto auto 1fr`, header-row 2 and
+   body-row 3 the title and the offer form one block centred beside the cover, whatever the number of lines. */
+.rebar-card[data-rebar-promo][data-rebar-orientation="row"] > .rebar-card-header {
+  grid-row: var(--rebar-card-promo-header-row, auto);
+}
+.rebar-card[data-rebar-promo][data-rebar-orientation="row"] > .rebar-card-body {
+  grid-row: var(--rebar-card-promo-body-row, auto);
+}
