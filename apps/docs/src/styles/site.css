@@ -196,3 +196,29 @@ main { min-width: 0; }
 .cs-gen--banners .cs-gen-banner { min-height: 300px; padding: 32px; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 10px; border: 1px solid var(--rebar-color-border); }
 .cs-gen--banners .cs-gen-banner .cs-h2 { margin: 6px 0 0; font-size: clamp(2rem, 4vw, 3rem); }
 .cs-gen--banners .cs-gen-banner .cs-muted { margin: 0 0 8px; max-width: 34ch; }
+
+/* ---- tier gallery: one live card per construct on each tier cover page -------------------------------------------------- */
+:root { --cs-gal-top: 68px; --cs-gal-strip: 44px; }
+.cs-gal-strip { position: sticky; top: var(--cs-gal-top); z-index: 30; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; padding: 6px 0; margin: 0 0 16px; background: var(--rebar-color-bg-primary); border-bottom: 1px solid var(--rebar-color-border); }
+.cs-gal-strip::-webkit-scrollbar { display: none; }
+.cs-gal-strip a { flex: none; min-width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; font: var(--rebar-font-weight-semibold) 0.85rem/1 var(--rebar-font-family-sans); color: var(--rebar-color-text-secondary); text-decoration: none; }
+.cs-gal-strip a:hover { background: var(--rebar-color-bg-secondary); color: var(--rebar-color-text-primary); }
+.cs-gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 14px; margin-bottom: 48px; align-items: start; }
+.cs-gal-card { scroll-margin-top: calc(var(--cs-gal-top) + var(--cs-gal-strip) + 12px); background: var(--rebar-color-bg-secondary); border: 1px solid var(--rebar-color-border); border-radius: var(--rebar-radius-lg); padding: 12px 16px 16px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.cs-gal-card[data-wide="true"] { grid-column: 1 / -1; }
+.cs-gal-card:target { border-color: var(--rebar-color-text-primary); }
+.cs-gal-head { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.cs-gal-name { margin: 0; font: var(--rebar-font-weight-semibold) 0.98rem/1.2 var(--rebar-font-family-sans); min-width: 0; overflow-wrap: anywhere; }
+.cs-gal-name a { color: var(--rebar-color-text-primary); text-decoration: none; }
+.cs-gal-name a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.cs-gal-cat { font-size: 0.74rem; color: var(--rebar-color-text-secondary); }
+.cs-gal-docs { margin-left: auto; flex: none; font-size: 0.82rem; color: var(--rebar-color-text-secondary); text-decoration: none; }
+.cs-gal-docs:hover { color: var(--rebar-color-text-primary); text-decoration: underline; text-underline-offset: 3px; }
+/* transform makes the body the containing block for any position:fixed example (bubbles, drawers), and overflow keeps every example inside its card */
+.cs-gal-body { min-width: 0; max-height: 440px; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; padding: 8px; margin: -8px; transform: translateZ(0); position: relative; }
+.cs-gal-body[data-clipped="true"] { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent); }
+.cs-gal-body[data-ready="false"] { min-height: 110px; }
+.cs-gal-skel { height: 110px; border-radius: var(--rebar-radius); background: color-mix(in srgb, var(--rebar-color-text-primary) 5%, transparent); }
+.cs-gal-body .rebar-kanban { --rebar-kanban-column-width: 76%; }
+@media (max-width: 1180px) { :root { --cs-gal-top: 68px; } }
+@media (max-width: 900px) { :root { --cs-gal-top: 60px; } }

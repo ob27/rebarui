@@ -11,6 +11,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "check:tier-examples": "node scripts/check-tier-examples.mjs",
     "audit:packer": "node scripts/audit-packer-coverage.mjs",
     "typecheck": "npm run generate:props && tsc --noEmit",
     "test": "echo \"no tests\""
