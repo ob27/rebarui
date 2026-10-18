@@ -1,6 +1,6 @@
 {
   "name": "@rebar-ui/theme-basilika",
-  "version": "0.12.1",
+  "version": "1.0.0",
   "description": "Rebar UI's canonical look: basilika. Warm cream and navy with deep coral, Fraunces display type, soft rounded surfaces, light and dark.",
   "type": "module",
   "files": [

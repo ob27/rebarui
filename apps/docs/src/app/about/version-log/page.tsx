@@ -9,8 +9,13 @@ import type { TimelineItem } from "rebar-ui";
 // against this file's own prior wording.
 const VERSIONS: TimelineItem[] = [
   {
-    label: "0.12.1 — current",
+    label: "1.0.0 — current",
     tone: "info",
+    children:
+      "basilika, the Athic look, becomes Rebar UI's canonical theme (`@rebar-ui/theme-basilika`, `data-rebar-theme=\"basilika\"`), with zero-config tokens, a light and a dark scheme, and a `data-rebar-scheme` lock for any subtree. New constructs: TopBar, List and ListItem, ImagePicker, AuthScreen, ReadingView, HeroSplit, Section, PageHeader, Onboarding, Prose and Markdown, plus imperative `toast()` and `confirm()`. Existing constructs gained opt-in variants, props and tokens (AiChatInput boxed, ChatThread bubbles, NoticeBar banner, Button classic and tonal, native Checkbox, RadioGroup and Select, pill Tabs and more) so an app can reproduce a hand-built design pixel for pixel; defaults are unchanged. Small coral text uses the new `--rebar-color-primary-text-ink` token. The docs site was rebuilt around live, Tideline-backed demos with mobile frames.",
+  },  {
+    label: "0.12.1",
+    tone: "success",
     children:
       "FloatAssistant gained a sidebar dock: a toggle button in the panel header swaps the default 360x520 floating panel for a full-height layout anchored to the right screen edge, with a Claude-Code-style input toolbar (attachment, slash-command, history, an optional model pill, submit) in place of the compact floating input — opt-in via a new sidebarDockable prop, every existing floating-panel behavior unchanged unless it's set. The homepage was restructured: the three-pillars overview now leads (right after the hero) instead of sitting behind a live Rebar-vs-AntD comparison demo, a short doc-section now narrates the actual \"build volatile, migrate once stable\" argument in prose instead of only living in one dense hero sentence, and the heavy embedded-iframe comparison was replaced with a lightweight measured-numbers table linking out to the full methodology on /about/benchmarks. A broad documentation audit fixed a long-drifted class of stale cross-references (a plural agents.md/robot-md naming that hadn't matched the real agent.md file or /about/agent route in some time, ConstructRenderer renamed to BlockRenderer, /benchmarks moved under /about/benchmarks) across CLAUDE.md, README.md, CONTRIBUTING.md, ref/ARCHITECTURE.md, and a dozen-plus component source comments; ref/TIERS.md was rewritten against freshly verified counts (42 constructs, not 39) and given its long-missing fifth-tier (Genesis) explanation; and ref/TIERS.md, CONSTRUCTS.md, BENCHMARK_CONTRIBUTING.md, COMPONENT_BUILD_PLAN.md, and COMPONENT_BACKLOG.md — all silently caught by .gitignore's blanket ref/ rule despite being referenced throughout the codebase — are now actually tracked by git.",
   },

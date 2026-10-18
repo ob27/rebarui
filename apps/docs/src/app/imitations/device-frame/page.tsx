@@ -109,7 +109,7 @@ export default function DeviceFramePage() {
           {
             label: "Caption",
             node: (
-              <TidelinePhone title="Today" width={150} height={140} caption="Tideline mobile, 0.13" />
+              <TidelinePhone title="Today" width={150} height={140} caption="Tideline mobile, 1.0" />
             ),
           },
         ]}
