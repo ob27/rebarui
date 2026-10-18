@@ -66,6 +66,11 @@ const BLOCKS: Construct[] = [
       }
     ],
   },
+  {
+    type: "doc-section",
+    heading: 'overlayStyle="full"',
+    body: [{ kind: "text", text: '`overlayStyle="full"` makes the overlay cover the whole picture with a dim layer and a centred label (`--rebar-avatar-overlay-bg / -size / -weight`); while `loading` the label gives way to `spinner` and the separate scrim is not drawn. `--rebar-avatar-overflow`, `--rebar-avatar-image-radius`, `--rebar-avatar-background` and `--rebar-avatar-ring` (theme) adjust how the picture is clipped and backed.' }],
+  },
 ];
 
 export default function AvatarPage() {

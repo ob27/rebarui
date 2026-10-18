@@ -3063,3 +3063,22 @@ textarea.rebar-input {
 }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-icon { border-radius: 50%; }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-title.rebar-heading { font-size: 26px; }
+
+/* ---- parity-r1: Avatar backing colour and ring behind opt-in properties (defaults = the values above) ---- */
+.rebar-avatar { background: var(--rebar-avatar-background, var(--rebar-color-tint-3)); box-shadow: var(--rebar-avatar-ring, 0 0 0 2px var(--rebar-color-bg-raised)); }
+.rebar-avatar[data-rebar-size="sm"] { background: var(--rebar-avatar-background, var(--rebar-color-tint-1)); }
+.rebar-avatar[data-rebar-size="lg"] { background: var(--rebar-avatar-background, var(--rebar-color-tint-2)); }
+
+/* ---- parity-r1: Input invalid look behind opt-in properties (defaults = the values above) ---- */
+.rebar-input[data-rebar-invalid="true"],
+.rebar-input[aria-invalid="true"] {
+  border-color: var(--rebar-input-invalid-border-color, var(--rebar-color-danger));
+  box-shadow: var(--rebar-input-invalid-shadow, 0 0 0 4px color-mix(in srgb, var(--rebar-color-danger) 14%, transparent));
+}
+.rebar-input[data-rebar-invalid="true"]:focus,
+.rebar-input[aria-invalid="true"]:focus,
+.rebar-input[data-rebar-invalid="true"]:focus-visible,
+.rebar-input[aria-invalid="true"]:focus-visible {
+  border-color: var(--rebar-input-invalid-border-color, var(--rebar-color-danger));
+  box-shadow: var(--rebar-input-invalid-focus-shadow, var(--rebar-input-invalid-shadow, 0 0 0 4px color-mix(in srgb, var(--rebar-color-danger) 24%, transparent)));
+}

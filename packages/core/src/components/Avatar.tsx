@@ -22,6 +22,10 @@ export interface AvatarProps extends Omit<ComponentPropsWithoutRef<"span">, "cla
   size?: "sm" | "md" | "lg" | "xl" | number;
   /** A band over the bottom of the image (`"edit"` shows "Edit", or pass your own content). Makes the avatar a button: give it `onClick` and an `aria-label`. Needs a size of 64 or more. */
   overlay?: "edit" | ReactNode;
+  /** `"full"`: the overlay covers the whole picture with a dim layer and centred label (an "Edit" button), and while `loading` it shows `spinner` in place of the label instead of the separate scrim. Default `"band"`. */
+  overlayStyle?: "band" | "full";
+  /** The spinner shown while `loading` with `overlayStyle="full"` (a glyph set the app already uses). Default a plain ring. */
+  spinner?: ReactNode;
   /** A round badge on the bottom-right edge (a camera icon). The alternative to `overlay`. */
   badge?: ReactNode;
   /** A dim scrim with a spinner (uploading). Pointer events off, `aria-busy`. */
@@ -31,7 +35,7 @@ export interface AvatarProps extends Omit<ComponentPropsWithoutRef<"span">, "cla
 }
 
 export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
-  { src, thumbSrc, alt, fallback, className, placeholder, size = "md", overlay, badge, loading, invalid, onClick, style, ...props },
+  { src, thumbSrc, alt, fallback, className, placeholder, size = "md", overlay, overlayStyle, spinner, badge, loading, invalid, onClick, style, ...props },
   ref,
 ) {
   const placeholderSrc = useAvatarPlaceholderSrc(src ? undefined : placeholder, fallback);
@@ -58,6 +62,7 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
       className={clsx("rebar-avatar", className)}
       data-rebar-component="avatar"
       data-rebar-size={numeric ? "custom" : size}
+      data-rebar-overlay-style={overlayStyle === "full" ? "full" : undefined}
       data-rebar-loading={loading ? "true" : undefined}
       data-rebar-invalid={invalid ? "true" : undefined}
       data-rebar-thumb={thumbActive ? (imageStatus === "loaded" ? "settled" : "blur") : undefined}
@@ -79,10 +84,10 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
       </RadixAvatar.Fallback>
       {overlay !== undefined && overlay !== false && overlay !== null ? (
         <span className="rebar-avatar-overlay" data-rebar-part="overlay">
-          {overlay === "edit" ? "Edit" : overlay}
+          {overlayStyle === "full" && loading ? (spinner ?? <span className="rebar-avatar-spinner" aria-hidden="true" />) : overlay === "edit" ? "Edit" : overlay}
         </span>
       ) : null}
-      {loading ? (
+      {loading && !(overlayStyle === "full" && overlay !== undefined && overlay !== false && overlay !== null) ? (
         <span className="rebar-avatar-scrim" data-rebar-part="scrim" role="status" aria-label="Uploading">
           <span className="rebar-avatar-spinner" aria-hidden="true" />
         </span>

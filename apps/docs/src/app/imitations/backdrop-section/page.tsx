@@ -48,6 +48,11 @@ const BLOCKS: Construct[] = [
       }
     ],
   },
+  {
+    "type": "doc-section",
+    "heading": "imageMode=\"background\"",
+    "body": [{ "kind": "text", "text": "`imageMode=\"background\"` draws the art and the scrim as CSS background layers of the section itself (no `<img>`, no scrim element), so a rounded edge anti-aliases like a plain background; the art is decorative. Tokens: `--rebar-backdrop-image-bg` (the colour behind the art, default the inverse surface) and `--rebar-backdrop-image-repeat` (default `no-repeat`). Use `scrim=\"custom\"` with `--rebar-backdrop-scrim-background` for the app gradient. Also: tertiary link Buttons honour `--rebar-button-tertiary-color`, classic primary Buttons `--rebar-classic-button-bg`, and Input has `--rebar-input-invalid-border-color / -shadow / -focus-shadow`." }],
+  },
 ];
 
 export default function BackdropSectionPage() {

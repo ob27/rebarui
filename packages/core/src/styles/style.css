@@ -13330,3 +13330,125 @@ a.rebar-list-item-main {
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-buttons { gap: 10px; }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-buttons > * { min-height: 0; }
 .rebar-onboarding[data-rebar-appearance="classic"] .rebar-onboarding-brand { display: flex; }
+
+/* ---- parity-r1: grouped lists as a warm panel, ListSection label and footer type (opt-in properties; every default is the previous value) ---- */
+.rebar-list[data-rebar-variant="grouped"] {
+  background: var(--rebar-list-grouped-bg, var(--rebar-color-bg-raised, var(--rebar-color-bg-primary, #ffffff)));
+  border-width: var(--rebar-list-grouped-border-width, 1px);
+  border-radius: var(--rebar-list-grouped-radius, 22px);
+  padding: var(--rebar-list-grouped-padding, 0);
+}
+.rebar-list[data-rebar-variant="grouped"] > .rebar-list-item {
+  background: var(--rebar-list-grouped-item-bg, var(--rebar-color-bg-raised, var(--rebar-color-bg-primary, #ffffff)));
+}
+.rebar-list[data-rebar-variant="grouped"] > .rebar-list-item + .rebar-list-item {
+  border-top-width: var(--rebar-list-grouped-divider-width, 1px);
+  border-top-color: var(--rebar-list-grouped-divider-color, var(--rebar-color-border, #e0e0e0));
+}
+.rebar-list-item-chevron { font-size: var(--rebar-list-item-chevron-size, inherit); color: var(--rebar-list-item-chevron-color, var(--rebar-color-text-secondary, #757575)); }
+.rebar-list-item-chevron svg { width: var(--rebar-list-item-chevron-size, 1.2em); height: var(--rebar-list-item-chevron-size, 1.2em); }
+.rebar-list-item-description, .rebar-list-item-meta { color: var(--rebar-list-item-meta-color, var(--rebar-color-text-secondary, #757575)); }
+.rebar-list-section > .rebar-list-section-title.rebar-text {
+  font-size: var(--rebar-list-section-title-size, 12px);
+  font-weight: var(--rebar-list-section-title-weight, 700);
+  line-height: var(--rebar-list-section-title-line-height, 1.2);
+  letter-spacing: var(--rebar-list-section-title-letter-spacing, 0.16em);
+  color: var(--rebar-list-section-title-color, var(--rebar-color-primary-text-ink, var(--rebar-color-primary, #b53824)));
+  padding: var(--rebar-list-section-title-padding, 0 4px 10px);
+}
+.rebar-list-section > .rebar-list-section-footer.rebar-text {
+  font-size: var(--rebar-list-section-footer-size, var(--rebar-font-size-sm, 14px));
+  line-height: var(--rebar-list-section-footer-line-height, var(--rebar-line-height, 1.5));
+  color: var(--rebar-list-section-footer-color, var(--rebar-color-text-secondary, #757575));
+  padding: var(--rebar-list-section-footer-padding, 10px 4px 0);
+}
+/* Avatar: clip the picture itself (as a bare rounded <img> does) instead of the box around it */
+.rebar-avatar {
+  overflow: var(--rebar-avatar-overflow, hidden);
+}
+.rebar-avatar-image { border-radius: var(--rebar-avatar-image-radius, 0); }
+
+/* ImagePicker appearance="ring": soft-shadow tiles, a bright ring and corner badge for the selected one, a plain fade for a busy one
+   (tokens: --rebar-image-picker-gap / -tile-radius / -shadow / -ring / -busy-opacity / -check-size / -check-inset / -check-bg / -check-icon-size) */
+.rebar-image-picker[data-rebar-appearance="ring"] { display: block; }
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-grid { gap: var(--rebar-image-picker-gap, 14px); }
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-tile {
+  min-width: 0;
+  min-height: 0;
+  border-radius: var(--rebar-image-picker-tile-radius, 18px);
+  background: var(--rebar-image-picker-tile-bg, transparent);
+  box-shadow: var(--rebar-image-picker-shadow, 0 2px 8px rgba(10, 11, 22, 0.15));
+}
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-tile[data-rebar-selected="true"],
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-tile[data-rebar-state="selected"] {
+  box-shadow: var(--rebar-image-picker-ring, 0 0 0 3px var(--rebar-color-primary-bright, var(--rebar-color-primary)));
+}
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-tile[aria-disabled="true"],
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-tile[data-rebar-disabled="true"] { opacity: 1; cursor: default; }
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-tile[data-rebar-state="busy"] { opacity: var(--rebar-image-picker-busy-opacity, 0.5); box-shadow: var(--rebar-image-picker-shadow, 0 2px 8px rgba(10, 11, 22, 0.15)); }
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-tile[data-rebar-state="busy"][data-rebar-selected="true"] { box-shadow: var(--rebar-image-picker-ring, 0 0 0 3px var(--rebar-color-primary-bright, var(--rebar-color-primary))); }
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-busy { display: none; }
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-check {
+  right: var(--rebar-image-picker-check-inset, 4px);
+  bottom: var(--rebar-image-picker-check-inset, 4px);
+  width: var(--rebar-image-picker-check-size, 22px);
+  height: var(--rebar-image-picker-check-size, 22px);
+  background: var(--rebar-image-picker-check-bg, var(--rebar-color-primary-bright, var(--rebar-color-primary)));
+  color: #fff;
+  font-size: var(--rebar-image-picker-check-icon-size, 13px);
+}
+.rebar-image-picker[data-rebar-appearance="ring"] .rebar-image-picker-check svg { width: 1em; height: 1em; }
+
+/* Avatar overlayStyle="full": a dim layer over the whole picture with a centred label (tokens: --rebar-avatar-overlay-bg / -size / -weight) */
+.rebar-avatar[data-rebar-overlay-style="full"] .rebar-avatar-overlay {
+  inset: 0;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--rebar-avatar-overlay-bg, rgba(10, 11, 22, 0.35));
+  color: #fff;
+  font-size: var(--rebar-avatar-overlay-size, 11px);
+  font-weight: var(--rebar-avatar-overlay-weight, 700);
+  letter-spacing: normal;
+  border-radius: 50%;
+}
+
+/* BottomSheet appearance="popup" titleStyle="heading": the heading size can be set by an app (default unchanged) */
+.rebar-drawer-content[data-rebar-appearance="popup"][data-rebar-title-style="heading"] [data-rebar-part="title"] {
+  font-size: var(--rebar-popup-heading-size, 22px);
+}
+
+/* ListItem: the title's line-breaking can be set by an app (default unchanged) */
+.rebar-list-item-title { text-wrap: var(--rebar-list-item-title-wrap, pretty); }
+
+/* Button appearance="classic", primary: the fill can be set by an app (default: the primary colour) */
+.rebar-button.rebar-button[data-rebar-appearance="classic"][data-rebar-variant="primary"],
+.rebar-button.rebar-button[data-rebar-appearance="classic"][data-rebar-variant="primary"]:hover:not(:disabled) {
+  background: var(--rebar-classic-button-bg, var(--rebar-color-primary));
+  border-color: var(--rebar-classic-button-bg, var(--rebar-color-primary));
+}
+
+/* BackdropSection imageMode="background": the art and scrim are background layers of the section itself */
+.rebar-backdrop-section[data-rebar-image-mode="background"] {
+  background-image: var(--rebar-backdrop-scrim-layer, none), var(--rebar-backdrop-image);
+  background-size: cover, cover;
+  background-position: center, center;
+  background-repeat: var(--rebar-backdrop-image-repeat, no-repeat);
+  background-color: var(--rebar-backdrop-image-bg, var(--rebar-color-bg-inverse, #1e1e1e));
+}
+.rebar-backdrop-section[data-rebar-image-mode="background"][data-rebar-scrim="soft"] {
+  --rebar-backdrop-scrim-layer: linear-gradient(180deg, color-mix(in srgb, var(--rebar-backdrop-scrim-color, #000000) 25%, transparent), color-mix(in srgb, var(--rebar-backdrop-scrim-color, #000000) 55%, transparent));
+}
+.rebar-backdrop-section[data-rebar-image-mode="background"][data-rebar-scrim="strong"] {
+  --rebar-backdrop-scrim-layer: linear-gradient(color-mix(in srgb, var(--rebar-backdrop-scrim-color, #000000) 70%, transparent), color-mix(in srgb, var(--rebar-backdrop-scrim-color, #000000) 70%, transparent));
+}
+.rebar-backdrop-section[data-rebar-image-mode="background"][data-rebar-scrim="start"] {
+  --rebar-backdrop-scrim-layer: linear-gradient(to right, color-mix(in srgb, var(--rebar-backdrop-scrim-color, #000000) 80%, transparent), color-mix(in srgb, var(--rebar-backdrop-scrim-color, #000000) 25%, transparent));
+}
+.rebar-backdrop-section[data-rebar-image-mode="background"][data-rebar-scrim="custom"] { --rebar-backdrop-scrim-layer: var(--rebar-backdrop-scrim-background, none); }
+
+/* Button as a link (href), tertiary: --rebar-button-tertiary-color applies to it too (default unchanged) */
+a.rebar-button[data-rebar-variant="tertiary"] {
+  color: var(--rebar-button-tertiary-color, var(--rebar-color-primary-text-ink, var(--rebar-color-primary, #b53824)));
+}

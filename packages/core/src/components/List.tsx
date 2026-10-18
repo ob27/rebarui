@@ -112,6 +112,8 @@ export interface ListItemProps extends Omit<ComponentPropsWithoutRef<"li">, "tit
   renderEditor?: () => ReactNode;
   /** `"chevron"`, `"more"` (a round ••• button, handled by `onMore`), or any node: a `Switch`, a `RadioGroup` item, a value pill, an `ActionSheet` trigger. A trailing control never triggers the row. */
   trailing?: ReactNode | "chevron" | "more";
+  /** Replaces the `"chevron"` trailing glyph with an icon of your own (a glyph set the app already uses). */
+  chevronIcon?: ReactNode;
   /** Called by the `"more"` trailing button. */
   onMore?: () => void;
   /** Accessible name of the `"more"` button. Default "More actions". */
@@ -182,6 +184,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
     onEdit,
     renderEditor,
     trailing,
+    chevronIcon,
     onMore,
     moreLabel = "More actions",
     moreIcon,
@@ -289,7 +292,7 @@ export const ListItem = forwardRef<HTMLLIElement, ListItemProps>(function ListIt
       </span>
       {chevron ? (
         <span className="rebar-list-item-chevron" data-rebar-part="chevron" aria-hidden="true">
-          <Chevron />
+          {chevronIcon ?? <Chevron />}
         </span>
       ) : null}
     </>
