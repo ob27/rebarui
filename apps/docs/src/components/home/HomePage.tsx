@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { GenesisBanners } from "@/components/GenesisBanners";
 import { AvatarGroup, Button, Card, Combobox, Input, Kanban, Sparkline, Tag } from "rebar-ui";
 import type { KanbanCard, KanbanColumn, KanbanState } from "rebar-ui";
 import { CONSTRUCT_TIER } from "@/data/constructTier";
@@ -118,22 +119,7 @@ export function HomePage() {
         <h2 className="cs-h2">Geneses</h2>
         <Link className="cs-btn cs-btn--secondary cs-btn--sm" href="/geneses">All geneses</Link>
       </div>
-      <div className="cs-gen">
-        <div>
-          <div className="cs-shot">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/geneses/ai-hive/wall-light.png" alt="The AI Hive wall in light mode: agent and service tiles with a chat panel" />
-          </div>
-          <div className="cs-cap"><h3 className="cs-h3">AI Hive</h3><span className="cs-tag cs-tag--genesis">Genesis</span></div>
-        </div>
-        <div>
-          <div className="cs-shot">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/geneses/ai-hive/wall-dark.png" alt="The AI Hive wall in dark mode" />
-          </div>
-          <div className="cs-cap"><h3 className="cs-h3">AI Hive, dark</h3><span className="cs-tag cs-tag--genesis">Genesis</span></div>
-        </div>
-      </div>
+      <GenesisBanners />
     </main>
   );
 }

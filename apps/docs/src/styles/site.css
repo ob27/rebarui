@@ -71,7 +71,7 @@
 .cs-collage .cs-wide { grid-column: 1 / 3; }
 .cs-collage .cs-collage-card { background: var(--rebar-color-bg-raised, var(--rebar-color-bg-primary)); border: 1px solid var(--rebar-color-border); border-radius: var(--rebar-radius); padding: 18px; box-shadow: var(--rebar-shadow); display: grid; gap: 10px; align-content: start; }
 .cs-collage .cs-kicker { margin-bottom: 2px; }
-.cs-collage .rebar-kanban { --rebar-kanban-column-width: 100%; }
+.cs-collage .rebar-kanban { --rebar-kanban-column-width: 76%; }
 .cs-collage .cs-collage-kanban { overflow: hidden; }
 .cs-collage .cs-collage-stat { display: flex; align-items: center; gap: 22px; }
 .cs-collage-stat .cs-big { font: var(--rebar-font-weight-semibold) 2rem/1 var(--rebar-font-family-display); font-variation-settings: "SOFT" 100; }
@@ -131,7 +131,7 @@
 .cs-featured-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .cs-featured-head a { font-size: 0.82rem; color: var(--rebar-color-text-secondary); text-decoration: none; } .cs-featured-head a:hover { color: var(--rebar-color-text-primary); }
 .cs-featured-body { min-width: 0; overflow: hidden; }
-.cs-featured-body .rebar-kanban { --rebar-kanban-column-width: 100%; }
+.cs-featured-body .rebar-kanban { --rebar-kanban-column-width: 76%; }
 .cs-sec-h--tight { margin-top: 48px; margin-bottom: 18px; }
 .cs-list { list-style: none; margin: 0 0 48px; padding: 0; background: var(--rebar-color-bg-raised, var(--rebar-color-bg-primary)); border: 1px solid var(--rebar-color-border); border-radius: var(--rebar-radius); overflow: hidden; column-count: 2; column-gap: 0; }
 .cs-list li { break-inside: avoid; display: block; }
@@ -191,3 +191,8 @@ main { min-width: 0; }
   main code, main .rebar-text, main .rebar-link { overflow-wrap: anywhere; }
   main .rebar-stack[data-rebar-direction="row"] { flex-wrap: wrap; }
 }
+
+/* Genesis banners: hero cards on the grain art. */
+.cs-gen--banners .cs-gen-banner { min-height: 300px; padding: 32px; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 10px; border: 1px solid var(--rebar-color-border); }
+.cs-gen--banners .cs-gen-banner .cs-h2 { margin: 6px 0 0; font-size: clamp(2rem, 4vw, 3rem); }
+.cs-gen--banners .cs-gen-banner .cs-muted { margin: 0 0 8px; max-width: 34ch; }
