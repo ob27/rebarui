@@ -178,6 +178,24 @@ export default function CardPage() {
             ),
           },
           {
+            label: "Feature card (orientation=\"feature\"): framed square cover, pill kicker, title, body",
+            node: (
+              <div style={{ maxWidth: 320 }}>
+                <Card orientation="feature" href="#feature" cover={<span style={{ display: "block", width: "100%", height: "100%" }} />} eyebrow="Charism" title="A title that may wrap onto a second line">
+                  <Text size="sm" color="secondary">A short excerpt of the body.</Text>
+                </Card>
+              </div>
+            ),
+          },
+          {
+            label: "Border width, surface and eyebrow type from properties (--rebar-card-border-width, --rebar-card-background, --rebar-eyebrow-*)",
+            node: (
+              <div style={{ "--rebar-card-border-width": "0px", "--rebar-card-background": "var(--rebar-color-bg-secondary)", "--rebar-eyebrow-size": "11.5px", "--rebar-eyebrow-letter-spacing": "0.14em", "--rebar-eyebrow-line-height": "normal" } as React.CSSProperties}>
+                <Card eyebrow="No border, warm surface"><Text>Body</Text></Card>
+              </div>
+            ),
+          },
+          {
             label: "Panel from --rebar-card-* properties (26px radius, 20px padding)",
             node: (
               <div style={{ "--rebar-card-radius": "26px", "--rebar-card-header-padding": "20px 20px 10px", "--rebar-card-body-padding": "20px", "--rebar-card-body-padding-top": "0px", "--rebar-card-eyebrow-gap": "0px" } as React.CSSProperties}>
