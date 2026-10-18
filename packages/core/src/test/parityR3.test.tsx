@@ -35,6 +35,15 @@ describe("parity-r3: ReadingView", () => {
     expect(container.firstElementChild).not.toHaveAttribute("data-rebar-verse-actions");
   });
 
+  it("below: a verse with extra shows it instead of the action pill; inline keeps both", () => {
+    const verses = [{ num: 1, text: "In the beginning", extra: <textarea aria-label="note" /> }];
+    const { container, rerender } = render(<ReadingView verses={verses} onVerseAction={() => {}} verseActions="below" />);
+    expect(container.querySelector('[data-rebar-part="verse-action"]')).toBeNull();
+    expect(container.querySelector('[data-rebar-part="verse-extra"] textarea')).not.toBeNull();
+    rerender(<ReadingView verses={verses} onVerseAction={() => {}} />);
+    expect(container.querySelector('[data-rebar-part="verse-action"]')).not.toBeNull();
+  });
+
   it("every metric is an opt-in property whose fallback is the previous value", () => {
     for (const re of [
       /gap: var\(--rebar-reading-view-panel-gap, var\(--rebar-space-md\)\)/,

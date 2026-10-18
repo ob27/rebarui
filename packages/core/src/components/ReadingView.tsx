@@ -37,7 +37,7 @@ export interface ReadingViewProps extends Omit<ComponentPropsWithoutRef<"article
   verseFont?: "sans" | "serif";
   /** Verses whose pill reads "Note added" (filled). */
   notedVerses?: number[];
-  /** Where each verse's action pill and `extra` sit: `"inline"` (default) in the text column under the verse, or `"below"` on a row of their own under the number and the text, offset by `--rebar-reading-view-pill-margin-start`. */
+  /** Where each verse's action pill and `extra` sit: `"inline"` (default) in the text column under the verse, or `"below"` on a row of their own under the number and the text, offset by `--rebar-reading-view-pill-margin-start`; a verse that carries `extra` then shows it instead of the pill (offset by `--rebar-reading-view-extra-margin-start`). */
   verseActions?: "inline" | "below";
   /** Slot above the text for the narration bar (`WaveformAudioPlayer`). */
   media?: ReactNode;
@@ -128,7 +128,7 @@ export function ReadingView({
               const content = (
                 <div>
                   <span className="rebar-reading-view-text">{verse.text}</span>
-                  {onVerseAction ? (
+                  {onVerseAction && !(verseActions === "below" && verse.extra) ? (
                     <div>
                       <button
                         type="button"

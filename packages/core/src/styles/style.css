@@ -13492,7 +13492,10 @@ a.rebar-list-item-main {
   display: flex;
   margin: var(--rebar-reading-view-pill-margin-top, 0) 0 0 var(--rebar-reading-view-pill-margin-start, 0);
 }
-.rebar-reading-view[data-rebar-verse-actions="below"] .rebar-reading-view-verse > div > .rebar-reading-view-extra { grid-column: 1 / -1; }
+.rebar-reading-view[data-rebar-verse-actions="below"] .rebar-reading-view-verse > div > .rebar-reading-view-extra {
+  grid-column: 1 / -1;
+  margin: var(--rebar-reading-view-extra-margin-top, var(--rebar-space-xs, 4px)) 0 0 var(--rebar-reading-view-extra-margin-start, 0);
+}
 .rebar-reading-view[data-rebar-verse-actions="below"] .rebar-reading-view-verse { row-gap: 0; }
 
 /* ListItem: leading control box, the main area after it, a tone fill, the selected ring offset and a dimmed main area */
