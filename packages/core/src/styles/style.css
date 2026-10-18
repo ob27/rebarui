@@ -12936,7 +12936,7 @@ a.rebar-list-item-main {
   box-shadow: none;
 }
 .rebar-drawer-content[data-rebar-appearance="popup"] .rebar-dialog-header { display: block; flex: none; gap: 0; }
-.rebar-drawer-content[data-rebar-appearance="popup"] [data-rebar-part="title"] {
+.rebar-drawer-content[data-rebar-appearance="popup"] .rebar-dialog-header [data-rebar-part="title"] {
   margin: 0;
   padding: var(--rebar-popup-title-padding, 10px 12px 6px);
   font-family: inherit;
@@ -12949,7 +12949,7 @@ a.rebar-list-item-main {
   text-wrap: wrap;
   color: var(--rebar-popup-title-color, var(--rebar-color-text-secondary));
 }
-.rebar-drawer-content[data-rebar-appearance="popup"][data-rebar-title-style="heading"] [data-rebar-part="title"] {
+.rebar-drawer-content[data-rebar-appearance="popup"][data-rebar-title-style="heading"] .rebar-dialog-header [data-rebar-part="title"] {
   padding: 0;
   font-family: var(--rebar-font-family-display, inherit);
   font-variation-settings: "SOFT" 100;
@@ -13415,12 +13415,9 @@ a.rebar-list-item-main {
 }
 
 /* BottomSheet appearance="popup" titleStyle="heading": the heading size can be set by an app (default unchanged) */
-.rebar-drawer-content[data-rebar-appearance="popup"][data-rebar-title-style="heading"] [data-rebar-part="title"] {
+.rebar-drawer-content[data-rebar-appearance="popup"][data-rebar-title-style="heading"] .rebar-dialog-header [data-rebar-part="title"] {
   font-size: var(--rebar-popup-heading-size, 22px);
 }
-
-/* ListItem: the title's line-breaking can be set by an app (default unchanged) */
-.rebar-list-item-title { text-wrap: var(--rebar-list-item-title-wrap, pretty); }
 
 /* Button appearance="classic", primary: the fill can be set by an app (default: the primary colour) */
 .rebar-button.rebar-button[data-rebar-appearance="classic"][data-rebar-variant="primary"],
@@ -13459,16 +13456,6 @@ a.rebar-button[data-rebar-variant="tertiary"] {
 .rebar-card {
   border-width: var(--rebar-card-border-width, var(--rebar-border-width, 1px));
   overflow: var(--rebar-card-overflow, hidden);
-}
-
-/* Text eyebrow / section-label: size, weight, line height and tracking */
-.rebar-text[data-rebar-variant="eyebrow"],
-.rebar-text[data-rebar-variant="section-label"] {
-  font-size: var(--rebar-eyebrow-size, 12px);
-  font-weight: var(--rebar-eyebrow-weight, 700);
-  line-height: var(--rebar-eyebrow-line-height, 1.2);
-  letter-spacing: var(--rebar-eyebrow-letter-spacing, 0.16em);
-  color: var(--rebar-eyebrow-color, var(--rebar-color-primary-text-ink, var(--rebar-color-primary, #b53824)));
 }
 
 /* WaveformAudioPlayer appearance="track": a bare round play glyph, a thin seek rail with a fill, m:ss / m:ss */
@@ -13569,13 +13556,6 @@ a.rebar-button[data-rebar-variant="tertiary"] {
   max-width: var(--rebar-reading-view-body-max-width, 34em);
 }
 
-/* Text variant="section-label": size, tracking and line height can be set by an app */
-.rebar-text[data-rebar-variant="section-label"] {
-  font-size: var(--rebar-section-label-size, 12px);
-  line-height: var(--rebar-section-label-line-height, 1.2);
-  letter-spacing: var(--rebar-section-label-tracking, 0.16em);
-}
-
 /* Card orientation="feature": the bare media card (square framed cover, pill kicker, title, body) */
 .rebar-card[data-rebar-orientation="feature"] {
   display: flex;
@@ -13641,14 +13621,6 @@ a.rebar-button[data-rebar-variant="tertiary"] {
 /* Heading with an eyebrow: gap between the two */
 .rebar-heading-group {
   gap: var(--rebar-heading-group-gap, 8px);
-}
-
-/* ListItem title: display, wrapping and overflow (a one-line title with a character-level ellipsis instead of a line clamp) */
-.rebar-list-item-title {
-  display: var(--rebar-list-item-title-display, -webkit-box);
-  white-space: var(--rebar-list-item-title-white-space, normal);
-  text-overflow: var(--rebar-list-item-title-text-overflow, clip);
-  text-wrap-style: var(--rebar-list-item-title-text-wrap, pretty);
 }
 
 /* Card promo: surface, colour, radius, padding, thumbnail size and type can be set by an app (defaults = the shipped promo) */
@@ -13887,11 +13859,6 @@ a.rebar-button[data-rebar-variant="tertiary"] {
   font-family: var(--rebar-tag-font-family, inherit);
 }
 
-/* ListItem: how the title wraps can be set by an app (default: pretty) */
-.rebar-list-item-title {
-  text-wrap: var(--rebar-list-item-title-text-wrap, pretty);
-}
-
 /* CalendarHeatmap month-rows: row rhythm, month label, cell size and colours, legend swatches can be set by an app */
 .rebar-calendar-heatmap-rows { gap: var(--rebar-calendar-heatmap-legend-gap, var(--rebar-space-sm)); }
 .rebar-calendar-heatmap-body { gap: var(--rebar-calendar-heatmap-row-gap, var(--rebar-space-xs)); padding: var(--rebar-calendar-heatmap-body-padding, 0); }
@@ -13931,4 +13898,45 @@ a.rebar-button[data-rebar-variant="tertiary"] {
 .rebar-calendar-heatmap-legend i[data-rebar-state="on"] {
   background: var(--rebar-calendar-heatmap-on, var(--rebar-color-primary));
   border-color: var(--rebar-calendar-heatmap-on, var(--rebar-color-primary));
+}
+
+/* ---- parity-r4: card tone tokens, eyebrow type tokens, checkbox label colour (every default below is the previous value) ---- */
+.rebar-card[data-rebar-tone] { border-width: var(--rebar-card-tone-border-width, var(--rebar-border-width, 1px)); }
+.rebar-card[data-rebar-tone="1"] { background: var(--rebar-card-tone-bg, var(--rebar-color-tint-1, #f5f5f5)); }
+.rebar-card[data-rebar-tone="2"] { background: var(--rebar-card-tone-bg, var(--rebar-color-tint-2, #f5f5f5)); }
+.rebar-card[data-rebar-tone="3"] { background: var(--rebar-card-tone-bg, var(--rebar-color-tint-3, #f5f5f5)); }
+.rebar-card[data-rebar-tone="4"] { background: var(--rebar-card-tone-bg, var(--rebar-color-tint-4, #f5f5f5)); }
+/* Text eyebrow / section-label: ONE token family, --rebar-text-eyebrow-* (size, weight, line-height, letter-spacing, color).
+   Aliases kept for the earlier names: --rebar-eyebrow-* (parity-r2) for both variants, and --rebar-section-label-size / -line-height / -tracking
+   (parity-r3), which win for the section-label variant only. */
+.rebar-text[data-rebar-variant="eyebrow"],
+.rebar-text[data-rebar-variant="section-label"] {
+  font-size: var(--rebar-text-eyebrow-size, var(--rebar-eyebrow-size, 12px));
+  font-weight: var(--rebar-text-eyebrow-weight, var(--rebar-eyebrow-weight, 700));
+  line-height: var(--rebar-text-eyebrow-line-height, var(--rebar-eyebrow-line-height, 1.2));
+  letter-spacing: var(--rebar-text-eyebrow-letter-spacing, var(--rebar-eyebrow-letter-spacing, 0.16em));
+  color: var(--rebar-text-eyebrow-color, var(--rebar-eyebrow-color, var(--rebar-color-primary-text-ink, var(--rebar-color-primary, #b53824))));
+}
+.rebar-text[data-rebar-variant="section-label"] {
+  font-size: var(--rebar-section-label-size, var(--rebar-text-eyebrow-size, var(--rebar-eyebrow-size, 12px)));
+  line-height: var(--rebar-section-label-line-height, var(--rebar-text-eyebrow-line-height, var(--rebar-eyebrow-line-height, 1.2)));
+  letter-spacing: var(--rebar-section-label-tracking, var(--rebar-text-eyebrow-letter-spacing, var(--rebar-eyebrow-letter-spacing, 0.16em)));
+}
+.rebar-checkbox-label { color: var(--rebar-checkbox-label-color, inherit); }
+.rebar-list[data-rebar-variant="cards"] > .rebar-list-item { border-width: var(--rebar-list-item-border-width, 1px); }
+/* loading toast, reduced motion: the still ring is the 3/4 arc the original settled on (its spring's end value), not the 80-offset start */
+@media (prefers-reduced-motion: reduce) {
+  .rebar-toaster-ring circle { stroke-dashoffset: var(--rebar-toaster-ring-still-offset, 44); }
+}
+/* loading toast: the label sits centred under the ring (the original's icon toasts centred their text) */
+.rebar-toaster-toast[data-rebar-appearance="classic"][data-rebar-type="loading"] { text-align: var(--rebar-toaster-loading-text-align, center); }
+/* popup action sheet: the divider has its own colour token (defaults to the hairline) */
+.rebar-drawer-content[data-rebar-appearance="popup"] .rebar-action-sheet-divider { background: var(--rebar-popup-divider, var(--rebar-popup-hairline, var(--rebar-color-border))); }
+/* ListItem title: ONE token family. Display, wrapping, overflow and wrap style (a one-line title with an ellipsis instead of a line clamp; defaults keep the clamp).
+   --rebar-list-item-title-overflow (parity-r4) is an alias of --rebar-list-item-title-text-overflow (parity-r2). */
+.rebar-list-item-title {
+  display: var(--rebar-list-item-title-display, -webkit-box);
+  white-space: var(--rebar-list-item-title-white-space, normal);
+  text-overflow: var(--rebar-list-item-title-text-overflow, var(--rebar-list-item-title-overflow, clip));
+  text-wrap: var(--rebar-list-item-title-text-wrap, var(--rebar-list-item-title-wrap, pretty));
 }

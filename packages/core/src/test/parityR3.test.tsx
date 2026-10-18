@@ -94,7 +94,7 @@ describe("parity-r3: ListItem tone", () => {
     for (const re of [
       /min-width: var\(--rebar-list-item-leading-min-width, 44px\)/,
       /padding: var\(--rebar-list-item-leading-padding, 0 0 0 8px\)/,
-      /text-wrap: var\(--rebar-list-item-title-text-wrap, pretty\)/,
+      /text-wrap: var\(--rebar-list-item-title-text-wrap, var\(--rebar-list-item-title-wrap, pretty\)\)/,
       /gap: var\(--rebar-list-plain-gap, 0\)/,
       /white-space: var\(--rebar-list-item-description-white-space, normal\)/,
     ]) expect(block).toMatch(re);
@@ -113,8 +113,8 @@ describe("parity-r3: Statistic titlePlacement", () => {
 describe("parity-r3: section label, Button, Tag and heatmap properties", () => {
   it("fall back to the previous values", () => {
     for (const re of [
-      /font-size: var\(--rebar-section-label-size, 12px\)/,
-      /letter-spacing: var\(--rebar-section-label-tracking, 0\.16em\)/,
+      /font-size: var\(--rebar-section-label-size, var\(--rebar-text-eyebrow-size, var\(--rebar-eyebrow-size, 12px\)\)\)/,
+      /letter-spacing: var\(--rebar-section-label-tracking, var\(--rebar-text-eyebrow-letter-spacing, var\(--rebar-eyebrow-letter-spacing, 0\.16em\)\)\)/,
       /font-family: var\(--rebar-button-font-family, inherit\)/,
       /font-family: var\(--rebar-tag-font-family, inherit\)/,
       /width: var\(--rebar-calendar-heatmap-cell-size, 22px\)/,

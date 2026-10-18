@@ -3099,3 +3099,5 @@ textarea.rebar-input {
 .rebar-statistic-affix {
   font-weight: var(--rebar-statistic-affix-weight, var(--rebar-font-weight-medium));
 }
+/* ---- parity-r4: select disabled opacity token (default = the previous value) ---- */
+.rebar-select-trigger:disabled { opacity: var(--rebar-select-disabled-opacity, 0.5); }

@@ -41,7 +41,7 @@ describe("parity-r1: grouped list panel and ListSection type tokens", () => {
   it("theme Avatar keeps its backing colour and ring unless tokens are set", () => {
     const t = theme.slice(theme.indexOf("/* ---- parity-r1"));
     expect(t).toContain("var(--rebar-avatar-background, var(--rebar-color-tint-3))");
-    expect(t).toContain("var(--rebar-avatar-ring, 0 0 0 2px var(--rebar-color-bg-raised))");
+    expect(t).toContain("var(--rebar-avatar-ring, var(--rebar-avatar-shadow, 0 0 0 2px var(--rebar-color-bg-raised)))");
     expect(t).toContain("var(--rebar-input-invalid-border-color, var(--rebar-color-danger))");
   });
 

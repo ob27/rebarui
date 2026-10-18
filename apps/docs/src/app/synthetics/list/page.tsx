@@ -95,6 +95,7 @@ export default function ListPage() {
 
   const STATES = [
           { label: "Default", node: <List><ListItem title={DISCUSSIONS[0].title} meta={DISCUSSIONS[0].when} media={thumb(0)} trailing="more" onClick={() => {}} /></List> },
+          { label: "Borderless cards (--rebar-list-item-border-width)", node: <div style={{ "--rebar-list-item-border-width": "0px" } as React.CSSProperties}><List><ListItem title={DISCUSSIONS[0].title} meta={DISCUSSIONS[0].when} media={thumb(0)} onClick={() => {}} /></List></div> },
           { label: "Just added (highlight, pinned)", node: <List><ListItem title={DISCUSSIONS[4].title} meta={DISCUSSIONS[4].when} media={thumb(4)} trailing="more" highlight="new" highlightPinned onClick={() => {}} /></List> },
           { label: "Selected (open item)", node: <List><ListItem title={DISCUSSIONS[2].title} meta={DISCUSSIONS[2].when} media={thumb(2)} trailing="more" selected onClick={() => {}} /></List> },
           { label: "Busy (deleting)", node: <List><ListItem title={DISCUSSIONS[0].title} meta={DISCUSSIONS[0].when} media={thumb(0)} loading /></List> },

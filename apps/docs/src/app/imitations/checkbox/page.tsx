@@ -135,6 +135,7 @@ export default function CheckboxPage() {
       <DemoStage title="Native" caption={'appearance="native" renders the browser checkbox (sized by --rebar-checkbox-native-size, tinted by --rebar-checkbox-accent); card and label tokens style the row.'} widths={false}
         code={`<Checkbox appearance="native" variant="card">Mandatory Days only</Checkbox>`}
         states={[
+          { label: "Label colour (--rebar-checkbox-label-color)", node: <div style={{ "--rebar-checkbox-label-color": "var(--rebar-color-primary)" } as React.CSSProperties}><Checkbox appearance="native" defaultChecked>Hide past dates</Checkbox></div> },
           { label: "Checked", node: <Checkbox appearance="native" defaultChecked>Hide past dates</Checkbox> },
           { label: "Indeterminate", node: <Checkbox appearance="native" checked="indeterminate">Some selected</Checkbox> },
           { label: "Disabled", node: <Checkbox appearance="native" disabled>Unavailable</Checkbox> },
