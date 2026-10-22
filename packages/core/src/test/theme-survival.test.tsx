@@ -8,7 +8,7 @@ import { Alert } from "../components/Alert";
  * Proves the core value proposition from ref/ARCHITECTURE.md: components never branch
  * behavior on theme. Rendering the same tree under different `data-rebar-theme` values
  * must produce identical data-rebar-* attributes and ARIA roles — only CSS custom
- * property *values* (defined in theme-sketch/theme-clean, not exercised here) may differ.
+ * property *values* (defined in the theme packages, not exercised here) may differ.
  */
 describe("survives a theme swap", () => {
   const renderSample = () =>
