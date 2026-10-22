@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored, pre-built antd demo bundle (apps/docs/scripts/build-antd-demo.sh): not source.
+    "public/demos/**",
   ]),
 ]);
 

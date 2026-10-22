@@ -44,13 +44,13 @@ export default async function PlannedComponentPage({
             </Text>
             <Text color="secondary">
               This page normally lists a component identified as a gap — cross-referencing 180+
-              published UI libraries and design systems against rebar-ui's current set — but not
+              published UI libraries and design systems against rebar-ui&apos;s current set — but not
               yet built. Right now that list is empty: every component this project ever
               catalogued this way has since shipped as a real component. Check{" "}
               <Link href="/about/agent" className="rebar-link">
                 the four tiers
               </Link>{" "}
-              for what's actually available.
+              for what&apos;s actually available.
             </Text>
           </Stack>
         </Card>
