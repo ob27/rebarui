@@ -15,7 +15,7 @@ it flagged with a `rebar-migrate:` comment.
 
 ## The prompt
 
-> You are migrating a React codebase off `rebar-ui` (a headless, low-fidelity component library)
+> You are migrating a React codebase off `rebar-ui` (a headless component library)
 > onto **`<TARGET_SYSTEM>`**. Rebar's whole design is built so this migration is mechanical, not a
 > rewrite — every component wraps a real semantic HTML element or an accessible headless
 > primitive, carries `data-rebar-*` attributes for testing, and is styled purely through CSS

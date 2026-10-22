@@ -36,7 +36,7 @@ export interface GeoChartProps extends Omit<ComponentPropsWithoutRef<"figure">, 
 
 // Identical to `Heatmap`'s own default — see that file's comment for why: a plain opacity gradient
 // on the real `--rebar-color-primary` token, not a hardcoded multi-hue scale, matching this
-// project's low-fidelity, function-over-form philosophy. Duplicated rather than imported since each
+// project's function-over-form philosophy. Duplicated rather than imported since each
 // chart component in this package is a standalone file with no cross-component dependency.
 const DEFAULT_COLOR_SCALE = (normalizedValue: number): string => {
   const t = Math.max(0, Math.min(1, normalizedValue));
@@ -78,7 +78,7 @@ function resolveLayout(regions: GeoChartRegion[], layout: GeoChartLayoutEntry[] 
  * SCOPE DECISION: this component deliberately does NOT attempt real geographic border/projection
  * rendering. Doing that properly requires either a mapping dependency carrying real GeoJSON/
  * TopoJSON path data, or an enormous hand-authored path dataset per region set (countries, states,
- * postcodes, ...) — both are out of scope for this project's low-fidelity, no-heavy-dependency
+ * postcodes, ...) — both are out of scope for this project's no-heavy-dependency
  * philosophy (see `ref/ARCHITECTURE.md`). Instead, each region renders as a plain rounded `<rect>`
  * positioned on an abstract grid (explicit via `layout`, or auto-arranged into a roughly square
  * grid in the order `regions` was given) and shaded by `value` — exactly `Heatmap`'s own density

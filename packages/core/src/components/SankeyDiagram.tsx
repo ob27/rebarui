@@ -95,7 +95,7 @@ function nodeTotalFlow(id: string, links: SankeyDiagramLink[]): number {
  * visibly divide its edge into bands) and diverge as smooth curves between those bands. Here every
  * link instead runs as a single semi-transparent, thick *stroked* line between each node's own
  * vertical center, using a classic horizontal-tangent cubic bezier for the curve shape — an honest,
- * low-fidelity stand-in consistent with this project's philosophy, not a mistaken shortcut. All of
+ * simple stand-in consistent with this project's philosophy, not a mistaken shortcut. All of
  * the coordinate math below is plain arithmetic (no `Math.sin`/`Math.cos`/other transcendental
  * functions), so none of it needs the trig-rounding guard `PieChart`/`GaugeChart`/`RadarChart` do.
  */

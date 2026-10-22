@@ -36,7 +36,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "rebar-ui doesn't look like a finished product out of the box — it stays deliberately plain until you, or an agent, migrate it to a real design system once, at the end. That migration has a real cost, so the honest question is whether iterating on rebar-ui first actually earns it back rather than costing more overall. The [iteration benchmark](/about/benchmarks/iteration) measured this round by round instead of guessing: on Claude, it takes 13-17 rounds of revisions before rebar-ui, even counting the full migration cost, beats what antd was ever going to cost. Most real projects go through more revisions than that before they ship, and a project that's never re-skinned at all (an internal tool, a prototype) has nothing to earn back in the first place.",
+        text: "These benchmarks measured rebar-ui in its deliberately plain v0.1.0 form, which stays plain until you, or an agent, migrate it to a real design system once, at the end. That migration has a real cost, so the honest question is whether iterating on rebar-ui first actually earns it back rather than costing more overall. The [iteration benchmark](/about/benchmarks/iteration) measured this round by round instead of guessing: on Claude, it takes 13-17 rounds of revisions before rebar-ui, even counting the full migration cost, beats what antd was ever going to cost. Most real projects go through more revisions than that before they ship, and a project that's never re-skinned at all (an internal tool, a prototype) has nothing to earn back in the first place.",
       },
     ],
   },

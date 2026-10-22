@@ -58,8 +58,8 @@ interface Cell extends Rect {
 // siblings' total value, alternating the split axis between the top level (horizontal) and its
 // children (vertical). This is deliberately simpler than a true "squarified" treemap (which repacks
 // rows to keep every cell's aspect ratio near 1:1) — slice-and-dice can produce thin slivers when
-// values are very uneven, but it's a fraction of the code, and this project's low-fidelity
-// philosophy doesn't need the more visually-optimal algorithm.
+// values are very uneven, but it's a fraction of the code, and this project
+// doesn't need the more visually-optimal algorithm.
 function sliceAndDice(nodes: TreemapLeaf[], rect: Rect, horizontal: boolean): Rect[] {
   const total = nodes.reduce((sum, n) => sum + Math.max(n.value, 0), 0);
   let offset = 0;

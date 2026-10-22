@@ -1,7 +1,7 @@
 # rebarui
 
-Rebar UI: a headless-first, intentionally low-fidelity ("Balsamiq-as-code") React component
-library, designed to be re-skinned into a real design system later — by hand or by an LLM —
+Rebar UI: a headless-first React component library with one canonical theme, basilika (light and
+dark), designed to be re-skinned into a real design system later — by hand or by an LLM —
 without rewriting component structure or breaking Playwright tests.
 
 ## Planning docs live in `ref/`

@@ -33,7 +33,7 @@ const COMMANDS: { command: string; label: string; Icon: ComponentType<IconProps>
 /**
  * A minimal, honest WYSIWYG editor — a real `contentEditable` region with a small formatting
  * toolbar (bold/italic/underline/lists/link), not a ProseMirror/Tiptap-grade rich text engine.
- * That's a deliberate scope call, not an oversight: this project's own low-fidelity philosophy
+ * That's a deliberate scope call, not an oversight: this project's own scope
  * (ref/HEURISTICS.md, and `/docs/design-philosophy`) is to ship the real, correct *shape* of an
  * interaction rather than compete on polish with a dedicated editor library, the same reasoning
  * that kept `CodeBlock` free of syntax highlighting. Formatting commands use the browser's

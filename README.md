@@ -1,8 +1,8 @@
 # Rebar UI
 
-Headless-first, intentionally low-fidelity React components. Fully functional and accessible by
-default, styled entirely through CSS variables, so a later pass — by hand or by an LLM — can
-re-skin an app built with Rebar into a real design system without touching component structure,
+Headless-first React components with one canonical theme, basilika, in light and dark. Fully
+functional and accessible by default, styled entirely through CSS variables, so a later pass — by hand
+or by an LLM — can re-skin an app built with Rebar into a real design system without touching component structure,
 props, or tests.
 
 Planning lives in [`ref/`](ref) — start with [`ref/ARCHITECTURE.md`](ref/ARCHITECTURE.md) for the
@@ -18,9 +18,6 @@ technical decisions and [`ref/TIERS.md`](ref/TIERS.md) for the component/block c
 - [`packages/theme-basilika`](packages/theme-basilika) (`@rebar-ui/theme-basilika`) — the canonical
   theme: cream and navy with deep coral, Fraunces over Inter, light and dark. Import
   `@rebar-ui/theme-basilika/theme.css` after `rebar-ui/style.css`; no attribute needed.
-- [`packages/theme-sketch`](packages/theme-sketch), [`packages/theme-clean`](packages/theme-clean) and
-  [`packages/theme-con`](packages/theme-con) — the legacy themes, still shipped; select one with
-  `data-rebar-theme`.
 - [`packages/devtools`](packages/devtools) (`@rebar-ui/devtools`) — a dev-only floating panel:
   real component counts, theme/grid toggles, a migration-effort estimate.
 - [`packages/adapters/antd`](packages/adapters/antd) (`@rebar-ui/migrate-antd`) — a jscodeshift

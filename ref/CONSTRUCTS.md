@@ -15,7 +15,7 @@ use, but an agent building a mobile page needs to know that going in, the same w
 `/components`' own filter. This document is the construct-level equivalent of that categorization,
 plus (for **Global** constructs specifically) real reference values pulled from Ant Design's own
 published spec pages — a starting point for color/spacing/font/shadow/dark-mode/data-format
-decisions, not a set of rules this project is adopting wholesale (Rebar stays headless/low-fidelity
+decisions, not a set of rules this project is adopting wholesale (Rebar stays headless
 until migration; see `packages/core/README.md`'s "Don't fine-tune visual styling here").
 
 Three categories:

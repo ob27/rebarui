@@ -82,7 +82,7 @@ function overlaps(placed: Circle[], candidate: Circle): boolean {
  * tightest around the origin (falling back to a tangent-to-one-circle position at a search angle
  * if no valid pair-tangent point exists, which only matters for the first couple of circles). Not
  * the optimal front-chain algorithm real packing libraries use — a real, always-correct (no
- * overlaps) result, matching this project's low-fidelity philosophy: correct geometry over the
+ * overlaps) result, matching this project's scope: correct geometry over the
  * tightest theoretically possible one.
  */
 function packCircles<T extends { r: number }>(input: T[]): (T & Circle)[] {

@@ -1,7 +1,7 @@
 {
   "name": "rebar-ui",
   "version": "1.1.0",
-  "description": "Headless-first, intentionally low-fidelity React components, built to be re-skinned into a real design system later.",
+  "description": "Headless-first React components with one canonical theme (basilika, light and dark), built to be re-skinned into a real design system later.",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/esm/index.js",
@@ -104,10 +104,7 @@
   "keywords": [
     "react",
     "ui",
-    "wireframe",
-    "low-fi",
-    "headless",
-    "balsamiq"
+    "headless"
   ],
   "license": "MIT"
 }

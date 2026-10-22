@@ -1,6 +1,6 @@
 # rebar-ui
 
-Headless-first, low-fidelity React components (real Radix UI underneath, styled via `--rebar-*`
+Headless-first React components (real Radix UI underneath, styled via `--rebar-*`
 CSS custom properties).
 
 Read `agent.md` (ships in this package) first — a single compressed context file covering
@@ -23,6 +23,6 @@ content, not the page itself, and wrapping everything in one produces a page tha
 single giant grey/boxed rectangle. See README.md's "The page background is already handled"
 section.
 
-Default a new build to `@rebar-ui/theme-clean` + `data-rebar-theme="clean"`, light mode (no
-`data-theme="dark"`) — regular IBM Plex Sans font, not the hand-drawn `theme-sketch` look. Only
-use `theme-sketch` when that aesthetic is specifically requested.
+Default a new build to `@rebar-ui/theme-basilika`: import `@rebar-ui/theme-basilika/theme.css` after
+`rebar-ui/style.css`. It needs no `data-rebar-theme` attribute and ships light and dark
+(`data-theme="dark"` on an ancestor).

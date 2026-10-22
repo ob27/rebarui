@@ -35,7 +35,7 @@ function clamp(value: number, min: number, max: number): number {
  * content (no new dependency), same technique `ResizablePanels` uses for its divider drag: past
  * roughly 40% of the actions' total width, release snaps fully open; otherwise it springs back
  * closed via a CSS transition (no real spring physics — out of scope for this project's
- * low-fidelity gesture handling, same discipline `BottomSheet`'s own drag handle already applies).
+ * minimal gesture handling, same discipline `BottomSheet`'s own drag handle already applies).
  *
  * Heuristic #38 (drag-and-drop needs a non-drag fallback): a swipe-only reveal would leave a
  * mouse/keyboard user with zero access to the actions underneath, even though each one renders as

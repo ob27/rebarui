@@ -60,7 +60,7 @@ function round(n: number): number {
  * A parametric normal ("bell curve") distribution plot — each series drawn from its own
  * `mean`/`stdDev`, not from raw sample data. This is a deliberate scope choice, not an oversight:
  * computing a real kernel-density estimate from raw samples is a substantially bigger statistical
- * undertaking than this project's low-fidelity philosophy calls for, and the parametric case (a
+ * undertaking than this project's scope calls for, and the parametric case (a
  * known or already-summarized distribution — a test-score curve, a tolerance band, a confidence
  * interval) is the far more common real need. A caller with raw samples computes their own
  * mean/stdDev first (a two-line reduction) rather than this component attempting KDE internally.

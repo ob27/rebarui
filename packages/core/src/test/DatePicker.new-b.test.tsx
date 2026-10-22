@@ -5,12 +5,6 @@ import { DatePicker } from "../components/DatePicker";
 
 afterEach(cleanup);
 
-async function pick(user: ReturnType<typeof userEvent.setup>, year: string, month: string, day: string) {
-  await user.click(screen.getByRole("button", { name: year }));
-  await user.click(screen.getByRole("button", { name: month }));
-  await user.click(screen.getByRole("button", { name: day }));
-}
-
 describe("DatePicker date-of-birth mode", () => {
   it("shows a field with the format as the placeholder and opens a sheet with step crumbs", async () => {
     const user = userEvent.setup();

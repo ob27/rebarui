@@ -261,7 +261,7 @@ function layoutManual(
  *
  * **Scope decision**: this does NOT implement real force-directed graph physics — that's a
  * genuinely hard, iterative algorithm (repeated simulation steps, convergence tuning) that's out
- * of scope for this project's low-fidelity, deterministic-by-default philosophy. Instead it
+ * of scope for this project's deterministic-by-default philosophy. Instead it
  * supports three deterministic layouts, computed once per render from the input data:
  * - `"hierarchical"` (default): a simple layered top-down tree. Builds parent→children from each
  *   node's `parentId`, assigns a depth to every node via BFS from the roots (any node without a
@@ -292,7 +292,7 @@ function layoutManual(
  * wheel-only zoom would be inaccessible to anyone without a wheel/trackpad gesture.
  *
  * Edges render as simple straight lines between node centers (not an elbow/orthogonal router —
- * picked for simplicity, matching this project's low-fidelity philosophy; an elbow router is a
+ * picked for simplicity, matching this project's scope; an elbow router is a
  * reasonable follow-up if a specific derived component needs it) with a shared, single SVG
  * `<marker>` arrowhead definition (referenced via `marker-end`) to show direction.
  */

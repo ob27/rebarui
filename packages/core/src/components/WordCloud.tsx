@@ -70,7 +70,7 @@ function approxTextWidth(text: string, fontSize: number): number {
 /**
  * A size-weighted text visualization — bigger `weight`, bigger word. This intentionally does NOT
  * attempt real spiral/collision-avoiding cloud packing (a genuinely hard, iterative algorithm out
- * of scope for this project's low-fidelity philosophy): words are sorted by weight descending and
+ * of scope for this project): words are sorted by weight descending and
  * flowed left-to-right, wrapping to a new row once the current one would overflow `width` — a
  * simple, honest row layout, not a packed cloud shape. Each word's own small rotation is derived
  * deterministically from a hash of its own text (the same technique `Sticky.tsx` uses for its own

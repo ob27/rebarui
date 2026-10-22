@@ -1,8 +1,8 @@
 # rebar-ui
 
-Headless-first, intentionally low-fidelity React components — real Radix UI underneath, styled
-purely via `--rebar-*` CSS custom properties (swap `@rebar-ui/theme-sketch` for
-`@rebar-ui/theme-clean`, or write your own, without touching component code).
+Headless-first React components — real Radix UI underneath, styled purely via `--rebar-*` CSS
+custom properties (the canonical theme is `@rebar-ui/theme-basilika`, light and dark; write your own
+without touching component code).
 
 ## Reach for the highest-tier existing component that already does the job
 
@@ -46,23 +46,21 @@ node_modules/rebar-ui/dist/index.d.ts
 ```
 # Rebar UI is not on npm yet: build it from a checkout and link it.
 git clone https://github.com/ob27/rebarui ../rebarui
-(cd ../rebarui && pnpm install && pnpm --filter rebar-ui build && pnpm --filter @rebar-ui/theme-clean build)
+(cd ../rebarui && pnpm install && pnpm --filter rebar-ui build && pnpm --filter @rebar-ui/theme-basilika build)
 # then, in your app's package.json dependencies:
 #   "rebar-ui": "link:../rebarui/packages/core",
-#   "@rebar-ui/theme-clean": "link:../rebarui/packages/theme-clean",
+#   "@rebar-ui/theme-basilika": "link:../rebarui/packages/theme-basilika",
 ```
 
 ```tsx
 import "rebar-ui/style.css";
-import "@rebar-ui/theme-clean/theme.css";
+import "@rebar-ui/theme-basilika/theme.css";
 ```
 
-Set `data-rebar-theme="clean"` on `<html>` or any wrapping element — **this is the recommended
-default for a new build**: light mode (no `data-theme="dark"`) with `theme-clean`'s regular
-IBM Plex Sans font, not the hand-drawn `theme-sketch` look. Reach for `@rebar-ui/theme-sketch` +
-`data-rebar-theme="sketch"` only when the hand-drawn "Balsamiq-as-code" aesthetic is specifically
-wanted; don't treat the two as an arbitrary coin-flip. Add `data-theme="dark"` alongside it for
-dark mode, or `data-rebar-bionic="true"` for bionic reading
+Basilika is the canonical theme and **the recommended default for a new build**: it needs no
+`data-rebar-theme` attribute (its tokens apply to `:root`) and is light by default. Add
+`data-theme="dark"` on `<html>` or any ancestor for dark mode (`data-rebar-scheme="light" | "dark"` locks a
+subtree), or `data-rebar-bionic="true"` for bionic reading
 (bolds the first portion of each word so the eye can pattern-match it — a dyslexia-readability aid;
 deliberately bold-only, not dimmed, so contrast never depends on what surface the text sits on) — both are
 plain DOM attributes toggled live, no rebuild, no Provider. Every text-bearing component
@@ -72,12 +70,10 @@ follows `data-rebar-bionic` automatically; a `bionic` prop on any of them overri
 that instance, and `bionicOptions` (`fixationStrength`, `saccadeFrequency`, `skipShortWords`) tunes
 the split.
 
-**Offering `ThemeToggle`? Install and import *both* theme packages.** The toggle only flips the
-`data-rebar-theme` attribute between `"sketch"`/`"clean"` — it never loads either stylesheet
-itself. If a build imports only `@rebar-ui/theme-clean` (the recommended default above) but still
-renders `<ThemeToggle />`, switching to "sketch" silently does nothing: no CSS is loaded for it to
-switch to, indistinguishable from a broken control. Import both themes' CSS whenever the toggle is
-in play, even though only one is the active default.
+**Offering `ThemeToggle`'s style switch?** It only writes `data-rebar-theme` and never loads a
+stylesheet, so every look it offers must have its theme package imported, or switching to it silently
+does nothing. With basilika alone there is one look: the mode switch flips `data-theme` and needs
+nothing else.
 
 ## TypeScript
 

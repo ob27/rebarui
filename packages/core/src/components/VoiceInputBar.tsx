@@ -56,7 +56,7 @@ function hashString(value: string): number {
   return Math.abs(hash);
 }
 
-// No real audio-amplitude data exists to visualize (this project's own low-fidelity philosophy,
+// No real audio-amplitude data exists to visualize (this project's own scope,
 // see agent.md — a decorative waveform, not real audio analysis, same stance as
 // `WaveformAudioPlayer`). Each bar gets a deterministic base height *and* an animation-delay/
 // duration pair, so a pure-CSS pulse animation (see style.css) reads as a lively, non-uniform

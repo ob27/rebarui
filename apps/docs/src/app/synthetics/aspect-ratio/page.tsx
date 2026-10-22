@@ -17,7 +17,7 @@ const BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "Empty and low-fidelity by default. `placeholder` shows a built-in illustrated image whose own ratio is closest to the one you ask for; pass a number to pick a variant of that ratio.",
+        text: "Empty by default. `placeholder` shows a built-in illustrated image whose own ratio is closest to the one you ask for; pass a number to pick a variant of that ratio.",
       },
     ],
   },

@@ -120,7 +120,7 @@ function hashString(value: string): number {
   return Math.abs(hash);
 }
 
-// No real amplitude data exists to visualize (this project's own low-fidelity philosophy, see
+// No real amplitude data exists to visualize (this project's own scope, see
 // agent.md — a decorative waveform, not a real audio analysis). A cheap linear congruential
 // generator advanced from the seed hash gives a deterministic, good-enough-looking spread of bar
 // heights (15%-100%) without pulling in a real FFT/waveform-extraction dependency.
@@ -144,8 +144,8 @@ function formatTime(seconds: number): string {
 /**
  * An audio transport control with a bar-based waveform display — a real `<audio>` element
  * underneath (visually hidden), driven entirely by this component's own play/pause/seek logic.
- * The waveform is purely decorative (no real amplitude analysis, matching this project's
- * low-fidelity philosophy) but deterministic: the same `src` always renders the same bar pattern,
+ * The waveform is purely decorative (no real amplitude analysis, matching this
+ * project's scope) but deterministic: the same `src` always renders the same bar pattern,
  * via a seeded hash rather than `Math.random` (see `generateBarHeights` above).
  *
  * The bars double as a real scrub bar — click/tap seeks to that position, and since a

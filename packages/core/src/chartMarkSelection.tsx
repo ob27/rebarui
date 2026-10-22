@@ -85,7 +85,7 @@ const TAG_PADDING_Y = 6;
 const TAG_OFFSET = 10;
 const TAG_FONT_SIZE = 11;
 // A rough average character width for this font-size — good enough for sizing a small background
-// rect without needing a real text-measurement pass (this is a low-fidelity chart tag, not
+// rect without needing a real text-measurement pass (this is a simple chart tag, not
 // typeset copy); errs slightly wide rather than clipping.
 const APPROX_CHAR_WIDTH = 6.4;
 

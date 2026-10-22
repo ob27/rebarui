@@ -77,7 +77,7 @@ function EditableCell({
  * inline editing (every cell becomes a real click-to-edit `Editable` when `editable` is set) and
  * row grouping (`groupBy` renders one real, collapsible `Accordion` section — value + row count —
  * per distinct group value, each holding its own nested `Table` of that group's rows).
- * Virtualization is out of scope, matching this project's own low-fidelity philosophy.
+ * Virtualization is out of scope for this project.
  */
 export function DataGrid<T>({
   columns,

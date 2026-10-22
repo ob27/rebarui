@@ -8,7 +8,7 @@ import { renderMarkdown } from "../markdown";
 export interface CodeBlockProps extends Omit<ComponentPropsWithoutRef<"pre">, "children"> {
   code: string;
   /** A small label shown above the code — e.g. `"tsx"`, `"bash"`. Purely a caption, not real
-   * syntax highlighting: a plain, low-fidelity block stays that way on purpose, rather than
+   * syntax highlighting: a plain block stays that way on purpose, rather than
    * pulling in a highlighter dependency for something this project's own code samples don't need
    * (see ref/HEURISTICS.md #8, aesthetic and minimalist design). Ignored when `markdown` is set —
    * rendered Markdown has no single "language" the way a code sample does. */

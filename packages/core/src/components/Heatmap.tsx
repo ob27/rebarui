@@ -36,9 +36,8 @@ export interface HeatmapProps extends Omit<ComponentPropsWithoutRef<"figure">, "
 }
 
 // A simple light-to-dark interpolation on a single base color (an alpha/opacity gradient, not a
-// full multi-hue scale) - deliberately plain, matching this project's low-fidelity,
-// function-over-form philosophy: a heatmap's job here is showing relative density at a glance, not
-// a perceptually-calibrated multi-hue scale. `color-mix` blends the real `--rebar-color-primary`
+// full multi-hue scale) - deliberately plain, matching this project's function-over-form philosophy: a heatmap's job here is showing relative
+// density at a glance, not a perceptually-calibrated multi-hue scale. `color-mix` blends the real `--rebar-color-primary`
 // token toward transparent, so a consuming app's own theme override still shows through instead of
 // a hardcoded hex baked into every cell.
 const DEFAULT_COLOR_SCALE = (normalizedValue: number): string => {

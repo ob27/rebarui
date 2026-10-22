@@ -78,7 +78,7 @@ function ExpandIcon({ open }: { open: boolean }) {
 
 // Small inline vector icons matching `Empty`'s own vector-fallback style (currentColor strokes,
 // strokeWidth 1.5, strokeLinecap round) rather than a raster/emoji glyph — consistent with this
-// project's low-fidelity, theme-aware icon convention.
+// project's theme-aware icon convention.
 function LockIcon({ locked }: { locked: boolean }) {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
