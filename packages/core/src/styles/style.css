@@ -13986,6 +13986,18 @@ a.rebar-button[data-rebar-variant="tertiary"] {
 /* ListItem thumb: the clip and the child's corner are tokens. `overflow: visible` with a child that inherits the radius paints the corner once
    (a rounded fill, like a bordered image), instead of a square child clipped by the wrapper (a second anti-aliased edge). Defaults: clipped, square child. */
 .rebar-list-item-thumb { overflow: var(--rebar-list-item-thumb-overflow, hidden); }
-.rebar-list-item-thumb > * { border-radius: var(--rebar-list-item-thumb-child-radius, 0); }
+:where(.rebar-list-item-thumb) > * { border-radius: var(--rebar-list-item-thumb-child-radius, 0); } /* zero specificity: a child's own radius rule still wins */
 /* ListItem pressed state: an opacity token (default 1: no change) */
 .rebar-list-item:active { opacity: var(--rebar-list-item-pressed-opacity, 1); }
+/* Tag label: display and gap tokens (default inline, no gap: unchanged). A flex label with a gap lays a leading count and its text like a flex row of two items. */
+.rebar-tag > [data-rebar-part="label"] {
+  display: var(--rebar-tag-label-display, inline);
+  gap: var(--rebar-tag-label-gap, 0);
+}
+/* Card orientation="feature" coverFrame="clip": the frame keeps the border, the radius and the clip (one rounded clip, a plain fill behind the picture);
+   the image wrapper in it adds no radius, clip or fill of its own */
+.rebar-card[data-rebar-orientation="feature"][data-rebar-cover-frame="clip"] > .rebar-card-cover .rebar-image {
+  overflow: visible;
+  border-radius: 0;
+  background: transparent !important;
+}

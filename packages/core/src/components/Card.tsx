@@ -89,8 +89,8 @@ export interface CardProps extends Omit<ComponentPropsWithoutRef<"div">, "title"
   renderLink?: RenderLink;
   /** `"row"` is the compact layout: a 64px thumbnail (`cover`) at the start, title and meta, `extra` at the end. `"tile"` is the hub tile: the `cover` (an icon) at the top, `title` and `subtitle` pinned to the bottom, sized by the `--rebar-card-tile-*` properties. `"feature"` is the bare media card: no surface, border or padding; a square `cover` with a rounded, hairline-bordered frame, then the `eyebrow` (or `subtitle`) as a small pill, the `title` and the body, spaced by `--rebar-card-feature-gap`. Sized by the `--rebar-card-feature-*` properties. Default `"vertical"`. */
   orientation?: "vertical" | "row" | "tile" | "feature";
-  /** With `orientation="feature"`: `"media"` puts the hairline border and rounded corners on the cover's image itself instead of on a clipping frame around it, so the corners anti-alias like a bordered `<img>`. Default `"frame"`. */
-  coverFrame?: "frame" | "media";
+  /** With `orientation="feature"`: `"media"` puts the hairline border and rounded corners on the cover's image itself instead of on a clipping frame around it, so the corners anti-alias like a bordered `<img>`. `"clip"` keeps the border, radius and clip on the frame but strips the image wrapper's own radius, clip and fill, so the corner is one rounded clip over a plain fill. Default `"frame"`. */
+  coverFrame?: "frame" | "media" | "clip";
   /** An uppercase kicker above the title (`Text variant="eyebrow"`). */
   eyebrow?: ReactNode;
   /** The promo preset: a row card on the lavender tint with a small thumbnail (`cover`), one action (`actions[0]`) and, with `onDismiss`, a close button. */
@@ -150,7 +150,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     "data-rebar-component": "card",
     "data-rebar-tone": tone === "default" ? undefined : String(tone),
     "data-rebar-orientation": effectiveOrientation === "row" ? "row" : effectiveOrientation === "tile" ? "tile" : effectiveOrientation === "feature" ? "feature" : undefined,
-    "data-rebar-cover-frame": effectiveOrientation === "feature" && coverFrame === "media" ? "media" : undefined,
+    "data-rebar-cover-frame": effectiveOrientation === "feature" && (coverFrame === "media" || coverFrame === "clip") ? coverFrame : undefined,
     "data-rebar-promo": promo ? "true" : undefined,
     "data-rebar-link": href !== undefined ? "true" : undefined,
   };
