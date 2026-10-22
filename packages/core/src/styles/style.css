@@ -14001,3 +14001,7 @@ a.rebar-button[data-rebar-variant="tertiary"] {
   border-radius: 0;
   background: transparent !important;
 }
+/* popup sheet footer: the rule above it is a token (default the hairline: unchanged) */
+.rebar-drawer-content[data-rebar-appearance="popup"] .rebar-dialog-footer {
+  border-top: var(--rebar-popup-footer-border, 1px solid var(--rebar-popup-hairline, var(--rebar-color-border)));
+}

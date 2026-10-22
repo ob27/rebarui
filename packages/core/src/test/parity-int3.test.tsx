@@ -79,3 +79,9 @@ describe("parity-int3: Card feature coverFrame=clip", () => {
     expect(block).toContain('[data-rebar-cover-frame="clip"] > .rebar-card-cover .rebar-image');
   });
 });
+
+describe("parity-int3: popup footer rule token (default unchanged)", () => {
+  it("takes --rebar-popup-footer-border, defaulting to the 1px hairline", () => {
+    expect(block).toContain("border-top: var(--rebar-popup-footer-border, 1px solid var(--rebar-popup-hairline, var(--rebar-color-border)))");
+  });
+});
