@@ -52,7 +52,7 @@ describe("parity-int2: Card feature coverFrame", () => {
 });
 
 describe("parity-int2: popup heading colour", () => {
-  it("takes --rebar-popup-heading-color, then the title colour token (default unchanged)", () => {
-    expect(css).toContain("color: var(--rebar-popup-heading-color, var(--rebar-popup-title-color, var(--rebar-color-text-secondary)))");
+  it("takes --rebar-popup-heading-color, defaulting to the inherited popup text colour (the heading rule's own default)", () => {
+    expect(css).toContain("color: var(--rebar-popup-heading-color, inherit)");
   });
 });
