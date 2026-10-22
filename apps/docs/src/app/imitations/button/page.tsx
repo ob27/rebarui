@@ -4,6 +4,7 @@ import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 import { ButtonMobile } from "./ButtonMobile";
+import { PopupHeadingDemo } from "./PopupHeadingDemo";
 import { project } from "@/fixtures/tideline";
 
 const CODE = `<Button variant="primary">Save changes</Button>
@@ -117,6 +118,19 @@ export default function ButtonPage() {
         ]}>
         <Stack direction="row" gap="sm" align="center"><Button variant="tonal" size="sm">Share</Button><Button variant="tonal" size="sm">Discuss</Button></Stack>
       </DemoStage>
+      <Heading level={2}>Stacked block buttons</Heading>
+      <DemoStage title="Block gap" caption="Block buttons stacked in a column take their gap from --rebar-button-block-gap (default: the spacing token)" widths={false}
+        code={`<div style={{ "--rebar-button-block-gap": "20px" }}>\n  <Button block>Continue</Button>\n  <Button block variant="secondary">Back</Button>\n</div>`}
+        states={[
+          { label: "Default gap", node: <div style={{ maxWidth: 320 }}><Button block>Continue</Button><Button block variant="secondary">Back</Button></div> },
+        ]}>
+        <div style={{ maxWidth: 320, "--rebar-button-block-gap": "20px" } as React.CSSProperties}>
+          <Button block>Continue</Button>
+          <Button block variant="secondary">Back</Button>
+        </div>
+      </DemoStage>
+      <Heading level={2}>Popup sheet heading colour</Heading>
+      <PopupHeadingDemo />
       <NextBlockRenderer blocks={BLOCKS} />
     </Stack>
   );

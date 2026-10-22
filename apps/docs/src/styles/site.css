@@ -224,3 +224,6 @@ main { min-width: 0; }
 .cs-gal-body .rebar-kanban { --rebar-kanban-column-width: 76%; }
 @media (max-width: 1180px) { :root { --cs-gal-top: 68px; } }
 @media (max-width: 900px) { :root { --cs-gal-top: 60px; } }
+
+/* ---- parity-int3: docs demo for --rebar-popup-heading-color ---- */
+.docs-popup-heading-danger { --rebar-popup-heading-color: #c4402a; }

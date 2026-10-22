@@ -188,6 +188,36 @@ export default function CardPage() {
             ),
           },
           {
+            label: "Feature card coverFrame=\"media\": the border and radius belong to the image itself",
+            node: (
+              <div style={{ maxWidth: 320 }}>
+                <Card orientation="feature" coverFrame="media" href="#feature-media" cover={<span style={{ display: "block", width: "100%", height: "100%", background: "linear-gradient(135deg, #8b97b5, #8ec9b4)" }} />} eyebrow="Grace" title="Border and radius on the image">
+                  <Text size="sm" color="secondary">The corner is one anti-aliased edge, like a bordered picture.</Text>
+                </Card>
+              </div>
+            ),
+          },
+          {
+            label: "Feature card coverFrame=\"clip\": the frame clips, the image wrapper adds no radius, clip or fill",
+            node: (
+              <div style={{ maxWidth: 320 }}>
+                <Card orientation="feature" coverFrame="clip" href="#feature-clip" cover={<span style={{ display: "block", width: "100%", height: "100%", background: "linear-gradient(135deg, #8b97b5, #8ec9b4)" }} />} eyebrow="Prayer" title="One rounded clip over a plain fill">
+                  <Text size="sm" color="secondary">Border, radius and clip stay on the frame.</Text>
+                </Card>
+              </div>
+            ),
+          },
+          {
+            label: "Promo card with slot rows (--rebar-card-promo-header-row: 2, --rebar-card-promo-body-row: 3)",
+            node: (
+              <div style={{ maxWidth: 380, "--rebar-card-promo-header-row": "2", "--rebar-card-promo-body-row": "3" } as React.CSSProperties}>
+                <Card promo href="#promo" cover={<span style={{ display: "block", width: "100%", height: "100%", background: "linear-gradient(135deg, #b8a7d9, #f2c4a8)" }} />} title="Upgrade to Plus">
+                  5,000 tokens/month
+                </Card>
+              </div>
+            ),
+          },
+          {
             label: "Border width, surface and eyebrow type from properties (--rebar-card-border-width, --rebar-card-background, --rebar-eyebrow-*)",
             node: (
               <div style={{ "--rebar-card-border-width": "0px", "--rebar-card-background": "var(--rebar-color-bg-secondary)", "--rebar-eyebrow-size": "11.5px", "--rebar-eyebrow-letter-spacing": "0.14em", "--rebar-eyebrow-line-height": "normal" } as React.CSSProperties}>
