@@ -9,11 +9,18 @@ import type { TimelineItem } from "rebar-ui";
 // against this file's own prior wording.
 const VERSIONS: TimelineItem[] = [
   {
-    label: "1.0.0 — current",
+    label: "1.1.0 — current",
     tone: "info",
     children:
+      "Opt-in parity variants, so an app can reproduce a hand-built design exactly; defaults are unchanged. Card gained orientation feature (alongside row and tile), coverFrame (frame, media or clip) and promo and tone border and background tokens. ListItem gained pressed-opacity, focus-ring, border-width, title display, white-space and overflow tokens, and List gained a chevronIcon. ActionSheet and DrawerPanel gained a modal prop (a non-modal sheet stays inline with the page). ReadingView gained verse tokens, verseActions below, an extra composer offset and a loadingLabel. Statistic gained titlePlacement (top or bottom). CalendarHeatmap gained month-rows and stats tokens. Text gained eyebrow and section-label type tokens. WaveformAudioPlayer gained track and card appearances. VideoPlayer gained a preload option. Tag gained label tokens. BackdropSection gained imageMode background. ImagePicker gained a ring appearance, and Avatar a ring token. BlockRenderer now keys its rendered blocks. The docs site shows states for the new props.",
+  },
+  {
+    label: "1.0.0",
+    tone: "success",
+    children:
       "basilika, the Athic look, becomes Rebar UI's canonical theme (@rebar-ui/theme-basilika, data-rebar-theme=basilika), with zero-config tokens, a light and a dark scheme, and a data-rebar-scheme lock for any subtree. New constructs: TopBar, List and ListItem, ImagePicker, AuthScreen, ReadingView, HeroSplit, Section, PageHeader, Onboarding, Prose and Markdown, plus imperative toast() and confirm(). Existing constructs gained opt-in variants, props and tokens (AiChatInput boxed, ChatThread bubbles, NoticeBar banner, Button classic and tonal, native Checkbox, RadioGroup and Select, pill Tabs and more) so an app can reproduce a hand-built design pixel for pixel; defaults are unchanged. Small coral text uses the new --rebar-color-primary-text-ink token. The docs site was rebuilt around live, Tideline-backed demos with mobile frames.",
-  },  {
+  },
+  {
     label: "0.12.1",
     tone: "success",
     children:

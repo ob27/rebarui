@@ -11,7 +11,7 @@ export function SiteFooter() {
   return (
     <footer className="cs-foot">
       <div className="cs-wrap">
-        <span>Rebar UI 1.0 &middot; MIT</span>
+        <span>Rebar UI 1.1 &middot; MIT</span>
         <span className="cs-sp" />
         {FOOTER_LINKS.map((link) => (
           <Link key={link.href} href={link.href}>

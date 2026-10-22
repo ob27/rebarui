@@ -46,7 +46,7 @@ To run the docs site locally: `pnpm --filter docs dev`, then open http://localho
 
 ## Status
 
-Currently `1.0.0`. Core primitives, composite components (`Dialog`/`Tabs`/`Form`), theming, the
+Currently `1.1.0`. Core primitives, composite components (`Dialog`/`Tabs`/`Form`), theming, the
 DevTools panel, the AntD migration adapter, the `@rebar-ui/placement` Packer, and the real
 docs/marketing site are all built and tested (196 test files, ~1,700+ individual tests across
 `packages/`). See [`PACKER_COVERAGE.md`](PACKER_COVERAGE.md) for how much of the docs site itself

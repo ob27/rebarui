@@ -1,4 +1,4 @@
-# Rebar UI — Agent Context (v1.0.0)
+# Rebar UI — Agent Context (v1.1.0)
 
 Compressed operating context for an AI agent building a UI with **Rebar UI**. The single goal: **reach for the highest-tier existing unit that already does most of the job** — an Opinion or Order-tier component or construct, not a primitive. Every section below serves that goal.
 
