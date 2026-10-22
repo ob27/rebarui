@@ -10,15 +10,17 @@ technical decisions and [`ref/TIERS.md`](ref/TIERS.md) for the component/block c
 
 ## Packages
 
-- [`packages/core`](packages/core) (`rebar-ui`) — 207 components across five tiers
+- [`packages/core`](packages/core) (`rebar-ui`) — the component library, across five tiers
   (Imitation/Synthetic/Opinion/Order/Genesis, see [`ref/TIERS.md`](ref/TIERS.md)): everything from
   `Box`/`Stack`/`Text` up through charts, data grids, diagramming, and a floating AI assistant.
   Browse the live catalog at `/imitations`, `/synthetics`, `/opinions`, `/orders` on the docs site,
   or `packages/core/agent.md` for the compressed agent-facing digest.
-- [`packages/theme-sketch`](packages/theme-sketch) (`@rebar-ui/theme-sketch`) — the default
-  hand-drawn, low-fidelity theme.
-- [`packages/theme-clean`](packages/theme-clean) (`@rebar-ui/theme-clean`) — a plain,
-  production-safe baseline theme.
+- [`packages/theme-basilika`](packages/theme-basilika) (`@rebar-ui/theme-basilika`) — the canonical
+  theme: cream and navy with deep coral, Fraunces over Inter, light and dark. Import
+  `@rebar-ui/theme-basilika/theme.css` after `rebar-ui/style.css`; no attribute needed.
+- [`packages/theme-sketch`](packages/theme-sketch), [`packages/theme-clean`](packages/theme-clean) and
+  [`packages/theme-con`](packages/theme-con) — the legacy themes, still shipped; select one with
+  `data-rebar-theme`.
 - [`packages/devtools`](packages/devtools) (`@rebar-ui/devtools`) — a dev-only floating panel:
   real component counts, theme/grid toggles, a migration-effort estimate.
 - [`packages/adapters/antd`](packages/adapters/antd) (`@rebar-ui/migrate-antd`) — a jscodeshift
@@ -48,6 +50,6 @@ To run the docs site locally: `pnpm --filter docs dev`, then open http://localho
 
 Currently `1.1.0`. Core primitives, composite components (`Dialog`/`Tabs`/`Form`), theming, the
 DevTools panel, the AntD migration adapter, the `@rebar-ui/placement` Packer, and the real
-docs/marketing site are all built and tested (196 test files, ~1,700+ individual tests across
-`packages/`). See [`PACKER_COVERAGE.md`](PACKER_COVERAGE.md) for how much of the docs site itself
+docs/marketing site are all built and tested (the core package alone passes 2,475 tests across 260
+files at 1.1.0). See [`PACKER_COVERAGE.md`](PACKER_COVERAGE.md) for how much of the docs site itself
 is printed by the Packer versus hand-authored, and `/roadmap` on the site for what's next.

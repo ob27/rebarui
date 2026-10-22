@@ -45,12 +45,14 @@ Next's generated route types, which only exist after a build has run once.
 - `packages/placement` (published as `@rebar-ui/placement`) — the placement layer/DSL Packer.
   **This is the recommended way to consume the library**, not hand-authored JSX against
   `packages/core` — see that package's own README for why.
-- `packages/theme-sketch`, `packages/theme-clean` — the two shipped themes.
+- `packages/theme-basilika` — the canonical theme (`@rebar-ui/theme-basilika`). `packages/theme-sketch`,
+  `packages/theme-clean` and `packages/theme-con` are the legacy themes, still shipped.
 - `packages/devtools` — the dev-only `RebarDevTools` panel.
 - `packages/adapters/antd` (published as `@rebar-ui/migrate-antd`) — the migration codemod.
 - `apps/docs` — the marketing/docs site, and the demo app `pnpm dev` launches at
   `localhost:3000` after you clone the repo. Also the live dogfooding ground — every component is
-  demoed here, and the homepage itself renders through `@rebar-ui/placement`.
+  demoed here with Tideline and Athic fixtures, and most of the catalogue pages render their reference
+  sections through `@rebar-ui/placement` (the homepage is hand-composed).
 - `bench/` — disposable benchmark scaffolds from measuring rebar-ui against Ant Design across
   models (see `/about/benchmarks` on the site, and `ref/BENCHMARK_CONTRIBUTING.md` if you want to
   add a new condition or reproduce one).
