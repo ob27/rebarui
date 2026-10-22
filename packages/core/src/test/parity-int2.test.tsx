@@ -50,3 +50,9 @@ describe("parity-int2: Card feature coverFrame", () => {
     expect(block).toMatch(/\[data-rebar-cover-frame="media"\] > \.rebar-card-cover img \{\s*box-sizing: border-box;\s*border: var\(--rebar-card-feature-cover-border/);
   });
 });
+
+describe("parity-int2: popup heading colour", () => {
+  it("takes --rebar-popup-heading-color, then the title colour token (default unchanged)", () => {
+    expect(css).toContain("color: var(--rebar-popup-heading-color, var(--rebar-popup-title-color, var(--rebar-color-text-secondary)))");
+  });
+});

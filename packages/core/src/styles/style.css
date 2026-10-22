@@ -13417,6 +13417,7 @@ a.rebar-list-item-main {
 /* BottomSheet appearance="popup" titleStyle="heading": the heading size can be set by an app (default unchanged) */
 .rebar-drawer-content[data-rebar-appearance="popup"][data-rebar-title-style="heading"] .rebar-dialog-header [data-rebar-part="title"] {
   font-size: var(--rebar-popup-heading-size, 22px);
+  color: var(--rebar-popup-heading-color, var(--rebar-popup-title-color, var(--rebar-color-text-secondary)));
 }
 
 /* Button appearance="classic", primary: the fill can be set by an app (default: the primary colour) */
