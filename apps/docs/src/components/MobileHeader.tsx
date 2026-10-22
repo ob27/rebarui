@@ -8,7 +8,7 @@ import { REBAR_MARK_PATH, REBAR_MARK_VIEWBOX } from "@/data/rebarMark";
 
 const GROUPS: { label: string; links: [string, string][] }[] = [
   { label: "Constructs", links: [["Imitations", "/imitations"], ["Synthetics", "/synthetics"], ["Opinions", "/opinions"], ["Orders", "/orders"], ["Archetypes", "/archetypes"], ["Geneses", "/geneses"]] },
-  { label: "Docs", links: [["For agents", "/about/agent"], ["Heuristics", "/heuristics"], ["Benchmarks", "/about/benchmarks"], ["Roadmap", "/roadmap"], ["Version log", "/about/version-log"], ["About", "/about"]] },
+  { label: "Docs", links: [["For agents", "/about/agent"], ["Heuristics", "/heuristics"], ["Benchmarks", "/about/benchmarks"], ["Roadmap", "/roadmap"], ["Install", "/about/install"], ["Version log", "/about/version-log"], ["About", "/about"]] },
 ];
 
 /** The site header on a phone: the logo and a Menu button; the menu holds search, every link group and the theme controls. */

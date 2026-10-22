@@ -47,6 +47,7 @@ const BLOCKS: Construct[] = [
                 { label: "Heuristics", href: "/heuristics" },
                 { label: "Benchmarks", href: "/about/benchmarks" },
                 { label: "Roadmap", href: "/roadmap" },
+                { label: "Install", href: "/about/install" },
                 { label: "Version log", href: "/about/version-log" },
                 { label: "About", href: "/about" },
               ],
