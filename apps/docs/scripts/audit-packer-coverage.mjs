@@ -55,7 +55,6 @@ const ROUTES = [
   "/opinions/slash-command-menu", "/opinions/voice-composer", "/opinions/shape-gallery",
   "/opinions/file-manager", "/opinions/layers-panel",
   "/about/agent", "/archetypes", "/geneses", "/heuristics", "/roadmap",
-  "/status",
 ];
 
 const browser = await chromium.launch();

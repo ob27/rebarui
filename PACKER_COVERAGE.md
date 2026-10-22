@@ -68,17 +68,15 @@ whatever DevTools costs it."
 | `/geneses` | 55 | 35 | 20 | 64% | |
 | `/heuristics` | 335 | 320 | 15 | 96% | All 47 entries print via the `heuristic` construct. |
 | `/roadmap` | 30 | 14 | 16 | 47% | |
-| `/status` | 58 | 10 | 48 | 17% | Legitimate exception — internal dev smoke-test page, not public marketing content; its non-zero % is purely the printed site header. |
 | `/imitations/*`, `/synthetics/*`, `/opinions/*`, `/orders/*` (116 reference pages) | 6,944 | 3,839 | 3,105 | 55% avg (11–71% range) | **Not a gap** — see below. One reference page per shipped component/construct. |
 
-**Site-wide roll-up (136 routes):** 8,654 components total, 5,083 printed — **58.7% printed** as a
+**Site-wide roll-up (135 routes):** 8,596 components total, 5,073 printed — **59.0% printed** as a
 flat average. That number is diluted by the 116 per-component/per-construct reference pages
 (11–71% each, by design: only each one's own demo, code, props-table, and accessibility/migration
-sections print, not the page chrome around them) plus `/status` (non-zero only for the site-header
-reason above, despite its own content staying fully hand-authored by design). Excluding those, the
+sections print, not the page chrome around them). Excluding those, the
 remaining 19 core marketing/philosophy pages this inventory is meant to move toward 100% come to
 **1,710 components, 1,244 printed — 72.7% printed**. That's the number to watch trend upward; the
-flat 58.7% isn't a useful target since a large share of its shortfall is by design, not backlog.
+flat 59.0% isn't a useful target since a large share of its shortfall is by design, not backlog.
 
 ## Legitimate exceptions (not counted as gaps)
 
@@ -93,8 +91,6 @@ flat 58.7% isn't a useful target since a large share of its shortfall is by desi
   every reference page's real percentage sits well under 100%; a cost/benefit call, not an
   architectural wall. The Code/Props-table/Accessibility/Migration sections around that demo already
   print.
-- **`/status`** — an internal dev tool for a quick visual smoke-test, not a page a real visitor
-  reaches. Explicitly out of scope for "the marketing site."
 - **The `DevTools` panel** — a live dev tool, not static content, present (and hand-drawn) on every
   route regardless of how printed the rest of the page is.
 - **Genuinely interactive widgets** — a live estimator, a live panel demo, anything whose whole
