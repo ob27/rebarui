@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { render } from "@testing-library/react";
+import { Card } from "../components/Card";
 
 const css = readFileSync(resolve(__dirname, "../styles/style.css"), "utf8");
 const block = css.slice(css.indexOf("/* ---- parity-int2"));
@@ -34,5 +36,17 @@ describe("parity-int2: reconciled token families keep every earlier name", () =>
   it("the Avatar ring accepts --rebar-avatar-ring and --rebar-avatar-shadow", () => {
     const theme = readFileSync(resolve(__dirname, "../../../theme-basilika/src/components.css"), "utf8");
     expect(theme).toContain("var(--rebar-avatar-ring, var(--rebar-avatar-shadow,");
+  });
+});
+
+describe("parity-int2: Card feature coverFrame", () => {
+  it('"media" is marked and the default frame is not', () => {
+    const { container, rerender } = render(<Card orientation="feature" coverFrame="media" cover={<img alt="" src="/a.jpg" />} title="T" />);
+    expect(container.querySelector(".rebar-card")).toHaveAttribute("data-rebar-cover-frame", "media");
+    rerender(<Card orientation="feature" cover={<img alt="" src="/a.jpg" />} title="T" />);
+    expect(container.querySelector(".rebar-card")).not.toHaveAttribute("data-rebar-cover-frame");
+  });
+  it("moves the border and radius onto the image", () => {
+    expect(block).toMatch(/\[data-rebar-cover-frame="media"\] > \.rebar-card-cover img \{\s*box-sizing: border-box;\s*border: var\(--rebar-card-feature-cover-border/);
   });
 });

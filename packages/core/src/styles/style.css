@@ -13951,3 +13951,21 @@ a.rebar-button[data-rebar-variant="tertiary"] {
 .rebar-card[data-rebar-promo][data-rebar-orientation="row"] > .rebar-card-body {
   grid-row: var(--rebar-card-promo-body-row, auto);
 }
+
+/* Card orientation="feature" coverFrame="media": the border and radius belong to the image, not to a clipping frame */
+.rebar-card[data-rebar-orientation="feature"][data-rebar-cover-frame="media"] > .rebar-card-cover {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+.rebar-card[data-rebar-orientation="feature"][data-rebar-cover-frame="media"] > .rebar-card-cover .rebar-image {
+  overflow: visible;
+  border-radius: 0;
+  background: transparent !important; /* the image paints its own rounded fill; the wrapper's accent would show at the corners */
+}
+.rebar-card[data-rebar-orientation="feature"][data-rebar-cover-frame="media"] > .rebar-card-cover img {
+  box-sizing: border-box;
+  border: var(--rebar-card-feature-cover-border, 1px solid var(--rebar-color-border));
+  border-radius: var(--rebar-card-feature-cover-radius, 26px);
+}
