@@ -16,6 +16,8 @@ export interface ListProps extends Omit<ComponentPropsWithoutRef<"ul">, "childre
   empty?: ReactNode;
   /** Shows four skeleton rows. */
   loading?: boolean;
+  /** `"item"`: a keyboard-focused row draws the browser's native focus ring around the whole row (outer border box) instead of Rebar's soft ring around the row's main area. Default `"default"`: unchanged. Tokens: `--rebar-list-item-focus-outline`, `--rebar-list-item-focus-outline-offset`. */
+  focusRing?: "default" | "item";
   children?: ReactNode;
 }
 
@@ -24,7 +26,7 @@ export interface ListProps extends Omit<ComponentPropsWithoutRef<"ul">, "childre
  * composition of rows, with no state of its own. The rows are `ListItem`s in a real `<ul>`.
  */
 export const List = forwardRef<HTMLUListElement, ListProps>(function List(
-  { variant = "cards", empty, loading, className, children, ...props },
+  { variant = "cards", empty, loading, focusRing, className, children, ...props },
   ref,
 ) {
   const hasRows = Children.toArray(children).length > 0;
@@ -42,6 +44,7 @@ export const List = forwardRef<HTMLUListElement, ListProps>(function List(
         className={clsx("rebar-list", className)}
         data-rebar-component="list"
         data-rebar-variant={variant}
+        data-rebar-focus-ring={focusRing === "item" ? "item" : undefined}
         aria-busy={loading || undefined}
         {...props}
       >

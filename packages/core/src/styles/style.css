@@ -13970,3 +13970,22 @@ a.rebar-button[data-rebar-variant="tertiary"] {
   border: var(--rebar-card-feature-cover-border, 1px solid var(--rebar-color-border));
   border-radius: var(--rebar-card-feature-cover-radius, 26px);
 }
+
+/* ---- parity-int3 ---- */
+/* List focusRing="item": the native focus ring around the whole row, not Rebar's soft ring around the row's main area */
+.rebar-list[data-rebar-focus-ring="item"] > .rebar-list-item:has(> .rebar-list-item-main:focus-visible) {
+  outline: var(--rebar-list-item-focus-outline, auto 1px -webkit-focus-ring-color);
+  outline-offset: var(--rebar-list-item-focus-outline-offset, 1px);
+}
+.rebar-list[data-rebar-focus-ring="item"] > .rebar-list-item > .rebar-list-item-main:focus-visible { outline: none; }
+/* SearchInput: the typed element's overflow style and a right margin (an app that reserves the clear button's space) */
+.rebar-search-input-control {
+  text-overflow: var(--rebar-search-input-control-text-overflow, ellipsis);
+  margin: var(--rebar-search-input-control-margin, 0);
+}
+/* ListItem thumb: the clip and the child's corner are tokens. `overflow: visible` with a child that inherits the radius paints the corner once
+   (a rounded fill, like a bordered image), instead of a square child clipped by the wrapper (a second anti-aliased edge). Defaults: clipped, square child. */
+.rebar-list-item-thumb { overflow: var(--rebar-list-item-thumb-overflow, hidden); }
+.rebar-list-item-thumb > * { border-radius: var(--rebar-list-item-thumb-child-radius, 0); }
+/* ListItem pressed state: an opacity token (default 1: no change) */
+.rebar-list-item:active { opacity: var(--rebar-list-item-pressed-opacity, 1); }

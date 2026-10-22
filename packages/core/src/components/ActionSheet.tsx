@@ -48,6 +48,8 @@ export interface ActionSheetProps {
   closeOnSelect?: boolean;
   /** Set `false` to refuse mask tap, swipe and Cancel (it is `false` by itself while a row is loading). */
   dismissible?: boolean;
+  /** `false`: focus is not trapped in the sheet (see `DrawerProps.modal`). Default `true`. */
+  modal?: boolean;
 }
 
 function ExternalGlyph() {
@@ -84,6 +86,7 @@ export function ActionSheet({
   closeOnSelect = true,
   dismissible = true,
   appearance,
+  modal,
 }: ActionSheetProps) {
   const contextRenderLink = useRenderLink(undefined, defaultRenderLink);
   const isControlled = open !== undefined;
@@ -131,6 +134,7 @@ export function ActionSheet({
       dataComponent="action-sheet"
       dragToDismiss
       appearance={appearance}
+      modal={modal}
       handle={<div className="rebar-bottom-sheet-handle" data-rebar-part="handle" aria-hidden="true" />}
     >
       <div className="rebar-action-sheet-list" data-rebar-part="actions">

@@ -64,6 +64,10 @@ export interface DrawerProps {
   showHandle?: boolean;
   /** With `appearance="popup"`: `"eyebrow"` (default, small uppercase muted label) or `"heading"` (a serif display title). */
   titleStyle?: "eyebrow" | "heading";
+  /** `false`: no focus trap and nothing outside the panel is made inert, so focus can live in a field outside the panel (an inline
+   * rename in the page header opened from the sheet's menu). The dim layer is still drawn and still dismisses; moving focus out does
+   * not. Default `true` (a modal dialog: focus is trapped). */
+  modal?: boolean;
 }
 
 /**
@@ -120,6 +124,7 @@ export function DrawerPanel({
   appearance,
   showHandle,
   titleStyle,
+  modal = true,
 }: DrawerPanelProps) {
   const schemeAttr = useSchemeAttr();
   // Same controlled/uncontrolled pattern as Dialog: internally managed regardless of whether the
@@ -195,17 +200,33 @@ export function DrawerPanel({
       : undefined;
 
   return (
-    <RadixDialog.Root open={currentOpen} onOpenChange={handleOpenChange}>
+    <RadixDialog.Root open={currentOpen} onOpenChange={handleOpenChange} modal={modal}>
       {trigger ? <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger> : null}
       <RadixDialog.Portal container={container ?? undefined}>
-        <RadixDialog.Overlay
-            {...schemeAttr}
-          className="rebar-dialog-overlay"
-          data-rebar-part="overlay"
-          data-rebar-appearance={popup ? "popup" : undefined}
-          data-rebar-contained={container ? "true" : undefined}
-          style={popupLevel ? { zIndex: 1000 + popupLevel * 10 } : undefined}
-        />
+        {modal ? (
+          <RadixDialog.Overlay
+              {...schemeAttr}
+            className="rebar-dialog-overlay"
+            data-rebar-part="overlay"
+            data-rebar-appearance={popup ? "popup" : undefined}
+            data-rebar-contained={container ? "true" : undefined}
+            style={popupLevel ? { zIndex: 1000 + popupLevel * 10 } : undefined}
+          />
+        ) : (
+          // A non-modal Radix dialog draws no overlay of its own: the same dim layer as a plain element (a pointer-down on it is
+          // "outside the panel" and dismisses).
+          currentOpen && (
+            <div
+              {...schemeAttr}
+              className="rebar-dialog-overlay"
+              data-rebar-part="overlay"
+              data-rebar-appearance={popup ? "popup" : undefined}
+              data-rebar-contained={container ? "true" : undefined}
+              data-state="open"
+              style={popupLevel ? { zIndex: 1000 + popupLevel * 10 } : undefined}
+            />
+          )
+        )}
         <RadixDialog.Content
             {...schemeAttr}
           className={clsx("rebar-drawer-content", `rebar-drawer-content-${side}`, className)}
@@ -216,13 +237,14 @@ export function DrawerPanel({
           data-rebar-handle={popup && showHandle ? "true" : undefined}
           data-rebar-contained={container ? "true" : undefined}
           style={{ ...sizeStyle, ...dragStyle, ...(popupLevel ? { zIndex: 1001 + popupLevel * 10 } : null) }}
-          aria-modal="true"
+          aria-modal={modal ? "true" : undefined}
           ref={contentRef}
           data-rebar-size={isAuto ? "auto" : undefined}
           data-rebar-dismissible={dismissible ? undefined : "false"}
           onEscapeKeyDown={dismissible ? undefined : (e) => e.preventDefault()}
           onPointerDownOutside={dismissible ? undefined : (e) => e.preventDefault()}
           onInteractOutside={dismissible ? undefined : (e) => e.preventDefault()}
+          onFocusOutside={modal ? undefined : (e) => e.preventDefault()}
         >
           {!dismissible ? null : dragEnabled ? (
             <div
