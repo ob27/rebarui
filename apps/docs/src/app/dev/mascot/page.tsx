@@ -40,7 +40,7 @@ function Panel({ mode }: { mode: "light" | "dark" }) {
           </Button>
           <Tag>Opinion</Tag>
         </Stack>
-        <Input aria-label="Search" placeholder="Search 206 constructs" />
+        <Input aria-label="Search" placeholder="Search constructs" />
         <Card>
           <Stack gap="sm">
             <Heading level={3}>A card</Heading>

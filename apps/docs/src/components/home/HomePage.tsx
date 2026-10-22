@@ -5,11 +5,6 @@ import { useState } from "react";
 import { GenesisBanners } from "@/components/GenesisBanners";
 import { AvatarGroup, Button, Card, Combobox, Input, Kanban, Sparkline, Tag } from "rebar-ui";
 import type { KanbanCard, KanbanColumn, KanbanState } from "rebar-ui";
-import { CONSTRUCT_TIER } from "@/data/constructTier";
-
-// The counts come from the registry, so the page can never drift from the catalogue.
-const tierCount = (tier: string) => Object.values(CONSTRUCT_TIER.component).filter((t) => t === tier).length;
-const TOTAL = Object.keys(CONSTRUCT_TIER.component).length;
 
 // Shared sample world ("Tideline", a small studio's project app) used by every demo on the site.
 const PEOPLE = [
@@ -53,11 +48,11 @@ function Collage() {
 }
 
 const TIERS = [
-  { id: "imitation", n: "01", name: "Imitation", href: "/imitations", note: "Familiar parts.", count: tierCount("imitation") },
-  { id: "synthetic", n: "02", name: "Synthetic", href: "/synthetics", note: "Parts combined.", count: tierCount("synthetic") },
-  { id: "opinion", n: "03", name: "Opinion", href: "/opinions", note: "Our own take.", count: tierCount("opinion") },
-  { id: "order", n: "04", name: "Order", href: "/orders", note: "Whole layouts.", count: tierCount("order") },
-  { id: "genesis", n: "05", name: "Genesis", href: "/geneses", note: "Finished apps.", count: 1 },
+  { id: "imitation", n: "01", name: "Imitation", href: "/imitations", note: "Familiar parts." },
+  { id: "synthetic", n: "02", name: "Synthetic", href: "/synthetics", note: "Parts combined." },
+  { id: "opinion", n: "03", name: "Opinion", href: "/opinions", note: "Our own take." },
+  { id: "order", n: "04", name: "Order", href: "/orders", note: "Whole layouts." },
+  { id: "genesis", n: "05", name: "Genesis", href: "/geneses", note: "Finished apps." },
 ];
 
 function TierPreview({ id }: { id: string }) {
@@ -84,12 +79,13 @@ function TierPreview({ id }: { id: string }) {
   }
 }
 
-export function HomePage() {
+/** `total` is the number of constructs the site lists, from the registry the tier pages read (see `data/catalogueCounts.ts`). */
+export function HomePage({ total }: { total: number }) {
   return (
     <main className="cs-wrap">
       <section className="cs-hero cs-grain">
         <div>
-          <span className="cs-kicker">{TOTAL} constructs</span>
+          <span className="cs-kicker">{total} constructs</span>
           <h1 className="cs-h1">Rebar UI</h1>
           <p className="cs-tl">Five tiers, one look.</p>
           <div className="cs-cta">
