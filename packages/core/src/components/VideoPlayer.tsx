@@ -7,6 +7,9 @@ import { Text } from "./Text";
 export interface VideoPlayerProps extends Omit<ComponentPropsWithoutRef<"div">, "children"> {
   src: string;
   poster?: string;
+  /** What the browser fetches before the first play: `"none"` downloads nothing until Play (use it for a large file or a
+   * page with many players), `"metadata"` only the duration and dimensions, `"auto"` the whole file. Default `"metadata"`. */
+  preload?: "none" | "metadata" | "auto";
   /** Seconds the skip-back/skip-forward buttons jump by. Default 10. */
   skipSeconds?: number;
 }
@@ -28,6 +31,7 @@ function formatTime(seconds: number): string {
 export function VideoPlayer({
   src,
   poster,
+  preload = "metadata",
   skipSeconds = 10,
   className,
   "aria-label": ariaLabel = "Video player",
@@ -177,6 +181,7 @@ export function VideoPlayer({
         ref={videoRef}
         src={src}
         poster={poster}
+        preload={preload}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={handleEnded}

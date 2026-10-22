@@ -11,8 +11,6 @@ const CODE = `<Ellipsis content={note} rows={2} expandText="More" collapseText="
 
 const NOTE =
   "Interview 11: most of the crew keep a paper copy of the rota in the cab because the app is slow to open on the quay. They want shifts they can read at a glance, offline, with the next handover time shown first.";
-/** The core stylesheet leaves .rebar-ellipsis inline, so it measures a zero width and never truncates; block display fixes it (needs a core CSS change). */
-const BLOCK_FIX = ".cs-ellipsis-fix .rebar-ellipsis { display: block; }";
 const FILE = "interview-03-walkthrough-harbour-office-second-take-final.mp4";
 
 const BLOCKS: Construct[] = [
@@ -38,8 +36,7 @@ const BLOCKS: Construct[] = [
 
 export default function EllipsisPage() {
   return (
-    <Stack gap="lg" className="cs-ellipsis-fix">
-      <style>{BLOCK_FIX}</style>
+    <Stack gap="lg">
       <Heading level={1}>Ellipsis</Heading>
       <Text color="secondary">Cuts text to a number of lines, with optional More and Less.</Text>
 

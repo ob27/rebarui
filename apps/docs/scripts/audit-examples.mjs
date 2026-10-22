@@ -30,6 +30,12 @@ for (const m of hasFullPageSrc.matchAll(/^\s*([A-Za-z0-9]+):\s*"([^"]+)",?\s*$/g
   hrefToComponent[m[2]] = m[1];
 }
 
+// --- Ground truth: manual sidebar entries (tierSections.ts EXTRA_SECTIONS: Icon, useHashTarget) that have a page but no
+// hasFullPage.ts row. The label is the exported name; a hook is rendered as a call, a component as a JSX tag. ---
+const tierSectionsSrc = fs.readFileSync(path.join(ROOT, "src/data/tierSections.ts"), "utf8");
+for (const m of tierSectionsSrc.matchAll(/\{\s*href:\s*"([^"]+)",\s*label:\s*"([^"]+)"/g)) {
+  if (!hrefToComponent[m[1]]) hrefToComponent[m[1]] = m[2];
+}
 // --- Ground truth: block types from constructTier.ts's `block: {...}` section ---
 const constructTierSrc = fs.readFileSync(path.join(ROOT, "src/data/constructTier.ts"), "utf8");
 const blockSection = constructTierSrc.split("block: {")[1].split(/}\s*satisfies Record<Construct/)[0];
@@ -48,6 +54,8 @@ for (const tier of TIERS) {
     const route = `/${tier}/${entry.name}`;
     const src = fs.readFileSync(pagePath, "utf8");
     const stripped = stripCodeStrings(src);
+    // A redirect page (kept so old links land somewhere) documents nothing itself.
+    if (/\bredirect\(/.test(src)) continue;
 
     const componentName = hrefToComponent[route];
     const isBlock = blockTypes.has(entry.name);
@@ -60,7 +68,7 @@ for (const tier of TIERS) {
     // A construct can legitimately be documented via either shape (some — the Opinion-tier
     // blocks like `table`/`wizard`/`nav-bar` — are BOTH a real component and a block type, and
     // their docs page might demo either or both), so a live example in either form counts.
-    const hasComponentRender = componentName ? new RegExp(`<${componentName}[\\s/>]`).test(stripped) : false;
+    const hasComponentRender = componentName ? new RegExp(`(<${componentName}[\\s/>]|\\b${componentName}\\()`).test(stripped) : false;
     const hasBlockRender = isBlock ? new RegExp(`type:\\s*["']${entry.name}["']`).test(stripped) : false;
     const hasLiveRender = hasComponentRender || hasBlockRender;
     const kind = [componentName ? "component" : null, isBlock ? "block" : null].filter(Boolean).join("+");
