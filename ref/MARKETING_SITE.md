@@ -167,7 +167,7 @@ and migration as two separate, only-loosely-connected features.
   the same template (next section).
 - **Theming & Defaults** — the content of [HEURISTICS.md](HEURISTICS.md), written for public
   consumption: token tables, behavioral heuristics, how to override.
-- **Migration** — how the sketch→clean re-skin works, `MIGRATION_PROMPT.md` explained, adapter
+- **Migration** — how the re-skin works, `MIGRATION_PROMPT.md` explained, adapter
   packages (`@rebar-ui/migrate-antd` and future ones) documented individually.
 - **DevTools** — what the dev-only panel shows and how to read it.
 - **Contributing** — same spirit as mermaid's Contributing section: how to add a component, how

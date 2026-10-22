@@ -3,6 +3,9 @@ title: Rebar UI — contributing a new benchmark, compatibly
 status: living document
 ---
 
+> Note: the `bench/` scaffolds this document refers to were removed from the repo; they survive only in git history.
+
+
 # Contributing a new benchmark
 
 `/benchmarks` compares `rebar-ui` (via the placement layer / DSL Packer) against hand-authored Ant

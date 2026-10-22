@@ -20,8 +20,7 @@ Monorepo (pnpm workspaces + Turborepo, pending confirmation):
 packages/
   core/            # components + primitives, wraps Radix, ships CSS-var-only styles
   placement/       # @rebar-ui/placement — the placement layer: construct schema + BlockRenderer, see below
-  theme-sketch/    # default sketch theme: fonts, sketchy borders, grayscale tokens
-  theme-clean/     # plain production-safe baseline theme
+  theme-basilika/  # the canonical theme: cream and navy with deep coral, light and dark
   devtools/        # dev-only floating panel — kept out of prod via a consumer-side dynamic import, see below
   adapters/
     antd/          # @rebar-ui/migrate-antd — prop-map + codemod, first adapter template
@@ -113,7 +112,7 @@ questions, not yet answered by more than "it worked for these six."
 LLM building UI is paid up front, during the early, high-volatility phase of a project — flows,
 layouts, and information architecture are still being figured out, and every design decision made
 against a fully-styled, opinionated target library has to be re-justified on every iteration. That
-is exactly the phase where a low-fidelity, placement-driven build is cheapest and most consistent:
+is exactly the phase where a placement-driven build is cheapest and most consistent:
 there is nothing visual to re-litigate, so iteration is fast and (per the benchmark above) far more
 predictable in cost. Once a project's UI has actually stabilized — the flows are settled, it is
 heading to production — the adapter/codemod migration path (see "Migration adapters" below) is the
@@ -133,7 +132,7 @@ alongside it, not as a separate authoring step. At render time, the client picks
 based on the viewport actually in front of the user: a phone or a small tablet gets the mobile
 print; a large tablet gets the full desktop app, same as a laptop. The practical result: a site
 built through the Packer gets a mobile-optimized version of itself automatically, the same way it
-already gets a consistent, low-fidelity visual baseline automatically — no separate mobile design
+already gets a consistent visual baseline automatically — no separate mobile design
 pass, no second document for the model (or a human) to author.
 
 **Why this is a placement-layer problem, not a per-component one.** A component built and used
@@ -217,30 +216,23 @@ role output can't be trusted yet.
 ## Theming mechanism
 
 All visual values are CSS custom properties, scoped under a `--rebar-` prefix, defined once in
-`theme-sketch`/`theme-clean` and consumed by `core`'s stylesheets — never written as literal
+`theme-basilika` and consumed by `core`'s stylesheets — never written as literal
 values inside a component's CSS. Theme switching is:
 
 ```html
-<html data-rebar-theme="sketch" data-theme="dark">
+<html data-theme="dark">
 ```
 
 A single attribute toggle on the root element; no per-component JS re-render needed for a theme
-change, no runtime style mutation. Dark mode is an orthogonal attribute so it composes with either
+change, no runtime style mutation. Dark mode is an orthogonal attribute so it composes with any
 theme.
 
-**Theme rules must scope to their own attribute selector only — never also to bare `:root`.**
-An earlier version of `theme-sketch` matched `:root, [data-rebar-theme="sketch"]` in one rule, to
-make sketch "the default" even with no attribute set. That meant sketch's tokens always applied
-at the root regardless of which theme was actually active, and switching to
-`data-rebar-theme="clean"` on the same element came down to an equal-specificity, source-order
-tiebreak between `theme-sketch`'s and `theme-clean`'s CSS — which broke in practice (clicking
-"Clean" didn't change the font; Turbopack's CSS bundling doesn't guarantee the import-order
-assumption that tiebreak depended on). Fixed by scoping every theme rule to only its own explicit
-`[data-rebar-theme="..."]` (and `[data-theme="dark"]`) selector, never `:root` — an app with no
-theme attribute set at all now falls back to `core`'s own inline `var(--x, fallback)` values
-rather than silently becoming "sketch." Getting-started docs already instruct setting the
-attribute explicitly, so this doesn't change the documented setup path, only removes an
-undocumented, fragile implicit default.
+**A theme that is not the default must scope its rules to its own attribute selector only — never also to bare `:root`.**
+Otherwise its tokens always apply at the root, and switching to another theme on the same element
+comes down to an equal-specificity, source-order tiebreak between the two stylesheets, which
+bundlers do not guarantee. `theme-basilika` is the one theme that applies to `:root`, because it is
+the default; an app with no theme attribute falls back to it, and `core`'s own inline
+`var(--x, fallback)` values cover the case where no theme is loaded.
 
 No component ever silently rewrites a developer-authored value (e.g. "rounds" a stray `margin:
 13px` to `16px`). Deviations from the token scale are surfaced as **dev-mode console warnings**
@@ -360,8 +352,8 @@ panel shows:
 - Unit tests (`vitest`) for token/theme logic, prop-mapping tables, codemods.
 - Component tests (`@playwright/test` component testing or Testing Library) for every component:
   render, keyboard operability, ARIA role/name assertions.
-- A dedicated "survives re-skin" test: render a component tree under `theme-sketch`, snapshot its
-  `data-rebar-*`/ARIA output, re-render under `theme-clean`, assert the same output — this is the
+- A dedicated "survives re-skin" test: render a component tree under one `data-rebar-theme` value, snapshot its
+  `data-rebar-*`/ARIA output, re-render under another, assert the same output — this is the
   automated proof of the core value proposition and should exist before v0.1 ships.
 
 ## Packaging and tree-shaking (rebar-ui core)

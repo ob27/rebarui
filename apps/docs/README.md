@@ -5,7 +5,7 @@ component check and build-progress checklist. Grows into the real docs/marketing
 in [`ref/MARKETING_SITE.md`](../../ref/MARKETING_SITE.md) at Phase 6.
 
 Built with Next.js (App Router, static export — `output: "export"`), styled entirely by
-`rebar-ui` + `@rebar-ui/theme-sketch` (both workspace packages, see `package.json`). Deploys to
+`rebar-ui` + `@rebar-ui/theme-basilika` (both workspace packages, see `package.json`). Deploys to
 Firebase Hosting on the `rebarui` project (config in `.env.local`, gitignored — see
 `.env.example` for the shape).
 

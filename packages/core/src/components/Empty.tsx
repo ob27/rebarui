@@ -25,7 +25,7 @@ export interface EmptyProps {
    * `illustration="bowl-and-spoon"`; never the error-style circle-with-an-X) automatically in dark
    * mode — the illustration is a raster image baked onto a white background, so it can't recolor
    * itself for a dark surface. Set explicitly
-   * to keep one icon in both themes instead: "illustration" for the sketch look everywhere,
+   * to keep one icon in both themes instead: "illustration" for the hand-drawn image everywhere,
    * "vector" for the plain circle-with-an-X everywhere, "container" for the real Ant
    * Design-sourced `InboxOutlined` glyph (`currentColor`, same as "vector" — adapts to either
    * theme on its own, no raster/vector swap needed). "container" used to be a hand-traced

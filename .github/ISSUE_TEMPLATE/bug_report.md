@@ -22,7 +22,7 @@ What should have happened instead.
 
 **Environment**
 - rebar-ui / @rebar-ui/placement version:
-- Theme: sketch / clean
+- Theme: basilika (light / dark)
 - Dark mode: on / off
 - Browser:
 

@@ -2,7 +2,6 @@ packages:
   - "packages/*"
   - "packages/adapters/*"
   - "apps/*"
-  - "bench/*"
 allowBuilds:
   esbuild: true
   sharp: false

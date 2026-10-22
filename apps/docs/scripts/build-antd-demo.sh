@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
+# NOTE: bench/ (including bench/antd-composite-demo, this script's source) was removed from the repo;
+# recover it from git history before the legacy cleanup commit if this demo ever needs a rebuild.
+#
 # Rebuilds the standalone antd demo embedded live on the homepage (the "migrated to Ant Design"
 # side of the migration-comparison section) and copies it into apps/docs/public/demos/.
 #
 # This is a real, separate Vite+antd build — not a screenshot — so both sides of that comparison
 # are genuinely live implementations. It's copied as a static build artifact rather than linked
 # live, specifically so antd never becomes a dependency of the main docs app bundle (that would
-# contradict the whole "headless, low-fi, no design-system weight until you choose it" pitch this
+# contradict the whole "no design-system weight until you choose it" pitch this
 # site makes).
 #
 # Built from bench/antd-composite-demo, NOT bench/antd-composite directly — a dedicated clone with

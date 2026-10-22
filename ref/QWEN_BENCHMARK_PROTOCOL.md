@@ -3,6 +3,9 @@ title: Rebar UI — cross-model benchmark protocol (for Qwen or any other model)
 status: living document
 ---
 
+> Note: the `bench/` scaffolds this document refers to were removed from the repo; they survive only in git history.
+
+
 # Cross-model benchmark protocol
 
 This is a self-contained runbook for reproducing the `/benchmarks` experiments on a **different

@@ -77,7 +77,7 @@ function readAmbientBionic(): boolean {
 
 /**
  * Mirrors the same "ambient DOM attribute, live-updated via MutationObserver" pattern dark mode
- * and sketch/clean theming already use (see RebarDevTools.tsx) — data-rebar-bionic="true" on
+ * and theme selection already use (see RebarDevTools.tsx) — data-rebar-bionic="true" on
  * <html>, toggled globally, no Provider required.
  */
 export function useAmbientBionic(): boolean {

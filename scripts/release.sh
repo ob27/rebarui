@@ -35,8 +35,7 @@ const packages = [
   './packages/core/package.json',
   './packages/placement/package.json',
   './packages/devtools/package.json',
-  './packages/theme-sketch/package.json',
-  './packages/theme-clean/package.json',
+  './packages/theme-basilika/package.json',
   './packages/adapters/antd/package.json',
   './apps/docs/package.json'
 ];

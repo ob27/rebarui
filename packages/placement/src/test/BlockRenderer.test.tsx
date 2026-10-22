@@ -1133,7 +1133,7 @@ describe("BlockRenderer", () => {
         type: "hero",
         badge: "v0.1",
         title: "Rebar UI",
-        subtitle: "Headless-first, low-fidelity components.",
+        subtitle: "Headless-first components.",
         actions: [
           { label: "Getting Started", href: "/docs/getting-started", variant: "primary" },
           { label: "Design Heuristics", href: "/docs/theming" },
@@ -1180,7 +1180,7 @@ describe("BlockRenderer", () => {
         heading: "1. Install",
         body: [
           { kind: "code", code: "npm install rebar-ui" },
-          { kind: "text", text: "Swap `@rebar-ui/theme-sketch` for a different theme any time." },
+          { kind: "text", text: "Swap `@rebar-ui/theme-basilika` for a different theme any time." },
           { kind: "list", items: ["First step", "Second step"] },
         ],
       },
@@ -1199,7 +1199,7 @@ describe("BlockRenderer", () => {
       "Copy",
       "npm install rebar-ui",
       "Swap",
-      "@rebar-ui/theme-sketch",
+      "@rebar-ui/theme-basilika",
       "for a different theme any time.",
       "First step",
       "Second step",

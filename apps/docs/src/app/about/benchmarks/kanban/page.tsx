@@ -5,7 +5,7 @@ import { NextBlockRenderer } from "@/components/NextBlockRenderer";
 
 // A new, standalone baseline — not a variant of Simple/Composite/Complex — per
 // ref/BENCHMARK_CONTRIBUTING.md rule #8. Full methodology/prompts/constraints live in
-// bench/KANBAN_BENCHMARK_SPEC.md; the 60 scaffolds themselves are committed under bench/kanban-*.
+// the benchmark spec (the former bench/KANBAN_BENCHMARK_SPEC.md, now only in git history).
 
 const ANTD_COLOR = "var(--rebar-color-text-secondary, #757575)";
 const PRIMITIVES_COLOR = "var(--rebar-color-danger, #d32f2f)";
@@ -36,7 +36,7 @@ const INTRO_BLOCKS: Construct[] = [
       },
       {
         kind: "text",
-        text: "Same target spec, same model (Claude Sonnet 5), same agentic harness, isolated scaffolds (fresh `bench/kanban-<condition>-<NN>` per run, `workspace:*` deps, no shared state), n=15 per condition — 75 real dispatches total, plus a 5-run validation follow-up (see below). The first 4 conditions were run 2026-09-25 against rebar-ui v0.12.1 (the current version — every other benchmark on this section was measured against v0.1.0; see the version note on the [benchmarks overview](/about/benchmarks)); the 5th (`kanban-opinion-dsl`) was added the same day, after widening `Kanban`'s own schema with `assignee`/`statusTag`/`addPosition` fields specifically so this condition's data could express the spec without a `renderCard` escape hatch. Every output was independently re-typechecked in a single-threaded pass after all runs completed (not trusted from each building agent's own self-report — see the verification section below for why that distinction mattered, twice over this time).",
+        text: "Same target spec, same model (Claude Sonnet 5), same agentic harness, isolated scaffolds (fresh `kanban-<condition>-<NN>` scaffold per run, `workspace:*` deps, no shared state), n=15 per condition — 75 real dispatches total, plus a 5-run validation follow-up (see below). The first 4 conditions were run 2026-09-25 against rebar-ui v0.12.1 (the current version — every other benchmark on this section was measured against v0.1.0; see the version note on the [benchmarks overview](/about/benchmarks)); the 5th (`kanban-opinion-dsl`) was added the same day, after widening `Kanban`'s own schema with `assignee`/`statusTag`/`addPosition` fields specifically so this condition's data could express the spec without a `renderCard` escape hatch. Every output was independently re-typechecked in a single-threaded pass after all runs completed (not trusted from each building agent's own self-report — see the verification section below for why that distinction mattered, twice over this time).",
       },
     ],
   },
@@ -205,7 +205,7 @@ const VALIDATION_BLOCKS: Construct[] = [
     body: [
       {
         kind: "text",
-        text: "The recurring \"search removes instead of hides\" defect in hand-rolled scaffold code (see the verification section below) raised an obvious question: would explicitly naming the mistake in the spec actually prevent it, or is that the kind of thing that sounds like it should help but doesn't? `bench/KANBAN_BENCHMARK_SPEC.md` got a new \"Known gotcha\" section spelling out exactly what went wrong and why (\"render every card unconditionally, toggle only its visibility — a card that was never rendered in the first place is not hidden\"), and 5 fresh `kanban-synthetic` runs (16 through 20) were dispatched against the updated spec to check.",
+        text: "The recurring \"search removes instead of hides\" defect in hand-rolled scaffold code (see the verification section below) raised an obvious question: would explicitly naming the mistake in the spec actually prevent it, or is that the kind of thing that sounds like it should help but doesn't? The benchmark spec got a new \"Known gotcha\" section spelling out exactly what went wrong and why (\"render every card unconditionally, toggle only its visibility — a card that was never rendered in the first place is not hidden\"), and 5 fresh `kanban-synthetic` runs (16 through 20) were dispatched against the updated spec to check.",
       },
       {
         kind: "text",
@@ -348,9 +348,9 @@ export default function KanbanBenchmarkPage() {
         #8) — Kanban had no prior benchmark spec, so it isn&apos;t folded into the
         Simple/Composite/Complex tiers measured elsewhere on this section. All 80 scaffolds across
         five conditions plus the 5-run gotcha-note validation
-        (<code>bench/kanban-antd-01</code> … <code>kanban-opinion-dsl-15</code>), the target spec,
-        and all three scaffold generators are committed to the repo under <code>bench/</code> for
-        anyone who wants to re-run or extend it.
+        (<code>kanban-antd-01</code> … <code>kanban-opinion-dsl-15</code>), the target spec, and all
+        three scaffold generators were committed under <code>bench/</code> when this ran; that directory
+        has since been removed from the repo and survives only in git history.
       </Alert>
     </Stack>
   );

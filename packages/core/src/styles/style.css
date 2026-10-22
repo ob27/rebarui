@@ -1,7 +1,7 @@
 /*
   Structural styles only — every value reads a --rebar-* custom property with a
-  fallback matching ref/HEURISTICS.md's defaults. A theme package (theme-sketch,
-  theme-clean) overrides the variables; this file never hardcodes a look.
+  fallback matching ref/HEURISTICS.md's defaults. A theme package (theme-basilika)
+  overrides the variables; this file never hardcodes a look.
 */
 
 body {

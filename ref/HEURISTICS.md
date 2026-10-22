@@ -654,7 +654,7 @@ should add to it, not spawn a parallel document.
     present. A toggle like this typically only flips a pointer or attribute; loading what each
     variant actually needs is a separate step nothing does automatically, and offering the switch
     is not the same as making every state it can reach real. Seen failing in: a live field build
-    whose theme toggle had a "sketch" state with no corresponding stylesheet ever imported —
+    whose theme toggle offered a second look with no corresponding stylesheet ever imported —
     switching to it silently did nothing, indistinguishable from a broken control to the end user,
     since nothing on screen indicated the missing half. Component rule: `ThemeToggle` documents
     that using it requires importing every theme package it can switch between, not just whichever
@@ -822,8 +822,7 @@ Convention shared by Material Design, IBM Carbon, and USWDS. All spacing is a mu
 
 ### Typography
 Six-step type scale (Material/Carbon convention), system font stack by default (no web-font
-loading cost until a theme opts in — the sketch theme opts in explicitly, to a hand-drawn-style
-font).
+loading cost until a theme opts in — basilika opts in explicitly, to Fraunces and Inter).
 
 ```css
 --rebar-font-size-xs: 12px;   /* captions, metadata */

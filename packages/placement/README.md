@@ -54,16 +54,16 @@ tier system this choice is actually about.
 ```
 # Rebar UI is not on npm yet: build it from a checkout and link it.
 git clone https://github.com/ob27/rebarui ../rebarui
-(cd ../rebarui && pnpm install && pnpm --filter rebar-ui build && pnpm --filter @rebar-ui/placement build && pnpm --filter @rebar-ui/theme-clean build)
+(cd ../rebarui && pnpm install && pnpm --filter rebar-ui build && pnpm --filter @rebar-ui/placement build && pnpm --filter @rebar-ui/theme-basilika build)
 # then, in your app's package.json dependencies:
 #   "rebar-ui": "link:../rebarui/packages/core",
 #   "@rebar-ui/placement": "link:../rebarui/packages/placement",
-#   "@rebar-ui/theme-clean": "link:../rebarui/packages/theme-clean",
+#   "@rebar-ui/theme-basilika": "link:../rebarui/packages/theme-basilika",
 ```
 
 ```tsx
 import "rebar-ui/style.css";
-import "@rebar-ui/theme-clean/theme.css";
+import "@rebar-ui/theme-basilika/theme.css";
 import { BlockRenderer, type Block } from "@rebar-ui/placement";
 
 const blocks: Block[] = [
