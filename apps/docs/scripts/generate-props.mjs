@@ -43,6 +43,7 @@ const COMPONENT_FILES = [
   "Button.tsx",
   "Input.tsx",
   "Card.tsx",
+  "Chip.tsx",
   "Alert.tsx",
   "Dialog.tsx",
   "Tabs.tsx",

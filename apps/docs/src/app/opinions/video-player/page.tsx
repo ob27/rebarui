@@ -40,6 +40,7 @@ export default function VideoPlayerPage() {
         states={[
           { label: "Skip 15 seconds", node: <VideoPlayer src={SAMPLE_SRC} skipSeconds={15} /> },
           { label: "Skip 5 seconds", node: <VideoPlayer src={SAMPLE_SRC} skipSeconds={5} /> },
+          { label: "preload=\"none\": nothing downloads until Play (default \"metadata\")", node: <VideoPlayer src={SAMPLE_SRC} preload="none" /> },
         ]}>
         <div style={{ maxWidth: 560 }}>
           <VideoPlayer src={SAMPLE_SRC} />

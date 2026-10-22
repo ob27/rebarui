@@ -75,6 +75,7 @@ function Phone({ title, children }: { title: string; children: ReactNode }) {
 
 const BLOCKS: Construct[] = [
   { type: "props-table", heading: "Props", rows: componentProps["ChatThread"] ?? [] },
+  { type: "props-table", heading: "Chip props", rows: componentProps["Chip"] ?? [] },
   {
     type: "doc-section",
     heading: "Accessibility",

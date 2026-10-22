@@ -6,6 +6,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TokenTable } from "@/components/docs/TokenTable";
 import { PhoneSheet, TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
 import { APP_ICONS, CHAT_ANSWER, CHAT_QUESTION, COVERS, COVER_TAGS } from "@/fixtures/athic-mobile";
 
@@ -125,6 +126,8 @@ export default function ImagePickerPage() {
       </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
+
+      <TokenTable component="ImagePicker" />
     </Stack>
   );
 }

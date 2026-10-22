@@ -3,6 +3,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TokenTable } from "@/components/docs/TokenTable";
 import { BACKDROP_ART } from "@/data/placeholderScreens";
 import { project } from "@/fixtures/tideline";
 
@@ -100,6 +101,8 @@ export default function BackdropSectionPage() {
       </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
+
+      <TokenTable component="BackdropSection" />
     </Stack>
   );
 }

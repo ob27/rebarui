@@ -3,6 +3,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TokenTable } from "@/components/docs/TokenTable";
 import { TASKS, project } from "@/fixtures/tideline";
 
 const CODE = `<Checkbox defaultChecked>Include archived projects</Checkbox>
@@ -143,6 +144,7 @@ export default function CheckboxPage() {
         <Stack gap="sm"><Checkbox appearance="native" variant="card">Mandatory Days only</Checkbox><Checkbox appearance="native" variant="card" defaultChecked>Hide past dates</Checkbox></Stack>
       </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
+      <TokenTable component="Checkbox" />
     </Stack>
   );
 }

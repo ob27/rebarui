@@ -7,6 +7,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TokenTable } from "@/components/docs/TokenTable";
 import { COLUMN_TITLES, PROJECT_OPTIONS, TASKS, project } from "@/fixtures/tideline";
 
 const STATUS_OPTIONS = [
@@ -218,6 +219,7 @@ export default function SelectPage() {
         <Select native aria-label="Letter" defaultValue="a" options={[{ value: "a", label: "Alpha" }, { value: "b", label: "Beta" }]} />
       </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
+      <TokenTable component="Select" />
     </Stack>
   );
 }

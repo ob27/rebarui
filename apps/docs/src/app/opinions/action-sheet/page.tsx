@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { ActionSheet, Button, Heading, Stack, Text } from "rebar-ui";
+import { ActionSheet, Button, Heading, Input, Stack, Text } from "rebar-ui";
 import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TokenTable } from "@/components/docs/TokenTable";
 import { ActionSheetMobile } from "./ActionSheetMobile";
 import { TASKS, person, project } from "@/fixtures/tideline";
 import { PhoneList, PhoneRow, PhoneSheet, TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
@@ -116,6 +117,15 @@ export default function ActionSheetPage() {
             node: <ActionSheet trigger={<Button variant="secondary" size="sm">Long label…</Button>} title={sync.title} actions={[{ label: `Move “${sync.title}, edge cases” to Done` }, { label: "Keep it where it is" }]} />,
           },
           {
+            label: "Non-modal (modal={false}): focus stays free, so a field outside can take it",
+            node: (
+              <Stack gap="sm">
+                <ActionSheet modal={false} closeOnSelect={false} trigger={<Button variant="secondary" size="sm">Task menu…</Button>} title={sync.title} actions={[{ label: "Rename", onSelect: () => document.getElementById("as-rename")?.focus() }, { label: "Duplicate" }]} />
+                <Input id="as-rename" aria-label="Task name" defaultValue={sync.title} />
+              </Stack>
+            ),
+          },
+          {
             label: "Custom cancel",
             node: <ActionSheet trigger={<Button variant="secondary" size="sm">Rota…</Button>} title={rota.name} cancelLabel="Not now" actions={[{ label: "Send to payroll" }]} />,
           },
@@ -177,6 +187,7 @@ export default function ActionSheetPage() {
 
       <ActionSheetMobile />
       <NextBlockRenderer blocks={BLOCKS} />
+      <TokenTable component="ActionSheet" />
     </Stack>
   );
 }

@@ -164,6 +164,17 @@ export default function DrawerPage() {
           { label: "Right", node: <TaskDrawer trigger={<Button variant="secondary" size="sm">Task details</Button>} /> },
           { label: "Bottom", node: <TaskDrawer side="bottom" trigger={<Button variant="secondary" size="sm">Sheet</Button>} /> },
           {
+            label: "Non-modal (modal={false}): no focus trap, nothing outside is made inert",
+            node: (
+              <Stack direction="row" gap="sm" align="center">
+                <Drawer modal={false} side="right" title="Notes" trigger={<Button variant="secondary" size="sm">Notes</Button>} size={280}>
+                  <Text size="sm" color="secondary">Tab leaves the panel; the dim layer is still drawn and still dismisses.</Text>
+                </Drawer>
+                <Input aria-label="Quick search" placeholder="Tab reaches this while open" />
+              </Stack>
+            ),
+          },
+          {
             label: "No title",
             node: (
               <Drawer trigger={<Button variant="secondary" size="sm">Open</Button>} size={280}>

@@ -50,6 +50,7 @@ export function tierBlockTypes(tier: Tier): Construct["type"][] {
  */
 const SUB_COMPONENT_EXCLUSIONS = new Set([
   "FormItem",        // documented on /opinions/form with Form
+  "Chip",            // documented on /synthetics/chat-thread with ChatThread
   "AgentTile",       // documented on /opinions/agent-wall with AgentWall
   "Radio",           // documented on /imitations/radio-group with RadioGroup
   "AccordionItem",   // documented on /opinions/accordion with Accordion

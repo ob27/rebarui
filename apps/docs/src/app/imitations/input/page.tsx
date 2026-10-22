@@ -5,6 +5,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TokenTable } from "@/components/docs/TokenTable";
 import { InputMobile } from "./InputMobile";
 import { person, project } from "@/fixtures/tideline";
 
@@ -131,6 +132,7 @@ export default function InputPage() {
         <Stack gap="sm"><Input aria-label="Date" type="date" style={{ "--rebar-input-font-size": "14px", "--rebar-input-padding": "6px 10px", "--rebar-input-min-height": "0", "--rebar-input-border-width": "1px", "--rebar-input-radius": "16px", width: "auto" } as CSSProperties} /></Stack>
       </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
+      <TokenTable component="Input" />
     </Stack>
   );
 }

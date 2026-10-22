@@ -5,6 +5,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TokenTable } from "@/components/docs/TokenTable";
 import { WEEKLY_DONE, avatarOf, person } from "@/fixtures/tideline";
 import { NewBStages } from "./NewBStages";
 
@@ -97,6 +98,7 @@ export default function CalendarHeatmapPage() {
 
       <NewBStages />
       <NextBlockRenderer blocks={BLOCKS} />
+      <TokenTable component="CalendarHeatmap" />
     </Stack>
   );
 }

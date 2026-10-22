@@ -8,6 +8,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TokenTable } from "@/components/docs/TokenTable";
 import { PROJECTS, TAGS, TASKS, avatarOf, project } from "@/fixtures/tideline";
 
 const CODE = `<Tag>Design</Tag>
@@ -120,6 +121,7 @@ export default function TagPage() {
         <Tag tone="info" style={{ "--rebar-tag-padding": "1px 7px", "--rebar-tag-font-size": "9.5px", "--rebar-tag-font-weight": 700, "--rebar-tag-letter-spacing": "0.08em", "--rebar-tag-text-transform": "uppercase", "--rebar-tag-info-bg": "transparent", "--rebar-tag-info-border-color": "currentColor" } as CSSProperties}>This week</Tag>
       </DemoStage>
       <NextBlockRenderer blocks={BLOCKS} />
+      <TokenTable component="Tag" />
     </Stack>
   );
 }

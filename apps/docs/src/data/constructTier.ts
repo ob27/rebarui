@@ -52,6 +52,7 @@ export const CONSTRUCT_TIER = {
     Button: "imitation",
     Carousel: "synthetic", // composes a real `Button` (prev/next) + a track/dots grouping — see file header.
     Checkbox: "imitation",
+    Chip: "imitation", // a styled <button> (tonal, outline or floating pill); composes no named component. Documented on /synthetics/chat-thread.
     BackdropSection: "imitation", // art + scrim + content in plain elements; composes no named component, no state.
     BentoGrid: "imitation", // a CSS grid wrapper; composes no named component, no state.
     FloatCard: "imitation", // an elevated card of plain elements; no state.

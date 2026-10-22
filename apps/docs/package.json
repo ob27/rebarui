@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "generate:props": "node scripts/generate-props.mjs",
+    "generate:props": "node scripts/generate-props.mjs && node scripts/generate-tokens.mjs",
     "predev": "npm run generate:props",
     "prebuild": "npm run generate:props",
     "dev": "next dev",

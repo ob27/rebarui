@@ -6,6 +6,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TokenTable } from "@/components/docs/TokenTable";
 import { PhoneBar, athicTabs } from "@/components/PhoneBar";
 import { TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
 import { ART, BIBLE_TRANSLATIONS, DISCUSSIONS, LIBRARY_ENTRIES, PROFILE } from "@/fixtures/athic";
@@ -219,6 +220,8 @@ export default function ListPage() {
       </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
+
+      <TokenTable component="List" />
     </Stack>
     </ToastProvider>
   );

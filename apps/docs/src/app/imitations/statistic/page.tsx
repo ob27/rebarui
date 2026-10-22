@@ -5,6 +5,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TokenTable } from "@/components/docs/TokenTable";
 import { HOURS_BY_PERSON, KPIS } from "@/fixtures/tideline";
 
 const CODE = `<Statistic title="Open tasks" value={42} />
@@ -91,6 +92,8 @@ export default function StatisticPage() {
       </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
+
+      <TokenTable component="Statistic" />
     </Stack>
   );
 }

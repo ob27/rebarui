@@ -3,6 +3,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TokenTable } from "@/components/docs/TokenTable";
 import { HeadingMobile } from "./HeadingMobile";
 import { project } from "@/fixtures/tideline";
 
@@ -78,6 +79,7 @@ export default function HeadingPage() {
 
       <HeadingMobile />
       <NextBlockRenderer blocks={BLOCKS} />
+      <TokenTable component="Heading" />
     </Stack>
   );
 }

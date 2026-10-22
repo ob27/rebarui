@@ -7,6 +7,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TokenTable } from "@/components/docs/TokenTable";
 import { COLUMN_TITLES, PEOPLE, TAGS, TASKS, avatarOf, person } from "@/fixtures/tideline";
 import type { TaskColumn } from "@/fixtures/tideline";
 import { PhoneList, PhoneRow, PhoneSheet, TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
@@ -322,6 +323,8 @@ export default function BottomSheetPage() {
       </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
+
+      <TokenTable component="BottomSheet" />
     </Stack>
   );
 }

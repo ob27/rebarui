@@ -6,6 +6,7 @@ import type { Construct } from "@rebar-ui/placement";
 import componentProps from "@/generated/component-props.json";
 import { DemoStage } from "@/components/DemoStage";
 import { NextBlockRenderer } from "@/components/NextBlockRenderer";
+import { TokenTable } from "@/components/docs/TokenTable";
 import { PhoneBar, athicTabs } from "@/components/PhoneBar";
 import { TidelinePhone } from "@/app/imitations/device-frame/TidelinePhone";
 import { ANSWER, ART, ARTICLE, DISCUSSIONS, QUESTION, TODAY } from "@/fixtures/athic";
@@ -148,6 +149,8 @@ export default function TopBarPage() {
       </DemoStage>
 
       <NextBlockRenderer blocks={BLOCKS} />
+
+      <TokenTable component="TopBar" />
     </Stack>
   );
 }
